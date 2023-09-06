@@ -177,18 +177,12 @@ transition: 0.5s;}
 .aa:hover {
 background-color: #f04d43;
 color: rgb(255,255,255);
-font-size: 21px;
-transform: scale(1.15);
-margin-left: 7.9%;
-margin-right: 7.9%;
-margin-bottom: 2.5%;
 transition: 0.75s;}
 
 a.aaa::selection {
 background: #f04d43;
   color: rgb(250,247,254);
 }
-
 
 .aa {
 display:block;
