@@ -163,15 +163,9 @@ z-index: 101;
 margin-left: 30%;
 }
 
-
-
-
-
 .aas:hover {
 background-color: #f04d43;
 color: rgb(255,255,255);
-font-size: 21px;
-transform: scale(1.015);
 transition: 0.5s;}
 
 .aa:hover {
