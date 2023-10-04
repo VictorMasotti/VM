@@ -17,7 +17,7 @@ a#exhi::selection {
 }
 
 a#work::selection {
-  background: #86BD00;
+  background: #F4BA00;
   color: rgb(255,255,255);
 }
 
@@ -161,7 +161,7 @@ text-decoration-style: solid;
 display: inline-block;
 }
 
-#exhi {
+#exhi { 
 text-size-adjust: 100%;
 text-transform: none;
 width: auto;
@@ -177,7 +177,7 @@ text-decoration-color: rgb(1,1,1)
 text-decoration-line: none;
 text-decoration: none;
 text-decoration-style: solid; 
-display: inline-block;
+z-index: 101;
 }
 
 .io {
