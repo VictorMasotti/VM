@@ -4,16 +4,31 @@
 
 ::selection {
   background: #FF0000;
-  color: rgb(250,247,254);}
+  color: rgb(255,255,255);}
 
 a#name::selection {
-  background: #FF4500;
-  color: rgb(250,247,254);
+  background: #F34808;
+  color: rgb(255,255,255);
+}
+
+a#exhi::selection {
+  background: #86BD00;
+  color: rgb(255,255,255);
+}
+
+a#work::selection {
+  background: #86BD00;
+  color: rgb(255,255,255);
 }
 
 p#below::selection {
-  background: #378805;
-  color: rgb(250,247,254);
+  background: #F4BA00;
+  color: rgb(255,255,255);
+}
+
+a#info::selection {
+  background: #44A6FA;
+  color: rgb(255,255,255);
 }
 
 .dname:hover {
