@@ -228,13 +228,13 @@ color: rgb(255,255,255);
 transition: 0.5s;}
 
 .aa:hover {
-background-color: #f04d43;
+background: #AFABAB;
 color: rgb(255,255,255);
 transition: 0.75s;}
 
 a.aaa::selection {
-background: #f04d43;
-  color: rgb(250,247,254);
+background: #AFABAB;
+color: rgb(255,255,255);
 }
 
 .aa {
@@ -306,13 +306,13 @@ z-index: 106;
 }
 
 .bb:hover {
-background-color: #f68235;
+background: #AFABAB;
 color: rgb(255,255,255);
-transition: 0.2s;}
+transition: 0.5s;}
 
 a#bbb::selection {
-  background: #f68235;
-  color: rgb(250,247,254);
+background: #AFABAB;
+color: rgb(255,255,255);
 }
 
 .bb {
@@ -346,13 +346,15 @@ z-index: 101;
 }
 
 .cc:hover {
-background-color: #faaf18;
+background: #AFABAB;
 color: rgb(255,255,255);
-transition: 0.2s;}
+transition: 0.5s;
+}
 
 a#ccc::selection {
-  background:#faaf18;
-  color: rgb(250,247,254);}
+background: #AFABAB;
+color: rgb(255,255,255);
+}
 
 .cc {
 margin-left: 1.45%;
@@ -385,13 +387,13 @@ z-index: 101;
 }
 
 .dd:hover {
-background-color: #b2ba35;
+background: #AFABAB;
 color: rgb(255,255,255);
-transition: 0.2s;}
+transition: 0.5s;}
 
 a#ddd::selection {
-  background: #b2ba35;
-  color: rgb(250,247,254);
+background: #AFABAB;
+color: rgb(255,255,255);
 }
 
 .dd {
@@ -560,5 +562,4 @@ background-size: cover;
 background-color: rgb(254);
 background-repeat: no-repeat;
 background-attachment:fixed;
-background-size:100% 100%;
-}
+background-size:100% 100%;}
