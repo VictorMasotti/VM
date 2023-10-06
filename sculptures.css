@@ -2,34 +2,69 @@
 	display:none;
 }
 
+
+
+
+
 ::selection {
   background: #FF0000;
-  color: rgb(250,247,254);}
+  color: rgb(255,255,255);}
 
 a#name::selection {
-  background: #FF4500;
-  color: rgb(250,247,254);
+  background: #F34808;
+  color: rgb(255,255,255);
+}
+
+a#exhi::selection {
+  background: #86BD00;
+  color: rgb(255,255,255);
+}
+
+a#work::selection {
+  background: #F4BA00;
+  color: rgb(255,255,255);
 }
 
 p#below::selection {
-  background: #378805;
-  color: rgb(250,247,254);
+  background: #4B0076;
+  color: rgb(255,255,255);
+}
+
+a#info::selection {
+  background: #44A6FA;
+  color: rgb(255,255,255);
 }
 
 .dname:hover {
-background-color: #FF4500;
+background-color: #F34808;
 color: rgb(255,255,255);
-transition: 0.05s;}
+transition: 0.08s;}
+
+.dexhi:hover {
+background-color: #86BD00;
+color: rgb(255,255,255);
+transition: 0.08s;}
 
 .dwork:hover {
-background-color: #FF0000;
+background-color: #F4BA00;
 color: rgb(255,255,255);
-transition: 0.06s;}
+transition: 0.08s;
+}
 
 .dinfo:hover {
-background-color: #FF0000;
+background-color: #44A6FA;
 color: rgb(255,255,255);
-transition: 0.06s;}
+transition: 0.08s;
+}
+
+.dexhi {
+position: relative;
+flex-basis: 25%;
+display: block;
+justify-content: center;
+align-items: center;
+margin-left:0.4%;
+}
 
 .header {
 background-color: rgba(245,245,245,0);
@@ -60,7 +95,7 @@ z-index: 99;
 .dname {
 margin-left: 1.45%;
 position: relative;
-flex-basis: 40%;
+flex-basis: 25%;
 display: block;
 justify-content: center;
 align-items: center;
@@ -88,7 +123,7 @@ z-index: 101;
 
 .dwork {
 position: relative;
-flex-basis: 30%;
+flex-basis: 25%;
 display: block;
 justify-content: center;
 align-items: center;
@@ -118,13 +153,30 @@ display: inline-block;
 .dinfo {
 margin-right: 1.45%;
 position: relative;
-flex-basis: 30%;
+flex-basis: 25%;
 display: block;
 justify-content: endright;
 align-items: endright;
 padding: 0;
-margin-left:0.4%;
-}
+margin-left:0.4%;}
+
+#exhi { 
+text-size-adjust: 100%;
+text-transform: none;
+width: auto;
+z-index: 99;
+color: rgb(1,1,1);
+cursor: pointer;
+font-family: 'Inter', sans-serif;
+font-size: 29px;
+font-style: normal;
+font-weight: 400;
+line-height: auto;
+text-decoration-color: rgb(1,1,1)
+text-decoration-line: none;
+text-decoration: none;
+text-decoration-style: solid; 
+z-index: 101;}
 
 #info {
 text-size-adjust: 100%;
@@ -174,7 +226,7 @@ transition: 0.05s;}
 
 a#sculptures::selection {
   background: #FFC000;
-  color: rgb(250,247,254);
+  color: rgb(255,255,255);
 }
 
 .dscu {
@@ -213,7 +265,7 @@ transition: 0.05s;}
 
 a#paintings::selection {
   background: #58267e;
-  color: rgb(250,247,254);
+  color: rgb(255,255,255);
 }
 
 .dpai {
@@ -252,7 +304,7 @@ transition: 0.05s;}
 
 a#drawings::selection {
   background:#0071c1;
-  color: rgb(250,247,254);}
+  color: rgb(255,255,255);}
 
 .ddra {
 position: relative;
@@ -290,7 +342,7 @@ transition: 0.05s;}
 
 a#objects::selection {
   background: #00af50;
-  color: rgb(250,247,254);
+  color: rgb(255,255,255);
 }
 
 .dobj {
@@ -323,16 +375,11 @@ z-index: 101;
 margin-left:0.4%;
 }
 
-
-
-
-
 .footer {
 margin-bottom: 1.2%;
 margin-top: 1.2%;
 margin-left: 1.45%;
 }
-
 
 #below {
 color: #000000;
