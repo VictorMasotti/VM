@@ -225,9 +225,11 @@ a#sculptures::selection {
 }
 
 .dscu {
+cursor: pointer;
 margin-left: 1.45%;
+margin-right: 1.45%;
 position: relative;
-flex-basis: 50%;
+flex-basis: 100%;
 display: block;
 justify-content: center;
 align-items: center;
