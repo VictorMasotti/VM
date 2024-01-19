@@ -227,6 +227,11 @@ transition: 0.05s;}
 a#sculptures::selection {
   background: #FFC000;
   color: rgb(255,255,255);
+	transition-duration: 8s;
+
+
+
+	
 }
 
 .dscu {
