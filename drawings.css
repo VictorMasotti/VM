@@ -3,9 +3,6 @@
 }
 
 
-
-
-
 ::selection {
   background: #FF0000;
   color: rgb(255,255,255);}
@@ -54,10 +51,6 @@ transition: 0.08s;}
 background-color: #44A6FA;
 color: rgb(255,255,255);
 transition: 0.08s;}
-
-
-
-
 
 .header {
 background-color: rgba(245,245,245,0);
@@ -217,8 +210,6 @@ z-index: 101;
 margin-left: 30%;
 }
 
-
-
 .dscu:hover {
 background-color: #FFC000;
 color: rgb(255,255,255);
@@ -226,12 +217,7 @@ transition: 0.05s;}
 
 a#sculptures::selection {
   background: #FFC000;
-  color: rgb(255,255,255);
-	transition-duration: 8s;
-
-
-
-	
+  color: rgb(255,255,255);	
 }
 
 .dscu {
