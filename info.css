@@ -1,9 +1,5 @@
 ::-webkit-scrollbar {
-	display:none;
-}
-
-
-
+	display:none;}
 
 ::selection {
   background: #FF0000;
@@ -11,33 +7,23 @@
 
 a#name::selection {
   background: #F34808;
-  color: rgb(255,255,255);
-}
+  color: rgb(255,255,255);}
 
 a#exhi::selection {
   background: #86BD00;
-  color: rgb(255,255,255);
-}
+  color: rgb(255,255,255);}
 
 a#work::selection {
   background: #F4BA00;
-  color: rgb(255,255,255);
-}
+  color: rgb(255,255,255);}
 
 p#below::selection {
   background: #4B0076;
-  color: rgb(255,255,255);
-}
+  color: rgb(255,255,255);}
 
 a#info::selection {
   background: #44A6FA;
-  color: rgb(255,255,255);
-}
-
-
-
-
-
+  color: rgb(255,255,255);}
 
 .dname:hover {
 background-color: #F34808;
@@ -59,8 +45,6 @@ background-color: #44A6FA;
 color: rgb(255,255,255);
 transition: 0.08s;}
 
-
-
 .header {
 background-color: rgba(245,245,245,0);
 margin-top: 1.2%;
@@ -71,8 +55,7 @@ justify content: space-between;
 position: relative;
 width: 100%;
 top: 0;
-z-index: 99;
-}
+z-index: 99;}
 
 .apps {
 background-color: rgba(245,245,245,0);
@@ -83,10 +66,8 @@ width: 98.55%;
 flex-direction: column;
 justify content: space-between;
 position: relative;
-
 top: 0;
-z-index: 99;
-}
+z-index: 99;}
 
 .dname {
 margin-left: 1.45%;
@@ -97,7 +78,8 @@ display: block;
 justify-content: center;
 align-items: center;
 z-index: 100;
-}
+transition-duration: 4s;
+transition-property: background; }
 
 #name { 
 text-size-adjust: 100%;
@@ -125,7 +107,8 @@ display: block;
 justify-content: center;
 align-items: center;
 margin-left:0.4%;
-}
+	transition-duration: 4s;
+transition-property: background; }
 
 #work {
 display: block;
@@ -156,6 +139,8 @@ justify-content: endright;
 align-items: endright;
 padding: 0;
 margin-left:0.4%;
+	transition-duration: 4s;
+transition-property: background; 
 }
 
 .dexhi {
@@ -165,6 +150,8 @@ display: block;
 justify-content: center;
 align-items: center;
 margin-left:0.4%;
+transition-duration: 4s;
+transition-property: background; 
 }
 
 #info {
