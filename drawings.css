@@ -2,7 +2,6 @@
 	display:none;
 }
 
-
 ::selection {
   background: #FF0000;
   color: rgb(255,255,255);}
@@ -114,6 +113,8 @@ display: block;
 justify-content: center;
 align-items: center;
 margin-left:0.4%;
+transition-duration: 4s;
+transition-property: background; 
 }
 
 #exhi { 
@@ -142,7 +143,8 @@ display: block;
 justify-content: center;
 align-items: center;
 margin-left:0.4%;
-}
+transition-duration: 4s;
+transition-property: background; }
 
 #work {
 display: block;
@@ -173,7 +175,8 @@ justify-content: endright;
 align-items: endright;
 padding: 0;
 margin-left:0.4%;
-}
+transition-duration: 4s;
+transition-property: background; }
 
 #info {
 text-size-adjust: 100%;
@@ -228,6 +231,8 @@ display: block;
 justify-content: center;
 align-items: center;
 z-index: 100;
+	transition-duration: 4s;
+transition-property: background; 
 }
 
 #sculptures { 
@@ -266,6 +271,8 @@ display: block;
 justify-content: center;
 align-items: center;
 z-index: 100;
+	transition-duration: 4s;
+transition-property: background; 
 }
 
 #paintings { 
@@ -304,6 +311,8 @@ display: block;
 justify-content: center;
 align-items: center;
 z-index: 100;
+transition-duration: 4s;
+transition-property: background; 
 }
 
 #drawings { 
@@ -344,6 +353,8 @@ display: block;
 justify-content: center;
 align-items: center;
 z-index: 100;
+	transition-duration: 4s;
+transition-property: background; 
 }
 
 #objects { 
