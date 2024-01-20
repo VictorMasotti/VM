@@ -2,10 +2,6 @@
 	display:none;
 }
 
-
-
-
-
 ::selection {
   background: #FF0000;
   color: rgb(255,255,255);}
@@ -27,13 +23,11 @@ a#work::selection {
 
 p#below::selection {
   background: #4B0076;
-  color: rgb(255,255,255);
-}
+  color: rgb(255,255,255);}
 
 a#info::selection {
   background: #44A6FA;
-  color: rgb(255,255,255);
-}
+  color: rgb(255,255,255);}
 
 .dname:hover {
 background-color: #F34808;
@@ -48,8 +42,7 @@ transition: 0.08s;}
 .dwork:hover {
 background-color: #F4BA00;
 color: rgb(255,255,255);
-transition: 0.08s;
-}
+transition: 0.08s;}
 
 .dinfo:hover {
 background-color: #44A6FA;
@@ -64,7 +57,8 @@ display: block;
 justify-content: center;
 align-items: center;
 margin-left:0.4%;
-}
+transition-duration: 4s;
+transition-property: background; }
 
 .header {
 background-color: rgba(245,245,245,0);
@@ -100,7 +94,8 @@ display: block;
 justify-content: center;
 align-items: center;
 z-index: 100;
-}
+transition-duration: 4s;
+transition-property: background; }
 
 #name { 
 text-size-adjust: 100%;
@@ -128,7 +123,8 @@ display: block;
 justify-content: center;
 align-items: center;
 margin-left:0.4%;
-}
+transition-duration: 4s;
+transition-property: background; }
 
 #work {
 display: block;
@@ -158,7 +154,9 @@ display: block;
 justify-content: endright;
 align-items: endright;
 padding: 0;
-margin-left:0.4%;}
+margin-left:0.4%;
+transition-duration: 4s;
+transition-property: background; }
 
 #exhi { 
 text-size-adjust: 100%;
@@ -237,6 +235,8 @@ display: block;
 justify-content: center;
 align-items: center;
 z-index: 100;
+	transition-duration: 4s;
+transition-property: background; 
 }
 
 #sculptures { 
@@ -275,6 +275,8 @@ display: block;
 justify-content: center;
 align-items: center;
 z-index: 100;
+	transition-duration: 4s;
+transition-property: background; 
 }
 
 #paintings { 
@@ -313,6 +315,8 @@ display: block;
 justify-content: center;
 align-items: center;
 z-index: 100;
+	transition-duration: 4s;
+transition-property: background; 
 }
 
 #drawings { 
@@ -353,6 +357,8 @@ display: block;
 justify-content: center;
 align-items: center;
 z-index: 100;
+	transition-duration: 4s;
+transition-property: background; 
 }
 
 #objects { 
