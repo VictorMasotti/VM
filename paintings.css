@@ -3,7 +3,13 @@
 }
 
 
+transition-duration: 8s;
 
+transition-duration: inherit;
+transition-duration: initial;
+transition-duration: revert;
+transition-duration: revert-layer;
+transition-duration: unset;
 
 
 ::selection {
