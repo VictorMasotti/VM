@@ -44,22 +44,30 @@ a#info::selection {
 .dname:hover {
 background-color: #F34808;
 color: rgb(255,255,255);
-transition: 0.08s;}
+transition: 0.08s;
+  transition-timing-function: ease-in-out;
+}
 
 .dexhi:hover {
 background-color: #86BD00;
 color: rgb(255,255,255);
-transition: 0.08s;}
+transition: 0.08s;
+  transition-timing-function: ease-in-out;
+}
 
 .dwork:hover {
 background-color: #F4BA00;
 color: rgb(255,255,255);
-transition: 0.08s;}
+transition: 0.08s;
+  transition-timing-function: ease-in-out;
+}
 
 .dinfo:hover {
 background-color: #44A6FA;
 color: rgb(255,255,255);
-transition: 0.08s;}
+transition: 0.08s;
+  transition-timing-function: ease-in-out;
+}
 
 
 
