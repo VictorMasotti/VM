@@ -89,6 +89,8 @@ display: block;
 justify-content: center;
 align-items: center;
 z-index: 100;
+transition-duration: 4s;
+transition-property: background; 
 }
 
 #name { 
@@ -117,6 +119,8 @@ display: block;
 justify-content: center;
 align-items: center;
 margin-left:0.4%;
+transition-duration: 4s;
+transition-property: background; 
 }
 
 .dwork {
@@ -125,7 +129,9 @@ flex-basis: 25%;
 display: block;
 justify-content: center;
 align-items: center;
-margin-left:0.4%;
+margin-left: 0.4%;
+transition-duration: 4s;
+transition-property: background; 
 }
 
 #work {
@@ -157,6 +163,8 @@ justify-content: endright;
 align-items: endright;
 padding: 0;
 margin-left:0.4%;
+transition-duration: 4s;
+transition-property: background; 
 }
 
 #info {
@@ -273,6 +281,8 @@ display: block;
 justify-content: center;
 align-items: center;
 z-index: 100;
+transition-duration: 4s;
+transition-property: background; 
 }
 
 #paintings { 
