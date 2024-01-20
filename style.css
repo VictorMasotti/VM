@@ -72,6 +72,8 @@ display: block;
 justify-content: center;
 align-items: center;
 z-index: 100;
+transition-duration: 4s;
+transition-property: background; 
 }
 
 #name { 
@@ -100,6 +102,8 @@ display: block;
 justify-content: center;
 align-items: center;
 margin-left:0.4%;
+transition-duration: 4s;
+transition-property: background; 
 }
 
 .dexhi {
@@ -109,6 +113,8 @@ display: block;
 justify-content: center;
 align-items: center;
 margin-left:0.4%;
+transition-duration: 4s;
+transition-property: background; 
 }
 
 #work {
@@ -140,6 +146,8 @@ justify-content: endright;
 align-items: endright;
 padding: 0;
 margin-left:0.4%;
+transition-duration: 4s;
+transition-property: background; 
 }
 
 #info {
@@ -178,6 +186,8 @@ text-decoration-line: none;
 text-decoration: none;
 text-decoration-style: solid; 
 z-index: 101;
+transition-duration: 4s;
+transition-property: background; 
 }
 
 .io {
