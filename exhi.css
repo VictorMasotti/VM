@@ -74,7 +74,8 @@ justify content: space-between;
 position: relative;
 width: 100%;
 top: 0;
-z-index: 99; }
+z-index: 99; 
+}
 
 .stacy {
 margin-left: 0.2%;
@@ -87,6 +88,7 @@ z-index: 100;
 margin-top:2%;
 width: 100%;
 height: 50vh;
+padding: 0px;
 text-align: center; }
 
 #blocco {
