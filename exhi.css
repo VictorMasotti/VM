@@ -221,11 +221,6 @@ background-color: #f04d43;
 color: rgb(255,255,255);
 transition: 0.5s;}
 
-.aa:hover {
-background: #AFABAB;
-color: rgb(255,255,255);
-transition: 0.75s;}
-
 a.aaa::selection {
 background: #AFABAB;
 color: rgb(255,255,255);
@@ -277,8 +272,30 @@ text-decoration: none;
 text-decoration-style: solid; 
 margin-block-end: 0px;
 margin-block-start: 0px;
-z-index: 105;
-}
+z-index: 105; }
+
+.aaa { 
+display: block;
+text-align: justify;
+text-justify: inter-word;
+text-size-adjust: 100%;
+text-transform: none;
+width: 48.55%;
+z-index: 99;
+color: rgb(1,1,1);
+cursor: pointer;
+font-family: 'Inter', sans-serif;
+font-size: 22px;
+font-style: normal;
+font-weight: 400;
+line-height: auto;
+text-decoration-color: rgb(1,1,1)
+text-decoration-line: none;
+text-decoration: none;
+text-decoration-style: solid; 
+margin-block-end: 0px;
+margin-block-start: 0px;
+z-index: 105; }
 
 .aaaa { 
 display:block;
