@@ -76,10 +76,23 @@ width: 100%;
 top: 0;
 z-index: 99; }
 
+.stacy {
+margin-left: 1.45%;
+position: relative;
+flex-basis: 25%;
+display: block;
+justify-content: center;
+align-items: center;
+z-index: 100; 
+margin-top:2.2%;
+margin-bottom:2.2%;
+width: 100%;
+height: 50vh;
+text-align: center; }
+
 #blocco {
 height: 90%;
-width: auto;
-}
+width: auto; }
 
 .apps {
 background-color: rgba(245,245,245,0);
@@ -103,21 +116,6 @@ align-items: center;
 z-index: 100;
 transition-duration: 4s;
 transition-property: background; }
-
-.stacy {
-margin-left: 1.45%;
-position: relative;
-flex-basis: 25%;
-display: block;
-justify-content: center;
-align-items: center;
-z-index: 100; 
-margin-top:2.2%;
-margin-bottom:2.2%;
-width: 100%;
-height: 75vh;
-text-align: center;
-}
 
 #name { 
 text-size-adjust: 100%;
