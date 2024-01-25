@@ -8,28 +8,23 @@
 
 a#name::selection {
   background: #F34808;
-  color: rgb(255,255,255);
-}
+  color: rgb(255,255,255);}
 
 a#exhi::selection {
   background: #86BD00;
-  color: rgb(255,255,255);
-}
+  color: rgb(255,255,255);}
 
 a#work::selection {
   background: #F4BA00;
-  color: rgb(255,255,255);
-}
+  color: rgb(255,255,255);}
 
 p#below::selection {
   background: #4B0076;
-  color: rgb(255,255,255);
-}
+  color: rgb(255,255,255);}
 
 a#info::selection {
   background: #44A6FA;
-  color: rgb(255,255,255);
-}
+  color: rgb(255,255,255);}
 
 .dname:hover {
 background-color: #F34808;
@@ -61,8 +56,7 @@ justify content: space-between;
 position: relative;
 width: 100%;
 top: 0;
-z-index: 99;
-}
+z-index: 99;}
 
 .options {
 background-color: rgba(245,245,245,0);
@@ -74,8 +68,7 @@ justify content: space-between;
 position: relative;
 width: 100%;
 top: 0;
-z-index: 99;
-}
+z-index: 99;}
 
 .dname {
 margin-left: 1.45%;
@@ -85,6 +78,8 @@ display: block;
 justify-content: center;
 align-items: center;
 z-index: 100;
+transition-duration: 4s;
+transition-property: background; 
 }
 
 #name { 
@@ -103,8 +98,7 @@ text-decoration-color: rgb(1,1,1)
 text-decoration-line: none;
 text-decoration: none;
 text-decoration-style: solid; 
-z-index: 101;
-}
+z-index: 101;}
 
 .dexhi {
 position: relative;
