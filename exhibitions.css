@@ -227,12 +227,12 @@ color: rgb(255,255,255);
 display:block;
 margin-left: 1.45%;
 position: relative;
-flex-basis: 25%;
+flex-basis: 75%;
 display: block;
 justify-content: center;
 align-items: center;
 z-index: 100;
-margin-bottom: 1.6%;
+margin-bottom: 0.9%;
 }
 
 .aas {
