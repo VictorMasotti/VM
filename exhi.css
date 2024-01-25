@@ -274,7 +274,7 @@ margin-block-end: 0px;
 margin-block-start: 0px;
 z-index: 105; }
 
-.aaa { 
+.yyy { 
 display: block;
 text-align: justify;
 text-justify: inter-word;
@@ -286,6 +286,29 @@ color: rgb(1,1,1);
 cursor: pointer;
 font-family: 'Inter', sans-serif;
 font-size: 22px;
+font-style: normal;
+font-weight: 400;
+line-height: auto;
+text-decoration-color: rgb(1,1,1)
+text-decoration-line: none;
+text-decoration: none;
+text-decoration-style: solid; 
+margin-block-end: 0px;
+margin-block-start: 0px;
+z-index: 105; }
+
+.vvv { 
+display: block;
+text-align: justify;
+text-justify: inter-word;
+text-size-adjust: 100%;
+text-transform: none;
+width: 48.55%;
+z-index: 99;
+color: rgb(1,1,1);
+cursor: pointer;
+font-family: 'Inter', sans-serif;
+font-size: 24px;
 font-style: normal;
 font-weight: 400;
 line-height: auto;
