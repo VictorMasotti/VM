@@ -80,6 +80,7 @@ padding: 0px; }
 .ga {
 position: relative;
 display: block;
+flex-basis: auto;
 justify-content: center;
 align-items: center;
 z-index: 100; 
@@ -92,6 +93,7 @@ text-align: center; }
 .gal {
 position: relative;
 display: block;
+flex-basis: auto;
 justify-content: center;
 align-items: center;
 z-index: 100; 
