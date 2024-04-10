@@ -1,17 +1,15 @@
 ::-webkit-scrollbar {
-	display:none;}
+	display:none; }
 
 ::selection {
   background: #FF0000;
   color: rgb(255,255,255);}
 
-p {
-    display: block;
+p {     display: block;
     margin-block-start: 0px;
     margin-block-end: 0px;
     margin-inline-start: 0px;
-    margin-inline-end: 0px;
-}
+    margin-inline-end: 0px; }
 
 a#name::selection {
   background: #F34808;
@@ -77,17 +75,28 @@ position: relative;
 width: 100%;
 top: 0;
 z-index: 99; 
-padding: 0px;
-}
+padding: 0px; }
 
-.stacy {
+.ga {
 position: relative;
-flex-basis: 25%;
 display: block;
 justify-content: center;
 align-items: center;
 z-index: 100; 
-margin-top:2%;
+margin-top: 2%;
+width: 100%;
+height: 54vh;
+padding: 0px;
+text-align: center; }
+
+.gal {
+position: relative;
+display: block;
+justify-content: center;
+align-items: center;
+z-index: 100; 
+margin-top: 2%;
+margin-left: 2%;
 width: 100%;
 height: 54vh;
 padding: 0px;
@@ -95,8 +104,7 @@ text-align: center; }
 
 #blocco {
 height: 100%;
-width: auto; 
-}
+width: auto; }
 
 .apps {
 background-color: rgba(245,245,245,0);
@@ -108,7 +116,7 @@ flex-direction: column;
 justify content: space-between;
 position: relative;
 top: 0;
-z-index: 99;}
+z-index: 99; }
 
 .dname {
 margin-left: 1.45%;
