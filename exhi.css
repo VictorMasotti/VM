@@ -126,6 +126,19 @@ position: relative;
 top: 0;
 z-index: 99; }
 
+.tap {
+background-color: rgba(245,245,245,0);
+margin-top: 1.5%;
+margin-bottom: 2.75%;
+min-height: auto;
+display: flex;
+width: 98.55%;
+flex-direction: column;
+justify content: space-between;
+position: relative;
+top: 0;
+z-index: 99; }
+
 .dname {
 margin-left: 1.45%;
 position: relative;
