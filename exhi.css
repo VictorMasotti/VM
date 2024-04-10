@@ -15,6 +15,11 @@ a#name::selection {
   background: #F34808;
   color: rgb(255,255,255);}
 
+.aa:hover {
+background: #AFABAB;
+color: rgb(255,255,255);
+transition: 0.75s;}
+
 a#exhi::selection {
   background: #86BD00;
   color: rgb(255,255,255);}
