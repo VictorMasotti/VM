@@ -66,6 +66,8 @@ top: 0;
 z-index: 99;}
 
 .stac {
+margin-left: 1.2%;
+margin-right: 1.2%;
 background-color: rgba(245,245,245,0);
 min-height: auto;
 display: flex;
@@ -79,7 +81,6 @@ padding: 0px;
 }
 
 .stacy {
-margin-left: 1.2%;
 position: relative;
 flex-basis: 25%;
 display: block;
