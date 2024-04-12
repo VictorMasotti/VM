@@ -306,6 +306,19 @@ margin-bottom: 0.3%;
 cursor: auto;
 }
 
+.aacc {
+display:block;
+margin-left: 1.45%;
+position: relative;
+flex-basis: 75%;
+display: block;
+justify-content: center;
+align-items: center;
+z-index: 100;
+margin-bottom: 0.3%;
+cursor: auto;
+}
+
 .aas {
 display:block;
 margin-left: 1.45%;
