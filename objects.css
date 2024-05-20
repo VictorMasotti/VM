@@ -411,6 +411,10 @@ height: 75vh;
 text-align: center;
 }
 
+iframe{
+height: 70vh;
+}
+
 #blocco {
 height: 95%;
 width: auto;
