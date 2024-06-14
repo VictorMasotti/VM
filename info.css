@@ -257,10 +257,10 @@ width: 48.55%;
 z-index: 99;
 color: rgb(1,1,1);
 cursor: pointer;
-font-family: 'Inter', sans-serif;
-font-size: 19px;
-font-style: normal;
+font-family: "Anton", sans-serif;
 font-weight: 400;
+font-style: normal;
+font-size: 70px;
 line-height: auto;
 text-decoration-color: rgb(1,1,1)
 text-decoration-line: none;
