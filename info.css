@@ -249,7 +249,7 @@ margin-bottom: 0.4%;
 
 .aaa { 
 display: block;
-text-align: justify;
+text-align: left;
 text-justify: inter-word;
 text-size-adjust: 100%;
 text-transform: none;
@@ -260,7 +260,7 @@ cursor: url('aspol.png'), auto;
 font-family: "Anton", sans-serif;
 font-weight: 400;
 font-style: normal;
-font-size: 70px;
+font-size: 74px;
 line-height: auto;
 text-decoration-color: rgb(1,1,1)
 text-decoration-line: none;
@@ -296,8 +296,7 @@ transition: 0.5s;}
 
 a#bbb::selection {
 background: #AFABAB;
-color: rgb(255,255,255);
-}
+color: rgb(255,255,255); }
 
 .bb {
 margin-left: 1.45%;
@@ -307,8 +306,7 @@ display: block;
 justify-content: center;
 align-items: center;
 z-index: 100;
-margin-bottom: 1.6%;
-}
+margin-bottom: 1.6%; }
 
 #bbb { 
 text-size-adjust: 100%;
@@ -326,19 +324,16 @@ text-decoration-color: rgb(1,1,1)
 text-decoration-line: none;
 text-decoration: none;
 text-decoration-style: solid; 
-z-index: 101;
-}
+z-index: 101; }
 
 .cc:hover {
 background: #AFABAB;
 color: rgb(255,255,255);
-transition: 0.5s;
-}
+transition: 0.5s; }
 
 a#ccc::selection {
 background: #AFABAB;
-color: rgb(255,255,255);
-}
+color: rgb(255,255,255); }
 
 .cc {
 margin-left: 1.45%;
@@ -348,8 +343,7 @@ display: block;
 justify-content: center;
 align-items: center;
 z-index: 100;
-margin-bottom: 1.6%;
-}
+margin-bottom: 1.6%; }
 
 #ccc { 
 text-size-adjust: 100%;
