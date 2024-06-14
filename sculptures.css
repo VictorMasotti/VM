@@ -103,7 +103,7 @@ text-transform: none;
 width: auto;
 z-index: 99;
 color: rgb(1,1,1);
-cursor: pointer;
+cursor: url('used.png'), auto;
 font-family: 'Inter', sans-serif;
 font-size: 29px;
 font-style: normal;
@@ -133,7 +133,7 @@ text-transform: none;
 width: auto;
 z-index: 99;
 color: rgb(1,1,1);
-cursor: pointer;
+cursor: url('used.png'), auto;
 font-family: 'Inter', sans-serif;
 font-size: 29px;
 font-style: normal;
@@ -164,7 +164,7 @@ text-transform: none;
 width: auto;
 z-index: 99;
 color: rgb(1,1,1);
-cursor: pointer;
+cursor: url('used.png'), auto;
 font-family: 'Inter', sans-serif;
 font-size: 29px;
 font-style: normal;
@@ -182,7 +182,7 @@ text-transform: none;
 width: auto;
 z-index: 99;
 color: rgb(1,1,1);
-cursor: pointer;
+cursor: url('used.png'), auto;
 font-family: 'Inter', sans-serif;
 font-size: 29px;
 font-style: normal;
@@ -201,7 +201,7 @@ height: auto;
 display: block;
 background: #FF4500;
 color: rgb(1,1,1);
-cursor: pointer;
+cursor: url('used.png'), auto;
 font-family: 'Inter', sans-serif;
 font-size: 29px;
 font-style: normal;
@@ -245,7 +245,7 @@ text-transform: none;
 width: auto;
 z-index: 99;
 color: rgb(1,1,1);
-cursor: pointer;
+cursor: url('used.png'), auto;
 font-family: 'Inter', sans-serif;
 font-size: 19px;
 font-style: normal;
@@ -285,7 +285,7 @@ text-transform: none;
 width: auto;
 z-index: 99;
 color: rgb(1,1,1);
-cursor: pointer;
+cursor: url('used.png'), auto;
 font-family: 'Inter', sans-serif;
 font-size: 19px;
 font-style: normal;
@@ -316,8 +316,7 @@ justify-content: center;
 align-items: center;
 z-index: 100;
 	transition-duration: 4s;
-transition-property: background; 
-}
+transition-property: background;  }
 
 #drawings { 
 text-size-adjust: 100%;
@@ -325,7 +324,7 @@ text-transform: none;
 width: auto;
 z-index: 99;
 color: rgb(1,1,1);
-cursor: pointer;
+cursor: url('used.png'), auto;
 font-family: 'Inter', sans-serif;
 font-size: 19px;
 font-style: normal;
@@ -336,18 +335,16 @@ text-decoration-line: none;
 text-decoration: none;
 text-decoration-style: solid; 
 z-index: 101;
-margin-left:0.4%;
-}
+margin-left:0.4%; }
 
 .dobj:hover {
 background-color: #00af50;
 color: rgb(255,255,255);
-transition: 0.05s;}
+transition: 0.05s; }
 
 a#objects::selection {
-  background: #00af50;
-  color: rgb(255,255,255);
-}
+background: #00af50;
+color: rgb(255,255,255); }
 
 .dobj {
 margin-right: 1.45%;
@@ -367,7 +364,7 @@ text-transform: none;
 width: auto;
 z-index: 99;
 color: rgb(1,1,1);
-cursor: pointer;
+cursor: url('used.png'), auto;
 font-family: 'Inter', sans-serif;
 font-size: 19px;
 font-style: normal;
@@ -440,7 +437,7 @@ text-transform: none;
 width: auto;
 z-index: 99;
 color: rgb(1,1,1);
-cursor: auto;
+cursor: url('used.png'), auto;
 font-family: 'Inter', sans-serif;
 font-size: 10px;
 font-style: normal;
@@ -465,7 +462,6 @@ display: block;
 }
 
 body{
-cursor: auto;
 width: 100%;
 height: 100%;
 max-width: 100%;
@@ -481,5 +477,4 @@ background-size: cover;
 background-color: rgb(254);
 background-repeat: no-repeat;
 background-attachment:fixed;
-background-size:100% 100%;
-}
+background-size:100% 100%; }
