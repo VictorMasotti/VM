@@ -47,8 +47,20 @@ transition: 0.08s;}
 .dinfo:hover {
 background-color: #44A6FA;
 color: rgb(255,255,255);
-transition: 0.08s;
-}
+transition: 0.08s; }
+
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  padding: 0 4px; }
+
+.column {
+  flex: 50%;
+  padding: 0 4px; }
+
+.column img {
+  margin-top: 8px;
+  vertical-align: middle; }
 
 .dexhi {
 position: relative;
@@ -70,8 +82,7 @@ justify content: space-between;
 position: relative;
 width: 100%;
 top: 0;
-z-index: 99;
-}
+z-index: 99; }
 
 .options {
 background-color: rgba(245,245,245,0);
@@ -83,8 +94,7 @@ justify content: space-between;
 position: relative;
 width: 100%;
 top: 0;
-z-index: 99;
-}
+z-index: 99; }
 
 .dname {
 margin-left: 1.45%;
@@ -143,8 +153,7 @@ text-decoration-color: rgb(1,1,1)
 text-decoration-line: none;
 text-decoration: none;
 text-decoration-style: solid; 
-display: inline-block;
-}
+display: inline-block; }
 
 .dinfo {
 margin-right: 1.45%;
