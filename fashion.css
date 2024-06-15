@@ -69,9 +69,6 @@ body {
   margin: 0;
   font-family: 'Inter', sans-serif; }
 
-.header {
-  text-align: center; 
-  padding: 32px; }
 .column {
   float: left;
   width: 50%;
