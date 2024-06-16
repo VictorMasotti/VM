@@ -46,6 +46,10 @@ height: 100%;
 border-radius: 5px;
 object-fit: cover; }
 
+@media(max-width:768px){
+.alpha{
+flex-direction: column; } }
+
 .dname:hover {
 background-color: #F34808;
 color: rgb(255,255,255);
