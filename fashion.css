@@ -86,6 +86,14 @@ position: relative;
 flex-basis: 25%;
 display: block;
 justify-content: center;
+align-items: center;
+margin-right: 1.5%}
+
+.lov {
+position: relative;
+flex-basis: 25%;
+display: block;
+justify-content: center;
 align-items: center; }
 
 #corn {
