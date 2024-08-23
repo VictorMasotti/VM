@@ -97,7 +97,7 @@ text-transform: none;
 width: auto;
 z-index: 99;
 color: rgb(1,1,1);
-cursor: url('used.png'), auto;
+cursor: url('start.png'), auto;
 font-family: 'Inter', sans-serif;
 font-size: 29px;
 font-style: normal;
@@ -141,7 +141,7 @@ text-transform: none;
 width: auto;
 z-index: 99;
 color: rgb(1,1,1);
-cursor: url('used.png'), auto;
+cursor: url('start.png'), auto;
 font-family: 'Inter', sans-serif;
 font-size: 29px;
 font-style: normal;
@@ -173,7 +173,7 @@ text-transform: none;
 width: auto;
 z-index: 99;
 color: rgb(1,1,1);
-cursor: url('used.png'), auto;
+cursor: url('start.png'), auto;
 font-family: 'Inter', sans-serif;
 font-size: 29px;
 font-style: normal;
@@ -192,7 +192,7 @@ text-transform: none;
 width: auto;
 z-index: 99;
 color: rgb(1,1,1);
-cursor: url('used.png'), auto;
+cursor: url('start.png'), auto;
 font-family: 'Inter', sans-serif;
 font-size: 29px;
 font-style: normal;
@@ -211,7 +211,7 @@ height: auto;
 display: block;
 background: #FF4500;
 color: rgb(1,1,1);
-cursor: url('used.png'), auto;
+cursor: url('start.png'), auto;
 font-family: 'Inter', sans-serif;
 font-size: 29px;
 font-style: normal;
@@ -250,7 +250,7 @@ text-transform: none;
 width: auto;
 z-index: 99;
 color: rgb(1,1,1);
-cursor: url('used.png'), auto;
+cursor: url('start.png'), auto;
 font-family: 'Inter', sans-serif;
 font-size: 19px;
 font-style: normal;
@@ -292,7 +292,7 @@ text-transform: none;
 width: auto;
 z-index: 99;
 color: rgb(1,1,1);
-cursor: url('used.png'), auto;
+cursor: url('start.png'), auto;
 font-family: 'Inter', sans-serif;
 font-size: 19px;
 font-style: normal;
@@ -332,7 +332,7 @@ text-transform: none;
 width: auto;
 z-index: 99;
 color: rgb(1,1,1);
-cursor: url('used.png'), auto;
+cursor: url('start.png'), auto;
 font-family: 'Inter', sans-serif;
 font-size: 19px;
 font-style: normal;
@@ -343,18 +343,16 @@ text-decoration-line: none;
 text-decoration: none;
 text-decoration-style: solid; 
 z-index: 101;
-margin-left:0.4%;
-}
+margin-left:0.4%; }
 
 .dobj:hover {
 background-color: #00af50;
 color: rgb(255,255,255);
-transition: 0.05s;}
+transition: 0.05s; }
 
 a#objects::selection {
   background: #00af50;
-  color: rgb(255,255,255);
-}
+  color: rgb(255,255,255); }
 
 .dobj {
 margin-right: 1.45%;
@@ -365,8 +363,7 @@ justify-content: center;
 align-items: center;
 z-index: 100;
 transition-duration: 4s;
-transition-property: background; 
-}
+transition-property: background;  }
 
 #objects { 
 text-size-adjust: 100%;
@@ -374,7 +371,7 @@ text-transform: none;
 width: auto;
 z-index: 99;
 color: rgb(1,1,1);
-cursor: url('used.png'), auto;
+cursor: url('start.png'), auto;
 font-family: 'Inter', sans-serif;
 font-size: 19px;
 font-style: normal;
@@ -426,8 +423,7 @@ margin-top:2.2%;
 margin-bottom:2.2%;
 width: 100%;
 height: 75vh;
-text-align: center;
-}
+text-align: center; }
 
 #blocco {
 height: 95%;
@@ -441,7 +437,7 @@ text-transform: none;
 width: auto;
 z-index: 99;
 color: rgb(1,1,1);
-cursor: url('used.png'), auto;
+cursor: url('start.png'), auto;
 font-family: 'Inter', sans-serif;
 font-size: 10px;
 font-style: normal;
@@ -455,14 +451,12 @@ z-index: 101; }
 
 html, body {
 margin: 0;
-padding: 0;
-}
+padding: 0; }
 
 html, body {
 overflow: scroll;
 box-sizing: border-box;
-display: block;
-}
+display: block; }
 
 body{
 width: 100%;
