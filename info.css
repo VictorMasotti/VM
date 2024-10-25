@@ -86,7 +86,7 @@ text-transform: none;
 width: auto;
 z-index: 99;
 color: rgb(1,1,1);
-cursor: url('aspol.png'), auto;
+cursor: url('igo.png'), auto;
 font-family: 'Inter', sans-serif;
 font-size: 29px;
 font-style: normal;
@@ -116,7 +116,7 @@ text-transform: none;
 width: auto;
 z-index: 99;
 color: rgb(1,1,1);
-cursor: url('aspol.png'), auto;
+cursor: url('igo.png'), auto;
 font-family: 'Inter', sans-serif;
 font-size: 29px;
 font-style: normal;
@@ -156,7 +156,7 @@ text-transform: none;
 width: auto;
 z-index: 99;
 color: rgb(1,1,1);
-cursor: url('aspol.png'), auto;
+cursor: url('igo.png'), auto;
 font-family: 'Inter', sans-serif;
 font-size: 29px;
 font-style: normal;
@@ -175,7 +175,7 @@ text-transform: none;
 width: auto;
 z-index: 99;
 color: rgb(1,1,1);
-cursor: url('aspol.png'), auto;
+cursor: url('igo.png'), auto;
 font-family: 'Inter', sans-serif;
 font-size: 29px;
 font-style: normal;
@@ -195,15 +195,14 @@ height: auto;
 display: block;
 background: #FF4500;
 color: rgb(1,1,1);
-cursor: url('aspol.png'), auto;
+cursor: url('igo.png'), auto;
 font-family: 'Inter', sans-serif;
 font-size: 29px;
 font-style: normal;
 font-weight: 400;
 float:left;
 z-index: 101;
-margin-left: 30%;
-}
+margin-left: 30%; }
 
 .aas:hover {
 background-color: #f04d43;
@@ -217,8 +216,7 @@ transition: 0.75s;}
 
 a.aaa::selection {
 background: #AFABAB;
-color: rgb(255,255,255);
-}
+color: rgb(255,255,255); }
 
 .aa {
 display:block;
@@ -229,8 +227,7 @@ display: block;
 justify-content: center;
 align-items: center;
 z-index: 100;
-margin-bottom: 1.6%;
-}
+margin-bottom: 1.6%; }
 
 .aas {
 display:block;
@@ -241,8 +238,7 @@ display: block;
 justify-content: center;
 align-items: center;
 z-index: 100;
-margin-bottom: 0.4%;
-}
+margin-bottom: 0.4%; }
 
 .aaa { 
 display: block;
@@ -253,7 +249,7 @@ text-transform: none;
 width: 48.55%;
 z-index: 99;
 color: rgb(1,1,1);
-cursor: url('aspol.png'), auto;
+cursor: url('igo.png'), auto;
 font-family: 'Inter', sans-serif;
 font-weight: 400;
 font-style: normal;
@@ -274,7 +270,7 @@ text-transform: none;
 width: auto;
 z-index: 99;
 color: rgb(1,1,1);
-cursor: url('aspol.png'), auto;
+cursor: url('igo.png'), auto;
 font-family: 'Inter', sans-serif;
 font-size: 19px;
 font-style: normal;
@@ -311,7 +307,7 @@ text-transform: none;
 width: auto;
 z-index: 99;
 color: rgb(1,1,1);
-cursor: url('aspol.png'), auto;
+cursor: url('igo.png'), auto;
 font-family: 'Inter', sans-serif;
 font-weight: 400;
 font-style: normal;
@@ -348,7 +344,7 @@ text-transform: none;
 width: auto;
 z-index: 99;
 color: rgb(1,1,1);
-cursor: url('aspol.png'), auto;
+cursor: url('igo.png'), auto;
 font-family: 'Inter', sans-serif;
 font-weight: 400;
 font-style: normal;
@@ -384,7 +380,7 @@ text-transform: none;
 width: auto;
 z-index: 99;
 color: rgb(1,1,1);
-cursor: url('aspol.png'), auto;
+cursor: url('igo.png'), auto;
 font-family: 'Inter', sans-serif;
 font-weight: 400;
 font-style: normal;
@@ -474,7 +470,7 @@ text-transform: none;
 width: auto;
 z-index: 99;
 color: rgb(1,1,1);
-cursor: url('aspol.png'), auto;
+cursor: url('igo.png'), auto;
 font-family: 'Inter', sans-serif;
 font-size: 10px;
 font-style: normal;
