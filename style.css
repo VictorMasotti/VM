@@ -3,53 +3,53 @@
 }
 
 ::selection {
-  background: #FF0000;
+  background: rgb(70);
   color: rgb(70);}
 
 a#name::selection {
-  background: #F34808;
+  background: #46B1E1;
   color: rgb(70);
 }
 
 a#exhi::selection {
-  background: #86BD00;
+  background: #E4D890;
   color: rgb(70);
 }
 
 a#work::selection {
-  background: #F4BA00;
+  background: #F8A2CF;
   color: rgb(70);
 }
 
 p#below::selection {
-  background: #4B0076;
+  background: #FF3FBF;
   color: rgb(70);
 }
 
 a#info::selection {
-  background: #44A6FA;
+  background: #9DEB81;
   color: rgb(70);
 }
 
 .dname:hover {
-background-color: #F34808;
+background-color: #46B1E1;
 color: rgb(255,255,255);
-transition: 0.1s;}
+transition: 0.2s;}
 
 .dexhi:hover {
-background-color: #86BD00;
+background-color: #E4D890;
 color: rgb(255,255,255);
-transition: 0.1s;}
+transition: 0.2s;}
 
 .dwork:hover {
-background-color: #F4BA00;
+background-color: #F8A2CF;
 color: rgb(255,255,255);
-transition: 0.1s;}
+transition: 0.2s;}
 
 .dinfo:hover {
-background-color: #44A6FA;
+background-color: #9DEB81;
 color: rgb(255,255,255);
-transition: 0.1s;}
+transition: 0.2s;}
 
 .header {
 background-color: rgba(245,245,245,0);
@@ -100,7 +100,7 @@ justify-content: center;
 align-items: center;
 margin-left:0.4%;
 transition-duration: 5s;
-transition-property: background;  }
+transition-property: background; }
 
 .dexhi {
 position: relative;
