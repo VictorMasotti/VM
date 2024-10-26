@@ -138,8 +138,7 @@ text-decoration-color: rgb(1,1,1)
 text-decoration-line: none;
 text-decoration: none;
 text-decoration-style: solid; 
-z-index: 101;
-}
+z-index: 101; }
 
 .dwork {
 position: relative;
@@ -468,7 +467,7 @@ background-attachment: fixed;
 position: fixed;
 background-repeat: no-repeat;
 background-size: cover;
-background-color: rgb(254);
+background-color: rgb(253,255,238);
 background-repeat: no-repeat;
 background-attachment:fixed;
-background-size:100% 100%; }
+background-size:100% 100%;}
