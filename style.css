@@ -27,29 +27,29 @@ p#below::selection {
 }
 
 a#info::selection {
-  background: #9DEB81;
+  background: #B8854C;
   color: rgb(70);
 }
 
 .dname:hover {
 background-color: #46B1E1;
 color: rgb(255,255,255);
-transition: 0.2s;}
+transition: 0.3s;}
 
 .dexhi:hover {
 background-color: #E4D890;
 color: rgb(255,255,255);
-transition: 0.2s;}
+transition: 0.3s;}
 
 .dwork:hover {
 background-color: #F8A2CF;
 color: rgb(255,255,255);
-transition: 0.2s;}
+transition: 0.3s;}
 
 .dinfo:hover {
-background-color: #9DEB81;
+background-color: #B8854C;
 color: rgb(255,255,255);
-transition: 0.2s;}
+transition: 0.3s;}
 
 .header {
 background-color: rgba(245,245,245,0);
@@ -71,7 +71,7 @@ display: block;
 justify-content: center;
 align-items: center;
 z-index: 100;
-transition-duration: 5s;
+transition-duration: 8s;
 transition-property: background; }
 
 #name { 
@@ -99,7 +99,7 @@ display: block;
 justify-content: center;
 align-items: center;
 margin-left:0.4%;
-transition-duration: 5s;
+transition-duration: 8s;
 transition-property: background; }
 
 .dexhi {
@@ -109,7 +109,7 @@ display: block;
 justify-content: center;
 align-items: center;
 margin-left:0.4%;
-transition-duration: 5s;
+transition-duration: 8s;
 transition-property: background; }
 
 #work {
@@ -140,7 +140,7 @@ justify-content: endright;
 align-items: endright;
 padding: 0;
 margin-left:0.4%;
-transition-duration: 5s;
+transition-duration: 8s;
 transition-property: background; 
 }
 
@@ -180,7 +180,7 @@ text-decoration-line: none;
 text-decoration: none;
 text-decoration-style: solid; 
 z-index: 101;
-transition-duration: 5s;
+transition-duration: 8s;
 transition-property: background;  }
 
 .io {
