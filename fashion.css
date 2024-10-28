@@ -113,6 +113,11 @@ display: block;
 height: auto;
 width: 100%; }
 
+#pop {
+display: block;
+height: auto;
+width: 100%; }
+
 .options {
 background-color: rgba(245,245,245,0);
 margin-top: 1.2%;
