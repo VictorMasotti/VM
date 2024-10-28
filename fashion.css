@@ -3,47 +3,47 @@
 
 ::selection {
   background: #FF0000;
-  color: rgb(255,255,255);}
+  color: rgb(70);}
 
 a#name::selection {
-  background: #F34808;
-  color: rgb(255,255,255); }
+  background: #46B1E1;
+  color: rgb(70);}
 
 a#exhi::selection {
-  background: #86BD00;
-  color: rgb(255,255,255); }
+  background: #E4D890;
+   color: rgb(70);}
 
 a#work::selection {
-  background: #F4BA00;
-  color: rgb(255,255,255);}
+  background: #F8A2CF;
+    color: rgb(70);}
 
 p#below::selection {
-  background: #4B0076;
-  color: rgb(255,255,255);}
+  background: #FF3FBF;
+   color: rgb(70);}
 
 a#info::selection {
-  background: #44A6FA;
-  color: rgb(255,255,255);}
+  background: #B8854C;
+   color: rgb(70);}
 
 .dname:hover {
-background-color: #F34808;
+background-color: #46B1E1;
 color: rgb(255,255,255);
-transition: 0.08s;}
+transition: 0.3s;}
 
 .dexhi:hover {
-background-color: #86BD00;
+background-color: #E4D890;
 color: rgb(255,255,255);
-transition: 0.08s;}
+transition: 0.3s;}
 
 .dwork:hover {
-background-color: #F4BA00;
+background-color: #F8A2CF;
 color: rgb(255,255,255);
-transition: 0.08s;}
+transition: 0.3s;}
 
 .dinfo:hover {
-background-color: #44A6FA;
+background-color: #B8854C;
 color: rgb(255,255,255);
-transition: 0.08s; }
+transition: 0.3s;}
 
 .dexhi {
 position: relative;
@@ -147,7 +147,7 @@ text-transform: none;
 width: auto;
 z-index: 99;
 color: rgb(1,1,1);
-cursor: url('golf2.png'), auto;
+cursor: url('EARTH2.png'), auto;
 font-family: 'Inter', sans-serif;
 font-size: 29px;
 font-style: normal;
@@ -176,7 +176,7 @@ text-transform: none;
 width: auto;
 z-index: 99;
 color: rgb(1,1,1);
-cursor: url('golf2.png'), auto;
+cursor: url('EARTH2.png'), auto;
 font-family: 'Inter', sans-serif;
 font-size: 29px;
 font-style: normal;
@@ -206,7 +206,7 @@ text-transform: none;
 width: auto;
 z-index: 99;
 color: rgb(1,1,1);
-cursor: url('golf2.png'), auto;
+cursor: url('EARTH2.png'), auto;
 font-family: 'Inter', sans-serif;
 font-size: 29px;
 font-style: normal;
@@ -216,7 +216,7 @@ text-decoration-color: rgb(1,1,1)
 text-decoration-line: none;
 text-decoration: none;
 text-decoration-style: solid; 
-z-index: 101;}
+z-index: 101; }
 
 #info {
 text-size-adjust: 100%;
@@ -224,7 +224,7 @@ text-transform: none;
 width: auto;
 z-index: 99;
 color: rgb(1,1,1);
-cursor: url('golf2.png'), auto;
+cursor: url('EARTH2.png'), auto;
 font-family: 'Inter', sans-serif;
 font-size: 29px;
 font-style: normal;
@@ -234,8 +234,7 @@ text-decoration-color: rgb(1,1,1)
 text-decoration-line: none;
 text-decoration: none;
 text-decoration-style: solid; 
-display: inline-block;
-}
+display: inline-block; }
 
 .io {
 width:10%;
@@ -243,7 +242,7 @@ height: auto;
 display: block;
 background: #FF4500;
 color: rgb(1,1,1);
-cursor: url('golf2.png'), auto;
+cursor: url('EARTH2.png'), auto;
 font-family: 'Inter', sans-serif;
 font-size: 29px;
 font-style: normal;
@@ -269,8 +268,8 @@ display: block;
 justify-content: center;
 align-items: center;
 z-index: 100;
-	transition-duration: 4s;
-transition-property: background;  }
+transition-duration: 4s;
+transition-property: background; }
 
 #sculptures { 
 text-size-adjust: 100%;
@@ -278,7 +277,7 @@ text-transform: none;
 width: auto;
 z-index: 99;
 color: rgb(1,1,1);
-cursor: url('golf2.png'), auto;
+cursor: url('EARTH2.png'), auto;
 font-family: 'Inter', sans-serif;
 font-size: 19px;
 font-style: normal;
@@ -306,7 +305,7 @@ display: block;
 justify-content: center;
 align-items: center;
 z-index: 100;
-	transition-duration: 4s;
+transition-duration: 4s;
 transition-property: background; }
 
 #paintings { 
@@ -315,7 +314,7 @@ text-transform: none;
 width: auto;
 z-index: 99;
 color: rgb(1,1,1);
-cursor: url('golf2.png'), auto;
+cursor: url('EARTH2.png'), auto;
 font-family: 'Inter', sans-serif;
 font-size: 19px;
 font-style: normal;
@@ -353,7 +352,7 @@ text-transform: none;
 width: auto;
 z-index: 99;
 color: rgb(1,1,1);
-cursor: url('golf2.png'), auto;
+cursor: url('EARTH2.png'), auto;
 font-family: 'Inter', sans-serif;
 font-size: 19px;
 font-style: normal;
@@ -392,7 +391,7 @@ text-transform: none;
 width: auto;
 z-index: 99;
 color: rgb(1,1,1);
-cursor: url('golf2.png'), auto;
+cursor: url('EARTH2.png'), auto;
 font-family: 'Inter', sans-serif;
 font-size: 19px;
 font-style: normal;
@@ -454,7 +453,7 @@ text-transform: none;
 width: auto;
 z-index: 99;
 color: rgb(1,1,1);
-cursor: url('golf2.png'), auto;
+cursor: url('EARTH2.png'), auto;
 font-family: 'Inter', sans-serif;
 font-size: 10px;
 font-style: normal;
