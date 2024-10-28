@@ -20,10 +20,10 @@ a#work::selection {
 p#below::selection {
   background: #4B0076;
   color: rgb(255,255,255);}
-/* 
+
 a#info::selection {
   background: #44A6FA;
-  color: rgb(255,255,255);} */
+  color: rgb(255,255,255);}
 
 .dname:hover {
 background-color: #F34808;
@@ -40,10 +40,10 @@ background-color: #F4BA00;
 color: rgb(255,255,255);
 transition: 0.08s;}
 
-/* .dinfo:hover {
+.dinfo:hover {
 background-color: #44A6FA;
 color: rgb(255,255,255);
-transition: 0.08s; } */
+transition: 0.08s; }
 
 .dexhi {
 position: relative;
@@ -366,14 +366,14 @@ text-decoration-style: solid;
 z-index: 101;
 margin-left:0.4%; }
 
-.dobj:hover {
+/* .dobj:hover {
 background-color: #00af50;
 color: rgb(255,255,255);
-transition: 0.05s; }
+transition: 0.05s; } */
 
-a#objects::selection {
+/* a#objects::selection {
 background: #00af50;
-color: rgb(255,255,255); }
+color: rgb(255,255,255); } */
 
 .dobj {
 margin-right: 1.45%;
