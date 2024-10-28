@@ -257,8 +257,8 @@ color: rgb(255,255,255);
 transition: 0.05s;}
 
 a#sculptures::selection {
-  background: #FFC000;
-  color: rgb(255,255,255); }
+background: #FFC000;
+color: rgb(255,255,255); }
 
 .dscu {
 margin-left: 1.45%;
@@ -295,8 +295,8 @@ color: rgb(255,255,255);
 transition: 0.05s;}
 
 a#paintings::selection {
-  background: #58267e;
-  color: rgb(255,255,255); }
+background: #58267e;
+color: rgb(255,255,255); }
 
 .dpai {
 position: relative;
@@ -485,7 +485,7 @@ background-attachment: fixed;
 position: fixed;
 background-repeat: no-repeat;
 background-size: cover;
-background-color: rgb(253,255,238);
+background-color: rgb(253,255,233);
 background-repeat: no-repeat;
 background-attachment:fixed;
 background-size:100% 100%; }
