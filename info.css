@@ -87,7 +87,7 @@ text-transform: none;
 width: auto;
 z-index: 99;
 color: rgb(1,1,1);
-cursor: url('igo.png'), auto;
+cursor: url('EARTH3.png'), auto;
 font-family: 'Inter', sans-serif;
 font-size: 29px;
 font-style: normal;
@@ -117,7 +117,7 @@ text-transform: none;
 width: auto;
 z-index: 99;
 color: rgb(1,1,1);
-cursor: url('igo.png'), auto;
+cursor: url('EARTH3.png'), auto;
 font-family: 'Inter', sans-serif;
 font-size: 29px;
 font-style: normal;
@@ -157,7 +157,7 @@ text-transform: none;
 width: auto;
 z-index: 99;
 color: rgb(1,1,1);
-cursor: url('igo.png'), auto;
+cursor: url('EARTH3.png'), auto;
 font-family: 'Inter', sans-serif;
 font-size: 29px;
 font-style: normal;
@@ -167,8 +167,7 @@ text-decoration-color: rgb(1,1,1)
 text-decoration-line: none;
 text-decoration: none;
 text-decoration-style: solid; 
-display: inline-block;
-}
+display: inline-block; }
 
 #exhi {
 text-size-adjust: 100%;
@@ -176,7 +175,7 @@ text-transform: none;
 width: auto;
 z-index: 99;
 color: rgb(1,1,1);
-cursor: url('igo.png'), auto;
+cursor: url('EARTH3.png'), auto;
 font-family: 'Inter', sans-serif;
 font-size: 29px;
 font-style: normal;
@@ -196,7 +195,7 @@ height: auto;
 display: block;
 background: #FF4500;
 color: rgb(1,1,1);
-cursor: url('igo.png'), auto;
+cursor: url('EARTH3.png'), auto;
 font-family: 'Inter', sans-serif;
 font-size: 29px;
 font-style: normal;
@@ -312,7 +311,7 @@ cursor: url('EARTH3.png'), auto;
 font-family: 'Inter', sans-serif;
 font-weight: 400;
 font-style: normal;
-font-size: 55px;
+font-size: 60px;
 line-height: auto;
 text-decoration-color: rgb(1,1,1)
 text-decoration-line: none;
@@ -349,7 +348,7 @@ cursor: url('EARTH3.png'), auto;
 font-family: 'Inter', sans-serif;
 font-weight: 400;
 font-style: normal;
-font-size: 55px;
+font-size: 60px;
 line-height: auto;
 text-decoration-color: rgb(1,1,1)
 text-decoration-line: none;
