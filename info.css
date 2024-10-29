@@ -1,49 +1,50 @@
 ::-webkit-scrollbar {
-	display:none;}
+	display:none; }
 
 ::selection {
-  background: #FF0000;
-  color: rgb(255,255,255);}
+  background: rgb(70);
+  color: rgb(70);}
 
 a#name::selection {
-  background: #F34808;
-  color: rgb(255,255,255);}
+  background: #46B1E1;
+  color: rgb(70); }
 
 a#exhi::selection {
-  background: #86BD00;
-  color: rgb(255,255,255);}
+  background: #E4D890;
+  color: rgb(70); }
 
 a#work::selection {
-  background: #F4BA00;
-  color: rgb(255,255,255);}
+  background: #F8A2CF;
+  color: rgb(70); }
 
 p#below::selection {
-  background: #4B0076;
-  color: rgb(255,255,255);}
+  background: #FF3FBF;
+  color: rgb(70); }
 
 a#info::selection {
-  background: #44A6FA;
-  color: rgb(255,255,255);}
+  background: #B8854C;
+  color: rgb(70);
+}
 
 .dname:hover {
-background-color: #F34808;
+background-color: #46B1E1;
 color: rgb(255,255,255);
-transition: 0.08s;}
+transition: 0.3s;}
 
 .dexhi:hover {
-background-color: #86BD00;
+background-color: #E4D890;
 color: rgb(255,255,255);
-transition: 0.08s;}
+transition: 0.3s;}
 
 .dwork:hover {
-background-color: #F4BA00;
+background-color: #F8A2CF;
 color: rgb(255,255,255);
-transition: 0.08s;}
+transition: 0.3s;}
 
 .dinfo:hover {
-background-color: #44A6FA;
+background-color: #B8854C;
 color: rgb(255,255,255);
-transition: 0.08s;}
+transition: 0.3s;}
 
 .header {
 background-color: rgba(245,245,245,0);
@@ -249,11 +250,11 @@ text-transform: none;
 width: 48.55%;
 z-index: 99;
 color: rgb(1,1,1);
-cursor: url('igo.png'), auto;
+cursor: url('EARTH3.png'), auto;
 font-family: 'Inter', sans-serif;
 font-weight: 400;
 font-style: normal;
-font-size: 55px;
+font-size: 58px;
 line-height: auto;
 text-decoration-color: rgb(1,1,1)
 text-decoration-line: none;
@@ -270,7 +271,7 @@ text-transform: none;
 width: auto;
 z-index: 99;
 color: rgb(1,1,1);
-cursor: url('igo.png'), auto;
+cursor: url('EARTH3.png'), auto;
 font-family: 'Inter', sans-serif;
 font-size: 19px;
 font-style: normal;
@@ -307,7 +308,7 @@ text-transform: none;
 width: auto;
 z-index: 99;
 color: rgb(1,1,1);
-cursor: url('igo.png'), auto;
+cursor: url('EARTH3.png'), auto;
 font-family: 'Inter', sans-serif;
 font-weight: 400;
 font-style: normal;
@@ -344,7 +345,7 @@ text-transform: none;
 width: auto;
 z-index: 99;
 color: rgb(1,1,1);
-cursor: url('igo.png'), auto;
+cursor: url('EARTH3.png'), auto;
 font-family: 'Inter', sans-serif;
 font-weight: 400;
 font-style: normal;
@@ -380,7 +381,7 @@ text-transform: none;
 width: auto;
 z-index: 99;
 color: rgb(1,1,1);
-cursor: url('igo.png'), auto;
+cursor: url('EARTH3.png'), auto;
 font-family: 'Inter', sans-serif;
 font-weight: 400;
 font-style: normal;
@@ -470,7 +471,7 @@ text-transform: none;
 width: auto;
 z-index: 99;
 color: rgb(1,1,1);
-cursor: url('igo.png'), auto;
+cursor: url('EARTH3.png'), auto;
 font-family: 'Inter', sans-serif;
 font-size: 10px;
 font-style: normal;
