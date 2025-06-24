@@ -287,17 +287,17 @@ z-index: 101;
 margin-left: 30%; }
 
 .aas:hover {
-background-color: #f04d43;
+background-color: #E6F7A9;
 color: rgb(255,255,255);
-transition: 0.5s;}
+transition: 1s;}
 
 .aa:hover {
-background: #AFABAB;
+background: #E6F7A9;
 color: rgb(255,255,255);
-transition: 0.75s;}
+transition: 1s;}
 
 a.aaa::selection {
-background: #AFABAB;
+background: #E6F7A9;
 color: rgb(255,255,255); }
 
 .aa {
@@ -386,12 +386,12 @@ text-decoration-style: solid;
 z-index: 106; }
 
 .bb:hover {
-background: #AFABAB;
+background: #E6F7A9;
 color: rgb(255,255,255);
-transition: 0.5s;}
+transition: 1s;}
 
 a#bbb::selection {
-background: #AFABAB;
+background: #E6F7A9;
 color: rgb(255,255,255); }
 
 .bb {
@@ -423,12 +423,12 @@ text-decoration-style: solid;
 z-index: 101; }
 
 .cc:hover {
-background: #AFABAB;
+background: #E6F7A9;
 color: rgb(255,255,255);
-transition: 0.5s; }
+transition: 1s; }
 
 a#ccc::selection {
-background: #AFABAB;
+background: #E6F7A9;
 color: rgb(255,255,255); }
 
 .cc {
@@ -460,12 +460,12 @@ text-decoration-style: solid;
 z-index: 101; }
 
 .dd:hover {
-background: #AFABAB;
+background: #E6F7A9;
 color: rgb(255,255,255);
-transition: 0.5s;}
+transition: 1s;}
 
 a#ddd::selection {
-background: #AFABAB;
+background: #E6F7A9;
 color: rgb(255,255,255); }
 
 .dd {
@@ -501,7 +501,6 @@ margin-top: 1.2%;
 margin-left: 1.45%;
 position: absolute;
 bottom: 0; }
-
 
 #below {
 color: #000000;
