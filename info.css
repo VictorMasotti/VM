@@ -33,6 +33,27 @@ a#info::selection {
   background: #BFEA68;
    color: rgb(70);}
 
+#below {
+color: #000000;
+font-family: 'Inter', sans-serif;
+font-size: 12px;
+font-style: normal;
+font-weight: 400;
+height: auto;
+margin: 0;
+line-height: auto;
+position: relative;
+text-decoration-color: rgb(55,55,55)
+text-decoration-line: none;
+text-decoration: none;
+text-decoration-style: solid; 
+text-decoration-thickness: auto;
+text-size-adjust: 100%;
+text-transform: none;
+bottom: 2.9%;
+width: auto;
+z-index: 99; }
+
 .dname:hover {
 background-color: #3A5F1C;
 color: rgb(255,255,255);
