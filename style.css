@@ -1,53 +1,65 @@
 ::-webkit-scrollbar {
-	display:none;
-}
+	display:none; }
 
 ::selection {
   background: rgb(70);
-  color: rgb(70);}
+  color: rgb(70); }
 
 a#name::selection {
-  background: #46B1E1;
-  color: rgb(70);
-}
+  background: #8C5F45;
+  color: rgb(70); }
 
 a#exhi::selection {
-  background: #E4D890;
-  color: rgb(70);
-}
+  background: #B1624F;
+  color: rgb(70); }
 
 a#work::selection {
-  background: #F8A2CF;
-  color: rgb(70);
-}
+  background: #F78F57;
+  color: rgb(70); }
+
+a#cine::selection {
+  background: #D37569;
+  color: rgb(70); }
+
+a#musi::selection {
+  background: #E97A66;
+  color: rgb(70); }
 
 p#below::selection {
   background: #FF3FBF;
-  color: rgb(70);
-}
+  color: rgb(70); }
 
 a#info::selection {
-  background: #B8854C;
-  color: rgb(70);
-}
+  background: #FFC36D;
+  color: rgb(70); }
 
 .dname:hover {
-background-color: #46B1E1;
+background-color: #5C3A21;
 color: rgb(255,255,255);
 transition: 0.3s;}
 
 .dexhi:hover {
-background-color: #E4D890;
+background-color: #8B3C24;
+color: rgb(255,255,255);
+transition: 0.3s;}
+
+.dcine:hover {
+background-color: #B43A2F;
+color: rgb(255,255,255);
+transition: 0.3s;}
+
+.dmusi:hover {
+background-color: #D9482D;
 color: rgb(255,255,255);
 transition: 0.3s;}
 
 .dwork:hover {
-background-color: #F8A2CF;
+background-color: #F25C1D;
 color: rgb(255,255,255);
 transition: 0.3s;}
 
 .dinfo:hover {
-background-color: #B8854C;
+background-color: #FFA034;
 color: rgb(255,255,255);
 transition: 0.3s;}
 
