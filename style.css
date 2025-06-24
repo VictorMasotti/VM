@@ -78,12 +78,12 @@ z-index: 99; }
 .dname {
 margin-left: 1.45%;
 position: relative;
-flex-basis: 25%;
+flex-basis: 16.667%;
 display: block;
 justify-content: center;
 align-items: center;
 z-index: 100;
-transition-duration: 8s;
+transition-duration: 10s;
 transition-property: background; }
 
 #name { 
@@ -94,7 +94,7 @@ z-index: 99;
 color: rgb(1,1,1);
 cursor: url('EARTH1.png'), auto;
 font-family: 'Inter', sans-serif;
-font-size: 29px;
+font-size: 25px;
 font-style: normal;
 font-weight: 400;
 line-height: auto;
@@ -106,22 +106,42 @@ z-index: 101; }
 
 .dwork {
 position: relative;
-flex-basis: 25%;
+flex-basis: 16.667%;
 display: block;
 justify-content: center;
 align-items: center;
 margin-left:0.4%;
-transition-duration: 8s;
+transition-duration: 10s;
+transition-property: background; }
+
+.dmusi {
+position: relative;
+flex-basis: 16.667%;
+display: block;
+justify-content: center;
+align-items: center;
+margin-left:0.4%;
+transition-duration: 10s;
+transition-property: background; }
+
+.dcine {
+position: relative;
+flex-basis: 16.667%;
+display: block;
+justify-content: center;
+align-items: center;
+margin-left:0.4%;
+transition-duration: 10s;
 transition-property: background; }
 
 .dexhi {
 position: relative;
-flex-basis: 25%;
+flex-basis: 16.667%;
 display: block;
 justify-content: center;
 align-items: center;
 margin-left:0.4%;
-transition-duration: 8s;
+transition-duration: 10s;
 transition-property: background; }
 
 #work {
@@ -133,7 +153,45 @@ z-index: 99;
 color: rgb(1,1,1);
 cursor: url('EARTH1.png'), auto;
 font-family: 'Inter', sans-serif;
-font-size: 29px;
+font-size: 25px;
+font-style: normal;
+font-weight: 400;
+line-height: auto;
+text-decoration-color: rgb(1,1,1)
+text-decoration-line: none;
+text-decoration: none;
+text-decoration-style: solid; 
+display: inline-block; }
+
+#cine {
+display: block;
+text-size-adjust: 100%;
+text-transform: none;
+width: auto;
+z-index: 99;
+color: rgb(1,1,1);
+cursor: url('EARTH1.png'), auto;
+font-family: 'Inter', sans-serif;
+font-size: 25px;
+font-style: normal;
+font-weight: 400;
+line-height: auto;
+text-decoration-color: rgb(1,1,1)
+text-decoration-line: none;
+text-decoration: none;
+text-decoration-style: solid; 
+display: inline-block; }
+
+#musi {
+display: block;
+text-size-adjust: 100%;
+text-transform: none;
+width: auto;
+z-index: 99;
+color: rgb(1,1,1);
+cursor: url('EARTH1.png'), auto;
+font-family: 'Inter', sans-serif;
+font-size: 25px;
 font-style: normal;
 font-weight: 400;
 line-height: auto;
@@ -146,13 +204,13 @@ display: inline-block; }
 .dinfo {
 margin-right: 1.45%;
 position: relative;
-flex-basis: 25%;
+flex-basis: 16.667%;
 display: block;
 justify-content: endright;
 align-items: endright;
 padding: 0;
 margin-left:0.4%;
-transition-duration: 8s;
+transition-duration: 10s;
 transition-property: background; 
 }
 
@@ -164,7 +222,7 @@ z-index: 99;
 color: rgb(1,1,1);
 cursor: url('EARTH1.png'), auto;
 font-family: 'Inter', sans-serif;
-font-size: 29px;
+font-size: 25px;
 font-style: normal;
 font-weight: 400;
 line-height: auto;
@@ -183,7 +241,7 @@ z-index: 99;
 color: rgb(1,1,1);
 cursor: url('EARTH1.png'), auto;
 font-family: 'Inter', sans-serif;
-font-size: 29px;
+font-size: 25px;
 font-style: normal;
 font-weight: 400;
 line-height: auto;
@@ -203,7 +261,7 @@ background: rgb(70,176,225);
 color: rgb(1,1,1);
 cursor: url('EARTH1.png'), auto;
 font-family: 'Inter', sans-serif;
-font-size: 29px;
+font-size: 25px;
 font-style: normal;
 font-weight: 400;
 float:left;
@@ -213,7 +271,7 @@ margin-left: 30%; }
 #below {
 color: #000000;
 font-family: 'Inter', sans-serif;
-font-size: 12px;
+font-size: 11px;
 font-style: normal;
 font-weight: 400;
 height: auto;
