@@ -226,6 +226,44 @@ text-decoration: none;
 text-decoration-style: solid; 
 display: inline-block; }
 
+#musi {
+display: block;
+text-size-adjust: 100%;
+text-transform: none;
+width: auto;
+z-index: 99;
+color: rgb(1,1,1);
+cursor: url('EARTH2.png'), auto;
+font-family: 'Inter', sans-serif;
+font-size: 29px;
+font-style: normal;
+font-weight: 400;
+line-height: auto;
+text-decoration-color: rgb(1,1,1)
+text-decoration-line: none;
+text-decoration: none;
+text-decoration-style: solid; 
+display: inline-block; }
+
+#cine {
+display: block;
+text-size-adjust: 100%;
+text-transform: none;
+width: auto;
+z-index: 99;
+color: rgb(1,1,1);
+cursor: url('EARTH2.png'), auto;
+font-family: 'Inter', sans-serif;
+font-size: 29px;
+font-style: normal;
+font-weight: 400;
+line-height: auto;
+text-decoration-color: rgb(1,1,1)
+text-decoration-line: none;
+text-decoration: none;
+text-decoration-style: solid; 
+display: inline-block; }
+
 .dinfo {
 margin-right: 1.45%;
 position: relative;
@@ -403,15 +441,6 @@ text-decoration-style: solid;
 z-index: 101;
 margin-left:0.4%; }
 
-/* .dobj:hover {
-background-color: #00af50;
-color: rgb(255,255,255);
-transition: 0.05s; } */
-
-/* a#objects::selection {
-background: #00af50;
-color: rgb(255,255,255); } */
-
 .dobj {
 margin-right: 1.45%;
 position: relative;
@@ -512,7 +541,7 @@ overflow: scroll;
 box-sizing: border-box;
 display: block; }
 
-body{
+body {
 padding: 0;
 margin: 0;
 width: 100%;
