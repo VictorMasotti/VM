@@ -14,15 +14,15 @@ a#exhi::selection {
    color: rgb(70);}
 
 a#work::selection {
-  background: #89B932;
+  background: #A2D15A;
     color: rgb(70);}
 
 a#cine::selection {
-  background: #8AB94C;
+  background: #6F993F;
     color: rgb(70);}
 
 a#musi::selection {
-  background: #A2D15A;
+  background: #8AB94C;
     color: rgb(70);}
 
 p#below::selection {
