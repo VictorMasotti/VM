@@ -45,17 +45,47 @@
 </header> 
 <img id="dragon" src="eartth.png" />
   <script>
-    const dragon = document.getElementById("dragon");
+  const dragons = [];
+  for (let i = 0; i < 4; i++) {
+    const dragon = document.createElement("img");
+    dragon.src = "https://upload.wikimedia.org/wikipedia/commons/4/47/Dragon_black_white.png";
+    dragon.alt = "Flying Dragon";
+    dragon.id = "dragon" + i;
+    dragon.style.position = "absolute";
+    dragon.style.width = `${100 + Math.random() * 100}px`;
+    dragon.style.transition = "transform 3s ease-in-out";
+    dragon.style.pointerEvents = "none";
+    dragon.style.zIndex = "999";
+    document.body.appendChild(dragon);
+    dragons.push(dragon); }
+  function moveDragon(dragon, index) {
+    const screenW = window.innerWidth;
+    const screenH = window.innerHeight;
+    const x = Math.random() * (screenW - 200);
+    const y = Math.random() * (screenH - 200);
+    const scale = 0.8 + Math.random() * 1.5;
+    const rotate = Math.floor(Math.random() * 360);
+    const flip = Math.random() > 0.5 ? "scaleX(-1)" : "scaleX(1)";
+    let movement;
+    switch (index) {
+      case 0:
+        movement = `translate(${x}px, ${y}px) ${flip}`;
+        break;
+      case 1:
+        movement = `translate(${x}px, ${y}px) scale(${scale}) rotate(${rotate}deg)`;
+        break;
+      case 2:
+        movement = `translate(${screenW - 150}px, ${screenH - 150}px) scale(${scale})`;
+        break;
+      case 3:
+        movement = `translate(${x}px, ${y}px) rotate(${rotate}deg) ${flip} scale(${scale})`;
+        break;     }
+    dragon.style.transform = movement;  }
 
-    function moveDragon() {
-      const x = Math.random() * (window.innerWidth - 150);
-      const y = Math.random() * (window.innerHeight - 150);
-      const flip = Math.random() > 0.5 ? 'scaleX(-1)' : 'scaleX(1)';
-      dragon.style.transform = `translate(${x}px, ${y}px) ${flip}`;
-    }
-
-    setInterval(moveDragon, 4000);
-    moveDragon();
-  </script>
+  function animateAll() {
+    dragons.forEach((dragon, index) => moveDragon(dragon, index));  }
+  setInterval(animateAll, 4000);
+  animateAll();
+</script>
 <p id="below"> ALL RIGHTS RESERVED | © 2025 VICTOR MASOTTI </p>
 </div> </body> </html>
