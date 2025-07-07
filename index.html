@@ -44,20 +44,23 @@
 	<div class="dinfo"><a id="info" href="vmnotepad.html">NOTEPAD</a></div>
 </header> 
 <img id="dragon" src="eartth.png" />
-  <script>
+<script>
   const dragons = [];
   for (let i = 0; i < 4; i++) {
     const dragon = document.createElement("img");
-    dragon.src = "https://upload.wikimedia.org/wikipedia/commons/4/47/Dragon_black_white.png";
+    dragon.src = "eartth.png";
     dragon.alt = "Flying Dragon";
     dragon.id = "dragon" + i;
-    dragon.style.position = "absolute";
-    dragon.style.width = `${100 + Math.random() * 100}px`;
-    dragon.style.transition = "transform 3s ease-in-out";
-    dragon.style.pointerEvents = "none";
-    dragon.style.zIndex = "999";
+    Object.assign(dragon.style, {
+      position: "fixed",
+      width: `${100 + Math.random() * 100}px`,
+      transition: "transform 3s ease-in-out",
+      pointerEvents: "none",
+      zIndex: "9999",
+      top: "0",
+      left: "0"    });
     document.body.appendChild(dragon);
-    dragons.push(dragon); }
+    dragons.push(dragon);  }
   function moveDragon(dragon, index) {
     const screenW = window.innerWidth;
     const screenH = window.innerHeight;
@@ -79,9 +82,8 @@
         break;
       case 3:
         movement = `translate(${x}px, ${y}px) rotate(${rotate}deg) ${flip} scale(${scale})`;
-        break;     }
+        break;    }
     dragon.style.transform = movement;  }
-
   function animateAll() {
     dragons.forEach((dragon, index) => moveDragon(dragon, index));  }
   setInterval(animateAll, 4000);
