@@ -45,24 +45,22 @@
 </header> 
 <img id="dragon" src="eartth.png" />
 <script>
-  const dragonCount = 7;
+  const dragonCount = Math.floor(Math.random() * 11) + 5; // 5–15
   const dragons = [];
   const orbits = [];
 
-  // Create dragons and place them in circular orbits
   for (let i = 0; i < dragonCount; i++) {
     const dragon = document.createElement("img");
     dragon.src = "eartth.png";
     dragon.alt = "Flying Dragon";
     dragon.id = "dragon" + i;
 
-    const size = 80 + Math.random() * 60;
+    const size = 60 + Math.random() * 80;
 
     Object.assign(dragon.style, {
       position: "fixed",
       width: `${size}px`,
       height: "auto",
-      transition: "none",
       pointerEvents: "none",
       zIndex: "9999",
       top: "0",
@@ -72,17 +70,15 @@
     document.body.appendChild(dragon);
     dragons.push(dragon);
 
-    // Assign orbit parameters
     orbits.push({
-      radius: 150 + Math.random() * 200,
+      radius: 200 + Math.random() * Math.max(window.innerWidth, window.innerHeight),
       angle: Math.random() * Math.PI * 2,
-      speed: 0.005 + Math.random() * 0.005,
+      speed: 0.002 + Math.random() * 0.005,
       centerX: window.innerWidth / 2,
       centerY: window.innerHeight / 2,
     });
   }
 
-  // Animate in circular paths
   function animateDragons() {
     dragons.forEach((dragon, i) => {
       const orbit = orbits[i];
@@ -91,13 +87,13 @@
       const x = orbit.centerX + orbit.radius * Math.cos(orbit.angle);
       const y = orbit.centerY + orbit.radius * Math.sin(orbit.angle);
 
-      dragon.style.transform = `translate(${x}px, ${y}px) scale(1)`;
+      dragon.style.transform = `translate(${x}px, ${y}px)`;
     });
 
     requestAnimationFrame(animateDragons);
   }
 
-  animateDragons(); // Start immediately
+  animateDragons();
 </script>
 <p id="below"> ALL RIGHTS RESERVED | © 2025 VICTOR MASOTTI </p>
 </div> </body> </html>
