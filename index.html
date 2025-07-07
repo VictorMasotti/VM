@@ -22,6 +22,17 @@
 </head>
 <style>
 	html { cursor: url('EARTH1.png'), auto; }
+    body {
+      margin: 0;
+      overflow: hidden;
+      background: #000; }
+    #dragon {
+      position: absolute;
+      width: 150px;
+      height: auto;
+      transition: transform 3s ease-in-out;
+      z-index: 999;
+      pointer-events: none; }
 </style>
 <body>
 <header class="header">
@@ -32,5 +43,19 @@
 	<div class="dwork"><a id="work" href="vmwvisuals.html">W/VISUALS</a></div>
 	<div class="dinfo"><a id="info" href="vmnotepad.html">NOTEPAD</a></div>
 </header> 
+<img id="dragon" src="eartth.png" />
+  <script>
+    const dragon = document.getElementById("dragon");
+
+    function moveDragon() {
+      const x = Math.random() * (window.innerWidth - 150);
+      const y = Math.random() * (window.innerHeight - 150);
+      const flip = Math.random() > 0.5 ? 'scaleX(-1)' : 'scaleX(1)';
+      dragon.style.transform = `translate(${x}px, ${y}px) ${flip}`;
+    }
+
+    setInterval(moveDragon, 4000);
+    moveDragon();
+  </script>
 <p id="below"> ALL RIGHTS RESERVED | © 2025 VICTOR MASOTTI </p>
 </div> </body> </html>
