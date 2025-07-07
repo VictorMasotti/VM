@@ -46,7 +46,8 @@
 <img id="dragon" src="eartth.png" />
 <script>
   const dragons = [];
-  for (let i = 0; i < 4; i++) {
+  const dragonCount = 6;
+  for (let i = 0; i < dragonCount; i++) {
     const dragon = document.createElement("img");
     dragon.src = "eartth.png";
     dragon.alt = "Flying Dragon";
@@ -54,23 +55,28 @@
     Object.assign(dragon.style, {
       position: "fixed",
       width: `${100 + Math.random() * 100}px`,
-      transition: "transform 3s ease-in-out",
+      transition: "transform 3s ease-in-out, opacity 1s",
       pointerEvents: "none",
       zIndex: "9999",
       top: "0",
-      left: "0"    });
+      left: "0",
+      opacity: "0",
+      filter: "drop-shadow(0 0 10px #00f8ff)",
+    });
     document.body.appendChild(dragon);
-    dragons.push(dragon);  }
+    dragons.push(dragon);
+    setTimeout(() => {
+      dragon.style.opacity = "1";    }, i * 200);  }
   function moveDragon(dragon, index) {
     const screenW = window.innerWidth;
     const screenH = window.innerHeight;
     const x = Math.random() * (screenW - 200);
     const y = Math.random() * (screenH - 200);
-    const scale = 0.8 + Math.random() * 1.5;
+    const scale = 0.6 + Math.random() * 1.8;
     const rotate = Math.floor(Math.random() * 360);
     const flip = Math.random() > 0.5 ? "scaleX(-1)" : "scaleX(1)";
     let movement;
-    switch (index) {
+    switch (index % 5) {
       case 0:
         movement = `translate(${x}px, ${y}px) ${flip}`;
         break;
@@ -82,12 +88,15 @@
         break;
       case 3:
         movement = `translate(${x}px, ${y}px) rotate(${rotate}deg) ${flip} scale(${scale})`;
+        break;
+      case 4:
+        movement = `translate(${x}px, ${y}px) scale(${scale}) rotate(${rotate}deg) ${flip}`;
         break;    }
     dragon.style.transform = movement;  }
   function animateAll() {
     dragons.forEach((dragon, index) => moveDragon(dragon, index));  }
-  setInterval(animateAll, 4000);
   animateAll();
+  setInterval(animateAll, 2000);
 </script>
 <p id="below"> ALL RIGHTS RESERVED | © 2025 VICTOR MASOTTI </p>
 </div> </body> </html>
