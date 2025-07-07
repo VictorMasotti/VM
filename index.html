@@ -45,58 +45,59 @@
 </header> 
 <img id="dragon" src="eartth.png" />
 <script>
+  const dragonCount = 7;
   const dragons = [];
-  const dragonCount = 6;
+  const orbits = [];
+
+  // Create dragons and place them in circular orbits
   for (let i = 0; i < dragonCount; i++) {
     const dragon = document.createElement("img");
     dragon.src = "eartth.png";
     dragon.alt = "Flying Dragon";
     dragon.id = "dragon" + i;
+
+    const size = 80 + Math.random() * 60;
+
     Object.assign(dragon.style, {
       position: "fixed",
-      width: `${100 + Math.random() * 100}px`,
-      transition: "transform 3s ease-in-out, opacity 1s",
+      width: `${size}px`,
+      height: "auto",
+      transition: "none",
       pointerEvents: "none",
       zIndex: "9999",
       top: "0",
       left: "0",
-      opacity: "0",
-      filter: "drop-shadow(0 0 10px #00f8ff)",
     });
+
     document.body.appendChild(dragon);
     dragons.push(dragon);
-    setTimeout(() => {
-      dragon.style.opacity = "1";    }, i * 200);  }
-  function moveDragon(dragon, index) {
-    const screenW = window.innerWidth;
-    const screenH = window.innerHeight;
-    const x = Math.random() * (screenW - 200);
-    const y = Math.random() * (screenH - 200);
-    const scale = 0.6 + Math.random() * 1.8;
-    const rotate = Math.floor(Math.random() * 360);
-    const flip = Math.random() > 0.5 ? "scaleX(-1)" : "scaleX(1)";
-    let movement;
-    switch (index % 5) {
-      case 0:
-        movement = `translate(${x}px, ${y}px) ${flip}`;
-        break;
-      case 1:
-        movement = `translate(${x}px, ${y}px) scale(${scale}) rotate(${rotate}deg)`;
-        break;
-      case 2:
-        movement = `translate(${screenW - 150}px, ${screenH - 150}px) scale(${scale})`;
-        break;
-      case 3:
-        movement = `translate(${x}px, ${y}px) rotate(${rotate}deg) ${flip} scale(${scale})`;
-        break;
-      case 4:
-        movement = `translate(${x}px, ${y}px) scale(${scale}) rotate(${rotate}deg) ${flip}`;
-        break;    }
-    dragon.style.transform = movement;  }
-  function animateAll() {
-    dragons.forEach((dragon, index) => moveDragon(dragon, index));  }
-  animateAll();
-  setInterval(animateAll, 2000);
+
+    // Assign orbit parameters
+    orbits.push({
+      radius: 150 + Math.random() * 200,
+      angle: Math.random() * Math.PI * 2,
+      speed: 0.005 + Math.random() * 0.005,
+      centerX: window.innerWidth / 2,
+      centerY: window.innerHeight / 2,
+    });
+  }
+
+  // Animate in circular paths
+  function animateDragons() {
+    dragons.forEach((dragon, i) => {
+      const orbit = orbits[i];
+      orbit.angle += orbit.speed;
+
+      const x = orbit.centerX + orbit.radius * Math.cos(orbit.angle);
+      const y = orbit.centerY + orbit.radius * Math.sin(orbit.angle);
+
+      dragon.style.transform = `translate(${x}px, ${y}px) scale(1)`;
+    });
+
+    requestAnimationFrame(animateDragons);
+  }
+
+  animateDragons(); // Start immediately
 </script>
 <p id="below"> ALL RIGHTS RESERVED | © 2025 VICTOR MASOTTI </p>
 </div> </body> </html>
