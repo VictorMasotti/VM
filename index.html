@@ -10,11 +10,10 @@
   window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
   gtag('js', new Date());
-
   gtag('config', 'G-W8TM46NGTZ');
 </script>
 <link rel="stylesheet" href="style.css">
-<title>Victor Masotti</title> 
+<title>Victor</title> 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400;500&display=swap" rel="stylesheet">
@@ -22,10 +21,12 @@
 </head>
 <style>
 	html { cursor: url('EARTH1.png'), auto; }
-    body {
-      margin: 0;
-      overflow: hidden;
-      background-color: rgb(253,255,233); }
+	body {
+	  margin: 0;
+	  overflow: hidden;
+	  background-color: rgb(253,255,233);
+	}
+	canvas { position: fixed; top:0; left:0; z-index: 999; pointer-events: none; }
 </style>
 <body>
 <header class="header">
@@ -38,30 +39,23 @@
 </header> 
 
 <script>
-  // Slightly more images: 10–30
-  const dragonCount = Math.floor(Math.random() * 20) + 10; 
+  // Orbiting images
+  const dragonCount = Math.floor(Math.random() * 20) + 10; // 10–30 images
   const dragons = [];
   const orbits = [];
   const scales = [];
 
-  // Image pool (add more here)
+  // Image pool
   const imageSources = ["eartth.png", "mondo.png", "terra.png"];
 
   for (let i = 0; i < dragonCount; i++) {
     const dragon = document.createElement("img");
-
-    // random image from pool
     dragon.src = imageSources[Math.floor(Math.random() * imageSources.length)];
     dragon.alt = "Flying Object";
     dragon.id = "dragon" + i;
 
-    // base size
     let baseSize = 40 + Math.random() * 120;
-
-    // make ~10% of images larger
-    if (Math.random() < 0.1) {
-      baseSize *= 2.5; // much larger
-    }
+    if (Math.random() < 0.1) baseSize *= 2.5; // 10% larger
 
     Object.assign(dragon.style, {
       position: "fixed",
@@ -77,12 +71,16 @@
     document.body.appendChild(dragon);
     dragons.push(dragon);
 
+    // Orbit setup
     orbits.push({
-      radius: 200 + Math.random() * Math.max(window.innerWidth, window.innerHeight),
+      radiusX: 200 + Math.random() * Math.max(window.innerWidth, window.innerHeight),
+      radiusY: 200 + Math.random() * Math.max(window.innerWidth, window.innerHeight), // non-perfect circles
       angle: Math.random() * Math.PI * 2,
       speed: 0.0015 + Math.random() * 0.004,
       centerX: window.innerWidth / 2,
       centerY: window.innerHeight / 2,
+      rotateOffset: Math.random() * Math.PI * 2, // extra rotation
+      irregular: Math.random() < 0.3, // 30% irregular rotation
     });
 
     scales.push({
@@ -97,19 +95,66 @@
     dragons.forEach((dragon, i) => {
       const orbit = orbits[i];
       const scale = scales[i];
-
       orbit.angle += orbit.speed;
 
       scale.current += scale.delta * scale.direction;
       if (scale.current > 2.5 || scale.current < 0.5) scale.direction *= -1;
 
-      const x = orbit.centerX + orbit.radius * Math.cos(orbit.angle);
-      const y = orbit.centerY + orbit.radius * Math.sin(orbit.angle);
+      let x = orbit.centerX + orbit.radiusX * Math.cos(orbit.angle + orbit.rotateOffset);
+      let y = orbit.centerY + orbit.radiusY * Math.sin(orbit.angle + orbit.rotateOffset);
+
+      if (orbit.irregular) {
+        // slightly perturb for irregular motion
+        x += Math.sin(orbit.angle*3 + i) * 30;
+        y += Math.cos(orbit.angle*2 + i) * 20;
+      }
+
       dragon.style.transform = `translate(${x}px, ${y}px) scale(${scale.current})`;
     });
     requestAnimationFrame(animateDragons);
   }
   animateDragons();
+</script>
+
+<!-- Broken screen lines -->
+<canvas id="linesCanvas"></canvas>
+<script>
+  const canvas = document.getElementById("linesCanvas");
+  const ctx = canvas.getContext("2d");
+
+  function resizeCanvas() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+  }
+  window.addEventListener("resize", resizeCanvas);
+  resizeCanvas();
+
+  function drawLines() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    const lineCount = Math.floor(Math.random() * 20) + 10;
+    const startX = canvas.width * 0.2;
+    const endX = canvas.width * 0.8;
+    const startY = canvas.height * 0.2;
+    const endY = canvas.height * 0.8;
+
+    for (let i = 0; i < lineCount; i++) {
+      ctx.beginPath();
+      const x1 = startX + Math.random() * (endX - startX);
+      const y1 = startY + Math.random() * (endY - startY);
+      const x2 = x1 + (Math.random() - 0.5) * 50;
+      const y2 = y1 + (Math.random() - 0.5) * 50;
+      ctx.moveTo(x1, y1);
+      ctx.lineTo(x2, y2);
+      ctx.strokeStyle = `hsl(${Math.random()*360}, 80%, 50%)`;
+      ctx.lineWidth = Math.random() * 3 + 1;
+      ctx.stroke();
+    }
+
+    requestAnimationFrame(drawLines);
+  }
+
+  drawLines();
 </script>
 
 <p id="below"> ALL RIGHTS RESERVED | © 2025 VICTOR MASOTTI </p>
