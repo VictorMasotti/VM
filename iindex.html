@@ -11,8 +11,20 @@
 <link rel="icon" type="image/x-icon" href="wone.png">
 <style>
 html,body{margin:0;height:100%;overflow:hidden;font-family:'Inter',sans-serif;background:rgb(253,255,233);}
-#wheel{position:fixed;top:0;left:-57.5vw;width:115vw;height:100vh;border-radius:50%;display:flex;justify-content:center;align-items:center;background:rgba(255,255,255,0);transform:rotate(0deg);}
-.label{position:absolute;transform-origin:0 50%;font-size:4vh;font-weight:500;text-align:center;}
+#wheel{
+  position:fixed;
+  top:0;
+  left:-45vw; 
+  width:110vw; 
+  height:100vh;
+  border-radius:50%;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  background:rgba(255,255,255,0);
+  transform:rotate(0deg);
+}
+.label{position:absolute;transform-origin:0 50%;font-size:4.2vh;font-weight:500;text-align:center;}
 .label a{color:black;text-decoration:none;display:inline-block;}
 canvas{position:fixed;top:0;left:0;z-index:10;pointer-events:none;}
 #dragon-container img{position:fixed;pointer-events:none;z-index:90;transition:transform 0.1s linear;}
@@ -34,8 +46,8 @@ const labels=[
   {text:'W/VISUALS',href:'vmwvisuals.html'},
   {text:'NOTEPAD',href:'vmnotepad.html'}
 ];
-let wheelRadiusX = window.innerHeight/2*1.15; // horizontal radius = 1.15 × height /2
-let wheelRadiusY = window.innerHeight/2*0.98; // vertical radius
+let wheelRadiusX = window.innerHeight/2*1.05;
+let wheelRadiusY = window.innerHeight/2*0.98;
 let labelElements=[];
 labels.forEach((l,i)=>{
   const div=document.createElement('div');
@@ -49,7 +61,7 @@ labels.forEach((l,i)=>{
 });
 function positionLabels(rotation=0){
   const count=labelElements.length;
-  wheelRadiusX = window.innerHeight/2*1.15;
+  wheelRadiusX = window.innerHeight/2*1.05;
   wheelRadiusY = window.innerHeight/2*0.98;
   labelElements.forEach((el,i)=>{
     const angle=(i*(360/count)+rotation)*Math.PI/180;
@@ -63,6 +75,20 @@ window.addEventListener('resize',()=>positionLabels(r));
 
 let r=0,velocity=0;
 window.addEventListener('wheel',e=>{velocity+=e.deltaY*0.02;});
+
+// TOUCH SUPPORT
+let lastTouchY = null;
+window.addEventListener('touchstart', e => {
+  if(e.touches.length === 1) lastTouchY = e.touches[0].clientY;
+});
+window.addEventListener('touchmove', e => {
+  if(e.touches.length === 1 && lastTouchY !== null){
+    const deltaY = e.touches[0].clientY - lastTouchY;
+    velocity += deltaY*0.05; // adjust sensitivity
+    lastTouchY = e.touches[0].clientY;
+  }
+});
+window.addEventListener('touchend', e => { lastTouchY = null; });
 
 function animateWheel(){
   r+=velocity*0.6;
