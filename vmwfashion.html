@@ -3,171 +3,114 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>FashionVM</title>
-<link rel="stylesheet" href="fashion.css">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400;500&display=swap" rel="stylesheet">
-<link rel="icon" type="image/x-icon" href="pap.png">
+<title>Victor fasHION www</title>
 <style>
-html,body{margin:0;padding:0;width:100%;height:100%;overflow:hidden;background:rgb(253,255,233);font-family:'Inter',sans-serif;cursor:url('EARTH2.png'),auto;}
-#photo-container{position:absolute;top:0;left:0;width:100%;height:100%;overflow:hidden;perspective:1200px;}
-.photo{position:absolute;transform-style:preserve-3d;transition:transform 0.2s ease;cursor:pointer;width:auto;height:auto;max-width:150px;}
-.photo.enlarged{transform:scale(3)!important;z-index:999;}
-.header{display:flex;justify-content:space-between;position:relative;width:100%;z-index:99;}
-.footer{margin:1.2% 0 1.2% 1.45%;}
-#below{color:#000;font-family:'Inter',sans-serif;font-size:12px;}
+  html,body{margin:0;padding:0;overflow:hidden;background:rgb(253,255,233);font-family:Inter,sans-serif;}
+  #grid{position:relative;width:100vw;height:100vh;perspective:1000px;}
+  .photo{position:absolute;cursor:pointer;transition:transform 0.2s, z-index 0s;}
+  .enlarged{transition:transform 0.3s;transform:scale(3) translate(-50%,-50%) !important;z-index:9999;}
 </style>
 </head>
 <body>
-<header class="header">
-<div class="dname"><a id="exhi" href="vmwfashion.html">W/FASHION</a></div>
-<div class="dcine"><a id="cine" href="vmwcinema.html">W/CINEMA</a></div>
-<div class="dmusi"><a id="musi" href="vmwmusic.html">W/MUSIC</a></div>
-<div class="dwork"><a id="work" href="vmwvisuals.html">W/VISUALS</a></div>
-<div class="dinfo"><a id="info" href="vmnotepad.html">NOTEPAD</a></div>
-</header>
-<div id="photo-container">
-<img class="photo" src="globe.png">
-<img class="photo" src="tee001.jpg">
-<img class="photo" src="chrome.png">
-<img class="photo" src="maxi.jpg">
-<img class="photo" src="blue2.jpg">
-<img class="photo" src="lvm.jpg">
-<img class="photo" src="lvmm.jpg">
-<img class="photo" src="yellow.png">
-<img class="photo" src="converse.jpg">
-<img class="photo" src="g1.png">
-<img class="photo" src="g3.png">
-<img class="photo" src="aj1.jpg">
-<img class="photo" src="graphic1.png">
-<img class="photo" src="graphic2.png">
-<img class="photo" src="s1.jpg">
-<img class="photo" src="s11.jpg">
-<img class="photo" src="vm5.png">
-<img class="photo" src="globe.jpg">
-<img class="photo" src="cosme.jpg">
-<img class="photo" src="vm1.png">
-<img class="photo" src="i5.jpg">
-<img class="photo" src="vm6.png">
-<img class="photo" src="i8.jpg">
-<img class="photo" src="vm7.jpg">
-<img class="photo" src="i4.jpg">
-<img class="photo" src="vm3.png">
-<img class="photo" src="vm8.png">
-<img class="photo" src="i1.jpg">
-<img class="photo" src="i7.jpg">
-<img class="photo" src="i2.jpg">
-<img class="photo" src="vm2.png">
-<img class="photo" src="vm4.png">
-<img class="photo" src="i6.jpg">
-<img class="photo" src="i3.jpg">
-<img class="photo" src="xx1.jpg">
-<img class="photo" src="xx2.jpg">
-<img class="photo" src="xx4.jpg">
-<img class="photo" src="xx3.jpg">
-<img class="photo" src="bv10.jpg">
-<img class="photo" src="bv9.jpg">
-<img class="photo" src="bv8.jpg">
-<img class="photo" src="bv7.jpg">
-<img class="photo" src="bv6.jpg">
-<img class="photo" src="bv5.jpg">
-<img class="photo" src="bv4.jpg">
-<img class="photo" src="bv3.jpg">
-<img class="photo" src="bv2.jpg">
-<img class="photo" src="bv1.jpg">
-<img class="photo" src="hs4.jpg">
-<img class="photo" src="hs3.jpg">
-<img class="photo" src="hs2.jpg">
-<img class="photo" src="hs1.jpg">
-<img class="photo" src="m2.jpg">
-<img class="photo" src="m1.jpg">
-<img class="photo" src="qq5.jpg">
-<img class="photo" src="qq6.jpg">
-<img class="photo" src="qq4.jpg">
-<img class="photo" src="qq3.jpg">
-<img class="photo" src="qq2.jpg">
-<img class="photo" src="qq1.jpg">
-<img class="photo" src="k8.jpg">
-<img class="photo" src="k7.jpg">
-<img class="photo" src="k6.jpg">
-<img class="photo" src="k5.jpg">
-<img class="photo" src="k2.jpg">
-<img class="photo" src="k1.jpg">
-<img class="photo" src="k4.jpg">
-<img class="photo" src="k3.jpg">
-<img class="photo" src="acw5.jpg">
-<img class="photo" src="acw4.jpg">
-<img class="photo" src="acw3.jpg">
-<img class="photo" src="acw2.jpg">
-<img class="photo" src="16w.jpg">
-<img class="photo" src="15w.jpg">
-<img class="photo" src="14w.jpg">
-<img class="photo" src="13w.jpg">
-<img class="photo" src="12w.jpg">
-<img class="photo" src="11w.jpg">
-<img class="photo" src="10w.jpg">
-<img class="photo" src="9ww.jpg">
-<img class="photo" src="8w.jpg">
-<img class="photo" src="7w.jpg">
-<img class="photo" src="6w.jpg">
-<img class="photo" src="5w.jpg">
-<img class="photo" src="4w.jpg">
-<img class="photo" src="3w.jpg">
-<img class="photo" src="2w.jpg">
-<img class="photo" src="1w.jpg">
-<img class="photo" src="wf15.jpg">
-<img class="photo" src="wf14.jpg">
-<img class="photo" src="wf13.jpg">
-<img class="photo" src="wf12.jpg">
-<img class="photo" src="wf11.jpg">
-<img class="photo" src="wf10.jpg">
-<img class="photo" src="wf9.jpg">
-<img class="photo" src="wf8.jpg">
-<img class="photo" src="wf7.jpg">
-<img class="photo" src="wf6.jpg">
-<img class="photo" src="wf5.jpg">
-<img class="photo" src="wf4.jpg">
-<img class="photo" src="wf3.jpg">
-<img class="photo" src="wf2.jpg">
-<img class="photo" src="wf1.jpg">
-<img class="photo" src="ww9.jpg">
-</div>
-
-<footer class="footer">
-<p id="below">ALL RIGHTS RESERVED | © 2025 VICTOR MASOTTI</p>
-</footer>
+<div id="grid"></div>
 
 <script>
-const container=document.getElementById('photo-container');
-const photos=Array.from(container.getElementsByClassName('photo'));
-const width=window.innerWidth;
-const height=window.innerHeight;
-photos.forEach(p=>{
-p.x=Math.random()*width;
-p.y=Math.random()*height;
-p.vx=(Math.random()-0.5)*0.3;
-p.vy=(Math.random()-0.5)*0.3;
-p.scale=1+Math.random()*0.2;
-p.rotation=(Math.random()-0.5)*10;
-p.style.transform=`translate3d(${p.x}px,${p.y}px,0px) scale(${p.scale}) rotate(${p.rotation}deg)`;
+const images = [
+"globe.png","tee001.jpg","chrome.png","maxi.jpg","blue2.jpg","lvm.jpg","lvmm.jpg","yellow.png",
+"converse.jpg","g1.png","g3.png","aj1.jpg","graphic1.png","graphic2.png","s1.jpg","s11.jpg",
+"vm5.png","globe.jpg","cosme.jpg","vm1.png","i5.jpg","vm6.png","i8.jpg","vm7.jpg",
+"i4.jpg","vm3.png","vm8.png","i1.jpg","i7.jpg","i2.jpg","vm2.png","vm4.jpg",
+"i6.jpg","i3.jpg","xx1.jpg","xx2.jpg","xx4.jpg","xx3.jpg","bv10.jpg","bv9.jpg",
+"bv8.jpg","bv7.jpg","bv6.jpg","bv5.jpg","bv4.jpg","bv3.jpg","bv2.jpg","bv1.jpg",
+"hs4.jpg","hs3.jpg","hs2.jpg","hs1.jpg","m2.jpg","m1.jpg","qq5.jpg","qq6.jpg",
+"qq4.jpg","qq3.jpg","qq2.jpg","qq1.jpg","k8.jpg","k7.jpg","k6.jpg","k5.jpg",
+"k2.jpg","k1.jpg","k4.jpg","k3.jpg","acw5.jpg","acw4.jpg","acw3.jpg","acw2.jpg",
+"16w.jpg","15w.jpg","14w.jpg","13w.jpg","12w.jpg","11w.jpg","10w.jpg","9ww.jpg",
+"8w.jpg","7w.jpg","6w.jpg","5w.jpg","4w.jpg","3w.jpg","2w.jpg","1w.jpg",
+"wf15.jpg","wf14.jpg","wf13.jpg","wf12.jpg","wf11.jpg","wf10.jpg","wf9.jpg","wf8.jpg",
+"wf7.jpg","wf6.jpg","wf5.jpg","wf4.jpg","wf3.jpg","wf2.jpg","wf1.jpg","ww9.jpg"
+];
+
+const grid = document.getElementById('grid');
+let photoElems = [];
+
+images.forEach(src=>{
+  const img = document.createElement('img');
+  img.src = src;
+  img.className='photo';
+  grid.appendChild(img);
+  photoElems.push({el:img,x:0,y:0,vx:0,vy:0});
 });
-const mouse={x:width/2,y:height/2};
+
+// Random initial positions and velocities
+function initGrid(){
+  const cols = Math.ceil(Math.sqrt(photoElems.length));
+  const rows = Math.ceil(photoElems.length/cols);
+  const spacingX = window.innerWidth / cols * 0.8;
+  const spacingY = window.innerHeight / rows * 0.8;
+  let idx = 0;
+  for(let r=0;r<rows;r++){
+    for(let c=0;c<cols;c++){
+      if(idx>=photoElems.length) break;
+      const p=photoElems[idx];
+      p.x=c*spacingX + Math.random()*spacingX*0.2;
+      p.y=r*spacingY + Math.random()*spacingY*0.2;
+      p.vx=(Math.random()-0.5)*0.3;
+      p.vy=(Math.random()-0.5)*0.3;
+      p.el.style.transform=`translate(${p.x}px,${p.y}px)`;
+      idx++;
+    }
+  }
+}
+
+initGrid();
+
+// Mouse warp
+let mouse={x:window.innerWidth/2,y:window.innerHeight/2};
 window.addEventListener('mousemove',e=>{mouse.x=e.clientX;mouse.y=e.clientY;});
+
+// Click to enlarge
 let enlarged=null;
-photos.forEach(p=>{p.addEventListener('click',e=>{e.stopPropagation();if(enlarged&&enlarged!==p)enlarged.classList.remove('enlarged');p.classList.toggle('enlarged');enlarged=p.classList.contains('enlarged')?p:null;});});
-window.addEventListener('click',e=>{if(enlarged){enlarged.classList.remove('enlarged');enlarged=null;}});
-function animate(){photos.forEach(p=>{
-p.x+=p.vx;p.y+=p.vy;
-if(p.x>width+100)p.x=-100;if(p.x<-100)p.x=width+100;
-if(p.y>height+100)p.y=-100;if(p.y<-100)p.y=height+100;
-const dx=mouse.x-p.x;
-const dy=mouse.y-p.y;
-const dist=Math.sqrt(dx*dx+dy*dy);
-const factor=Math.min(200/dist,0.5);
-p.style.transform=`translate3d(${p.x+dx*factor}px,${p.y+dy*factor}px,0px) scale(${p.scale+(0.5-factor/2)}) rotate(${p.rotation}deg)`;
-});requestAnimationFrame(animate);}
+grid.addEventListener('click',e=>{
+  if(e.target.tagName==='IMG'){
+    if(enlarged) enlarged.classList.remove('enlarged');
+    enlarged=e.target;
+    enlarged.classList.add('enlarged');
+    e.stopPropagation();
+  } else if(enlarged){
+    enlarged.classList.remove('enlarged');
+    enlarged=null;
+  }
+});
+
+// Animation loop
+function animate(){
+  photoElems.forEach(p=>{
+    // Move
+    p.x+=p.vx;
+    p.y+=p.vy;
+
+    // Wrap around edges
+    if(p.x>window.innerWidth)p.x=-p.el.width;
+    if(p.x<-p.el.width)p.x=window.innerWidth;
+    if(p.y>window.innerHeight)p.y=-p.el.height;
+    if(p.y<-p.el.height)p.y=window.innerHeight;
+
+    // Warp effect
+    const dx=mouse.x-(p.x+p.el.width/2);
+    const dy=mouse.y-(p.y+p.el.height/2);
+    const dist=Math.sqrt(dx*dx+dy*dy);
+    const warp=Math.min(200/dist,0.8);
+    const scale=1+warp*0.5;
+
+    p.el.style.transform=`translate(${p.x}px,${p.y}px) scale(${scale})`;
+    p.el.style.zIndex=Math.floor(scale*100);
+  });
+  requestAnimationFrame(animate);
+}
 animate();
+
+window.addEventListener('resize',initGrid);
 </script>
 </body>
 </html>
