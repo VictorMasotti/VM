@@ -5,112 +5,96 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Victor fasHION www</title>
 <style>
-  html,body{margin:0;padding:0;overflow:hidden;background:rgb(253,255,233);font-family:Inter,sans-serif;}
-  #grid{position:relative;width:100vw;height:100vh;perspective:1000px;}
-  .photo{position:absolute;cursor:pointer;transition:transform 0.2s, z-index 0s;}
-  .enlarged{transition:transform 0.3s;transform:scale(3) translate(-50%,-50%) !important;z-index:9999;}
+html, body {
+  margin:0; padding:0; overflow:hidden;
+  width:100%; height:100%; background:rgb(253,255,233);
+  font-family:Inter,sans-serif;
+}
+#grid {
+  position:relative;
+  width:100vw;
+  height:100vh;
+  perspective:1200px;
+  overflow:hidden;
+}
+.photo {
+  position:absolute;
+  width:22%;
+  max-width:22%;
+  box-sizing:border-box;
+  cursor:pointer;
+  transition: transform 0.2s;
+}
+.enlarged {
+  transform: scale(2)!important;
+  z-index:1000;
+}
 </style>
 </head>
 <body>
 <div id="grid"></div>
-
 <script>
-const images = [
-"globe.png","tee001.jpg","chrome.png","maxi.jpg","blue2.jpg","lvm.jpg","lvmm.jpg","yellow.png",
-"converse.jpg","g1.png","g3.png","aj1.jpg","graphic1.png","graphic2.png","s1.jpg","s11.jpg",
-"vm5.png","globe.jpg","cosme.jpg","vm1.png","i5.jpg","vm6.png","i8.jpg","vm7.jpg",
-"i4.jpg","vm3.png","vm8.png","i1.jpg","i7.jpg","i2.jpg","vm2.png","vm4.jpg",
-"i6.jpg","i3.jpg","xx1.jpg","xx2.jpg","xx4.jpg","xx3.jpg","bv10.jpg","bv9.jpg",
-"bv8.jpg","bv7.jpg","bv6.jpg","bv5.jpg","bv4.jpg","bv3.jpg","bv2.jpg","bv1.jpg",
-"hs4.jpg","hs3.jpg","hs2.jpg","hs1.jpg","m2.jpg","m1.jpg","qq5.jpg","qq6.jpg",
-"qq4.jpg","qq3.jpg","qq2.jpg","qq1.jpg","k8.jpg","k7.jpg","k6.jpg","k5.jpg",
-"k2.jpg","k1.jpg","k4.jpg","k3.jpg","acw5.jpg","acw4.jpg","acw3.jpg","acw2.jpg",
-"16w.jpg","15w.jpg","14w.jpg","13w.jpg","12w.jpg","11w.jpg","10w.jpg","9ww.jpg",
-"8w.jpg","7w.jpg","6w.jpg","5w.jpg","4w.jpg","3w.jpg","2w.jpg","1w.jpg",
-"wf15.jpg","wf14.jpg","wf13.jpg","wf12.jpg","wf11.jpg","wf10.jpg","wf9.jpg","wf8.jpg",
-"wf7.jpg","wf6.jpg","wf5.jpg","wf4.jpg","wf3.jpg","wf2.jpg","wf1.jpg","ww9.jpg"
-];
+const imgs = ["globe.png","tee001.jpg","chrome.png","maxi.jpg","blue2.jpg","lvm.jpg","lvmm.jpg","yellow.png","converse.jpg","g1.png","g3.png","aj1.jpg","graphic1.png","graphic2.jpg","s1.jpg","s11.jpg","vm5.png","globe.jpg","cosme.jpg","vm1.jpg","i5.jpg","vm6.png","i8.jpg","vm7.png","i4.jpg","vm3.jpg","vm8.jpg","i1.jpg","i7.jpg","i2.jpg","vm2.png","vm4.jpg","i6.jpg","i3.jpg","xx1.jpg","xx2.jpg","xx4.jpg","xx3.jpg","bv10.jpg","bv9.jpg","bv8.jpg","bv7.jpg","bv6.jpg","bv5.jpg","bv4.jpg","bv3.jpg","bv2.jpg","bv1.jpg","hs4.jpg","hs3.jpg","hs2.jpg","hs1.jpg","m2.jpg","m1.jpg","qq5.jpg","qq6.jpg","qq4.jpg","qq3.jpg","qq2.jpg","qq1.jpg","k8.jpg","k7.jpg","k6.jpg","k5.jpg","k2.jpg","k1.jpg","k4.jpg","k3.jpg","acw5.jpg","acw4.jpg","acw3.jpg","acw2.jpg","16w.jpg","15w.jpg","14w.jpg","13w.jpg","12w.jpg","11w.jpg","10w.jpg","9ww.jpg","8w.jpg","7w.jpg","6w.jpg","5w.jpg","4w.jpg","3w.jpg","2w.jpg","1w.jpg","wf15.jpg","wf14.jpg","wf13.jpg","wf12.jpg","wf11.jpg","wf10.jpg","wf9.jpg","wf8.jpg","wf7.jpg","wf6.jpg","wf5.jpg","wf4.jpg","wf3.jpg","wf2.jpg","wf1.jpg","ww9.jpg"];
 
-const grid = document.getElementById('grid');
-let photoElems = [];
+const grid = document.getElementById("grid");
+const photos = [];
+const cols = 4;
+const rows = Math.ceil(imgs.length / cols);
+let w = window.innerWidth / cols;
+let h = window.innerHeight / rows;
 
-images.forEach(src=>{
-  const img = document.createElement('img');
-  img.src = src;
-  img.className='photo';
-  grid.appendChild(img);
-  photoElems.push({el:img,x:0,y:0,vx:0,vy:0});
-});
-
-// Random initial positions and velocities
-function initGrid(){
-  const cols = Math.ceil(Math.sqrt(photoElems.length));
-  const rows = Math.ceil(photoElems.length/cols);
-  const spacingX = window.innerWidth / cols * 0.8;
-  const spacingY = window.innerHeight / rows * 0.8;
-  let idx = 0;
-  for(let r=0;r<rows;r++){
-    for(let c=0;c<cols;c++){
-      if(idx>=photoElems.length) break;
-      const p=photoElems[idx];
-      p.x=c*spacingX + Math.random()*spacingX*0.2;
-      p.y=r*spacingY + Math.random()*spacingY*0.2;
-      p.vx=(Math.random()-0.5)*0.3;
-      p.vy=(Math.random()-0.5)*0.3;
-      p.el.style.transform=`translate(${p.x}px,${p.y}px)`;
-      idx++;
-    }
-  }
+function rand(min, max) {return Math.random()*(max-min)+min;}
+function createGrid() {
+  let positions = [];
+  imgs.forEach((src, i) => {
+    let img = document.createElement("img");
+    img.src = src;
+    img.className = "photo";
+    let col = i % cols;
+    let row = Math.floor(i / cols);
+    let x = col*w + rand(-w*0.1,w*0.1);
+    let y = row*h + rand(-h*0.1,h*0.1);
+    positions.push({x:x, y:y});
+    img.style.left = x+"px";
+    img.style.top = y+"px";
+    grid.appendChild(img);
+    photos.push({el:img, x:x, y:y, dx:rand(-1,1), dy:rand(-1,1)});
+    img.addEventListener("click", ()=>{
+      img.classList.toggle("enlarged");
+    });
+  });
 }
 
-initGrid();
-
-// Mouse warp
-let mouse={x:window.innerWidth/2,y:window.innerHeight/2};
-window.addEventListener('mousemove',e=>{mouse.x=e.clientX;mouse.y=e.clientY;});
-
-// Click to enlarge
-let enlarged=null;
-grid.addEventListener('click',e=>{
-  if(e.target.tagName==='IMG'){
-    if(enlarged) enlarged.classList.remove('enlarged');
-    enlarged=e.target;
-    enlarged.classList.add('enlarged');
-    e.stopPropagation();
-  } else if(enlarged){
-    enlarged.classList.remove('enlarged');
-    enlarged=null;
-  }
-});
-
-// Animation loop
-function animate(){
-  photoElems.forEach(p=>{
-    // Move
-    p.x+=p.vx;
-    p.y+=p.vy;
-
-    // Wrap around edges
-    if(p.x>window.innerWidth)p.x=-p.el.width;
-    if(p.x<-p.el.width)p.x=window.innerWidth;
-    if(p.y>window.innerHeight)p.y=-p.el.height;
-    if(p.y<-p.el.height)p.y=window.innerHeight;
-
-    // Warp effect
-    const dx=mouse.x-(p.x+p.el.width/2);
-    const dy=mouse.y-(p.y+p.el.height/2);
-    const dist=Math.sqrt(dx*dx+dy*dy);
-    const warp=Math.min(200/dist,0.8);
-    const scale=1+warp*0.5;
-
-    p.el.style.transform=`translate(${p.x}px,${p.y}px) scale(${scale})`;
-    p.el.style.zIndex=Math.floor(scale*100);
+function animate() {
+  let mx = window.mouseX || window.innerWidth/2;
+  let my = window.mouseY || window.innerHeight/2;
+  photos.forEach(p=>{
+    let distX = mx - (p.x + w/2);
+    let distY = my - (p.y + h/2);
+    let dist = Math.sqrt(distX*distX + distY*distY);
+    let warp = Math.min(150, 100/dist*30);
+    p.x += p.dx + distX*0.002;
+    p.y += p.dy + distY*0.002;
+    if(p.x < 0 || p.x > window.innerWidth - w) p.dx*=-1;
+    if(p.y < 0 || p.y > window.innerHeight - h) p.dy*=-1;
+    let scale = 1 + warp/150;
+    p.el.style.transform = `translate(${p.x}px,${p.y}px) scale(${scale})`;
   });
   requestAnimationFrame(animate);
 }
-animate();
 
-window.addEventListener('resize',initGrid);
+window.addEventListener("mousemove", e=>{
+  window.mouseX = e.clientX;
+  window.mouseY = e.clientY;
+});
+
+window.addEventListener("resize", ()=>{
+  w = window.innerWidth / cols;
+  h = window.innerHeight / rows;
+});
+
+createGrid();
+animate();
 </script>
 </body>
 </html>
