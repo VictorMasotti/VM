@@ -1,55 +1,253 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>Victor fasHION www</title>
 <style>
-html,body{margin:0;padding:0;width:100%;height:100%;overflow:hidden;background:#fdffee;cursor:url('EARTH2.png'),auto;font-family:'Inter',sans-serif}
-#grid{position:absolute;display:grid;grid-template-columns:repeat(20,300px);grid-auto-rows:300px;gap:10px;transform:translate3d(0,0,0)}
-#grid img{width:100%;height:100%;object-fit:cover;pointer-events:none;will-change:transform}
+  :root{
+    --cell-size:420px; /* base size - approx 3 across on common widths */
+    --gap:14px;
+  }
+  html,body{height:100%;margin:0;background:#fdffee;overflow:hidden;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;}
+  #viewport{position:fixed;inset:0;overflow:hidden;cursor:url('EARTH2.png'),auto}
+  /* grid container is very large so many cells are off-screen */
+  #sheet{
+    position:absolute;
+    left:50%;
+    top:50%;
+    transform-origin:center center;
+    will-change:transform;
+    display:grid;
+    grid-template-columns:repeat(20, var(--cell-size));
+    grid-auto-rows:var(--cell-size);
+    gap:var(--gap);
+    pointer-events:none;
+    /* slight visual smoothing */
+    backface-visibility:hidden;
+  }
+  .cell{
+    width:var(--cell-size);
+    height:var(--cell-size);
+    overflow:hidden;
+    display:block;
+    will-change:transform;
+    transform-origin:center center;
+    box-sizing:border-box;
+  }
+  .cell img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    display:block;
+    user-select:none;
+    -webkit-user-drag:none;
+    pointer-events:none;
+    transform-origin:center center;
+    will-change:transform;
+    transition:transform 120ms linear;
+  }
 </style>
 </head>
 <body>
-<div id="grid">
-<img src="globe.png"><img src="tee001.jpg"><img src="chrome.png"><img src="maxi.jpg">
-<img src="blue2.jpg"><img src="lvm.jpg"><img src="lvmm.jpg"><img src="yellow.png">
-<img src="converse.jpg"><img src="g1.png"><img src="g3.png"><img src="aj1.jpg">
-<img src="graphic1.png"><img src="graphic2.png"><img src="s1.jpg"><img src="s11.jpg">
-<img src="vm5.png"><img src="globe.jpg"><img src="cosme.jpg"><img src="vm1.png">
-<img src="i5.jpg"><img src="vm6.png"><img src="i8.jpg"><img src="vm7.png">
-<img src="i4.jpg"><img src="vm3.png"><img src="vm8.png"><img src="i1.jpg">
-<img src="i7.jpg"><img src="i2.jpg"><img src="vm2.png"><img src="vm4.png">
-<img src="i6.jpg"><img src="i3.jpg"><img src="xx1.jpg"><img src="xx2.jpg">
-<img src="xx4.jpg"><img src="xx3.jpg"><img src="bv10.jpg"><img src="bv9.jpg">
-<img src="bv8.jpg"><img src="bv7.jpg"><img src="bv6.jpg"><img src="bv5.jpg">
-<img src="bv4.jpg"><img src="bv3.jpg"><img src="bv2.jpg"><img src="bv1.jpg">
-<img src="hs4.jpg"><img src="hs3.jpg"><img src="hs2.jpg"><img src="hs1.jpg">
-<img src="m2.jpg"><img src="m1.jpg"><img src="qq5.jpg"><img src="qq6.jpg">
-<img src="qq4.jpg"><img src="qq3.jpg"><img src="qq2.jpg"><img src="qq1.jpg">
-<img src="k8.jpg"><img src="k7.jpg"><img src="k6.jpg"><img src="k5.jpg">
-<img src="k2.jpg"><img src="k1.jpg"><img src="k4.jpg"><img src="k3.jpg">
-<img src="acw5.jpg"><img src="acw4.jpg"><img src="acw3.jpg"><img src="acw2.jpg">
-<img src="16w.jpg"><img src="15w.jpg"><img src="14w.jpg"><img src="13w.jpg">
-<img src="12w.jpg"><img src="11w.jpg"><img src="10w.jpg"><img src="9ww.jpg">
-<img src="8w.jpg"><img src="7w.jpg"><img src="6w.jpg"><img src="5w.jpg">
-<img src="4w.jpg"><img src="3w.jpg"><img src="2w.jpg"><img src="1w.jpg">
-<img src="wf15.jpg"><img src="wf14.jpg"><img src="wf13.jpg"><img src="wf12.jpg">
-<img src="wf11.jpg"><img src="wf10.jpg"><img src="wf9.jpg"><img src="wf8.jpg">
-<img src="wf7.jpg"><img src="wf6.jpg"><img src="wf5.jpg"><img src="wf4.jpg">
-<img src="wf3.jpg"><img src="wf2.jpg"><img src="wf1.jpg"><img src="ww9.jpg">
+<div id="viewport">
+  <div id="sheet"></div>
 </div>
+
 <script>
-let grid=document.getElementById('grid'),w=window.innerWidth,h=window.innerHeight,tx=w/2,ty=h/2,lastMove=Date.now();
-document.addEventListener('mousemove',e=>{tx=e.clientX;ty=e.clientY;lastMove=Date.now()});
-let t=0,angle=Math.random()*Math.PI*2,radiusX=w/2+Math.random()*100,radiusY=h/2+Math.random()*100,centerX=w/2,centerY=h/2;
-function animate(){
-t+=0.04;
-let gx=centerX+Math.cos(t+angle)*radiusX,gy=centerY+Math.sin(t+angle)*radiusY;
-let dx=(tx-gx)/w*30,dy=(ty-gy)/h*30,dist=Math.hypot(tx-gx,ty-gy),scale=1+Math.sin(dist/150)*2.5;
-grid.style.transform=`translate(${gx-w/2}px,${gy-h/2}px) perspective(1000px) rotateX(${dy}deg) rotateY(${dx}deg) scale(${scale})`;
-requestAnimationFrame(animate)}
-animate();
+/* --------------------------
+   IMAGE LIST (from original)
+   -------------------------- */
+const sources = [
+"globe.png","tee001.jpg","chrome.png","maxi.jpg",
+"blue2.jpg","lvm.jpg","lvmm.jpg","yellow.png",
+"converse.jpg","g1.png","g3.png","aj1.jpg",
+"graphic1.png","graphic2.png","s1.jpg","s11.jpg",
+"vm5.png","globe.jpg","cosme.jpg","vm1.png",
+"i5.jpg","vm6.png","i8.jpg","vm7.png",
+"i4.jpg","vm3.png","vm8.png","i1.jpg",
+"i7.jpg","i2.jpg","vm2.png","vm4.png",
+"i6.jpg","i3.jpg","xx1.jpg","xx2.jpg",
+"xx4.jpg","xx3.jpg","bv10.jpg","bv9.jpg",
+"bv8.jpg","bv7.jpg","bv6.jpg","bv5.jpg",
+"bv4.jpg","bv3.jpg","bv2.jpg","bv1.jpg",
+"hs4.jpg","hs3.jpg","hs2.jpg","hs1.jpg",
+"m2.jpg","m1.jpg","qq5.jpg","qq6.jpg",
+"qq4.jpg","qq3.jpg","qq2.jpg","qq1.jpg",
+"k8.jpg","k7.jpg","k6.jpg","k5.jpg",
+"k2.jpg","k1.jpg","k4.jpg","k3.jpg",
+"acw5.jpg","acw4.jpg","acw3.jpg","acw2.jpg",
+"16w.jpg","15w.jpg","14w.jpg","13w.jpg",
+"12w.jpg","11w.jpg","10w.jpg","9ww.jpg",
+"8w.jpg","7w.jpg","6w.jpg","5w.jpg",
+"4w.jpg","3w.jpg","2w.jpg","1w.jpg",
+"wf15.jpg","wf14.jpg","wf13.jpg","wf12.jpg",
+"wf11.jpg","wf10.jpg","wf9.jpg","wf8.jpg",
+"wf7.jpg","wf6.jpg","wf5.jpg","wf4.jpg",
+"wf3.jpg","wf2.jpg","wf1.jpg","ww9.jpg"
+];
+
+/* --------------------------
+   GRID / DOM build
+   -------------------------- */
+const sheet = document.getElementById('sheet');
+const COLS = 20;
+const ROWS = 20;
+const TOTAL = COLS * ROWS;
+const imgs = [];
+for (let i = 0; i < TOTAL; i++) {
+  const idx = i % sources.length;
+  const cell = document.createElement('div');
+  cell.className = 'cell';
+  // small random size variation so grid is imperfect but consistent
+  const scaleJitter = 0.92 + Math.random() * 0.16; // between .92 and 1.08
+  cell.style.width = `calc(var(--cell-size) * ${scaleJitter})`;
+  cell.style.height = `calc(var(--cell-size) * ${scaleJitter})`;
+  // tiny position jitter to break the perfect grid
+  cell.style.marginTop = `${(Math.random() - 0.5) * 10}px`;
+  cell.style.marginLeft = `${(Math.random() - 0.5) * 10}px`;
+  const img = document.createElement('img');
+  img.src = sources[idx];
+  cell.appendChild(img);
+  sheet.appendChild(cell);
+  imgs.push({el:cell, img});
+}
+
+/* --------------------------
+   Movement as single body
+   - smooth elliptical path with Perlin-like jitter
+   - speed moderate (dynamic but gentle)
+   -------------------------- */
+let t = 0;
+const center = { x: window.innerWidth / 2, y: window.innerHeight / 2 };
+let angleOffset = Math.random() * Math.PI * 2;
+const baseRadiusX = Math.max(window.innerWidth * 0.35, 300);
+const baseRadiusY = Math.max(window.innerHeight * 0.25, 200);
+const speed = 0.03; // main time step (lower = slower)
+/* lightweight pseudo-noise function for organic scribble */
+function noise(n) {
+  return (Math.sin(n * 1.7) + Math.sin(n * 2.9) * 0.5 + Math.sin(n * 5.1) * 0.25) * 0.6;
+}
+
+/* --------------------------
+   Ripple / warp state (single ripple)
+   - ripple center follows pointer on move and restarts time
+   - ripple decays over ~1.6s but we keep it smooth
+   - ripple produces per-cell vertical (z) and local translation offsets
+   -------------------------- */
+let ripple = { x: center.x, y: center.y, start: 0, active: false };
+let lastMoveTime = performance.now();
+let pointerStillSince = performance.now();
+
+/* stationary scaling: when pointer remains still, sheet slowly grows over 5s */
+const stationaryToFullSeconds = 5.0;
+let stationaryScale = 1.0;
+
+/* pointer tracking */
+document.addEventListener('mousemove', (e) => {
+  ripple.x = e.clientX;
+  ripple.y = e.clientY;
+  ripple.start = performance.now();
+  ripple.active = true;
+  lastMoveTime = performance.now();
+});
+
+/* reset on leaving - ripple will decay naturally */
+document.addEventListener('mouseleave', () => { ripple.start = performance.now(); ripple.active = false; lastMoveTime = performance.now(); });
+
+/* ensure sheet starts centered and visible */
+function placeInitialSheet() {
+  // center sheet roughly so 3 images visible horizontally on many displays
+  // we position sheet so center of grid aligns with center of viewport
+  const sheetWidth = COLS * parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--cell-size')) + (COLS - 1) * parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--gap'));
+  const sheetHeight = ROWS * parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--cell-size')) + (ROWS - 1) * parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--gap'));
+  // place sheet so its center maps to viewport center
+  sheet.style.left = `${center.x - sheetWidth / 2}px`;
+  sheet.style.top = `${center.y - sheetHeight / 2}px`;
+}
+placeInitialSheet();
+
+/* --------------------------
+   Animation loop
+   -------------------------- */
+function animate(now) {
+  t += speed;
+  // scribbly elliptical path (single-body)
+  const rx = baseRadiusX + noise(t * 0.3) * 80;
+  const ry = baseRadiusY + noise(t * 0.4 + 10) * 60;
+  const gx = center.x + Math.cos(t + angleOffset) * rx;
+  const gy = center.y + Math.sin(t * 0.9 + angleOffset) * ry;
+
+  // subtle overall rotation to make sheet feel 3D
+  const rotX = Math.sin(t * 0.18) * 2; // degrees
+  const rotY = Math.cos(t * 0.12) * 2; // degrees
+
+  // stationary scale ramp (pointer still)
+  const nowMs = performance.now();
+  const idle = (nowMs - lastMoveTime) / 1000;
+  if (idle > 0.06) {
+    // pointer is effectively still — start counting
+    pointerStillSince = pointerStillSince || nowMs;
+  } else {
+    pointerStillSince = nowMs;
+  }
+  const stillDuration = (nowMs - pointerStillSince) / 1000;
+  // grow to 1.0 -> 1.35 (approx full-screen height feel) over stationaryToFullSeconds
+  const targetScale = 1 + Math.min(0.35, 0.35 * Math.max(0, stillDuration / stationaryToFullSeconds));
+  stationaryScale += (targetScale - stationaryScale) * 0.06; // smooth lerp
+
+  // apply main transform (translate sheet center to gx,gy)
+  const sheetLeft = gx - (sheet.offsetWidth / 2);
+  const sheetTop = gy - (sheet.offsetHeight / 2);
+  sheet.style.transform = `translate3d(${sheetLeft}px, ${sheetTop}px, 0px) perspective(1400px) rotateX(${rotX}deg) rotateY(${rotY}deg) scale(${stationaryScale})`;
+
+  // ripple logic
+  const rippleAge = (nowMs - ripple.start) / 1000; // seconds
+  // ripple amplitude decays smoothly after activation
+  const rippleDecay = Math.max(0, 1 - rippleAge / 1.6); // ~1.6s decay
+  const rippleSpeed = 220; // px/sec wave speed
+  const wavelength = 200; // px
+
+  // compute per-image transform based on ripple distance/time
+  // do this per cell but as cheap as possible
+  imgs.forEach(({ el, img }) => {
+    const rect = el.getBoundingClientRect();
+    // center of cell
+    const cx = rect.left + rect.width / 2;
+    const cy = rect.top + rect.height / 2;
+    const dx = cx - ripple.x;
+    const dy = cy - ripple.y;
+    const dist = Math.hypot(dx, dy);
+
+    // wave phase: how far wavefront has moved
+    const wavePhase = dist / wavelength - rippleAge * (rippleSpeed / wavelength);
+    // sinusoidal wave, then multiplied by exponential decay with distance and rippleDecay
+    let wave = Math.sin(wavePhase * Math.PI * 2) * Math.exp(-dist * 0.0025) * rippleDecay;
+    // clamp small values
+    if (Math.abs(wave) < 0.0001) wave = 0;
+
+    // convert wave to transforms:
+    // z (forward) and slight local translation so sheet bends
+    const z = wave * 220;            // forward push (px)
+    const translateX = (dx / (dist + 1)) * wave * 40;
+    const translateY = (dy / (dist + 1)) * wave * 40;
+    // scale increases with forward lift, but use smooth mapping
+    const scale = 1 + Math.max(0, z / 700);
+
+    // subtle easing so result isn't jumpy
+    img.style.transform = `translate3d(${translateX}px, ${translateY}px, ${z}px) scale(${scale})`;
+  });
+
+  requestAnimationFrame(animate);
+}
+requestAnimationFrame(animate);
+
+/* responsive: update center & sizes on resize */
+window.addEventListener('resize', () => {
+  center.x = window.innerWidth / 2;
+  center.y = window.innerHeight / 2;
+  placeInitialSheet();
+});
 </script>
 </body>
 </html>
