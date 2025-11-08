@@ -6,10 +6,10 @@
 <title>Victor fasHION www</title>
 <style>
 html,body{margin:0;padding:0;width:100%;height:100%;overflow:hidden;background:#fdffee;cursor:url('EARTH2.png'),auto;font-family:'Inter',sans-serif}
-header{display:flex;justify-content:space-between;padding:10px;background:rgba(245,245,245,0);z-index:10;position:relative}
+header{display:flex;justify-content:space-between;padding:10px;background:rgba(245,245,245,0);position:relative;z-index:10}
 header a{font-size:29px;color:#000;text-decoration:none}
-.grid{position:absolute;top:0;left:0;width:300vw;height:300vh;display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));grid-auto-rows:300px;gap:10px;transform:translate3d(0,0,0)}
-.grid img{width:100%;height:100%;object-fit:cover;transition:transform 0.2s}
+#grid{position:absolute;top:0;left:0;display:grid;grid-template-columns:repeat(50,400px);grid-auto-rows:400px;gap:10px;transform:translate3d(0,0,0)}
+#grid img{width:100%;height:100%;object-fit:cover;pointer-events:none;will-change:transform}
 </style>
 </head>
 <body>
@@ -20,7 +20,7 @@ header a{font-size:29px;color:#000;text-decoration:none}
 <a href="vmwvisuals.html">W/VISUALS</a>
 <a href="vmnotepad.html">NOTEPAD</a>
 </header>
-<div class="grid" id="grid">
+<div id="grid">
 <img src="globe.png"><img src="tee001.jpg"><img src="chrome.png"><img src="maxi.jpg">
 <img src="blue2.jpg"><img src="lvm.jpg"><img src="lvmm.jpg"><img src="yellow.png">
 <img src="converse.jpg"><img src="g1.png"><img src="g3.png"><img src="aj1.jpg">
@@ -49,7 +49,15 @@ header a{font-size:29px;color:#000;text-decoration:none}
 <img src="wf3.jpg"><img src="wf2.jpg"><img src="wf1.jpg"><img src="ww9.jpg">
 </div>
 <script>
-const grid=document.getElementById('grid');let t=0;let mx=0,my=0;document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY});function animate(){t+=0.01;grid.style.transform=`translate3d(${Math.sin(t*0.3)*50}px,${Math.sin(t*0.2)*50}px,0) rotateX(${Math.sin(t*0.2)*5}deg) rotateY(${Math.sin(t*0.3)*5}deg)`;Array.from(grid.children).forEach(img=>{let rect=img.getBoundingClientRect();let dx=(mx-(rect.left+rect.width/2))/window.innerWidth;let dy=(my-(rect.top+rect.height/2))/window.innerHeight;img.style.transform=`scale(${1+0.2*Math.exp(-dx*dx-dy*dy)})`});requestAnimationFrame(animate)}animate();
+let grid=document.getElementById('grid'),w=window.innerWidth,h=window.innerHeight,px=0,py=0,tx=0,ty=0,angle=0;
+document.addEventListener('mousemove',e=>{tx=e.clientX;ty=e.clientY});
+function animate(){
+angle+=0.01;
+px+=Math.sin(angle*0.7)*6+2;
+py+=Math.cos(angle*0.5)*4+2;
+grid.style.transform=`translate(${px}px,${py}px) perspective(800px) rotateX(${(ty-h/2)/h*15}deg) rotateY(${(tx-w/2)/w*15}deg)`;
+requestAnimationFrame(animate)}
+animate();
 </script>
 </body>
 </html>
