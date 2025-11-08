@@ -2,326 +2,172 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-W8TM46NGTZ"></script>
-	
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'G-W8TM46NGTZ');
-</script>
-	
+<title>FashionVM</title>
 <link rel="stylesheet" href="fashion.css">
-<title>fasHionVM</title> 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400;500&display=swap" rel="stylesheet">
 <link rel="icon" type="image/x-icon" href="pap.png">
-</head>
 <style>
-	html { 	cursor: url('EARTH2.png'), auto; }
+html,body{margin:0;padding:0;width:100%;height:100%;overflow:hidden;background:rgb(253,255,233);font-family:'Inter',sans-serif;cursor:url('EARTH2.png'),auto;}
+#photo-container{position:absolute;top:0;left:0;width:100%;height:100%;overflow:hidden;perspective:1200px;}
+.photo{position:absolute;transform-style:preserve-3d;transition:transform 0.2s ease;cursor:pointer;width:auto;height:auto;max-width:150px;}
+.photo.enlarged{transform:scale(3)!important;z-index:999;}
+.header{display:flex;justify-content:space-between;position:relative;width:100%;z-index:99;}
+.footer{margin:1.2% 0 1.2% 1.45%;}
+#below{color:#000;font-family:'Inter',sans-serif;font-size:12px;}
 </style>
+</head>
 <body>
-	
 <header class="header">
-	<div class="dname"><a id="exhi" href="vmwfashion.html">W/FASHION</a></div>
-	<div class="dcine"><a id="cine" href="vmwcinema.html">W/CINEMA</a></div>
-	<div class="dmusi"><a id="musi" href="vmwmusic.html">W/MUSIC</a></div>
-	<div class="dwork"><a id="work" href="vmwvisuals.html">W/VISUALS</a></div>
-	<div class="dinfo"><a id="info" href="vmnotepad.html">NOTEPAD</a></div>
-</header>	
-<div class="apple">
-	<div class="banana">
-	<img id="corn" src="globe.png" alt="92"> </div>
-	<div class="banana">
-	<img id="corn" src="tee001.jpg" alt="91"> </div>
-	<div class="banana">
-	<img id="corn" src="chrome.png" alt="90"> </div>
-	<div class="lov">
-	<img id="corn" src="maxi.jpg" alt="89"> </div>
-</div>
-<div class="apple">
-	<div class="banana">
-	<img id="corn" src="blue2.jpg" alt="88"> </div>
-	<div class="banana">
-	<img id="corn" src="lvm.jpg" alt="87"> </div>
-	<div class="banana">
-	<img id="corn" src="lvmm.jpg" alt="86"> </div>
-	<div class="lov">
-	<img id="corn" src="yellow.png" alt="85"> </div>
-</div>
-	
-<div class="apple">
-	<div class="banana">
-	<img id="corn" src="converse.jpg" alt="84"> </div>
-	<div class="banana">
-	<img id="corn" src="g1.png" alt="83"> </div>
-	<div class="banana">
-	<img id="corn" src="g3.png" alt="82"> </div>
-	<div class="lov">
-	<img id="corn" src="aj1.jpg" alt="81"> </div>
-</div>
-	
-<div class="apple">
-	<div class="banana">
-	<img id="corn" src="graphic1.png" alt="84"> </div>
-	<div class="banana">
-	<img id="corn" src="graphic2.png" alt="83"> </div>
-	<div class="banana">
-	<img id="corn" src="s1.jpg" alt="82"> </div>
-	<div class="lov">
-	<img id="corn" src="s11.jpg" alt="81"> </div>
-</div>
-	
-<div class="apple">
-	<div class="banana">
-	<img id="corn" src="vm5.png" alt="80"> </div>
-	<div class="banana">
-	<img id="corn" src="globe.jpg" alt="79"> </div>
-	<div class="banana">
-	<img id="corn" src="cosme.jpg" alt="78"> </div>
-	<div class="lov">
-	<img id="corn" src="vm1.png" alt="77"> </div>
-</div>
-	
-<div class="apple">
-	<div class="banana">
-	<img id="corn" src="i5.jpg" alt="76"> </div>
-	<div class="banana">
-	<img id="corn" src="vm6.png" alt="75"> </div>
-	<div class="banana">
-	<img id="corn" src="i8.jpg" alt="74"> </div>
-	<div class="lov">
-	<img id="corn" src="vm7.png" alt="73"> </div>
-</div>
-	
-<div class="apple">
-	<div class="banana">
-	<img id="corn" src="i4.jpg" alt="76"> </div>
-	<div class="banana">
-	<img id="corn" src="vm3.png" alt="75"> </div>
-	<div class="banana">
-	<img id="corn" src="vm8.png" alt="74"> </div>
-	<div class="lov">
-	<img id="corn" src="i1.jpg" alt="73"> </div>
-</div>
-	
-<div class="apple">
-	<div class="banana">
-	<img id="corn" src="i7.jpg" alt="76"> </div>
-	<div class="banana">
-	<img id="corn" src="i2.jpg" alt="75"> </div>
-	<div class="banana">
-	<img id="corn" src="vm2.png" alt="74"> </div>
-	<div class="lov">
-	<img id="corn" src="vm4.png" alt="73"> </div>
-</div>
-	
-<div class="apple">
-	<div class="banana">
-	<img id="corn" src="i6.jpg" alt="72"> </div>
-	<div class="banana">
-	<img id="corn" src="i3.jpg" alt="71"> </div>
-	<div class="banana">
-	<img id="corn" src="xx1.jpg" alt="70"> </div>
-	<div class="lov">
-	<img id="corn" src="xx2.jpg" alt="69"> </div>
-</div>
-
-<div class="apple">
-	<div class="banana">
-	<img id="corn" src="xx4.jpg" alt="68"> </div>
-	<div class="banana">
-	<img id="corn" src="xx3.jpg" alt="67"> </div>
-	<div class="banana">
-	<img id="corn" src="bv10.jpg" alt="66"> </div>
-	<div class="lov">
-	<img id="corn" src="bv9.jpg" alt="65"> </div>
-</div>
-	
-<div class="apple">
-	<div class="banana">
-	<img id="corn" src="bv8.jpg" alt="64"> </div>
-	<div class="banana">
-	<img id="corn" src="bv7.jpg" alt="63"> </div>
-	<div class="banana">
-	<img id="corn" src="bv6.jpg" alt="62"> </div>
-	<div class="lov">
-	<img id="corn" src="bv5.jpg" alt="61"> </div>
+<div class="dname"><a id="exhi" href="vmwfashion.html">W/FASHION</a></div>
+<div class="dcine"><a id="cine" href="vmwcinema.html">W/CINEMA</a></div>
+<div class="dmusi"><a id="musi" href="vmwmusic.html">W/MUSIC</a></div>
+<div class="dwork"><a id="work" href="vmwvisuals.html">W/VISUALS</a></div>
+<div class="dinfo"><a id="info" href="vmnotepad.html">NOTEPAD</a></div>
+</header>
+<div id="photo-container">
+<img class="photo" src="globe.png">
+<img class="photo" src="tee001.jpg">
+<img class="photo" src="chrome.png">
+<img class="photo" src="maxi.jpg">
+<img class="photo" src="blue2.jpg">
+<img class="photo" src="lvm.jpg">
+<img class="photo" src="lvmm.jpg">
+<img class="photo" src="yellow.png">
+<img class="photo" src="converse.jpg">
+<img class="photo" src="g1.png">
+<img class="photo" src="g3.png">
+<img class="photo" src="aj1.jpg">
+<img class="photo" src="graphic1.png">
+<img class="photo" src="graphic2.png">
+<img class="photo" src="s1.jpg">
+<img class="photo" src="s11.jpg">
+<img class="photo" src="vm5.png">
+<img class="photo" src="globe.jpg">
+<img class="photo" src="cosme.jpg">
+<img class="photo" src="vm1.png">
+<img class="photo" src="i5.jpg">
+<img class="photo" src="vm6.png">
+<img class="photo" src="i8.jpg">
+<img class="photo" src="vm7.jpg">
+<img class="photo" src="i4.jpg">
+<img class="photo" src="vm3.png">
+<img class="photo" src="vm8.png">
+<img class="photo" src="i1.jpg">
+<img class="photo" src="i7.jpg">
+<img class="photo" src="i2.jpg">
+<img class="photo" src="vm2.png">
+<img class="photo" src="vm4.png">
+<img class="photo" src="i6.jpg">
+<img class="photo" src="i3.jpg">
+<img class="photo" src="xx1.jpg">
+<img class="photo" src="xx2.jpg">
+<img class="photo" src="xx4.jpg">
+<img class="photo" src="xx3.jpg">
+<img class="photo" src="bv10.jpg">
+<img class="photo" src="bv9.jpg">
+<img class="photo" src="bv8.jpg">
+<img class="photo" src="bv7.jpg">
+<img class="photo" src="bv6.jpg">
+<img class="photo" src="bv5.jpg">
+<img class="photo" src="bv4.jpg">
+<img class="photo" src="bv3.jpg">
+<img class="photo" src="bv2.jpg">
+<img class="photo" src="bv1.jpg">
+<img class="photo" src="hs4.jpg">
+<img class="photo" src="hs3.jpg">
+<img class="photo" src="hs2.jpg">
+<img class="photo" src="hs1.jpg">
+<img class="photo" src="m2.jpg">
+<img class="photo" src="m1.jpg">
+<img class="photo" src="qq5.jpg">
+<img class="photo" src="qq6.jpg">
+<img class="photo" src="qq4.jpg">
+<img class="photo" src="qq3.jpg">
+<img class="photo" src="qq2.jpg">
+<img class="photo" src="qq1.jpg">
+<img class="photo" src="k8.jpg">
+<img class="photo" src="k7.jpg">
+<img class="photo" src="k6.jpg">
+<img class="photo" src="k5.jpg">
+<img class="photo" src="k2.jpg">
+<img class="photo" src="k1.jpg">
+<img class="photo" src="k4.jpg">
+<img class="photo" src="k3.jpg">
+<img class="photo" src="acw5.jpg">
+<img class="photo" src="acw4.jpg">
+<img class="photo" src="acw3.jpg">
+<img class="photo" src="acw2.jpg">
+<img class="photo" src="16w.jpg">
+<img class="photo" src="15w.jpg">
+<img class="photo" src="14w.jpg">
+<img class="photo" src="13w.jpg">
+<img class="photo" src="12w.jpg">
+<img class="photo" src="11w.jpg">
+<img class="photo" src="10w.jpg">
+<img class="photo" src="9ww.jpg">
+<img class="photo" src="8w.jpg">
+<img class="photo" src="7w.jpg">
+<img class="photo" src="6w.jpg">
+<img class="photo" src="5w.jpg">
+<img class="photo" src="4w.jpg">
+<img class="photo" src="3w.jpg">
+<img class="photo" src="2w.jpg">
+<img class="photo" src="1w.jpg">
+<img class="photo" src="wf15.jpg">
+<img class="photo" src="wf14.jpg">
+<img class="photo" src="wf13.jpg">
+<img class="photo" src="wf12.jpg">
+<img class="photo" src="wf11.jpg">
+<img class="photo" src="wf10.jpg">
+<img class="photo" src="wf9.jpg">
+<img class="photo" src="wf8.jpg">
+<img class="photo" src="wf7.jpg">
+<img class="photo" src="wf6.jpg">
+<img class="photo" src="wf5.jpg">
+<img class="photo" src="wf4.jpg">
+<img class="photo" src="wf3.jpg">
+<img class="photo" src="wf2.jpg">
+<img class="photo" src="wf1.jpg">
+<img class="photo" src="ww9.jpg">
 </div>
 
-<div class="apple">
-	<div class="banana">
-	<img id="corn" src="bv4.jpg" alt="60"> </div>
-	<div class="banana">
-	<img id="corn" src="bv3.jpg" alt="59"> </div>
-	<div class="banana">
-	<img id="corn" src="bv2.jpg" alt="58"> </div>
-	<div class="lov">
-	<img id="corn" src="bv1.jpg" alt="57"> </div>
-</div>
-	
-<div class="apple">
-	<div class="banana">
-	<img id="corn" src="hs4.jpg" alt="56"> </div>
-	<div class="banana">
-	<img id="corn" src="hs3.jpg" alt="55"> </div>
-	<div class="banana">
-	<img id="corn" src="hs2.jpg" alt="54"> </div>
-	<div class="lov">
-	<img id="corn" src="hs1.jpg" alt="53"> </div>
-</div>
-	
-<div class="apple">
-	<div class="banana">
-	<img id="corn" src="m2.jpg" alt="52"> </div>
-	<div class="banana">
-	<img id="corn" src="m1.jpg" alt="51"> </div>
-	<div class="banana">
-	<img id="corn" src="qq5.jpg" alt="50"> </div>
-	<div class="lov">
-	<img id="corn" src="qq6.jpg" alt="49"> </div>
-</div>
-
-
-<div class="apple">
-	<div class="banana">
-	<img id="corn" src="qq4.jpg" alt="48"> </div>
-	<div class="banana">
-	<img id="corn" src="qq3.jpg" alt="47"> </div>
-	<div class="banana">
-	<img id="corn" src="qq2.jpg" alt="46"> </div>
-	<div class="lov">
-	<img id="corn" src="qq1.jpg" alt="45"> </div>
-</div>
-
-	
-<div class="apple">
-	<div class="banana">
-	<img id="corn" src="k8.jpg" alt="44"> </div>
-	<div class="banana">
-	<img id="corn" src="k7.jpg" alt="43"> </div>
-	<div class="banana">
-	<img id="corn" src="k6.jpg" alt="42"> </div>
-	<div class="lov">
-	<img id="corn" src="k5.jpg" alt="41"> </div>
-</div>
-
-<div class="apple">
-	<div class="banana">
-	<img id="corn" src="k2.jpg" alt="40"> </div>
-	<div class="banana">
-	<img id="corn" src="k1.jpg" alt="39"> </div>
-	<div class="banana">
-	<img id="corn" src="k4.jpg" alt="38"> </div>
-	<div class="lov">
-	<img id="corn" src="k3.jpg" alt="37"> </div>
-</div>
-	
-<div class="apple">
-	<div class="banana">
-	<img id="corn" src="acw5.jpg" alt="36"> </div>
-	<div class="banana">
-	<img id="corn" src="acw4.jpg" alt="35"> </div>
-	<div class="banana">
-	<img id="corn" src="acw3.jpg" alt="34"> </div>
-	<div class="lov">
-	<img id="corn" src="acw2.jpg" alt="33"> </div>
-</div>
-	
-<div class="apple">
-	<div class="banana">
-	<img id="corn" src="16w.jpg" alt="32"> </div>
-	<div class="banana">
-	<img id="corn" src="15w.jpg" alt="31"> </div>
-	<div class="banana">
-	<img id="corn" src="14w.jpg" alt="30"> </div>
-	<div class="lov">
-	<img id="corn" src="13w.jpg" alt="29"> </div>
-</div>
-	
-<div class="apple">
-	<div class="banana">
-	<img id="corn" src="12w.jpg" alt="28"> </div>
-	<div class="banana">
-	<img id="corn" src="11w.jpg" alt="27"> </div>
-	<div class="banana">
-	<img id="corn" src="10w.jpg" alt="26"> </div>
-	<div class="lov">
-	<img id="corn" src="9ww.jpg" alt="25"> </div>
-</div>
-	
-<div class="apple">
-	<div class="banana">
-	<img id="corn" src="8w.jpg" alt="24"> </div>
-	<div class="banana">
-	<img id="corn" src="7w.jpg" alt="23"> </div>
-	<div class="banana">
-	<img id="corn" src="6w.jpg" alt="22"> </div>
-	<div class="lov">
-	<img id="corn" src="5w.jpg" alt="21"> </div>
-</div>
-	
-<div class="apple">
-	<div class="banana">
-	<img id="corn" src="4w.jpg" alt="20"> </div>
-	<div class="banana">
-	<img id="corn" src="3w.jpg" alt="19"> </div>
-	<div class="banana">
-	<img id="corn" src="2w.jpg" alt="18"> </div>
-	<div class="lov">
-	<img id="corn" src="1w.jpg" alt="17"> </div>
-</div>
-	
-<div class="apple">
-	<div class="banana">
-	<img id="corn" src="wf15.jpg" alt="16"> </div>
-	<div class="banana">
-	<img id="corn" src="wf14.jpg" alt="15"> </div>
-	<div class="banana">
-	<img id="corn" src="wf13.jpg" alt="14"> </div>
-	<div class="lov">
-	<img id="corn" src="wf12.jpg" alt="13"> </div>
-</div>
-
-<div class="apple">
-	<div class="banana">
-	<img id="corn" src="wf11.jpg" alt="12"> </div>
-	<div class="banana">
-	<img id="corn" src="wf10.jpg" alt="11"> </div>
-	<div class="banana">
-	<img id="corn" src="wf9.jpg" alt="10"> </div>
-	<div class="lov">
-	<img id="corn" src="wf8.jpg" alt="9"> </div>
-</div>
-
-<div class="apple">
-	<div class="banana">
-	<img id="corn" src="wf7.jpg" alt="8"> </div>
-	<div class="banana">
-	<img id="corn" src="wf6.jpg" alt="7"> </div>
-	<div class="banana">
-	<img id="corn" src="wf5.jpg" alt="6"> </div>
-	<div class="lov">
-	<img id="corn" src="wf4.jpg" alt="5"> </div>
-</div>
-
-<div class="apple">
-	<div class="banana">
-	<img id="corn" src="wf3.jpg" alt="4"> </div>
-	<div class="banana">
-	<img id="corn" src="wf2.jpg" alt="3"> </div>
-	<div class="banana">
-	<img id="corn" src="wf1.jpg" alt="2"> </div>
-	<div class="lov">
-	<img id="corn" src="ww9.jpg" alt="1"> </div>
-</div>
-	
 <footer class="footer">
-<p id="below"> ALL RIGHTS RESERVED | © 2024 VICTOR MASOTTI </p>
+<p id="below">ALL RIGHTS RESERVED | © 2025 VICTOR MASOTTI</p>
 </footer>
-</div> </body> </html>
+
+<script>
+const container=document.getElementById('photo-container');
+const photos=Array.from(container.getElementsByClassName('photo'));
+const width=window.innerWidth;
+const height=window.innerHeight;
+photos.forEach(p=>{
+p.x=Math.random()*width;
+p.y=Math.random()*height;
+p.vx=(Math.random()-0.5)*0.3;
+p.vy=(Math.random()-0.5)*0.3;
+p.scale=1+Math.random()*0.2;
+p.rotation=(Math.random()-0.5)*10;
+p.style.transform=`translate3d(${p.x}px,${p.y}px,0px) scale(${p.scale}) rotate(${p.rotation}deg)`;
+});
+const mouse={x:width/2,y:height/2};
+window.addEventListener('mousemove',e=>{mouse.x=e.clientX;mouse.y=e.clientY;});
+let enlarged=null;
+photos.forEach(p=>{p.addEventListener('click',e=>{e.stopPropagation();if(enlarged&&enlarged!==p)enlarged.classList.remove('enlarged');p.classList.toggle('enlarged');enlarged=p.classList.contains('enlarged')?p:null;});});
+window.addEventListener('click',e=>{if(enlarged){enlarged.classList.remove('enlarged');enlarged=null;}});
+function animate(){photos.forEach(p=>{
+p.x+=p.vx;p.y+=p.vy;
+if(p.x>width+100)p.x=-100;if(p.x<-100)p.x=width+100;
+if(p.y>height+100)p.y=-100;if(p.y<-100)p.y=height+100;
+const dx=mouse.x-p.x;
+const dy=mouse.y-p.y;
+const dist=Math.sqrt(dx*dx+dy*dy);
+const factor=Math.min(200/dist,0.5);
+p.style.transform=`translate3d(${p.x+dx*factor}px,${p.y+dy*factor}px,0px) scale(${p.scale+(0.5-factor/2)}) rotate(${p.rotation}deg)`;
+});requestAnimationFrame(animate);}
+animate();
+</script>
+</body>
+</html>
