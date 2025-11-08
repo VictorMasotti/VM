@@ -4,61 +4,49 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Victor fasHION www</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400;500&display=swap" rel="stylesheet">
 <style>
-html,body{margin:0;padding:0;height:100%;overflow:hidden;font-family:'Inter',sans-serif;background:rgb(253,255,233);}
-#grid{position:absolute;top:0;left:0;display:grid;grid-template-columns:repeat(4,1fr);gap:10%;width:100%;height:100%;transform:translate(0,0);}
-.grid-item{position:relative;cursor:pointer;transition:transform 0.1s ease, z-index 0.2s ease;width:100%;height:auto;}
-.enlarged{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) scale(1.8);z-index:999;width:auto;height:auto;max-width:80%;max-height:80%;box-shadow:0 0 20px rgba(0,0,0,0.5);}
+html,body{margin:0;padding:0;width:100%;height:100%;overflow:hidden;background:#fdffe9;font-family:Inter,sans-serif;cursor:url('EARTH2.png'),auto;}
+#grid{position:absolute;top:0;left:0;width:100%;height:100%;transform-style:preserve-3d;}
+.cell{position:absolute;will-change:transform;}
+img{width:150px;height:auto;display:block;}
 </style>
 </head>
 <body>
 <div id="grid"></div>
 <script>
-const images=["globe.png","tee001.jpg","chrome.png","maxi.jpg","blue2.jpg","lvm.jpg","lvmm.jpg","yellow.png","converse.jpg","g1.png","g3.png","aj1.jpg","graphic1.png","graphic2.png","s1.jpg","s11.jpg","vm5.png","globe.jpg","cosme.jpg","vm1.png","i5.jpg","vm6.png","i8.jpg","vm7.png","i4.jpg","vm3.png","vm8.png","i1.jpg","i7.jpg","i2.jpg","vm2.png","vm4.png","i6.jpg","i3.jpg","xx1.jpg","xx2.jpg","xx4.jpg","xx3.jpg","bv10.jpg","bv9.jpg","bv8.jpg","bv7.jpg","bv6.jpg","bv5.jpg","bv4.jpg","bv3.jpg","bv2.jpg","bv1.jpg","hs4.jpg","hs3.jpg","hs2.jpg","hs1.jpg","m2.jpg","m1.jpg","qq5.jpg","qq6.jpg","qq4.jpg","qq3.jpg","qq2.jpg","qq1.jpg","k8.jpg","k7.jpg","k6.jpg","k5.jpg","k2.jpg","k1.jpg","k4.jpg","k3.jpg","acw5.jpg","acw4.jpg","acw3.jpg","acw2.jpg","16w.jpg","15w.jpg","14w.jpg","13w.jpg","12w.jpg","11w.jpg","10w.jpg","9ww.jpg","8w.jpg","7w.jpg","6w.jpg","5w.jpg","4w.jpg","3w.jpg","2w.jpg","1w.jpg","wf15.jpg","wf14.jpg","wf13.jpg","wf12.jpg","wf11.jpg","wf10.jpg","wf9.jpg","wf8.jpg","wf7.jpg","wf6.jpg","wf5.jpg","wf4.jpg","wf3.jpg","wf2.jpg","wf1.jpg","ww9.jpg"];
+const images=["globe.png","tee001.jpg","chrome.png","maxi.jpg","blue2.jpg","lvm.jpg","lvmm.jpg","yellow.png","converse.jpg","g1.png","g3.png","aj1.jpg","graphic1.png","graphic2.png","s1.jpg","s11.jpg","vm5.png","globe.jpg","cosme.jpg","vm1.png","i5.jpg","vm6.jpg","i8.jpg","vm7.png","i4.jpg","vm3.jpg","vm8.png","i1.jpg","i7.jpg","i2.jpg","vm2.png","vm4.png","i6.jpg","i3.jpg","xx1.jpg","xx2.jpg","xx4.jpg","xx3.jpg","bv10.jpg","bv9.jpg","bv8.jpg","bv7.jpg","bv6.jpg","bv5.jpg","bv4.jpg","bv3.jpg","bv2.jpg","bv1.jpg","hs4.jpg","hs3.jpg","hs2.jpg","hs1.jpg","m2.jpg","m1.jpg","qq5.jpg","qq6.jpg","qq4.jpg","qq3.jpg","qq2.jpg","qq1.jpg","k8.jpg","k7.jpg","k6.jpg","k5.jpg","k2.jpg","k1.jpg","k4.jpg","k3.jpg","acw5.jpg","acw4.jpg","acw3.jpg","acw2.jpg","16w.jpg","15w.jpg","14w.jpg","13w.jpg","12w.jpg","11w.jpg","10w.jpg","9ww.jpg","8w.jpg","7w.jpg","6w.jpg","5w.jpg","4w.jpg","3w.jpg","2w.jpg","1w.jpg","wf15.jpg","wf14.jpg","wf13.jpg","wf12.jpg","wf11.jpg","wf10.jpg","wf9.jpg","wf8.jpg","wf7.jpg","wf6.jpg","wf5.jpg","wf4.jpg","wf3.jpg","wf2.jpg","wf1.jpg","ww9.jpg"];
 const grid=document.getElementById("grid");
-const items=[];
-images.sort(()=>Math.random()-0.5).forEach(src=>{
-  const img=document.createElement("img");
-  img.src=src;
-  img.className="grid-item";
-  grid.appendChild(img);
-  items.push(img);
-});
-let gridPos={x:0,y:0,dx:(Math.random()*2-1)*0.3,dy:(Math.random()*2-1)*0.3};
+const cols=50,rows=50;
+let cells=[];
+for(let y=0;y<rows;y++){
+  for(let x=0;x<cols;x++){
+    const div=document.createElement("div");
+    div.className="cell";
+    const img=document.createElement("img");
+    img.src=images[Math.floor(Math.random()*images.length)];
+    div.appendChild(img);
+    grid.appendChild(div);
+    cells.push({el:div,x:x*170+Math.random()*50,y:y*170+Math.random()*50});
+  }
+}
 let mouse={x:window.innerWidth/2,y:window.innerHeight/2};
-
 window.addEventListener("mousemove",e=>{mouse.x=e.clientX;mouse.y=e.clientY;});
-
-let enlarged=null;
-items.forEach(img=>{
-  img.addEventListener("click",()=>{
-    if(enlarged){enlarged.classList.remove("enlarged");enlarged=null;}
-    else{img.classList.add("enlarged");enlarged=img;}
-  });
-});
-window.addEventListener("click",e=>{
-  if(enlarged&&!enlarged.contains(e.target)) enlarged.classList.remove("enlarged"),enlarged=null;
-});
-
+let angle=Math.random()*Math.PI*2,speed=0.5;
 function animate(){
-  gridPos.x+=gridPos.dx;
-  gridPos.y+=gridPos.dy;
-  if(gridPos.x>50||gridPos.x<-50) gridPos.dx*=-1;
-  if(gridPos.y>50||gridPos.y<-50) gridPos.dy*=-1;
-  grid.style.transform=`translate(${gridPos.x}px,${gridPos.y}px)`;
-  
-  const rect=grid.getBoundingClientRect();
-  items.forEach(img=>{
-    const cx=rect.left+img.offsetLeft+img.offsetWidth/2;
-    const cy=rect.top+img.offsetTop+img.offsetHeight/2;
-    const dx=(mouse.x-cx)/200;
-    const dy=(mouse.y-cy)/200;
-    const dist=Math.hypot(mouse.x-cx,mouse.y-cy);
-    const scale=1+Math.max(0,0.5-(dist/500));
-    img.style.transform=`translate(${dx*Math.sin(dist/50)}px,${dy*Math.sin(dist/50)}px) scale(${scale})`;
+  const centerX=window.innerWidth/2,centerY=window.innerHeight/2;
+  cells.forEach(c=>{
+    c.x+=Math.cos(angle)*speed;
+    c.y+=Math.sin(angle)*speed;
+    if(c.x>cols*170)c.x=0;
+    if(c.x<0)c.x=cols*170;
+    if(c.y>rows*170)c.y=0;
+    if(c.y<0)c.y=rows*170;
+    const dx=mouse.x-(c.x-centerX);
+    const dy=mouse.y-(c.y-centerY);
+    const dist=Math.sqrt(dx*dx+dy*dy);
+    const warp=Math.sin(dist/200)*50;
+    const scale=1+Math.max(0,(150-dist/2)/300);
+    c.el.style.transform=`translate(${c.x+dx*0.02}px,${c.y+dy*0.02}px) scale(${scale}) translateZ(${warp}px)`;
   });
   requestAnimationFrame(animate);
 }
