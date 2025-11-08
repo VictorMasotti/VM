@@ -5,21 +5,53 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Victor fasHION www</title>
 <style>
-html,body{margin:0;padding:0;width:100%;height:100%;overflow:hidden;background:#fdffe9;cursor:url('EARTH2.png'),auto;}
-#grid{position:absolute;display:grid;grid-template-columns:repeat(50,250px);grid-template-rows:repeat(50,250px);gap:10px;width:max-content;height:max-content;}
-.gridimg{width:250px;height:auto;transition:transform 0.1s linear;}
+html,body{margin:0;padding:0;width:100%;height:100%;overflow:hidden;background:#fdffee}
+body{cursor:url('EARTH2.png'),auto;font-family:'Inter',sans-serif}
+header{display:flex;justify-content:space-between;padding:10px;background:rgba(245,245,245,0)}
+header a{font-size:29px;color:#000;text-decoration:none}
+.grid{position:absolute;top:0;left:0;width:200vw;height:200vh;display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));grid-auto-rows:250px;gap:10px;transform:translate3d(0,0,0)}
+.grid img{width:100%;height:100%;object-fit:cover;transition:transform 0.2s}
 </style>
 </head>
 <body>
-<div id="grid"></div>
+<header>
+<a href="vmwfashion.html">W/FASHION</a>
+<a href="vmwcinema.html">W/CINEMA</a>
+<a href="vmwmusic.html">W/MUSIC</a>
+<a href="vmwvisuals.html">W/VISUALS</a>
+<a href="vmnotepad.html">NOTEPAD</a>
+</header>
+<div class="grid" id="grid">
+<img src="globe.png"><img src="tee001.jpg"><img src="chrome.png"><img src="maxi.jpg">
+<img src="blue2.jpg"><img src="lvm.jpg"><img src="lvmm.jpg"><img src="yellow.png">
+<img src="converse.jpg"><img src="g1.png"><img src="g3.png"><img src="aj1.jpg">
+<img src="graphic1.png"><img src="graphic2.png"><img src="s1.jpg"><img src="s11.jpg">
+<img src="vm5.png"><img src="globe.jpg"><img src="cosme.jpg"><img src="vm1.png">
+<img src="i5.jpg"><img src="vm6.png"><img src="i8.jpg"><img src="vm7.png">
+<img src="i4.jpg"><img src="vm3.png"><img src="vm8.png"><img src="i1.jpg">
+<img src="i7.jpg"><img src="i2.jpg"><img src="vm2.png"><img src="vm4.png">
+<img src="i6.jpg"><img src="i3.jpg"><img src="xx1.jpg"><img src="xx2.jpg">
+<img src="xx4.jpg"><img src="xx3.jpg"><img src="bv10.jpg"><img src="bv9.jpg">
+<img src="bv8.jpg"><img src="bv7.jpg"><img src="bv6.jpg"><img src="bv5.jpg">
+<img src="bv4.jpg"><img src="bv3.jpg"><img src="bv2.jpg"><img src="bv1.jpg">
+<img src="hs4.jpg"><img src="hs3.jpg"><img src="hs2.jpg"><img src="hs1.jpg">
+<img src="m2.jpg"><img src="m1.jpg"><img src="qq5.jpg"><img src="qq6.jpg">
+<img src="qq4.jpg"><img src="qq3.jpg"><img src="qq2.jpg"><img src="qq1.jpg">
+<img src="k8.jpg"><img src="k7.jpg"><img src="k6.jpg"><img src="k5.jpg">
+<img src="k2.jpg"><img src="k1.jpg"><img src="k4.jpg"><img src="k3.jpg">
+<img src="acw5.jpg"><img src="acw4.jpg"><img src="acw3.jpg"><img src="acw2.jpg">
+<img src="16w.jpg"><img src="15w.jpg"><img src="14w.jpg"><img src="13w.jpg">
+<img src="12w.jpg"><img src="11w.jpg"><img src="10w.jpg"><img src="9ww.jpg">
+<img src="8w.jpg"><img src="7w.jpg"><img src="6w.jpg"><img src="5w.jpg">
+<img src="4w.jpg"><img src="3w.jpg"><img src="2w.jpg"><img src="1w.jpg">
+<img src="wf15.jpg"><img src="wf14.jpg"><img src="wf13.jpg"><img src="wf12.jpg">
+<img src="wf11.jpg"><img src="wf10.jpg"><img src="wf9.jpg"><img src="wf8.jpg">
+<img src="wf7.jpg"><img src="wf6.jpg"><img src="wf5.jpg"><img src="wf4.jpg">
+<img src="wf3.jpg"><img src="wf2.jpg"><img src="wf1.jpg"><img src="ww9.jpg">
+</div>
 <script>
-const images=["globe.png","tee001.jpg","chrome.png","maxi.jpg","blue2.jpg","lvm.jpg","lvmm.jpg","yellow.png","converse.jpg","g1.png","g3.png","aj1.jpg","graphic1.png","graphic2.png","s1.jpg","s11.jpg","vm5.png","globe.jpg","cosme.jpg","vm1.png"];
-const grid=document.getElementById('grid');
-for(let i=0;i<50*50;i++){let img=document.createElement('img');img.src=images[Math.floor(Math.random()*images.length)];img.className='gridimg';grid.appendChild(img);}
-let posX=Math.random()*(-5000),posY=Math.random()*(-5000),vx=(Math.random()*2+1)*(Math.random()<0.5?-1:1),vy=(Math.random()*2+1)*(Math.random()<0.5?-1:1);
-function animate(){posX+=vx;posY+=vy;grid.style.left=posX+'px';grid.style.top=posY+'px';requestAnimationFrame(animate);}animate();
-let pointer={x:0,y:0};document.addEventListener('mousemove',e=>{pointer.x=e.clientX;pointer.y=e.clientY;});
-function warp(){document.querySelectorAll('.gridimg').forEach(img=>{let rect=img.getBoundingClientRect();let dx=rect.left+rect.width/2-pointer.x;let dy=rect.top+rect.height/2-pointer.y;let dist=Math.sqrt(dx*dx+dy*dy);let s=Math.min(2.5,1+200/(dist+50));let rx=dy/70;let ry=-dx/70;img.style.transform=`scale(${s}) rotateX(${rx}deg) rotateY(${ry}deg)`;});requestAnimationFrame(warp);}warp();
+const grid=document.getElementById('grid');let angle=0,warp=0;function animate(){angle+=0.002;warp*=0.95;const dx=Math.sin(angle)*50;const dy=Math.cos(angle)*50;grid.style.transform=`translate3d(${dx}px,${dy}px,0) perspective(800px) rotateX(${warp}deg) rotateY(${warp}deg)`;requestAnimationFrame(animate)}
+document.addEventListener('mousemove',e=>{warp=(e.clientY/window.innerHeight-0.5)*15});animate();
 </script>
 </body>
 </html>
