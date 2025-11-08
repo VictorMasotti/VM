@@ -6,58 +6,30 @@
 <title>Victor fasHION www</title>
 <style>
 html,body{margin:0;padding:0;width:100%;height:100%;overflow:hidden;background:#fdffee;cursor:url('EARTH2.png'),auto;font-family:'Inter',sans-serif}
-header{display:flex;justify-content:space-between;padding:10px;background:rgba(245,245,245,0);position:relative;z-index:10}
-header a{font-size:29px;color:#000;text-decoration:none}
 #grid{position:absolute;top:0;left:0;display:grid;grid-template-columns:repeat(50,400px);grid-auto-rows:400px;gap:10px;transform:translate3d(0,0,0)}
 #grid img{width:100%;height:100%;object-fit:cover;pointer-events:none;will-change:transform}
 </style>
 </head>
 <body>
-<header>
-<a href="vmwfashion.html">W/FASHION</a>
-<a href="vmwcinema.html">W/CINEMA</a>
-<a href="vmwmusic.html">W/MUSIC</a>
-<a href="vmwvisuals.html">W/VISUALS</a>
-<a href="vmnotepad.html">NOTEPAD</a>
-</header>
 <div id="grid">
 <img src="globe.png"><img src="tee001.jpg"><img src="chrome.png"><img src="maxi.jpg">
 <img src="blue2.jpg"><img src="lvm.jpg"><img src="lvmm.jpg"><img src="yellow.png">
 <img src="converse.jpg"><img src="g1.png"><img src="g3.png"><img src="aj1.jpg">
 <img src="graphic1.png"><img src="graphic2.png"><img src="s1.jpg"><img src="s11.jpg">
 <img src="vm5.png"><img src="globe.jpg"><img src="cosme.jpg"><img src="vm1.png">
-<img src="i5.jpg"><img src="vm6.png"><img src="i8.jpg"><img src="vm7.png">
-<img src="i4.jpg"><img src="vm3.png"><img src="vm8.png"><img src="i1.jpg">
-<img src="i7.jpg"><img src="i2.jpg"><img src="vm2.png"><img src="vm4.png">
-<img src="i6.jpg"><img src="i3.jpg"><img src="xx1.jpg"><img src="xx2.jpg">
-<img src="xx4.jpg"><img src="xx3.jpg"><img src="bv10.jpg"><img src="bv9.jpg">
-<img src="bv8.jpg"><img src="bv7.jpg"><img src="bv6.jpg"><img src="bv5.jpg">
-<img src="bv4.jpg"><img src="bv3.jpg"><img src="bv2.jpg"><img src="bv1.jpg">
-<img src="hs4.jpg"><img src="hs3.jpg"><img src="hs2.jpg"><img src="hs1.jpg">
-<img src="m2.jpg"><img src="m1.jpg"><img src="qq5.jpg"><img src="qq6.jpg">
-<img src="qq4.jpg"><img src="qq3.jpg"><img src="qq2.jpg"><img src="qq1.jpg">
-<img src="k8.jpg"><img src="k7.jpg"><img src="k6.jpg"><img src="k5.jpg">
-<img src="k2.jpg"><img src="k1.jpg"><img src="k4.jpg"><img src="k3.jpg">
-<img src="acw5.jpg"><img src="acw4.jpg"><img src="acw3.jpg"><img src="acw2.jpg">
-<img src="16w.jpg"><img src="15w.jpg"><img src="14w.jpg"><img src="13w.jpg">
-<img src="12w.jpg"><img src="11w.jpg"><img src="10w.jpg"><img src="9ww.jpg">
-<img src="8w.jpg"><img src="7w.jpg"><img src="6w.jpg"><img src="5w.jpg">
-<img src="4w.jpg"><img src="3w.jpg"><img src="2w.jpg"><img src="1w.jpg">
-<img src="wf15.jpg"><img src="wf14.jpg"><img src="wf13.jpg"><img src="wf12.jpg">
-<img src="wf11.jpg"><img src="wf10.jpg"><img src="wf9.jpg"><img src="wf8.jpg">
-<img src="wf7.jpg"><img src="wf6.jpg"><img src="wf5.jpg"><img src="wf4.jpg">
-<img src="wf3.jpg"><img src="wf2.jpg"><img src="wf1.jpg"><img src="ww9.jpg">
 </div>
 <script>
-let grid=document.getElementById('grid'),w=window.innerWidth,h=window.innerHeight,px=0,py=0,tx=0,ty=0,angle=0;
-document.addEventListener('mousemove',e=>{tx=e.clientX;ty=e.clientY});
-function animate(){
-angle+=0.01;
-px+=Math.sin(angle*0.7)*6+2;
-py+=Math.cos(angle*0.5)*4+2;
-grid.style.transform=`translate(${px}px,${py}px) perspective(800px) rotateX(${(ty-h/2)/h*15}deg) rotateY(${(tx-w/2)/w*15}deg)`;
+let grid=document.getElementById('grid'),w=window.innerWidth,h=window.innerHeight,px=0,py=0,tx=w/2,ty=h/2,lastMove=Date.now();document.addEventListener('mousemove',e=>{tx=e.clientX;ty=e.clientY;lastMove=Date.now()})
+let pathsX=[],pathsY=[],numCols=50,numRows=50
+for(let i=0;i<numCols*numRows;i++){pathsX.push(Math.random()*0.02+0.01);pathsY.push(Math.random()*0.02+0.01)}
+function animate(t){
+let dt=(Date.now()-lastMove)/1000
+px+=Math.sin(t*pathsX[0]*50)*12
+py+=Math.cos(t*pathsY[0]*30)*12
+let dx=(tx-w/2)/w*22,dy=(ty-h/2)/h*20,scale=1+Math.sin(dt*Math.PI/10)*1.5
+grid.style.transform=`translate(${px}px,${py}px) perspective(1000px) rotateX(${dy}deg) rotateY(${dx}deg) scale(${scale})`
 requestAnimationFrame(animate)}
-animate();
+animate(0)
 </script>
 </body>
 </html>
