@@ -1,49 +1,161 @@
-<!DOCTYPE html><html lang="en"><head>
-<meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>Victor fasHION www</title>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Victor Fashion Grid</title>
 <style>
-:root{--cell:170px;--gap:10px}
-html,body{margin:0;height:100%;overflow:hidden;background:#fefef8}
-#sheet{position:absolute;left:50%;top:50%;display:grid;
-grid-template-columns:repeat(20,var(--cell));grid-auto-rows:var(--cell);
-gap:var(--gap);transform-origin:center;will-change:transform}
-.cell{width:var(--cell);height:var(--cell);overflow:hidden}
-.cell img{width:100%;height:100%;object-fit:cover;transition:transform .1s linear;will-change:transform}
-.overlay{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.7)}
-.overlay img{max-width:95%;max-height:95%}
-</style></head><body>
-<div id="sheet"></div><div class="overlay" id="ov"><img id="ovi"></div>
+:root {
+  --cell: 170px;
+  --gap: 10px;
+}
+html,body {
+  margin: 0;
+  height: 100%;
+  overflow: hidden;
+  background: #fefef8;
+}
+#sheet {
+  position: absolute;
+  display: grid;
+  grid-template-columns: repeat(20, var(--cell));
+  grid-auto-rows: var(--cell);
+  gap: var(--gap);
+  transform-origin: center;
+  will-change: transform;
+}
+.cell {
+  width: var(--cell);
+  height: var(--cell);
+  overflow: hidden;
+}
+.cell img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.15s linear;
+  will-change: transform;
+  border-radius: 8px;
+}
+.overlay {
+  position: fixed;
+  inset: 0;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0,0,0,0.7);
+}
+.overlay img {
+  max-width: 95%;
+  max-height: 95%;
+}
+</style>
+</head>
+<body>
+<div id="sheet"></div>
+<div class="overlay" id="ov"><img id="ovi"></div>
 <script>
-const src=["globe.png","tee001.jpg","chrome.png","maxi.jpg","blue2.jpg","lvm.jpg","lvmm.jpg","yellow.png","converse.jpg","g1.png","g3.png","aj1.jpg"];
-const COL=20,ROW=20,sheet=document.getElementById('sheet');let vw=innerWidth,vh=innerHeight;
-for(let r=0;r<ROW;r++)for(let c=0;c<COL;c++){let d=document.createElement('div');d.className='cell';
-let j=.9+Math.random()*.2;d.style.width=`calc(var(--cell)*${j})`;d.style.height=`calc(var(--cell)*${j})`;
-let i=document.createElement('img');i.src=src[(r*COL+c)%src.length];d.appendChild(i);sheet.appendChild(d);
-i.onclick=e=>{e.stopPropagation();ov.style.display='flex';ovi.src=i.src};}
-const ov=document.getElementById('ov'),ovi=document.getElementById('ovi');ov.onclick=()=>ov.style.display='none';
-let cells=[...sheet.querySelectorAll('img')];let left=0,top=0;
-function clamp(v,min,max){return v<min?min:v>max?max:v}
-function centerSheet(){const rect=sheet.getBoundingClientRect();
-sheet.style.left=`${vw/2-rect.width/2}px`;sheet.style.top=`${vh/2-rect.height/2}px`;}
-window.onload=()=>setTimeout(centerSheet,100);
-let pointer={x:vw/2,y:vh/2},ripple={x:pointer.x,y:pointer.y,t:0};
-onmousemove=e=>{pointer.x=e.clientX;pointer.y=e.clientY;ripple={x:pointer.x,y:pointer.y,t:performance.now()}}
-let maxForward=260,maxScale=1.6;
-function anim(t){
-const age=(t-ripple.t)/1000,dec=Math.max(0,1-age/1.5);
-const rect=sheet.getBoundingClientRect();
-const sW=rect.width,sH=rect.height,minL=vw-sW,maxL=0,minT=vh-sH,maxT=0;
-for(let i=0;i<cells.length;i++){
-const img=cells[i],r=img.getBoundingClientRect(),cx=r.left+r.width/2,cy=r.top+r.height/2;
-const dx=cx-pointer.x,dy=cy-pointer.y,dist=Math.hypot(dx,dy);
-const inf=Math.exp(-dist*dist*0.0009)*dec,w=Math.sin((dist/120-age*3.2)*6.28)*.6;
-const eff=inf*(1+w*.6),z=eff*maxForward,tx=dx/(dist+1)*eff*40,ty=dy/(dist+1)*eff*40;
-const sc=1+(z/900)*(maxScale-1);img.style.transform=`translate3d(${-tx}px,${-ty}px,${z}px) scale(${sc})`;
-img.style.zIndex=Math.round(z+1000);}
-const nx=(pointer.x-vw/2)/vw,ny=(pointer.y-vh/2)/vh;
-left=clamp(left-nx*4,minL,maxL);top=clamp(top-ny*4,minT,maxT);
-sheet.style.left=`${left}px`;sheet.style.top=`${top}px`;
-requestAnimationFrame(anim);}
+const src = [
+  "globe.png","tee001.jpg","chrome.png","maxi.jpg",
+  "blue2.jpg","lvm.jpg","lvmm.jpg","yellow.png",
+  "converse.jpg","g1.png","g3.png","aj1.jpg"
+];
+
+const COL = 20, ROW = 20;
+const sheet = document.getElementById("sheet");
+let vw = innerWidth, vh = innerHeight;
+
+for (let r = 0; r < ROW; r++) {
+  for (let c = 0; c < COL; c++) {
+    const div = document.createElement("div");
+    div.className = "cell";
+    const scale = 0.9 + Math.random() * 0.2;
+    div.style.width = `calc(var(--cell) * ${scale})`;
+    div.style.height = `calc(var(--cell) * ${scale})`;
+    const img = document.createElement("img");
+    img.src = src[(r * COL + c) % src.length];
+    div.appendChild(img);
+    sheet.appendChild(div);
+    img.onclick = e => {
+      e.stopPropagation();
+      ov.style.display = "flex";
+      ovi.src = img.src;
+    };
+  }
+}
+
+const ov = document.getElementById("ov"), ovi = document.getElementById("ovi");
+ov.onclick = () => ov.style.display = "none";
+
+let cells = [...sheet.querySelectorAll("img")];
+let left = 0, top = 0;
+let pointer = { x: vw/2, y: vh/2 };
+let ripple = { x: pointer.x, y: pointer.y, t: 0 };
+
+function clamp(v, min, max) {
+  return v < min ? min : v > max ? max : v;
+}
+
+function centerSheet() {
+  const totalW = sheet.scrollWidth;
+  const totalH = sheet.scrollHeight;
+  left = vw/2 - totalW/2;
+  top = vh/2 - totalH/2;
+  sheet.style.left = `${left}px`;
+  sheet.style.top = `${top}px`;
+}
+centerSheet();
+
+onmousemove = e => {
+  pointer.x = e.clientX;
+  pointer.y = e.clientY;
+  ripple = { x: pointer.x, y: pointer.y, t: performance.now() };
+};
+
+let maxForward = 260, maxScale = 1.5;
+
+function anim(t) {
+  const age = (t - ripple.t) / 1000;
+  const dec = Math.max(0, 1 - age / 1.5);
+  const rect = sheet.getBoundingClientRect();
+  const sW = rect.width, sH = rect.height;
+  const minL = vw - sW, maxL = 0;
+  const minT = vh - sH, maxT = 0;
+
+  for (const img of cells) {
+    const r = img.getBoundingClientRect();
+    const cx = r.left + r.width / 2;
+    const cy = r.top + r.height / 2;
+    const dx = cx - pointer.x, dy = cy - pointer.y;
+    const dist = Math.hypot(dx, dy);
+    const inf = Math.exp(-dist * dist * 0.0009) * dec;
+    const w = Math.sin((dist / 120 - age * 3.2) * 6.28) * 0.6;
+    const eff = inf * (1 + w * 0.6);
+    const z = eff * maxForward;
+    const tx = dx / (dist + 1) * eff * 40;
+    const ty = dy / (dist + 1) * eff * 40;
+    const sc = 1 + (z / 900) * (maxScale - 1);
+    img.style.transform = `translate3d(${-tx}px, ${-ty}px, ${z}px) scale(${sc})`;
+    img.style.zIndex = Math.round(z + 1000);
+  }
+
+  // Inverted movement (grid moves *toward* cursor)
+  const nx = (pointer.x - vw/2) / vw;
+  const ny = (pointer.y - vh/2) / vh;
+  left = clamp(left - nx * 4, minL, maxL);
+  top = clamp(top - ny * 4, minT, maxT);
+  sheet.style.left = `${left}px`;
+  sheet.style.top = `${top}px`;
+
+  requestAnimationFrame(anim);
+}
 requestAnimationFrame(anim);
-onresize=()=>{vw=innerWidth;vh=innerHeight;centerSheet();}
-</script></body></html>
+
+onresize = () => {
+  vw = innerWidth;
+  vh = innerHeight;
+  centerSheet();
+};
+</script>
+</body>
+</html>
