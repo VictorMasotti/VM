@@ -6,10 +6,10 @@
 <title>Victor fasHION www</title>
 <style>
 html,body{margin:0;padding:0;width:100%;height:100%;background:#FDFFE9;overflow:hidden;cursor:url('EARTH2.png'),auto;font-family:'Inter',sans-serif;}
-body{display:flex;justify-content:center;align-items:center}
+body{display:flex;justify-content:center;align-items:center;perspective:1500px;}
 #grid{position:relative;display:grid;grid-template-columns:repeat(20,1fr);grid-auto-rows:min-content;gap:5px;transform-style:preserve-3d;transition:transform 0.2s}
-#grid img{width:100%;object-fit:cover;transition:transform 0.2s}
-.enlarge{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:999;transition:all 0.3s}
+#grid img{width:100%;object-fit:cover;transition:transform 0.2s;transform-style:preserve-3d;}
+.enlarge{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:999;transition:all 0.3s;}
 </style>
 </head>
 <body>
@@ -44,16 +44,11 @@ body{display:flex;justify-content:center;align-items:center}
 <script>
 const grid=document.getElementById('grid');
 const imgs=[...grid.querySelectorAll('img')];
-// random 3D rotation on refresh
-const randX=(Math.random()*10-5); 
-const randY=(Math.random()*10-5); 
-const randZ=(Math.random()*10-5);
-grid.style.transform=`rotateX(${randX}deg) rotateY(${randY}deg) rotateZ(${randZ}deg)`;
 document.addEventListener('mousemove',e=>{
   const w=window.innerWidth,h=window.innerHeight;
   const dx=(w/2-e.clientX)/w*2;
   const dy=(h/2-e.clientY)/h*2;
-  grid.style.transform=`translate(${dx*100}px,${dy*100}px) rotateX(${dy*15+randX}deg) rotateY(${-dx*15+randY}deg) rotateZ(${randZ}deg)`;
+  grid.style.transform=`translate(${dx*100}px,${dy*100}px) rotateX(${dy*15}deg) rotateY(${-dx*15}deg)`;
   imgs.forEach(img=>{
     const rect=img.getBoundingClientRect();
     const cx=rect.left+rect.width/2;
