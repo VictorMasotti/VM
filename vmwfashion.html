@@ -1,6 +1,6 @@
 <!DOCTYPE html><html lang="en"><head>
 <meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>Victor grid warp</title>
+<title>Victor fasHION www</title>
 <style>
 :root{--cell:170px;--gap:10px}
 html,body{margin:0;height:100%;overflow:hidden;background:#fefef8}
@@ -26,7 +26,7 @@ function clamp(v,min,max){return v<min?min:v>max?max:v}
 function centerSheet(){const rect=sheet.getBoundingClientRect();
 sheet.style.left=`${vw/2-rect.width/2}px`;sheet.style.top=`${vh/2-rect.height/2}px`;}
 window.onload=()=>setTimeout(centerSheet,100);
-let pointer={x:vw/2,y:vh/2},lastMove=0,ripple={x:pointer.x,y:pointer.y,t:0};
+let pointer={x:vw/2,y:vh/2},ripple={x:pointer.x,y:pointer.y,t:0};
 onmousemove=e=>{pointer.x=e.clientX;pointer.y=e.clientY;ripple={x:pointer.x,y:pointer.y,t:performance.now()}}
 let maxForward=260,maxScale=1.6;
 function anim(t){
@@ -41,7 +41,7 @@ const eff=inf*(1+w*.6),z=eff*maxForward,tx=dx/(dist+1)*eff*40,ty=dy/(dist+1)*eff
 const sc=1+(z/900)*(maxScale-1);img.style.transform=`translate3d(${-tx}px,${-ty}px,${z}px) scale(${sc})`;
 img.style.zIndex=Math.round(z+1000);}
 const nx=(pointer.x-vw/2)/vw,ny=(pointer.y-vh/2)/vh;
-left=clamp(left+nx*4,minL,maxL);top=clamp(top+ny*4,minT,maxT);
+left=clamp(left-nx*4,minL,maxL);top=clamp(top-ny*4,minT,maxT);
 sheet.style.left=`${left}px`;sheet.style.top=`${top}px`;
 requestAnimationFrame(anim);}
 requestAnimationFrame(anim);
