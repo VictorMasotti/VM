@@ -44,11 +44,16 @@ body{display:flex;justify-content:center;align-items:center}
 <script>
 const grid=document.getElementById('grid');
 const imgs=[...grid.querySelectorAll('img')];
+// random 3D rotation on refresh
+const randX=(Math.random()*10-5); 
+const randY=(Math.random()*10-5); 
+const randZ=(Math.random()*10-5);
+grid.style.transform=`rotateX(${randX}deg) rotateY(${randY}deg) rotateZ(${randZ}deg)`;
 document.addEventListener('mousemove',e=>{
   const w=window.innerWidth,h=window.innerHeight;
   const dx=(w/2-e.clientX)/w*2;
   const dy=(h/2-e.clientY)/h*2;
-  grid.style.transform=`translate(${dx*100}px,${dy*100}px) rotateX(${dy*15}deg) rotateY(${-dx*15}deg)`;
+  grid.style.transform=`translate(${dx*100}px,${dy*100}px) rotateX(${dy*15+randX}deg) rotateY(${-dx*15+randY}deg) rotateZ(${randZ}deg)`;
   imgs.forEach(img=>{
     const rect=img.getBoundingClientRect();
     const cx=rect.left+rect.width/2;
