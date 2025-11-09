@@ -5,44 +5,49 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Victor fasHION www</title>
 <style>
-html,body{margin:0;padding:0;width:100%;height:100%;background:#FDFFE9;overflow:hidden;cursor:url('EARTH2.png'),auto;font-family:'Inter',sans-serif;}
-body{display:flex;justify-content:center;align-items:center}
-#grid{position:relative;display:grid;grid-template-columns:repeat(20,1fr);grid-auto-rows:min-content;gap:5px;transform-style:preserve-3d;transition:transform 0.2s}
-#grid img{width:100%;object-fit:cover;transition:transform 0.2s}
-.enlarge{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) scale(2.5);z-index:999;cursor:pointer;transition:transform 0.3s}
+::-webkit-scrollbar{display:none}::selection{background:#E6F7A9;color:rgb(70)}a#name::selection{background:#5A7F3A;color:rgb(70)}a#exhi::selection{background:#5A7F3A;color:rgb(70)}a#work::selection{background:#A2D15A;color:rgb(70)}a#cine::selection{background:#6F993F;color:rgb(70)}a#musi::selection{background:#8AB94C;color:rgb(70)}p#below::selection{background:#FF3FBF;color:rgb(70)}a#info::selection{background:#BFEA68;color:rgb(70)}
+.dname:hover{background-color:#3A5F1C;color:rgb(255,255,255);transition:0.3s}.dexhi:hover{background-color:#3A5F1C;color:rgb(255,255,255);transition:0.3s}.dcine:hover{background-color:#4F7B1F;color:rgb(255,255,255);transition:0.3s}.dmusi:hover{background-color:#699C26;color:rgb(255,255,255);transition:0.3s}.dwork:hover{background-color:#89B932;color:rgb(255,255,255);transition:0.3s}.dinfo:hover{background-color:#A8D43E;color:rgb(255,255,255);transition:0.3s}
+.dexhi,.dwork,.dcine,.dmusi,.dinfo,.dname,.dscu,.dpai,.ddra,.dobj{position:relative;display:block;flex-basis:20%;justify-content:center;align-items:center;margin-left:0.4%;transition-duration:10s;transition-property:background}
+#corn,#pop{display:block;height:auto;width:100%}
+.header,.apple,.carrot,.options{background-color:rgba(245,245,245,0);display:flex;flex-direction:row;justify-content:space-between;position:relative;width:100%;top:0;z-index:101;margin:1.2% 1.5%}
+.banana,.lov{position:relative;flex-basis:25%;display:block}
+#name,#work,#musi,#cine,#exhi,#info,#sculptures,#paintings,#drawings,#objects{font-family:'Inter',sans-serif;color:rgb(1,1,1);cursor:url('EARTH2.png'),auto;text-decoration:none}
+#name,#work,#musi,#cine,#exhi,#info{font-size:29px}
+#sculptures,#paintings,#drawings,#objects{font-size:19px;margin-left:0.4%}
+.io{width:10%;height:auto;display:block;background:#FF4500;color:rgb(1,1,1);cursor:url('EARTH2.png'),auto;font-family:'Inter',sans-serif;font-size:29px;float:left;margin-left:30%}
+.footer{margin:1.2% 0 1.2% 1.45%}
+#below{color:#000;font-family:'Inter',sans-serif;font-size:12px;position:relative;bottom:2.9%;width:auto}
+html,body{margin:0;padding:0;overflow:scroll;box-sizing:border-box;display:block}
+body{width:100%;height:100%;max-width:100%;max-height:100%;background-color:rgb(253,255,233);background-repeat:no-repeat;background-attachment:fixed;background-size:100% 100%}
+.sezione{margin:2.2% 0;width:100%;height:75vh;text-align:center}
+#testo{font-family:'Inter',sans-serif;font-size:10px;z-index:101;color:rgb(1,1,1)}
 </style>
 </head>
 <body>
-<div id="grid">
-<img src="globe.png" alt="92"><img src="tee001.jpg" alt="91"><img src="chrome.png" alt="90"><img src="maxi.jpg" alt="89">
-<img src="blue2.jpg" alt="88"><img src="lvm.jpg" alt="87"><img src="lvmm.jpg" alt="86"><img src="yellow.png" alt="85">
-<img src="converse.jpg" alt="84"><img src="g1.png" alt="83"><img src="g3.png" alt="82"><img src="aj1.jpg" alt="81">
-<img src="graphic1.png" alt="84"><img src="graphic2.png" alt="83"><img src="s1.jpg" alt="82"><img src="s11.jpg" alt="81">
-<img src="vm5.png" alt="80"><img src="globe.jpg" alt="79"><img src="cosme.jpg" alt="78"><img src="vm1.png" alt="77">
-<img src="i5.jpg" alt="76"><img src="vm6.png" alt="75"><img src="i8.jpg" alt="74"><img src="vm7.png" alt="73">
-<img src="i4.jpg" alt="76"><img src="vm3.png" alt="75"><img src="vm8.png" alt="74"><img src="i1.jpg" alt="73">
-<img src="i7.jpg" alt="76"><img src="i2.jpg" alt="75"><img src="vm2.png" alt="74"><img src="vm4.png" alt="73">
-<img src="i6.jpg" alt="72"><img src="i3.jpg" alt="71"><img src="xx1.jpg" alt="70"><img src="xx2.jpg" alt="69">
-<img src="xx4.jpg" alt="68"><img src="xx3.jpg" alt="67"><img src="bv10.jpg" alt="66"><img src="bv9.jpg" alt="65">
-<img src="bv8.jpg" alt="64"><img src="bv7.jpg" alt="63"><img src="bv6.jpg" alt="62"><img src="bv5.jpg" alt="61">
-<img src="bv4.jpg" alt="60"><img src="bv3.jpg" alt="59"><img src="bv2.jpg" alt="58"><img src="bv1.jpg" alt="57">
-<img src="hs4.jpg" alt="56"><img src="hs3.jpg" alt="55"><img src="hs2.jpg" alt="54"><img src="hs1.jpg" alt="53">
-<img src="m2.jpg" alt="52"><img src="m1.jpg" alt="51"><img src="qq5.jpg" alt="50"><img src="qq6.jpg" alt="49">
-<img src="qq4.jpg" alt="48"><img src="qq3.jpg" alt="47"><img src="qq2.jpg" alt="46"><img src="qq1.jpg" alt="45">
-<img src="k8.jpg" alt="44"><img src="k7.jpg" alt="43"><img src="k6.jpg" alt="42"><img src="k5.jpg" alt="41">
-<img src="k2.jpg" alt="40"><img src="k1.jpg" alt="39"><img src="k4.jpg" alt="38"><img src="k3.jpg" alt="37">
-<img src="acw5.jpg" alt="36"><img src="acw4.jpg" alt="35"><img src="acw3.jpg" alt="34"><img src="acw2.jpg" alt="33">
-<img src="16w.jpg" alt="32"><img src="15w.jpg" alt="31"><img src="14w.jpg" alt="30"><img src="13w.jpg" alt="29">
-<img src="12w.jpg" alt="28"><img src="11w.jpg" alt="27"><img src="10w.jpg" alt="26"><img src="9ww.jpg" alt="25">
-<img src="8w.jpg" alt="24"><img src="7w.jpg" alt="23"><img src="6w.jpg" alt="22"><img src="5w.jpg" alt="21">
-<img src="4w.jpg" alt="20"><img src="3w.jpg" alt="19"><img src="2w.jpg" alt="18"><img src="1w.jpg" alt="17">
-<img src="wf15.jpg" alt="16"><img src="wf14.jpg" alt="15"><img src="wf13.jpg" alt="14"><img src="wf12.jpg" alt="13">
-<img src="wf11.jpg" alt="12"><img src="wf10.jpg" alt="11"><img src="wf9.jpg" alt="10"><img src="wf8.jpg" alt="9">
-<img src="wf7.jpg" alt="8"><img src="wf6.jpg" alt="7"><img src="wf5.jpg" alt="6"><img src="wf4.jpg" alt="5">
-<img src="wf3.jpg" alt="4"><img src="wf2.jpg" alt="3"><img src="wf1.jpg" alt="2"><img src="ww9.jpg" alt="1">
+<div class="header">
+<a id="name">Name</a>
+<a id="work">Work</a>
+<a id="cine">Cinema</a>
+<a id="musi">Music</a>
+<a id="exhi">Exhibitions</a>
+<a id="info">Info</a>
+</div>
+<div class="apple">
+<img id="corn" src="img1.jpg">
+<img id="corn" src="img2.jpg">
+<img id="corn" src="img3.jpg">
+<img id="corn" src="img4.jpg">
+<img id="corn" src="img5.jpg">
+<img id="corn" src="img6.jpg">
+<img id="corn" src="img7.jpg">
+<img id="corn" src="img8.jpg">
+<img id="corn" src="img9.jpg">
+</div>
+<div class="footer">
+<p id="below">Footer text</p>
 </div>
 <script>
-const grid=document.getElementById('grid');const imgs=[...grid.querySelectorAll('img')];let gridPos={x:0,y:0};document.addEventListener('mousemove',e=>{const w=window.innerWidth,h=window.innerHeight;const dx=(w/2-e.clientX)/w*2;const dy=(h/2-e.clientY)/h*2;grid.style.transform=`translate(${dx*100}px,${dy*100}px) rotateX(${dy*15}deg) rotateY(${-dx*15}deg)`;imgs.forEach(img=>{const rect=img.getBoundingClientRect();const cx=rect.left+rect.width/2;const cy=rect.top+rect.height/2;const dist=Math.hypot(cx-e.clientX,cy-e.clientY)/200;img.style.transform=`scale(${1+0.8*(1-dist)})`})});imgs.forEach(img=>{img.addEventListener('click',()=>{img.classList.add('enlarge')});document.body.addEventListener('click',ev=>{if(!img.contains(ev.target))img.classList.remove('enlarge')})});
+const imgs=document.querySelectorAll('#corn');let zoomed=null;document.addEventListener('mousemove',e=>{const cx=e.clientX,cy=e.clientY;imgs.forEach(img=>{const rect=img.getBoundingClientRect();const dx=rect.left+rect.width/2-cx;const dy=rect.top+rect.height/2-cy;const dist=Math.sqrt(dx*dx+dy*dy);const scale=1+Math.exp(-dist/200)*2;img.style.transform=`scale(${scale})`})});document.addEventListener('click',e=>{const target=e.target;if(target.tagName==='IMG'&&target.id==='corn'){zoomed=target;zoomed.style.transition='transform 0.5s';zoomed.style.transform=`scale(${window.innerHeight/zoomed.height*0.95})`;zoomed.style.zIndex=999}else if(zoomed){zoomed.style.transform='scale(1)';zoomed.style.zIndex='';zoomed=null}});
 </script>
 </body>
 </html>
