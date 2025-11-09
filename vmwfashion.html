@@ -9,26 +9,81 @@ html,body{margin:0;padding:0;width:100%;height:100%;background:#FDFFE9;overflow:
 body{display:flex;justify-content:center;align-items:center}
 #grid{position:relative;display:grid;grid-template-columns:repeat(20,1fr);grid-auto-rows:min-content;gap:5px;transform-style:preserve-3d;transition:transform 0.2s}
 #grid img{width:100%;object-fit:cover;transition:transform 0.2s}
-.enlarge{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:999;cursor:pointer;transition:all 0.3s}
+.enlarge{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:999;transition:all 0.3s}
 </style>
 </head>
 <body>
 <div id="grid">
-<img src="thumb/globe.png" data-highres="globe.png" alt="92">
-<img src="thumb/tee001.jpg" data-highres="tee001.jpg" alt="91">
-<img src="thumb/chrome.png" data-highres="chrome.png" alt="90">
-<img src="thumb/maxi.jpg" data-highres="maxi.jpg" alt="89">
-<img src="thumb/blue2.jpg" data-highres="blue2.jpg" alt="88">
-<img src="thumb/lvm.jpg" data-highres="lvm.jpg" alt="87">
-<img src="thumb/lvmm.jpg" data-highres="lvmm.jpg" alt="86">
-<img src="thumb/yellow.png" data-highres="yellow.png" alt="85">
-<img src="thumb/converse.jpg" data-highres="converse.jpg" alt="84">
-<img src="thumb/g1.png" data-highres="g1.png" alt="83">
-<img src="thumb/g3.png" data-highres="g3.png" alt="82">
-<img src="thumb/aj1.jpg" data-highres="aj1.jpg" alt="81">
+<img src="globe.png" alt="92"><img src="tee001.jpg" alt="91"><img src="chrome.png" alt="90"><img src="maxi.jpg" alt="89">
+<img src="blue2.jpg" alt="88"><img src="lvm.jpg" alt="87"><img src="lvmm.jpg" alt="86"><img src="yellow.png" alt="85">
+<img src="converse.jpg" alt="84"><img src="g1.png" alt="83"><img src="g3.png" alt="82"><img src="aj1.jpg" alt="81">
+<img src="graphic1.png" alt="84"><img src="graphic2.png" alt="83"><img src="s1.jpg" alt="82"><img src="s11.jpg" alt="81">
+<img src="vm5.png" alt="80"><img src="globe.jpg" alt="79"><img src="cosme.jpg" alt="78"><img src="vm1.png" alt="77">
+<img src="i5.jpg" alt="76"><img src="vm6.png" alt="75"><img src="i8.jpg" alt="74"><img src="vm7.png" alt="73">
+<img src="i4.jpg" alt="76"><img src="vm3.png" alt="75"><img src="vm8.png" alt="74"><img src="i1.jpg" alt="73">
+<img src="i7.jpg" alt="76"><img src="i2.jpg" alt="75"><img src="vm2.png" alt="74"><img src="vm4.png" alt="73">
+<img src="i6.jpg" alt="72"><img src="i3.jpg" alt="71"><img src="xx1.jpg" alt="70"><img src="xx2.jpg" alt="69">
+<img src="xx4.jpg" alt="68"><img src="xx3.jpg" alt="67"><img src="bv10.jpg" alt="66"><img src="bv9.jpg" alt="65">
+<img src="bv8.jpg" alt="64"><img src="bv7.jpg" alt="63"><img src="bv6.jpg" alt="62"><img src="bv5.jpg" alt="61">
+<img src="bv4.jpg" alt="60"><img src="bv3.jpg" alt="59"><img src="bv2.jpg" alt="58"><img src="bv1.jpg" alt="57">
+<img src="hs4.jpg" alt="56"><img src="hs3.jpg" alt="55"><img src="hs2.jpg" alt="54"><img src="hs1.jpg" alt="53">
+<img src="m2.jpg" alt="52"><img src="m1.jpg" alt="51"><img src="qq5.jpg" alt="50"><img src="qq6.jpg" alt="49">
+<img src="qq4.jpg" alt="48"><img src="qq3.jpg" alt="47"><img src="qq2.jpg" alt="46"><img src="qq1.jpg" alt="45">
+<img src="k8.jpg" alt="44"><img src="k7.jpg" alt="43"><img src="k6.jpg" alt="42"><img src="k5.jpg" alt="41">
+<img src="k2.jpg" alt="40"><img src="k1.jpg" alt="39"><img src="k4.jpg" alt="38"><img src="k3.jpg" alt="37">
+<img src="acw5.jpg" alt="36"><img src="acw4.jpg" alt="35"><img src="acw3.jpg" alt="34"><img src="acw2.jpg" alt="33">
+<img src="16w.jpg" alt="32"><img src="15w.jpg" alt="31"><img src="14w.jpg" alt="30"><img src="13w.jpg" alt="29">
+<img src="12w.jpg" alt="28"><img src="11w.jpg" alt="27"><img src="10w.jpg" alt="26"><img src="9ww.jpg" alt="25">
+<img src="8w.jpg" alt="24"><img src="7w.jpg" alt="23"><img src="6w.jpg" alt="22"><img src="5w.jpg" alt="21">
+<img src="4w.jpg" alt="20"><img src="3w.jpg" alt="19"><img src="2w.jpg" alt="18"><img src="1w.jpg" alt="17">
+<img src="wf15.jpg" alt="16"><img src="wf14.jpg" alt="15"><img src="wf13.jpg" alt="14"><img src="wf12.jpg" alt="13">
+<img src="wf11.jpg" alt="12"><img src="wf10.jpg" alt="11"><img src="wf9.jpg" alt="10"><img src="wf8.jpg" alt="9">
+<img src="wf7.jpg" alt="8"><img src="wf6.jpg" alt="7"><img src="wf5.jpg" alt="6"><img src="wf4.jpg" alt="5">
+<img src="wf3.jpg" alt="4"><img src="wf2.jpg" alt="3"><img src="wf1.jpg" alt="2"><img src="ww9.jpg" alt="1">
 </div>
 <script>
-const grid=document.getElementById('grid');const imgs=[...grid.querySelectorAll('img')];let zoomed=null;document.addEventListener('mousemove',e=>{const w=window.innerWidth,h=window.innerHeight;const dx=(w/2-e.clientX)/w*2;const dy=(h/2-e.clientY)/h*2;grid.style.transform=`translate(${dx*100}px,${dy*100}px) rotateX(${dy*15}deg) rotateY(${-dx*15}deg)`;imgs.forEach(img=>{const rect=img.getBoundingClientRect();const cx=rect.left+rect.width/2;const cy=rect.top+rect.height/2;const dist=Math.hypot(cx-e.clientX,cy-e.clientY)/200;img.style.transform=`scale(${1+0.8*(1-dist)})`})});imgs.forEach(img=>{img.addEventListener('click',()=>{zoomed=img;const highRes=img.dataset.highres;img.src=highRes;const h=window.innerHeight*0.95;const w=h*(img.naturalWidth/img.naturalHeight);img.style.height=h+'px';img.style.width=w+'px';img.classList.add('enlarge')});document.body.addEventListener('click',ev=>{if(zoomed&&!zoomed.contains(ev.target)){zoomed.style.height='';zoomed.style.width='';zoomed.classList.remove('enlarge');zoomed=null}})});
+const grid=document.getElementById('grid');
+const imgs=[...grid.querySelectorAll('img')];
+document.addEventListener('mousemove',e=>{
+  const w=window.innerWidth,h=window.innerHeight;
+  const dx=(w/2-e.clientX)/w*2;
+  const dy=(h/2-e.clientY)/h*2;
+  grid.style.transform=`translate(${dx*100}px,${dy*100}px) rotateX(${dy*15}deg) rotateY(${-dx*15}deg)`;
+  imgs.forEach(img=>{
+    const rect=img.getBoundingClientRect();
+    const cx=rect.left+rect.width/2;
+    const cy=rect.top+rect.height/2;
+    const dist=Math.hypot(cx-e.clientX,cy-e.clientY)/200;
+    img.style.transform=`scale(${1+0.8*(1-dist)})`;
+  });
+});
+imgs.forEach(img=>{
+  img.addEventListener('click',e=>{
+    e.stopPropagation();
+    const h=window.innerHeight*0.95;
+    const w=h*(img.naturalWidth/img.naturalHeight);
+    img.style.position='fixed';
+    img.style.top='50%';
+    img.style.left='50%';
+    img.style.height=h+'px';
+    img.style.width=w+'px';
+    img.style.transform='translate(-50%,-50%)';
+    img.style.zIndex=999;
+    img.style.transition='all 0.3s';
+  });
+  document.body.addEventListener('click',ev=>{
+    if(!img.contains(ev.target)){
+      img.style.position='';
+      img.style.top='';
+      img.style.left='';
+      img.style.height='';
+      img.style.width='';
+      img.style.transform='';
+      img.style.zIndex='';
+      img.style.transition='';
+    }
+  });
+});
 </script>
 </body>
 </html>
