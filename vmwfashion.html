@@ -1,161 +1,17 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="utf-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>Victor Fashion Grid</title>
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>Victor fasHION www</title>
 <style>
-:root {
-  --cell: 170px;
-  --gap: 10px;
-}
-html,body {
-  margin: 0;
-  height: 100%;
-  overflow: hidden;
-  background: #fefef8;
-}
-#sheet {
-  position: absolute;
-  display: grid;
-  grid-template-columns: repeat(20, var(--cell));
-  grid-auto-rows: var(--cell);
-  gap: var(--gap);
-  transform-origin: center;
-  will-change: transform;
-}
-.cell {
-  width: var(--cell);
-  height: var(--cell);
-  overflow: hidden;
-}
-.cell img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  transition: transform 0.15s linear;
-  will-change: transform;
-  border-radius: 8px;
-}
-.overlay {
-  position: fixed;
-  inset: 0;
-  display: none;
-  align-items: center;
-  justify-content: center;
-  background: rgba(0,0,0,0.7);
-}
-.overlay img {
-  max-width: 95%;
-  max-height: 95%;
-}
-</style>
-</head>
-<body>
-<div id="sheet"></div>
-<div class="overlay" id="ov"><img id="ovi"></div>
+html,body{margin:0;padding:0;overflow:hidden;background:#000;height:100%;}
+.grid{position:absolute;top:0;left:0;display:grid;grid-template-columns:repeat(20,auto);gap:6px;transform-style:preserve-3d;transition:transform .3s ease;}
+.grid img{width:240px;height:240px;object-fit:cover;transition:transform .4s ease,filter .3s ease;cursor:pointer;}
+img.active{position:fixed;top:50%;left:50%;width:80vw;height:80vh;transform:translate(-50%,-50%) scale(1);z-index:1000;}
+</style></head><body>
+<div class="grid" id="grid"></div>
 <script>
-const src = [
-  "globe.png","tee001.jpg","chrome.png","maxi.jpg",
-  "blue2.jpg","lvm.jpg","lvmm.jpg","yellow.png",
-  "converse.jpg","g1.png","g3.png","aj1.jpg"
-];
-
-const COL = 20, ROW = 20;
-const sheet = document.getElementById("sheet");
-let vw = innerWidth, vh = innerHeight;
-
-for (let r = 0; r < ROW; r++) {
-  for (let c = 0; c < COL; c++) {
-    const div = document.createElement("div");
-    div.className = "cell";
-    const scale = 0.9 + Math.random() * 0.2;
-    div.style.width = `calc(var(--cell) * ${scale})`;
-    div.style.height = `calc(var(--cell) * ${scale})`;
-    const img = document.createElement("img");
-    img.src = src[(r * COL + c) % src.length];
-    div.appendChild(img);
-    sheet.appendChild(div);
-    img.onclick = e => {
-      e.stopPropagation();
-      ov.style.display = "flex";
-      ovi.src = img.src;
-    };
-  }
-}
-
-const ov = document.getElementById("ov"), ovi = document.getElementById("ovi");
-ov.onclick = () => ov.style.display = "none";
-
-let cells = [...sheet.querySelectorAll("img")];
-let left = 0, top = 0;
-let pointer = { x: vw/2, y: vh/2 };
-let ripple = { x: pointer.x, y: pointer.y, t: 0 };
-
-function clamp(v, min, max) {
-  return v < min ? min : v > max ? max : v;
-}
-
-function centerSheet() {
-  const totalW = sheet.scrollWidth;
-  const totalH = sheet.scrollHeight;
-  left = vw/2 - totalW/2;
-  top = vh/2 - totalH/2;
-  sheet.style.left = `${left}px`;
-  sheet.style.top = `${top}px`;
-}
-centerSheet();
-
-onmousemove = e => {
-  pointer.x = e.clientX;
-  pointer.y = e.clientY;
-  ripple = { x: pointer.x, y: pointer.y, t: performance.now() };
-};
-
-let maxForward = 260, maxScale = 1.5;
-
-function anim(t) {
-  const age = (t - ripple.t) / 1000;
-  const dec = Math.max(0, 1 - age / 1.5);
-  const rect = sheet.getBoundingClientRect();
-  const sW = rect.width, sH = rect.height;
-  const minL = vw - sW, maxL = 0;
-  const minT = vh - sH, maxT = 0;
-
-  for (const img of cells) {
-    const r = img.getBoundingClientRect();
-    const cx = r.left + r.width / 2;
-    const cy = r.top + r.height / 2;
-    const dx = cx - pointer.x, dy = cy - pointer.y;
-    const dist = Math.hypot(dx, dy);
-    const inf = Math.exp(-dist * dist * 0.0009) * dec;
-    const w = Math.sin((dist / 120 - age * 3.2) * 6.28) * 0.6;
-    const eff = inf * (1 + w * 0.6);
-    const z = eff * maxForward;
-    const tx = dx / (dist + 1) * eff * 40;
-    const ty = dy / (dist + 1) * eff * 40;
-    const sc = 1 + (z / 900) * (maxScale - 1);
-    img.style.transform = `translate3d(${-tx}px, ${-ty}px, ${z}px) scale(${sc})`;
-    img.style.zIndex = Math.round(z + 1000);
-  }
-
-  // Inverted movement (grid moves *toward* cursor)
-  const nx = (pointer.x - vw/2) / vw;
-  const ny = (pointer.y - vh/2) / vh;
-  left = clamp(left - nx * 4, minL, maxL);
-  top = clamp(top - ny * 4, minT, maxT);
-  sheet.style.left = `${left}px`;
-  sheet.style.top = `${top}px`;
-
-  requestAnimationFrame(anim);
-}
-requestAnimationFrame(anim);
-
-onresize = () => {
-  vw = innerWidth;
-  vh = innerHeight;
-  centerSheet();
-};
-</script>
-</body>
-</html>
+const grid=document.getElementById('grid'),imgs=['img1.jpg','img2.jpg','img3.jpg','img4.jpg','img5.jpg','img6.jpg','img7.jpg','img8.jpg','img9.jpg','img10.jpg','img11.jpg','img12.jpg','img13.jpg','img14.jpg','img15.jpg','img16.jpg','img17.jpg','img18.jpg','img19.jpg','img20.jpg'];
+for(let i=0;i<400;i++){const im=document.createElement('img');im.src=imgs[Math.floor(Math.random()*imgs.length)];im.style.width=(200+Math.random()*120)+'px';im.style.height=(200+Math.random()*120)+'px';grid.appendChild(im);}
+let posX=0,posY=0,targetX=0,targetY=0;document.addEventListener('mousemove',e=>{targetX=(window.innerWidth/2-e.clientX)/2;targetY=(window.innerHeight/2-e.clientY)/2;warp(e.clientX,e.clientY);});
+function animate(){posX+=(targetX-posX)*.05;posY+=(targetY-posY)*.05;grid.style.transform=`translate3d(${posX}px,${posY}px,0)`;requestAnimationFrame(animate);}animate();
+function warp(x,y){const rect=grid.getBoundingClientRect(),cx=rect.left+rect.width/2,cy=rect.top+rect.height/2,dx=(x-cx)/window.innerWidth,dy=(y-cy)/window.innerHeight,imgs=document.querySelectorAll('.grid img');imgs.forEach(img=>{const r=img.getBoundingClientRect(),ix=r.left+r.width/2,iy=r.top+r.height/2,dist=Math.hypot(x-ix,y-iy),scale=Math.max(1,3-Math.min(dist/200,2));img.style.transform=`translateZ(${(1-dist/3)}px) scale(${scale})`;img.style.filter=`brightness(${1.5-scale/2})`;});}
+grid.addEventListener('click',e=>{if(e.target.tagName==='IMG'){e.target.classList.toggle('active');}});
+document.addEventListener('click',e=>{if(!e.target.classList.contains('active'))document.querySelectorAll('img.active').forEach(im=>im.classList.remove('active'));});
+</script></body></html>
