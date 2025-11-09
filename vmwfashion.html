@@ -1,248 +1,49 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Victor fasHION www</title>
+<!DOCTYPE html><html lang="en"><head>
+<meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Victor grid warp</title>
 <style>
-:root{--cell:360px;--gap:12px}
-html,body{height:100%;margin:0;background:#fdffee;overflow:hidden;font-family:Inter,system-ui,Segoe UI,Roboto,Arial}
-#viewport{position:fixed;inset:0;cursor:url('EARTH2.png'),auto}
-#sheet{
-  position:absolute;
-  left:50%;top:50%;
-  transform-origin:center center;
-  display:grid;
-  grid-template-columns:repeat(20,var(--cell));
-  grid-auto-rows:var(--cell);
-  gap:var(--gap);
-  pointer-events:none;
-  will-change:transform;
-}
-.cell{position:relative;width:var(--cell);height:var(--cell);overflow:hidden;box-sizing:border-box}
-.cell img{width:100%;height:100%;object-fit:cover;display:block;user-select:none;-webkit-user-drag:none;transition:transform 120ms linear;will-change:transform}
-.overlay{
-  position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,0.75);z-index:40;cursor:zoom-out
-}
-.overlay img{max-width:96%;max-height:96%;box-shadow:0 10px 40px rgba(0,0,0,0.6)}
-</style>
-</head>
-<body>
-<div id="viewport">
-  <div id="sheet"></div>
-</div>
-<div class="overlay" id="overlay"><img id="overlayImg" src=""></div>
-
+:root{--cell:170px;--gap:10px}
+html,body{margin:0;height:100%;overflow:hidden;background:#fefef8}
+#sheet{position:absolute;left:50%;top:50%;display:grid;
+grid-template-columns:repeat(20,var(--cell));grid-auto-rows:var(--cell);
+gap:var(--gap);transform-origin:center;will-change:transform}
+.cell{width:var(--cell);height:var(--cell);overflow:hidden}
+.cell img{width:100%;height:100%;object-fit:cover;transition:transform .1s linear;will-change:transform}
+.overlay{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.7)}
+.overlay img{max-width:95%;max-height:95%}
+</style></head><body>
+<div id="sheet"></div><div class="overlay" id="ov"><img id="ovi"></div>
 <script>
-/* ---------- image list (original files) ---------- */
-const sources = [
-"globe.png","tee001.jpg","chrome.png","maxi.jpg",
-"blue2.jpg","lvm.jpg","lvmm.jpg","yellow.png",
-"converse.jpg","g1.png","g3.png","aj1.jpg",
-"graphic1.png","graphic2.png","s1.jpg","s11.jpg",
-"vm5.png","globe.jpg","cosme.jpg","vm1.png",
-"i5.jpg","vm6.png","i8.jpg","vm7.png",
-"i4.jpg","vm3.png","vm8.png","i1.jpg",
-"i7.jpg","i2.jpg","vm2.png","vm4.png",
-"i6.jpg","i3.jpg","xx1.jpg","xx2.jpg",
-"xx4.jpg","xx3.jpg","bv10.jpg","bv9.jpg",
-"bv8.jpg","bv7.jpg","bv6.jpg","bv5.jpg",
-"bv4.jpg","bv3.jpg","bv2.jpg","bv1.jpg",
-"hs4.jpg","hs3.jpg","hs2.jpg","hs1.jpg",
-"m2.jpg","m1.jpg","qq5.jpg","qq6.jpg",
-"qq4.jpg","qq3.jpg","qq2.jpg","qq1.jpg",
-"k8.jpg","k7.jpg","k6.jpg","k5.jpg",
-"k2.jpg","k1.jpg","k4.jpg","k3.jpg",
-"acw5.jpg","acw4.jpg","acw3.jpg","acw2.jpg",
-"16w.jpg","15w.jpg","14w.jpg","13w.jpg",
-"12w.jpg","11w.jpg","10w.jpg","9ww.jpg",
-"8w.jpg","7w.jpg","6w.jpg","5w.jpg",
-"4w.jpg","3w.jpg","2w.jpg","1w.jpg",
-"wf15.jpg","wf14.jpg","wf13.jpg","wf12.jpg",
-"wf11.jpg","wf10.jpg","wf9.jpg","wf8.jpg",
-"wf7.jpg","wf6.jpg","wf5.jpg","wf4.jpg",
-"wf3.jpg","wf2.jpg","wf1.jpg","ww9.jpg"
-];
-
-/* ---------- build grid (20x20) with slight randomization ---------- */
-const COLS = 20, ROWS = 20;
-const sheet = document.getElementById('sheet');
-const cells = []; // store per-cell info (center coords relative to sheet)
-for(let r=0;r<ROWS;r++){
-  for(let c=0;c<COLS;c++){
-    const cell = document.createElement('div');
-    cell.className = 'cell';
-    // size jitter and small offset to break perfection
-    const jitter = 0.88 + Math.random()*0.24; // .88 - 1.12
-    cell.style.width = `calc(var(--cell) * ${jitter})`;
-    cell.style.height = `calc(var(--cell) * ${jitter})`;
-    cell.style.marginTop = `${(Math.random()-0.5)*18}px`;
-    cell.style.marginLeft = `${(Math.random()-0.5)*18}px`;
-    const img = document.createElement('img');
-    img.src = sources[(r*COLS + c) % sources.length];
-    cell.appendChild(img);
-    sheet.appendChild(cell);
-    cells.push({el:cell,img, r, c, jitter});
-    // click to zoom
-    img.addEventListener('click', (ev)=>{ev.stopPropagation(); openOverlay(img.src);});
-  }
-}
-
-/* ---------- overlay click-to-enlarge ---------- */
-const overlay = document.getElementById('overlay');
-const overlayImg = document.getElementById('overlayImg');
-function openOverlay(src){
-  overlayImg.src = src;
-  overlay.style.display = 'flex';
-}
-overlay.addEventListener('click', ()=>{ overlay.style.display = 'none'; overlayImg.src=''; });
-
-/* ---------- compute per-cell base center positions (relative to sheet top-left) ---------- */
-function computeCellCenters(){
-  const style = getComputedStyle(sheet);
-  const gap = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--gap')) || 12;
-  const cellBase = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--cell')) || 360;
-  const centers = [];
-  // grid auto-placement changes due to jitter in sizes; we'll compute by iterating DOM positions
-  const elems = sheet.children;
-  for(let i=0;i<elems.length;i++){
-    const el = elems[i];
-    const rect = el.getBoundingClientRect();
-    // but we need positions relative to sheet origin (we'll derive sheetLeft/sheetTop later)
-    centers.push({cx: rect.left + rect.width/2, cy: rect.top + rect.height/2, w:rect.width, h:rect.height});
-  }
-  return centers;
-}
-
-/* ---------- initial placement: center sheet on viewport so ~3 across visible --------- */
-const view = document.getElementById('viewport');
-let vw = innerWidth, vh = innerHeight;
-function placeSheetCenter(){
-  // measure total sheet bounding (approx using first row/col widths considering jitter)
-  // easiest: compute bounding via getBoundingClientRect after allowing layout to settle
-  // temporarily position sheet at 0,0 to measure its size reliably
-  sheet.style.left = '0px'; sheet.style.top = '0px';
-  sheet.style.transform = 'translate3d(0px,0px,0px)';
-  // allow browser to compute layout
-  const rect = sheet.getBoundingClientRect();
-  // position so center aligns with viewport center
-  const left = vw/2 - rect.width/2;
-  const top  = vh/2 - rect.height/2;
-  sheet.style.left = `${left}px`; sheet.style.top = `${top}px`;
-  // recompute centers now that positioned
-  cellCenters = computeCellCenters();
-}
-let cellCenters = [];
-// allow images to load a bit then compute
-window.addEventListener('load', ()=>{ setTimeout(()=>{ vw = innerWidth; vh = innerHeight; placeSheetCenter(); }, 80); });
-
-/* ---------- pointer and ripple state ---------- */
-let pointer = {x: vw/2, y: vh/2};
-let lastPointerTime = performance.now();
-let ripple = {x:pointer.x, y:pointer.y, t: -9999};
-document.addEventListener('mousemove', (e)=>{
-  pointer.x = e.clientX; pointer.y = e.clientY;
-  lastPointerTime = performance.now();
-  ripple.x = pointer.x; ripple.y = pointer.y; ripple.t = performance.now();
-});
-document.addEventListener('mouseleave', ()=>{ /* ripple will decay */ });
-
-/* ---------- sheet nudge near edges ---------- */
-const maxNudge = 140; // px how far sheet can move when pointer near edge
-function computeSheetNudge(px,py){
-  // fraction from center [-1..1]
-  const fx = (px - vw/2) / (vw/2);
-  const fy = (py - vh/2) / (vh/2);
-  // smooth clamp
-  return {nx: Math.max(-1,Math.min(1,fx)) * maxNudge, ny: Math.max(-1,Math.min(1,fy)) * maxNudge};
-}
-
-/* ---------- animation parameters ---------- */
-const maxForward = 260;     // max forward bulge px
-const maxScaleExtra = 1.6;  // scale = 1 + influence*(maxScaleExtra-1)
-const influenceRadius = 420; // how far pointer affects
-const waveSpeed = 3.2;      // speed for sinusoidal modulation
-const decayDistance = 0.003; // exponential falloff by distance
-let last = performance.now();
-
-/* ---------- main animation loop ---------- */
-function raf(now){
-  const dt = (now - last) / 1000;
-  last = now;
-  if(!cellCenters.length) { requestAnimationFrame(raf); return; }
-
-  // sheet base placement (centered)
-  const sheetRect = sheet.getBoundingClientRect();
-  const sheetLeft = sheetRect.left;
-  const sheetTop  = sheetRect.top;
-
-  // optionally nudge sheet slightly toward pointer if pointer near edge
-  const nudge = computeSheetNudge(pointer.x, pointer.y);
-  const nudgeL = parseFloat(sheet.style.left || 0) + nudge.nx * 0.02;
-  const nudgeT = parseFloat(sheet.style.top  || 0) + nudge.ny * 0.02;
-  // clamp so sheet doesn't run off completely (simple clamp using its measured size)
-  const sW = sheetRect.width, sH = sheetRect.height;
-  const minLeft = -sW + 120; const maxLeft = vw - 120;
-  const minTop  = -sH + 120; const maxTop  = vh - 120;
-  const finalLeft = Math.max(minLeft, Math.min(maxLeft, nudgeL));
-  const finalTop  = Math.max(minTop,  Math.min(maxTop,  nudgeT));
-  // apply transform to position sheet: we use translate to place sheet (so cellCenters must be recomputed if sheet moves massively)
-  sheet.style.left = `${finalLeft}px`;
-  sheet.style.top  = `${finalTop}px`;
-
-  // compute ripple progress
-  const age = (performance.now() - ripple.t) / 1000; // seconds since last pointer event
-  const rippleDecay = Math.max(0, 1 - age / 1.6); // decays ~1.6s
-
-  // for each cell compute forward bulge and small translation
-  for(let i=0;i<cellCenters.length;i++){
-    const cc = cellCenters[i];
-    // cell center in viewport coords = cc.cx + sheetLeft, cc.cy + sheetTop
-    const cx = cc.cx + (finalLeft - sheetRect.left);
-    const cy = cc.cy + (finalTop - sheetRect.top);
-    const dx = cx - pointer.x;
-    const dy = cy - pointer.y;
-    const dist = Math.hypot(dx,dy);
-    // influence: gaussian-like falloff
-    const influence = Math.exp(- (dist*dist) * 0.0009); // tuned
-    // sinusoidal component (gives soft rippling)
-    const phase = (dist / 120) - (age * waveSpeed);
-    const wave = Math.sin(phase * Math.PI * 2) * 0.6; // amplitude
-    // combined effect
-    const eff = influence * rippleDecay * (1 + wave*0.6);
-    // forward z push
-    const z = eff * maxForward;
-    // small lateral translation to simulate bending
-    const tx = (dx / (dist + 1)) * eff * 48;
-    const ty = (dy / (dist + 1)) * eff * 48;
-    // scale from z (smooth)
-    const scl = 1 + (z / 900) * (maxScaleExtra - 1);
-    // apply (to the <img> inside)
-    const img = cells[i].img;
-    img.style.transform = `translate3d(${ -tx }px, ${ -ty }px, ${ z }px) scale(${ scl })`;
-    img.style.zIndex = Math.round(z + 1000); // so lifted images visually sit above neighbors
-  }
-
-  // if no pointer movement for 5s, allow subtle vertical expansion (optional behavior)
-  const idle = (performance.now() - lastPointerTime) / 1000;
-  if(idle > 5){
-    // subtle global scale up to simulate "settling" (gentle)
-    const extra = Math.min(0.35, (idle - 5) / 5 * 0.35);
-    sheet.style.transform = `scale(${1 + extra})`;
-  } else {
-    sheet.style.transform = `scale(1)`;
-  }
-
-  requestAnimationFrame(raf);
-}
-requestAnimationFrame(raf);
-
-/* recompute cell centers if window resized or layout changes */
-let resizeTO;
-window.addEventListener('resize', ()=>{ vw = innerWidth; vh = innerHeight; clearTimeout(resizeTO); resizeTO=setTimeout(()=>{ placeSheetCenter(); cellCenters = computeCellCenters(); },120); });
-
-setTimeout(()=>{ cellCenters = computeCellCenters(); },160);
-
-</script>
-</body>
-</html>
+const src=["globe.png","tee001.jpg","chrome.png","maxi.jpg","blue2.jpg","lvm.jpg","lvmm.jpg","yellow.png","converse.jpg","g1.png","g3.png","aj1.jpg"];
+const COL=20,ROW=20,sheet=document.getElementById('sheet');let vw=innerWidth,vh=innerHeight;
+for(let r=0;r<ROW;r++)for(let c=0;c<COL;c++){let d=document.createElement('div');d.className='cell';
+let j=.9+Math.random()*.2;d.style.width=`calc(var(--cell)*${j})`;d.style.height=`calc(var(--cell)*${j})`;
+let i=document.createElement('img');i.src=src[(r*COL+c)%src.length];d.appendChild(i);sheet.appendChild(d);
+i.onclick=e=>{e.stopPropagation();ov.style.display='flex';ovi.src=i.src};}
+const ov=document.getElementById('ov'),ovi=document.getElementById('ovi');ov.onclick=()=>ov.style.display='none';
+let cells=[...sheet.querySelectorAll('img')];let left=0,top=0;
+function clamp(v,min,max){return v<min?min:v>max?max:v}
+function centerSheet(){const rect=sheet.getBoundingClientRect();
+sheet.style.left=`${vw/2-rect.width/2}px`;sheet.style.top=`${vh/2-rect.height/2}px`;}
+window.onload=()=>setTimeout(centerSheet,100);
+let pointer={x:vw/2,y:vh/2},lastMove=0,ripple={x:pointer.x,y:pointer.y,t:0};
+onmousemove=e=>{pointer.x=e.clientX;pointer.y=e.clientY;ripple={x:pointer.x,y:pointer.y,t:performance.now()}}
+let maxForward=260,maxScale=1.6;
+function anim(t){
+const age=(t-ripple.t)/1000,dec=Math.max(0,1-age/1.5);
+const rect=sheet.getBoundingClientRect();
+const sW=rect.width,sH=rect.height,minL=vw-sW,maxL=0,minT=vh-sH,maxT=0;
+for(let i=0;i<cells.length;i++){
+const img=cells[i],r=img.getBoundingClientRect(),cx=r.left+r.width/2,cy=r.top+r.height/2;
+const dx=cx-pointer.x,dy=cy-pointer.y,dist=Math.hypot(dx,dy);
+const inf=Math.exp(-dist*dist*0.0009)*dec,w=Math.sin((dist/120-age*3.2)*6.28)*.6;
+const eff=inf*(1+w*.6),z=eff*maxForward,tx=dx/(dist+1)*eff*40,ty=dy/(dist+1)*eff*40;
+const sc=1+(z/900)*(maxScale-1);img.style.transform=`translate3d(${-tx}px,${-ty}px,${z}px) scale(${sc})`;
+img.style.zIndex=Math.round(z+1000);}
+const nx=(pointer.x-vw/2)/vw,ny=(pointer.y-vh/2)/vh;
+left=clamp(left+nx*4,minL,maxL);top=clamp(top+ny*4,minT,maxT);
+sheet.style.left=`${left}px`;sheet.style.top=`${top}px`;
+requestAnimationFrame(anim);}
+requestAnimationFrame(anim);
+onresize=()=>{vw=innerWidth;vh=innerHeight;centerSheet();}
+</script></body></html>
