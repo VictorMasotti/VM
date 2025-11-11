@@ -5,27 +5,46 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Visuuual w ORKvictor</title>
 <style>
-html,body{margin:0;padding:0;width:100%;height:100%;overflow-x:hidden;background-color:rgb(253,255,233);font-family:'Inter',sans-serif}
-.section{width:100vw;display:flex;overflow:hidden;position:relative;perspective:1200px}
+html,body{margin:0;padding:0;width:100%;height:100%;overflow:hidden;background-color:rgb(253,255,233);font-family:'Inter',sans-serif}
+.section{width:100vw;display:flex;align-items:center;justify-content:center;perspective:1500px;overflow:hidden;position:relative}
 #groupB{height:45vh}#groupC{height:35vh}#groupA{height:20vh}
-.carousel{display:flex;align-items:center;height:100%;transition:transform 0.3s ease;cursor:grab;user-select:none;padding:0 2vw}
-.carousel img{flex-shrink:0;height:100%;width:auto;margin:0 5px;transition:transform 0.3s ease,opacity 0.3s ease;border-radius:8px}
-.center img{transform:scale(1.2) rotateY(0deg);z-index:10;opacity:1}
-.carousel img:not(.center){transform:scale(0.8) rotateY(30deg);opacity:0.5;z-index:1}
+.carousel{position:relative;width:100%;height:100%;transform-style:preserve-3d;display:flex;align-items:center;justify-content:center;cursor:grab;user-select:none}
+.carousel img{position:absolute;height:80%;width:auto;transform-style:preserve-3d;border-radius:8px;transition:transform 0.3s ease,opacity 0.3s ease}
 </style>
 </head>
 <body>
 <section class="section" id="groupA">
-<div class="carousel"><img src="ab.jpg"><img src="st.jpg"><img src="jv.jpg"><img src="albuquerque5.jpg"><img src="chelsea.jpg"><img src="shibuya.jpg"><img src="kualalumpur3.jpg"><img src="lahabana1.jpg"><img src="telaviv1.jpg"><img src="sc2.jpg"><img src="sc4.jpg"><img src="sc3.jpg"><img src="santamonica.jpg"><img src="santacruz.jpg"><img src="santafe.jpg"><img src="west21.jpg"><img src="miamibeach.jpg"><img src="sl5.jpg"><img src="wa5.jpg"><img src="pasadena.jpg"><img src="east.jpg"><img src="odeon.jpg"><img src="bakerloo.jpg"><img src="gstaad.jpg"><img src="geneva1.jpg"><img src="alotau1.jpeg"><img src="auckland1.jpg"><img src="siena2.jpg"><img src="basel2.jpg"><img src="iseltwald1.jpg"><img src="portofino1.jpg"><img src="fiumicino1.jpg"><img src="kiel1.jpg"><img src="akureyri1.jpg"><img src="ds1.jpg"><img src="ds2.jpg"><img src="ds4.jpg"><img src="ds3.jpg"><img src="ds5.jpg"><img src="ds6.jpg"></div>
+<div class="carousel">
+<img src="ab.jpg"><img src="st.jpg"><img src="jv.jpg"><img src="albuquerque5.jpg"><img src="chelsea.jpg"><img src="shibuya.jpg"><img src="kualalumpur3.jpg"><img src="lahabana1.jpg"><img src="telaviv1.jpg"><img src="sc2.jpg"><img src="sc4.jpg"><img src="sc3.jpg">
+</div>
 </section>
 <section class="section" id="groupB">
-<div class="carousel"><img src="EEE.png"><img src="BCC.png"><img src="pescheria.png"><img src="BCC.png"><img src="Innerwordly.png"><img src="scattershot.png"><img src="STIQUE01.png"><img src="breakTHROUGH.png"><img src="CORRETTO.png"><img src="Otherwordly.png"><img src="ARCCRA 2025 FEB.png"><img src="CCC.png"></div>
+<div class="carousel">
+<img src="EEE.png"><img src="BCC.png"><img src="pescheria.png"><img src="BCC.png"><img src="Innerwordly.png"><img src="scattershot.png"><img src="STIQUE01.png"><img src="breakTHROUGH.png"><img src="CORRETTO.png"><img src="Otherwordly.png"><img src="ARCCRA 2025 FEB.png"><img src="CCC.png">
+</div>
 </section>
 <section class="section" id="groupC">
-<div class="carousel"><img src="sky.png"><img src="neon.png"><img src=""><img src=""></div>
+<div class="carousel">
+<img src="sky.png"><img src="neon.png"><img src=""><img src="">
+</div>
 </section>
 <script>
-const sections=[...document.querySelectorAll('.section')];sections.sort(()=>Math.random()-0.5);sections.forEach(s=>document.body.appendChild(s));const carousels=document.querySelectorAll('.carousel');carousels.forEach(carousel=>{let isDown=false,startX,scrollLeft;const randomOffset=(Math.random()*0.5-0.25)*window.innerWidth;carousel.scrollLeft=(carousel.scrollWidth-carousel.clientWidth)/2+randomOffset;const updateCenter=()=>{const imgs=carousel.querySelectorAll('img');let centerIndex=0,minDistance=Infinity;const carouselCenter=carousel.scrollLeft+carousel.clientWidth/2;imgs.forEach((img,i)=>{const imgCenter=img.offsetLeft+img.offsetWidth/2;const dist=Math.abs(carouselCenter-imgCenter);if(dist<minDistance){minDistance=dist;centerIndex=i}img.classList.remove('center')});imgs[centerIndex].classList.add('center')};carousel.addEventListener('mousedown',e=>{isDown=true;startX=e.pageX-carousel.offsetLeft;scrollLeft=carousel.scrollLeft});carousel.addEventListener('mouseleave',()=>isDown=false);carousel.addEventListener('mouseup',()=>isDown=false);carousel.addEventListener('mousemove',e=>{if(!isDown)return;e.preventDefault();const x=e.pageX-carousel.offsetLeft;const walk=startX-x;carousel.scrollLeft=scrollLeft+walk;updateCenter()});carousel.addEventListener('touchstart',e=>{isDown=true;startX=e.touches[0].pageX-carousel.offsetLeft;scrollLeft=carousel.scrollLeft});carousel.addEventListener('touchend',()=>isDown=false);carousel.addEventListener('touchmove',e=>{if(!isDown)return;const x=e.touches[0].pageX-carousel.offsetLeft;const walk=startX-x;carousel.scrollLeft=scrollLeft+walk;updateCenter()});carousel.addEventListener('wheel',e=>{e.preventDefault();carousel.scrollLeft+=e.deltaY*2;updateCenter()},{passive:false});updateCenter()});
+function shuffleArray(arr){for(let i=arr.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[arr[i],arr[j]]=[arr[j],arr[i]]}return arr}
+document.querySelectorAll('.carousel').forEach(carousel=>{
+let imgs=[...carousel.querySelectorAll('img')];imgs=shuffleArray(imgs);imgs.forEach(img=>carousel.appendChild(img))
+const N=imgs.length;let angle=0,isDown=false,startX,scrollLeft;
+function update(){imgs.forEach((img,i)=>{const a=i*(360/N)+angle;const r=carousel.clientWidth/2-100;const y=(Math.random()-0.5)*50;const z=(Math.random()-0.5)*200;img.style.transform=`rotateY(${a}deg) translateX(${r}px) translateY(${y}px) translateZ(${z}px)`})}
+imgs.forEach((img,i)=>{const a=i*(360/N);const r=carousel.clientWidth/2-100;const y=(Math.random()-0.5)*50;const z=(Math.random()-0.5)*200;img.style.transform=`rotateY(${a}deg) translateX(${r}px) translateY(${y}px) translateZ(${z}px)`})
+carousel.addEventListener('mousedown',e=>{isDown=true;startX=e.pageX;scrollLeft=angle})
+carousel.addEventListener('mouseup',()=>isDown=false)
+carousel.addEventListener('mouseleave',()=>isDown=false)
+carousel.addEventListener('mousemove',e=>{if(!isDown)return;e.preventDefault();angle=scrollLeft+(startX-e.pageX)/5;update()})
+carousel.addEventListener('touchstart',e=>{isDown=true;startX=e.touches[0].pageX;scrollLeft=angle})
+carousel.addEventListener('touchend',()=>isDown=false)
+carousel.addEventListener('touchmove',e=>{if(!isDown)return;angle=scrollLeft+(startX-e.touches[0].pageX)/5;update()})
+carousel.addEventListener('wheel',e=>{e.preventDefault();angle+=e.deltaY/2;update()},{passive:false})
+update()
+})
 </script>
 </body>
 </html>
