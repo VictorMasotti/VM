@@ -59,9 +59,9 @@ let r=0,velocity=0;
 function adjustForMobile() {
     const width = window.innerWidth;
     if (width <= 1080) {
-        wheelRadiusX = window.innerHeight * 0.8;
-        wheelRadiusY = window.innerHeight * 0.8;
-    } else if (width >= 2560) {
+        wheelRadiusX = window.innerHeight/2*0.7;
+        wheelRadiusY = window.innerHeight/2*0.7;
+    } else {
         wheelRadiusX = window.innerHeight/2*1.05;
         wheelRadiusY = window.innerHeight/2*0.98;
     }
@@ -93,7 +93,7 @@ for(let i=0;i<dragonCount;i++){
 const dragon=document.createElement("img");
 dragon.src=imageSources[Math.floor(Math.random()*imageSources.length)];
 let size=30+Math.random()*120;
-if(window.innerWidth<=1080) size*=0.25; 
+if(window.innerWidth<=1080) size*=0.25;
 if(Math.random()<0.1)size*=2.5;
 dragon.style.width=size+'px';
 dragon.style.height="auto";
