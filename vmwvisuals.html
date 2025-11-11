@@ -9,7 +9,21 @@ html,body{margin:0;padding:0;width:100%;height:100%;overflow:hidden;background-c
 .section{width:100vw;display:flex;align-items:center;justify-content:center;perspective:1500px;overflow:hidden;position:relative}
 #groupB{height:45vh}#groupC{height:35vh}#groupA{height:20vh}
 .carousel{position:relative;width:100%;height:100%;transform-style:preserve-3d;display:flex;align-items:center;justify-content:center;cursor:grab;user-select:none}
-.carousel img{position:absolute;height:80%;width:auto;transform-style:preserve-3d;border-radius:8px;transition:transform 0.3s ease,opacity 0.3s ease}
+.carousel img{position:absolute;max-height:100%;width:auto;transform-style:preserve-3d;border-radius:8px;transition:transform 0.3s ease,opacity 0.3s ease}
+#homeButton{
+position:fixed;
+width:40px;
+height:40px;
+background-color:white;
+border-radius:50%;
+z-index:9999;
+cursor:pointer;
+box-shadow:0 0 10px rgba(0,0,0,0.3);
+transition:transform 0.2s ease;
+}
+#homeButton:hover{
+transform:scale(1.1);
+}
 </style>
 </head>
 <body>
@@ -28,6 +42,9 @@ html,body{margin:0;padding:0;width:100%;height:100%;overflow:hidden;background-c
 <img src="sky.png"><img src="neon.png"><img src=""><img src="">
 </div>
 </section>
+
+<div id="homeButton"></div>
+
 <script>
 function shuffleArray(arr){for(let i=arr.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[arr[i],arr[j]]=[arr[j],arr[i]]}return arr}
 document.querySelectorAll('.carousel').forEach(carousel=>{
@@ -45,7 +62,12 @@ carousel.addEventListener('touchmove',e=>{if(!isDown)return;angle=scrollLeft+(st
 carousel.addEventListener('wheel',e=>{e.preventDefault();angle+=e.deltaY/2;update()},{passive:false})
 update()
 })
+
+// home button random position
+const homeButton=document.getElementById('homeButton');
+homeButton.style.top=Math.random()*(window.innerHeight-50)+'px';
+homeButton.style.left=Math.random()*(window.innerWidth-50)+'px';
+homeButton.addEventListener('click',()=>{window.location.href='https://victormasotti.com/'})
 </script>
 </body>
 </html>
-
