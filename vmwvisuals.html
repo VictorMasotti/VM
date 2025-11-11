@@ -11,7 +11,7 @@
     width: 100%;
     height: 100%;
     overflow-x: hidden;
-    background: #111;
+    background-color: rgb(253,255,233);
     font-family: 'Inter', sans-serif;
   }
 
@@ -35,7 +35,7 @@
     transition: transform 0.3s ease;
     cursor: grab;
     user-select: none;
-    padding: 0 10vw; /* Allow side images to peek */
+    padding: 0 10vw;
   }
 
   .carousel img {
@@ -57,30 +57,75 @@
     opacity: 0.5;
     z-index: 1;
   }
-
 </style>
 </head>
 <body>
 
-<!-- Sections -->
+<!-- Group A - Art (20%) -->
 <section class="section" id="groupA">
   <div class="carousel">
     <img src="ab.jpg" alt="">
     <img src="st.jpg" alt="">
     <img src="jv.jpg" alt="">
     <img src="albuquerque5.jpg" alt="">
+    <img src="chelsea.jpg" alt="">
+    <img src="shibuya.jpg" alt="">
+    <img src="kualalumpur3.jpg" alt="">
+    <img src="lahabana1.jpg" alt="">
+    <img src="telaviv1.jpg" alt="">
+    <img src="sc2.jpg" alt="">
+    <img src="sc4.jpg" alt="">
+    <img src="sc3.jpg" alt="">
+    <img src="santamonica.jpg" alt="">
+    <img src="santacruz.jpg" alt="">
+    <img src="santafe.jpg" alt="">
+    <img src="west21.jpg" alt="">
+    <img src="miamibeach.jpg" alt="">
+    <img src="sl5.jpg" alt="">
+    <img src="wa5.jpg" alt="">
+    <img src="pasadena.jpg" alt="">
+    <img src="east.jpg" alt="">
+    <img src="odeon.jpg" alt="">
+    <img src="bakerloo.jpg" alt="">
+    <img src="gstaad.jpg" alt="">
+    <img src="geneva1.jpg" alt="">
+    <img src="alotau1.jpeg" alt="">
+    <img src="auckland1.jpg" alt="">
+    <img src="siena2.jpg" alt="">
+    <img src="basel2.jpg" alt="">
+    <img src="iseltwald1.jpg" alt="">
+    <img src="portofino1.jpg" alt="">
+    <img src="fiumicino1.jpg" alt="">
+    <img src="kiel1.jpg" alt="">
+    <img src="akureyri1.jpg" alt="">
+    <img src="ds1.jpg" alt="">
+    <img src="ds2.jpg" alt="">
+    <img src="ds4.jpg" alt="">
+    <img src="ds3.jpg" alt="">
+    <img src="ds5.jpg" alt="">
+    <img src="ds6.jpg" alt="">
   </div>
 </section>
 
+<!-- Group B - Visual Work (45%) -->
 <section class="section" id="groupB">
   <div class="carousel">
     <img src="EEE.png" alt="">
     <img src="BCC.png" alt="">
     <img src="pescheria.png" alt="">
     <img src="BCC.png" alt="">
+    <img src="Innerwordly.png" alt="">
+    <img src="scattershot.png" alt="">
+    <img src="STIQUE01.png" alt="">
+    <img src="breakTHROUGH.png" alt="">
+    <img src="CORRETTO.png" alt="">
+    <img src="Otherwordly.png" alt="">
+    <img src="ARCCRA 2025 FEB.png" alt="">
+    <img src="CCC.png" alt="">
   </div>
 </section>
 
+<!-- Group C - LEGO (35%) -->
 <section class="section" id="groupC">
   <div class="carousel">
     <img src="sky.png" alt="">
@@ -91,18 +136,16 @@
 </section>
 
 <script>
-  // --- RANDOMIZE SECTION ORDER ---
   const sections = [...document.querySelectorAll('.section')];
   const parent = document.body;
-  sections.sort(() => Math.random() - 0.5); // shuffle
+  sections.sort(() => Math.random() - 0.5);
   sections.forEach(s => parent.appendChild(s));
 
-  // --- COVER FLOW LOGIC ---
   const carousels = document.querySelectorAll('.carousel');
   carousels.forEach(carousel => {
     let isDown = false, startX, scrollLeft;
 
-    // Set initial random center offset 25% left/right
+    // Random center offset
     const randomOffset = (Math.random() * 0.5 - 0.25) * window.innerWidth;
     carousel.scrollLeft = (carousel.scrollWidth - carousel.clientWidth)/2 + randomOffset;
 
@@ -119,6 +162,7 @@
       imgs[centerIndex].classList.add('center');
     }
 
+    // Mouse drag
     carousel.addEventListener('mousedown', (e)=>{
       isDown = true;
       startX = e.pageX - carousel.offsetLeft;
@@ -128,13 +172,13 @@
     carousel.addEventListener('mouseup',()=>isDown=false);
     carousel.addEventListener('mousemove',(e)=>{
       if(!isDown) return;
-      e.preventDefault();
       const x = e.pageX - carousel.offsetLeft;
       const walk = (startX - x);
       carousel.scrollLeft = scrollLeft + walk;
       updateCenter();
     });
 
+    // Touch drag
     carousel.addEventListener('touchstart', (e)=>{
       isDown = true;
       startX = e.touches[0].pageX - carousel.offsetLeft;
@@ -149,8 +193,16 @@
       updateCenter();
     });
 
+    // Trackpad / wheel horizontal scroll
+    carousel.addEventListener('wheel', (e) => {
+      e.preventDefault();
+      carousel.scrollLeft += e.deltaY || e.deltaX; // vertical or horizontal scroll
+      updateCenter();
+    }, { passive: false });
+
     updateCenter();
   });
 </script>
+
 </body>
 </html>
