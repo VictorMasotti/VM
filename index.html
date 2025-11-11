@@ -91,6 +91,7 @@ const dragon=document.createElement("img");
 dragon.src=imageSources[Math.floor(Math.random()*imageSources.length)];
 let size=30+Math.random()*120;
 if(Math.random()<0.1)size*=2.5;
+dragon.dataset.originalWidth = size; // store original size
 dragon.style.width=size+'px';
 dragon.style.height="auto";
 dragonContainer.appendChild(dragon);
@@ -126,19 +127,17 @@ requestAnimationFrame(animateDragons);
 }
 animateDragons();
 
-// ---- RESPONSIVE SCALING ----
-function isMobile(){return window.innerWidth<=430;}
+// ---- RESPONSIVE DRAGONS SCALE ----
 function scaleDragons(){
-if(isMobile()){
+const w=window.innerWidth;
+const minW=1080, maxW=2560;
+const t=Math.max(0,Math.min(1,(w-minW)/(maxW-minW))); // 0 at 1080, 1 at 2560
 dragons.forEach(img=>{
-let w=parseFloat(img.style.width)||img.naturalWidth;
-img.style.width=(w*0.55)+'px'; // smaller but still visible
+const orig = parseFloat(img.dataset.originalWidth);
+img.style.width = (orig * t + orig * 0.25 * (1-t)) + 'px';
 });
-wheel.style.transform=`rotate(${r}deg) scale(0.85)`; // wheel slightly smaller
-}else{
-dragons.forEach(img=>{img.style.width='';});
-wheel.style.transform=`rotate(${r}deg) scale(1)`; // original wheel size
-}}
+wheel.style.transform = `rotate(${r}deg) scale(${0.85 + t*0.15})`; // wheel slightly smaller on small screens
+}
 scaleDragons();
 window.addEventListener('resize',scaleDragons);
 
