@@ -125,13 +125,26 @@ dragon.style.transform=`translate(${x}px,${y}px) scale(${s.current}) rotate(${ro
 requestAnimationFrame(animateDragons);
 }
 animateDragons();
+function isMobile(){return window.innerWidth<=430;}
+function applyMobileScaling(){
+const dragonImgs=document.querySelectorAll('#dragon-container img');
+if(isMobile()){
+dragonImgs.forEach(img=>{
+let currentWidth=parseFloat(img.style.width)||img.naturalWidth;
+img.style.width=(currentWidth*0.35)+'px';
+});
+wheel.style.transform='scale(0.85) rotate('+r+'deg)';
+}else{
+dragonImgs.forEach(img=>{img.style.width='';});
+wheel.style.transform='scale(1) rotate('+r+'deg)';
+}}
+applyMobileScaling();
+window.addEventListener('resize',applyMobileScaling);
 })();
 (function linesCanvas(){
 const c=document.getElementById("linesCanvas");
 const ctx=c.getContext("2d");
-function resize(){
-c.width=window.innerWidth;
-c.height=window.innerHeight; }
+function resize(){c.width=window.innerWidth;c.height=window.innerHeight;}
 window.addEventListener("resize",resize);
 resize();
 const maxLines=10;
@@ -160,7 +173,8 @@ ctx.lineWidth=l.width;
 ctx.stroke();
 });
 if(lines.length&&now-lines[0].startTime>5000)reset();
-requestAnimationFrame(draw); }
+requestAnimationFrame(draw);
+}
 draw();
 })();
 </script>
