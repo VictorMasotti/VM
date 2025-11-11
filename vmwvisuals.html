@@ -2,197 +2,155 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-W8TM46NGTZ"></script>
-	
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
+<title>Visuuual w ORKvictor</title>
+<style>
+  html, body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    overflow-x: hidden;
+    background: #111;
+    font-family: 'Inter', sans-serif;
+  }
 
-  gtag('config', 'G-W8TM46NGTZ');
-</script>
-	
-<link rel="stylesheet" href="fashion.css">
-<title>**Sculptures+ | Victor Masotti</title> 
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400;500&display=swap" rel="stylesheet">
-<link rel="icon" type="image/x-icon" href="cal.png">
+  .section {
+    width: 100vw;
+    display: flex;
+    overflow: hidden;
+    position: relative;
+    perspective: 1200px;
+  }
+
+  /* Section heights */
+  #groupB { height: 45vh; }
+  #groupC { height: 35vh; }
+  #groupA { height: 20vh; }
+
+  .carousel {
+    display: flex;
+    align-items: center;
+    height: 100%;
+    transition: transform 0.3s ease;
+    cursor: grab;
+    user-select: none;
+    padding: 0 10vw; /* Allow side images to peek */
+  }
+
+  .carousel img {
+    flex-shrink: 0;
+    height: 80%;
+    margin: 0 10px;
+    transition: transform 0.3s ease, opacity 0.3s ease;
+    border-radius: 8px;
+  }
+
+  .center img {
+    transform: scale(1.2) rotateY(0deg);
+    z-index: 10;
+    opacity: 1;
+  }
+
+  .carousel img:not(.center) {
+    transform: scale(0.8) rotateY(30deg);
+    opacity: 0.5;
+    z-index: 1;
+  }
+
+</style>
 </head>
-<style> html { 	cursor: url('EARTH2.png'), auto; } </style>
 <body>
-<header class="header">
-	<div class="dname"><a id="exhi" href="vmwfashion.html">W/FASHION</a></div>
-	<div class="dcine"><a id="cine" href="vmwcinema.html">W/CINEMA</a></div>
-	<div class="dmusi"><a id="musi" href="vmwmusic.html">W/MUSIC</a></div>
-	<div class="dwork"><a id="work" href="vmwvisuals.html">W/VISUALS</a></div>
-	<div class="dinfo"><a id="info" href="vmnotepad.html">NOTEPAD</a></div>
-</header>	
 
-<!-- SEPARATE THIS GROUP AND ANYTHING BELOW AND AFTER GROUP B IS GROUP C  -->
+<!-- Sections -->
+<section class="section" id="groupA">
+  <div class="carousel">
+    <img src="ab.jpg" alt="">
+    <img src="st.jpg" alt="">
+    <img src="jv.jpg" alt="">
+    <img src="albuquerque5.jpg" alt="">
+  </div>
+</section>
 
-<div class="apple">
-	<div class="banana">
-	<img id="corn" src="sky.png" alt="16"> </div>
-	<div class="banana">
-	<img id="corn" src="neon.png" alt="15"> </div>
-	<div class="banana">
-	<img id="corn" src="" alt="14"> </div>
-	<div class="lov">
-	<img id="corn" src="" alt="13"> </div>
-</div>
-	
-<!-- SEPARATE THIS GROUP AND ANYTHING BELOW AND AFTER GROUP A IS GROUP B  -->
-	
-<div class="apple">
-	<div class="banana">
-	<img id="corn" src="EEE.png" alt="16"> </div>
-	<div class="banana">
-	<img id="corn" src="BCC.png" alt="15"> </div>
-	<div class="banana">
-	<img id="corn" src="pescheria.png" alt="14"> </div>
-	<div class="lov">
-	<img id="corn" src="BCC.png" alt="13"> </div>
-</div>
+<section class="section" id="groupB">
+  <div class="carousel">
+    <img src="EEE.png" alt="">
+    <img src="BCC.png" alt="">
+    <img src="pescheria.png" alt="">
+    <img src="BCC.png" alt="">
+  </div>
+</section>
 
-<div class="apple">
-	<div class="banana">
-	<img id="corn" src="Innerwordly.png" alt="16"> </div>
-	<div class="banana">
-	<img id="corn" src="scattershot.png" alt="15"> </div>
-	<div class="banana">
-	<img id="corn" src="STIQUE01.png" alt="14"> </div>
-	<div class="lov">
-	<img id="corn" src="breakTHROUGH.png" alt="13"> </div>
-</div>
-	
-<div class="apple">
-	<div class="banana">
-	<img id="corn" src="CORRETTO.png" alt="16"> </div>
-	<div class="banana">
-	<img id="corn" src="Otherwordly.png" alt="15"> </div>
-	<div class="banana">
-	<img id="corn" src="ARCCRA 2025 FEB.png" alt="14"> </div>
-	<div class="lov">
-	<img id="corn" src="CCC.png" alt="13"> </div>
-</div>
-<br>	
+<section class="section" id="groupC">
+  <div class="carousel">
+    <img src="sky.png" alt="">
+    <img src="neon.png" alt="">
+    <img src="" alt="">
+    <img src="" alt="">
+  </div>
+</section>
 
-<!-- SEPARATE THIS GROUP AND ANYTHING BELOW IS GROUP A  -->
-	
-<div class="apple">
-	<div class="banana">
-	<img id="corn" src="ab.jpg" alt="12"> </div>
-	<div class="banana">
-	<img id="corn" src="st.jpg" alt="11"> </div>
-	<div class="banana">
-	<img id="corn" src="jv.jpg" alt="10"> </div>
-	<div class="lov">
-	<img id="corn" src="albuquerque5.jpg" alt="9"> </div>
-</div>
-<div class="apple">
-	<div class="banana">
-	<img id="corn" src="chelsea.jpg" alt="8"> </div>
-	<div class="banana">
-	<img id="corn" src="shibuya.jpg" alt="7"> </div>
-	<div class="banana">
-	<img id="corn" src="kualalumpur3.jpg" alt="6"> </div>
-	<div class="lov">
-	<img id="corn" src="lahabana1.jpg" alt="5"> </div>
-</div>
-<div class="apple">
-	<div class="banana">
-	<img id="corn" src="telaviv1.jpg" alt="4"> </div>
-	<div class="banana">
-	<img id="corn" src="sc2.jpg" alt="3"> </div>
-	<div class="banana">
-	<img id="corn" src="sc4.jpg" alt="2"> </div>
-	<div class="lov">
-	<img id="corn" src="sc3.jpg" alt="1"> </div>
-</div> <br>
-<div class="carrot">
-	<div class="banana">
-	<img id="pop" src="santamonica.jpg" alt="28"> </div>
-	<div class="banana">
-	<img id="corn" src="santacruz.jpg" alt="27"> </div>
-	<div class="banana">
-	<img id="corn" src="santafe.jpg" alt="26"> </div>
-	<div class="lov">
-	<img id="corn" src="west21.jpg" alt="25"> </div>
-</div>
-	
-<div class="apple">
-	<div class="banana">
-	<img id="corn" src="miamibeach.jpg" alt="24"> </div>
-	<div class="banana">
-	<img id="corn" src="sl5.jpg" alt="23"> </div>
-	<div class="banana">
-	<img id="corn" src="wa5.jpg" alt="22"> </div>
-	<div class="lov">
-	<img id="corn" src="pasadena.jpg" alt="21"> </div>
-</div>
-	
-<div class="apple">
-	<div class="banana">
-	<img id="corn" src="east.jpg" alt="20"> </div>
-	<div class="banana">
-	<img id="corn" src="odeon.jpg" alt="19"> </div>
-	<div class="banana">
-	<img id="corn" src="bakerloo.jpg" alt="18"> </div>
-	<div class="lov">
-	<img id="corn" src="gstaad.jpg" alt="17"> </div>
-</div>
-	
-<div class="apple">
-	<div class="banana">
-	<img id="corn" src="geneva1.jpg" alt="16"> </div>
-	<div class="banana">
-	<img id="corn" src="alotau1.jpeg" alt="15"> </div>
-	<div class="banana">
-	<img id="corn" src="auckland1.jpg" alt="14"> </div>
-	<div class="lov">
-	<img id="corn" src="siena2.jpg" alt="13"> </div>
-</div>
-	
-<div class="apple">
-	<div class="banana">
-	<img id="corn" src="basel2.jpg" alt="12"> </div>
-	<div class="banana">
-	<img id="corn" src="iseltwald1.jpg" alt="11"> </div>
-	<div class="banana">
-	<img id="corn" src="portofino1.jpg" alt="10"> </div>
-	<div class="lov">
-	<img id="corn" src="fiumicino1.jpg" alt="9"> </div>
-</div>
-	
-<div class="apple">
-	<div class="banana">
-	<img id="corn" src="kiel1.jpg" alt="8"> </div>
-	<div class="banana">
-	<img id="corn" src="akureyri1.jpg" alt="7"> </div>
-	<div class="banana">
-	<img id="corn" src="ds1.jpg" alt="6"> </div>
-	<div class="lov">
-	<img id="corn" src="ds2.jpg" alt="5"> </div>
-</div>
-	
-<div class="apple">
-	<div class="banana">
-	<img id="corn" src="ds4.jpg" alt="4"> </div>
-	<div class="banana">
-	<img id="corn" src="ds3.jpg" alt="3"> </div>
-	<div class="banana">
-	<img id="corn" src="ds5.jpg" alt="2"> </div>
-	<div class="lov">
-	<img id="corn" src="ds6.jpg" alt="1"> </div>
-</div>
-	
-<footer class="footer">
-<p id="below"> ALL RIGHTS RESERVED | © 2024 VICTOR MASOTTI </p>
-</footer>
-</div> </body> </html>
+<script>
+  // --- RANDOMIZE SECTION ORDER ---
+  const sections = [...document.querySelectorAll('.section')];
+  const parent = document.body;
+  sections.sort(() => Math.random() - 0.5); // shuffle
+  sections.forEach(s => parent.appendChild(s));
 
+  // --- COVER FLOW LOGIC ---
+  const carousels = document.querySelectorAll('.carousel');
+  carousels.forEach(carousel => {
+    let isDown = false, startX, scrollLeft;
 
+    // Set initial random center offset 25% left/right
+    const randomOffset = (Math.random() * 0.5 - 0.25) * window.innerWidth;
+    carousel.scrollLeft = (carousel.scrollWidth - carousel.clientWidth)/2 + randomOffset;
+
+    const updateCenter = () => {
+      const imgs = carousel.querySelectorAll('img');
+      let centerIndex = 0, minDistance = Infinity;
+      const carouselCenter = carousel.scrollLeft + carousel.clientWidth / 2;
+      imgs.forEach((img,i)=>{
+        const imgCenter = img.offsetLeft + img.offsetWidth/2;
+        const dist = Math.abs(carouselCenter - imgCenter);
+        if(dist < minDistance) { minDistance = dist; centerIndex = i; }
+        img.classList.remove('center');
+      });
+      imgs[centerIndex].classList.add('center');
+    }
+
+    carousel.addEventListener('mousedown', (e)=>{
+      isDown = true;
+      startX = e.pageX - carousel.offsetLeft;
+      scrollLeft = carousel.scrollLeft;
+    });
+    carousel.addEventListener('mouseleave',()=>isDown=false);
+    carousel.addEventListener('mouseup',()=>isDown=false);
+    carousel.addEventListener('mousemove',(e)=>{
+      if(!isDown) return;
+      e.preventDefault();
+      const x = e.pageX - carousel.offsetLeft;
+      const walk = (startX - x);
+      carousel.scrollLeft = scrollLeft + walk;
+      updateCenter();
+    });
+
+    carousel.addEventListener('touchstart', (e)=>{
+      isDown = true;
+      startX = e.touches[0].pageX - carousel.offsetLeft;
+      scrollLeft = carousel.scrollLeft;
+    });
+    carousel.addEventListener('touchend',()=>isDown=false);
+    carousel.addEventListener('touchmove',(e)=>{
+      if(!isDown) return;
+      const x = e.touches[0].pageX - carousel.offsetLeft;
+      const walk = (startX - x);
+      carousel.scrollLeft = scrollLeft + walk;
+      updateCenter();
+    });
+
+    updateCenter();
+  });
+</script>
+</body>
+</html>
