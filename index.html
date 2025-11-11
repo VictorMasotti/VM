@@ -73,11 +73,15 @@ function animateWheel(){
 r+=velocity*0.6;
 velocity*=0.95;
 if(Math.abs(velocity)<0.01)velocity=0;
-wheel.style.transform=`rotate(${r}deg) scale(${wheelScale})`;
+wheel.style.transform=`rotate(${r}deg)`;
 positionLabels(r);
 requestAnimationFrame(animateWheel); }
 animateWheel();
-let dragons=[],orbits=[],scales=[];
+
+// ---- DRAGONS ----
+const dragons=[]; 
+const orbits=[]; 
+const scales=[];
 (function createDragons(){
 const dragonCount=Math.floor(Math.random()*30)+20;
 const dragonContainer=document.getElementById('dragon-container');
@@ -114,31 +118,31 @@ s.current+=s.delta*s.direction;
 if(s.current>2.5||s.current<0.5)s.direction*=-1;
 let x=o.centerX+o.radiusX*Math.cos(o.angle+o.rotateOffset);
 let y=o.centerY+o.radiusY*Math.sin(o.angle+o.rotateOffset);
-if(o.irregular){
-x+=Math.sin(o.angle*3+i)*30;
-y+=Math.cos(o.angle*2+i)*20;
-}
+if(o.irregular){ x+=Math.sin(o.angle*3+i)*30; y+=Math.cos(o.angle*2+i)*20; }
 const rot=o.crazy?o.angle*3+i*0.5:0;
 dragon.style.transform=`translate(${x}px,${y}px) scale(${s.current}) rotate(${rot}rad)`;
 });
 requestAnimationFrame(animateDragons);
 }
 animateDragons();
-let wheelScale=1;
+
+// ---- RESPONSIVE SCALING ----
 function isMobile(){return window.innerWidth<=430;}
-function applyResponsiveScaling(){
+function scaleDragons(){
 if(isMobile()){
-wheelScale=0.85;
 dragons.forEach(img=>{
 let w=parseFloat(img.style.width)||img.naturalWidth;
-img.style.width=(w*0.5)+'px';
+img.style.width=(w*0.55)+'px'; // smaller but still visible
 });
+wheel.style.transform=`rotate(${r}deg) scale(0.85)`; // wheel slightly smaller
 }else{
-wheelScale=1;
 dragons.forEach(img=>{img.style.width='';});
+wheel.style.transform=`rotate(${r}deg) scale(1)`; // original wheel size
 }}
-applyResponsiveScaling();
-window.addEventListener('resize',applyResponsiveScaling);
+scaleDragons();
+window.addEventListener('resize',scaleDragons);
+
+// ---- LINES CANVAS ----
 (function linesCanvas(){
 const c=document.getElementById("linesCanvas");
 const ctx=c.getContext("2d");
