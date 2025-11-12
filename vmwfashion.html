@@ -3,13 +3,13 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Victor fasHION www</title>
+<title>Visuuual w ORKvictor</title>
 <style>
-html,body{margin:0;padding:0;width:100%;height:100%;background:#FDFFE9;overflow:hidden;cursor:url('EARTH2.png'),auto;font-family:'Inter',sans-serif;}
-body{display:flex;justify-content:center;align-items:center;perspective:1500px;}
-#grid{position:relative;display:grid;grid-template-columns:repeat(20,1fr);grid-auto-rows:min-content;gap:5px;transform-style:preserve-3d;transition:transform 0.2s}
-#grid img{width:100%;object-fit:cover;transition:transform 0.2s;transform-style:preserve-3d;}
-.enlarge{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:999;transition:all 0.3s;}
+html,body{margin:0;padding:0;width:100%;height:100%;overflow:hidden;background-color:rgb(253,255,233);font-family:'Inter',sans-serif}
+.section{width:100vw;display:flex;align-items:center;justify-content:center;perspective:1500px;overflow:hidden;position:relative}
+#groupB{height:45vh}#groupC{height:35vh}#groupA{height:20vh}
+.carousel{position:relative;width:100%;height:100%;transform-style:preserve-3d;display:flex;align-items:center;justify-content:center;cursor:grab;user-select:none}
+.carousel img{position:absolute;max-height:100%;width:auto;transform-style:preserve-3d;border-radius:8px;transition:transform 0.3s ease,opacity 0.3s ease}
 
 #homeButton{
 position:fixed;
@@ -28,88 +28,79 @@ transition: transform 0.2s ease, box-shadow 0.2s ease;
 transform:scale(1.2);
 box-shadow: 0 12px 30px rgba(0,0,0,0.35), inset 0 -4px 12px rgba(255,255,255,0.75);
 }
+.enlarge{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:999;transition:all 0.3s;}
 </style>
 </head>
 <body>
-<div id="grid">
-<img src="globe.png" alt="92"><img src="tee001.jpg" alt="91"><img src="chrome.png" alt="90"><img src="maxi.jpg" alt="89">
-<img src="blue2.jpg" alt="88"><img src="lvm.jpg" alt="87"><img src="lvmm.jpg" alt="86"><img src="yellow.png" alt="85">
-<img src="converse.jpg" alt="84"><img src="g1.png" alt="83"><img src="g3.png" alt="82"><img src="aj1.jpg" alt="81">
-<img src="graphic1.png" alt="84"><img src="graphic2.png" alt="83"><img src="s1.jpg" alt="82"><img src="s11.jpg" alt="81">
-<img src="vm5.png" alt="80"><img src="globe.jpg" alt="79"><img src="cosme.jpg" alt="78"><img src="vm1.png" alt="77">
-<img src="i5.jpg" alt="76"><img src="vm6.png" alt="75"><img src="i8.jpg" alt="74"><img src="vm7.png" alt="73">
-<img src="i4.jpg" alt="76"><img src="vm3.png" alt="75"><img src="vm8.png" alt="74"><img src="i1.jpg" alt="73">
-<img src="i7.jpg" alt="76"><img src="i2.jpg" alt="75"><img src="vm2.png" alt="74"><img src="vm4.png" alt="73">
-<img src="i6.jpg" alt="72"><img src="i3.jpg" alt="71"><img src="xx1.jpg" alt="70"><img src="xx2.jpg" alt="69">
-<img src="xx4.jpg" alt="68"><img src="xx3.jpg" alt="67"><img src="bv10.jpg" alt="66"><img src="bv9.jpg" alt="65">
-<img src="bv8.jpg" alt="64"><img src="bv7.jpg" alt="63"><img src="bv6.jpg" alt="62"><img src="bv5.jpg" alt="61">
-<img src="bv4.jpg" alt="60"><img src="bv3.jpg" alt="59"><img src="bv2.jpg" alt="58"><img src="bv1.jpg" alt="57">
-<img src="hs4.jpg" alt="56"><img src="hs3.jpg" alt="55"><img src="hs2.jpg" alt="54"><img src="hs1.jpg" alt="53">
-<img src="m2.jpg" alt="52"><img src="m1.jpg" alt="51"><img src="qq5.jpg" alt="50"><img src="qq6.jpg" alt="49">
-<img src="qq4.jpg" alt="48"><img src="qq3.jpg" alt="47"><img src="qq2.jpg" alt="46"><img src="qq1.jpg" alt="45">
-<img src="k8.jpg" alt="44"><img src="k7.jpg" alt="43"><img src="k6.jpg" alt="42"><img src="k5.jpg" alt="41">
-<img src="k2.jpg" alt="40"><img src="k1.jpg" alt="39"><img src="k4.jpg" alt="38"><img src="k3.jpg" alt="37">
-<img src="acw5.jpg" alt="36"><img src="acw4.jpg" alt="35"><img src="acw3.jpg" alt="34"><img src="acw2.jpg" alt="33">
-<img src="16w.jpg" alt="32"><img src="15w.jpg" alt="31"><img src="14w.jpg" alt="30"><img src="13w.jpg" alt="29">
-<img src="12w.jpg" alt="28"><img src="11w.jpg" alt="27"><img src="10w.jpg" alt="26"><img src="9ww.jpg" alt="25">
-<img src="8w.jpg" alt="24"><img src="7w.jpg" alt="23"><img src="6w.jpg" alt="22"><img src="5w.jpg" alt="21">
-<img src="4w.jpg" alt="20"><img src="3w.jpg" alt="19"><img src="2w.jpg" alt="18"><img src="1w.jpg" alt="17">
-<img src="wf15.jpg" alt="16"><img src="wf14.jpg" alt="15"><img src="wf13.jpg" alt="14"><img src="wf12.jpg" alt="13">
-<img src="wf11.jpg" alt="12"><img src="wf10.jpg" alt="11"><img src="wf9.jpg" alt="10"><img src="wf8.jpg" alt="9">
-<img src="wf7.jpg" alt="8"><img src="wf6.jpg" alt="7"><img src="wf5.jpg" alt="6"><img src="wf4.jpg" alt="5">
-<img src="wf3.jpg" alt="4"><img src="wf2.jpg" alt="3"><img src="wf1.jpg" alt="2"><img src="ww9.jpg" alt="1">
+<section class="section" id="groupA">
+<div class="carousel">
+<img src="ab.jpg"><img src="st.jpg"><img src="jv.jpg"><img src="albuquerque5.jpg"><img src="chelsea.jpg"><img src="shibuya.jpg"><img src="kualalumpur3.jpg"><img src="lahabana1.jpg"><img src="telaviv1.jpg"><img src="sc2.jpg"><img src="sc4.jpg"><img src="sc3.jpg">
 </div>
-
+</section>
+<section class="section" id="groupB">
+<div class="carousel">
+<img src="EEE.png"><img src="BCC.png"><img src="pescheria.png"><img src="BCC.png"><img src="Innerwordly.png"><img src="scattershot.png"><img src="STIQUE01.png"><img src="breakTHROUGH.png"><img src="CORRETTO.png"><img src="Otherwordly.png"><img src="ARCCRA 2025 FEB.png"><img src="CCC.png">
+</div>
+</section>
+<section class="section" id="groupC">
+<div class="carousel">
+<img src="juma.png"><img src="sky.png"><img src="neon.png"><img src="bird.png"><img src="ssd.png"><img src="mobile.png"><img src="screeeen.png"><img src="fishing.png"><img src="haunted.png">
+</div>
+</section>
 <div id="homeButton"></div>
-
 <script>
-const grid=document.getElementById('grid');
-const imgs=[...grid.querySelectorAll('img')];
-document.addEventListener('mousemove',e=>{
-  const w=window.innerWidth,h=window.innerHeight;
-  const dx=(w/2-e.clientX)/w*2;
-  const dy=(h/2-e.clientY)/h*2;
-  grid.style.transform=`translate(${dx*100}px,${dy*100}px) rotateX(${dy*15}deg) rotateY(${-dx*15}deg)`;
-  imgs.forEach(img=>{
-    const rect=img.getBoundingClientRect();
-    const cx=rect.left+rect.width/2;
-    const cy=rect.top+rect.height/2;
-    const dist=Math.hypot(cx-e.clientX,cy-e.clientY)/200;
-    img.style.transform=`scale(${1+0.8*(1-dist)})`;
-  });
-});
+function shuffleArray(arr){for(let i=arr.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[arr[i],arr[j]]=[arr[j],arr[i]]}return arr}
+
+document.querySelectorAll('.carousel').forEach(carousel=>{
+let imgs=[...carousel.querySelectorAll('img')];imgs=shuffleArray(imgs);imgs.forEach(img=>carousel.appendChild(img))
+const N=imgs.length;let angle=0,isDown=false,startX,scrollLeft;
+
+function update(){imgs.forEach((img,i)=>{const a=i*(360/N)+angle;const r=carousel.clientWidth/2-100;const y=(Math.random()-0.5)*50;const z=(Math.random()-0.5)*200;img.style.transform=`rotateY(${a}deg) translateX(${r}px) translateY(${y}px) translateZ(${z}px)`})}
+imgs.forEach((img,i)=>{const a=i*(360/N);const r=carousel.clientWidth/2-100;const y=(Math.random()-0.5)*50;const z=(Math.random()-0.5)*200;img.style.transform=`rotateY(${a}deg) translateX(${r}px) translateY(${y}px) translateZ(${z}px)`})
+
+// Mouse events
+carousel.addEventListener('mousedown',e=>{isDown=true;startX=e.pageX;scrollLeft=angle})
+carousel.addEventListener('mouseup',()=>isDown=false)
+carousel.addEventListener('mouseleave',()=>isDown=false)
+carousel.addEventListener('mousemove',e=>{if(!isDown)return;e.preventDefault();angle=scrollLeft+(startX-e.pageX)/5;update()})
+
+// Touch swipe
+let lastTouchX=null;
+carousel.addEventListener('touchstart',e=>{isDown=true;startX=e.touches[0].pageX;scrollLeft=angle;lastTouchX=startX})
+carousel.addEventListener('touchmove',e=>{
+  if(!isDown) return;
+  const touchX=e.touches[0].pageX;
+  const deltaX=touchX-lastTouchX;
+  angle += deltaX/3;
+  lastTouchX=touchX;
+  update();
+})
+carousel.addEventListener('touchend',()=>{isDown=false;lastTouchX=null})
+
+// Wheel scroll
+carousel.addEventListener('wheel',e=>{e.preventDefault();angle+=e.deltaY/2;update()},{passive:false})
+
+// Tap to enlarge image
 imgs.forEach(img=>{
   img.addEventListener('click',e=>{
     e.stopPropagation();
     const h=window.innerHeight*0.95;
     const w=h*(img.naturalWidth/img.naturalHeight);
-    img.style.position='fixed';
-    img.style.top='50%';
-    img.style.left='50%';
-    img.style.height=h+'px';
+    img.classList.add('enlarge');
     img.style.width=w+'px';
-    img.style.transform='translate(-50%,-50%)';
-    img.style.zIndex=999;
-    img.style.transition='all 0.3s';
-  });
-  document.body.addEventListener('click',ev=>{
-    if(!img.contains(ev.target)){
-      img.style.position='';
-      img.style.top='';
-      img.style.left='';
-      img.style.height='';
-      img.style.width='';
-      img.style.transform='';
-      img.style.zIndex='';
-      img.style.transition='';
-    }
+    img.style.height=h+'px';
   });
 });
+
+document.body.addEventListener('click',()=>{imgs.forEach(img=>{img.classList.remove('enlarge');img.style.width='';img.style.height='';});});
+
+update();
+})
 
 const homeButton=document.getElementById('homeButton');
 homeButton.style.top=Math.random()*(window.innerHeight-70)+'px';
 homeButton.style.left=Math.random()*(window.innerWidth-70)+'px';
-homeButton.addEventListener('click',()=>{window.location.href='https://victormasotti.com/'});
+homeButton.addEventListener('click',()=>{window.location.href='https://victormasotti.com/'})
 </script>
 </body>
 </html>
