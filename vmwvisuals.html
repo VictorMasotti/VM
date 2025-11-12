@@ -48,28 +48,45 @@ box-shadow: 0 12px 30px rgba(0,0,0,0.35), inset 0 -4px 12px rgba(255,255,255,0.7
 </section>
 <div id="homeButton"></div>
 <script>
-function shuffleArray(arr){for(let i=arr.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[arr[i],arr[j]]=[arr[j],arr[i]]}return arr}
 document.querySelectorAll('.carousel').forEach(carousel=>{
 let imgs=[...carousel.querySelectorAll('img')];imgs=shuffleArray(imgs);imgs.forEach(img=>carousel.appendChild(img))
 const N=imgs.length;let angle=0,isDown=false,startX,scrollLeft;
 function update(){imgs.forEach((img,i)=>{const a=i*(360/N)+angle;const r=carousel.clientWidth/2-100;const y=(Math.random()-0.5)*50;const z=(Math.random()-0.5)*200;img.style.transform=`rotateY(${a}deg) translateX(${r}px) translateY(${y}px) translateZ(${z}px)`})}
 imgs.forEach((img,i)=>{const a=i*(360/N);const r=carousel.clientWidth/2-100;const y=(Math.random()-0.5)*50;const z=(Math.random()-0.5)*200;img.style.transform=`rotateY(${a}deg) translateX(${r}px) translateY(${y}px) translateZ(${z}px)`})
+
+// Mouse events
 carousel.addEventListener('mousedown',e=>{isDown=true;startX=e.pageX;scrollLeft=angle})
 carousel.addEventListener('mouseup',()=>isDown=false)
 carousel.addEventListener('mouseleave',()=>isDown=false)
 carousel.addEventListener('mousemove',e=>{if(!isDown)return;e.preventDefault();angle=scrollLeft+(startX-e.pageX)/5;update()})
-carousel.addEventListener('touchstart',e=>{isDown=true;startX=e.touches[0].pageX;scrollLeft=angle})
-carousel.addEventListener('touchend',()=>isDown=false)
-carousel.addEventListener('touchmove',e=>{if(!isDown)return;angle=scrollLeft+(startX-e.touches[0].pageX)/5;update()})
+
+// Touch events
+let lastTouchX=null;
+carousel.addEventListener('touchstart',e=>{
+  isDown=true;
+  startX=e.touches[0].pageX;
+  scrollLeft=angle;
+  lastTouchX=startX;
+});
+carousel.addEventListener('touchmove',e=>{
+  if(!isDown) return;
+  const touchX=e.touches[0].pageX;
+  const deltaX=touchX-lastTouchX; // positive = swipe right, negative = swipe left
+  angle += deltaX/3; // smoother rotation
+  lastTouchX=touchX;
+  update();
+});
+carousel.addEventListener('touchend',()=>{isDown=false;lastTouchX=null;})
+
+// Wheel scroll
 carousel.addEventListener('wheel',e=>{e.preventDefault();angle+=e.deltaY/2;update()},{passive:false})
+
 update()
 })
-const homeButton=document.getElementById('homeButton');
-homeButton.style.top=Math.random()*(window.innerHeight-70)+'px';
-homeButton.style.left=Math.random()*(window.innerWidth-70)+'px';
-homeButton.addEventListener('click',()=>{window.location.href='https://victormasotti.com/'})
 </script>
+
 </body>
 </html>
+
 
 
