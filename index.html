@@ -11,7 +11,7 @@
 <link rel="icon" type="image/x-icon" href="wone.png">
 <style>
 html,body{margin:0;height:100%;overflow:hidden;font-family:'Inter',sans-serif;background:rgb(253,255,233);}
-#wheel{position:fixed;top:0;left:-45vw;width:110vw;height:100vh;border-radius:50%;display:flex;justify-content:center;align-items:center;background:rgba(255,255,255,0);transform:rotate(0deg);}
+#wheel{position:fixed;top:50%;left:50%;width:110vw;height:100vh;border-radius:50%;display:flex;justify-content:center;align-items:center;background:rgba(255,255,255,0);transform:translate(-50%,-50%) rotate(0deg);}
 .label{position:absolute;transform-origin:0 50%;font-size:4.2vh;font-weight:500;text-align:center;}
 .label a{color:black;text-decoration:none;display:inline-block;}
 canvas{position:fixed;top:0;left:0;z-index:10;pointer-events:none;}
@@ -78,9 +78,11 @@ function animateWheel(){
 r+=velocity*0.6;
 velocity*=0.95;
 if(Math.abs(velocity)<0.01)velocity=0;
-wheel.style.transform=`rotate(${r}deg)`;
+// keep centered perfectly
+wheel.style.transform=`translate(-50%,-50%) rotate(${r}deg)`;
 positionLabels(r);
-requestAnimationFrame(animateWheel); }
+requestAnimationFrame(animateWheel);
+}
 animateWheel();
 (function createDragons(){
 const dragonCount=Math.floor(Math.random()*30)+20;
