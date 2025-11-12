@@ -10,13 +10,68 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400;500&display=swap" rel="stylesheet">
 <link rel="icon" type="image/x-icon" href="wone.png">
 <style>
-html,body{margin:0;height:100%;overflow:hidden;font-family:'Inter',sans-serif;background:rgb(253,255,233);}
-#wheel{position:fixed;top:50%;left:50%;width:110vw;height:100vh;border-radius:50%;display:flex;justify-content:center;align-items:center;background:rgba(255,255,255,0);transform:translate(-50%,-50%) rotate(0deg);}
-.label{position:absolute;transform-origin:0 50%;font-size:4.2vh;font-weight:500;text-align:center;}
-.label a{color:black;text-decoration:none;display:inline-block;}
-canvas{position:fixed;top:0;left:0;z-index:10;pointer-events:none;}
-#dragon-container img{position:fixed;pointer-events:none;z-index:90;transition:transform 0.1s linear;}
-#below{position:fixed;right:16px;bottom:12px;font-size:12px;color:rgba(0,0,0,0.6);z-index:200;margin:0;}
+html,body{
+  margin:0;
+  height:100%;
+  overflow:hidden;
+  font-family:'Inter',sans-serif;
+  background:rgb(253,255,233);
+}
+
+/* keep original position + ellipse */
+#wheel{
+  position:fixed;
+  top:50%;
+  left:50%;
+  width:110vw;
+  height:100vh;
+  border-radius:50%;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  background:rgba(255,255,255,0);
+  transform:translate(-50%,-50%) rotate(0deg);
+  transform-origin:center center; /* added: stabilize pivot */
+}
+
+.label{
+  position:absolute;
+  transform-origin:0 50%;
+  font-size:4.2vh;
+  font-weight:500;
+  text-align:center;
+}
+
+.label a{
+  color:black;
+  text-decoration:none;
+  display:inline-block;
+}
+
+canvas{
+  position:fixed;
+  top:0;
+  left:0;
+  z-index:10;
+  pointer-events:none;
+}
+
+#dragon-container img{
+  position:fixed;
+  pointer-events:none;
+  z-index:90;
+  transition:transform 0.1s linear;
+}
+
+#below{
+  position:fixed;
+  right:16px;
+  bottom:12px;
+  font-size:12px;
+  color:rgba(0,0,0,0.6);
+  z-index:200;
+  margin:0;
+}
 </style>
 </head>
 <body>
@@ -24,6 +79,7 @@ canvas{position:fixed;top:0;left:0;z-index:10;pointer-events:none;}
 <div id="dragon-container"></div>
 <canvas id="linesCanvas"></canvas>
 <p id="below">ALL RIGHTS RESERVED | © 2025 VICTOR MASOTTI</p>
+
 <script>
 const wheel=document.getElementById("wheel");
 const labels=[
@@ -34,56 +90,78 @@ const labels=[
 {text:'W/VISUALS',href:'vmwvisuals.html'},
 {text:'NOTEPAD',href:'vmnotepad.html'}
 ];
+
 let wheelRadiusX=window.innerHeight/2*1.05;
 let wheelRadiusY=window.innerHeight/2*0.98;
 let labelElements=[];
+
 labels.forEach((l,i)=>{
-const div=document.createElement('div');
-div.className='label';
-const a=document.createElement('a');
-a.href=l.href;
-a.textContent=l.text;
-div.appendChild(a);
-wheel.appendChild(div);
-labelElements.push(div);
+  const div=document.createElement('div');
+  div.className='label';
+  const a=document.createElement('a');
+  a.href=l.href;
+  a.textContent=l.text;
+  div.appendChild(a);
+  wheel.appendChild(div);
+  labelElements.push(div);
 });
+
 function positionLabels(rotation=0){
-const count=labelElements.length;
-labelElements.forEach((el,i)=>{
-const angle=(i*(360/count)+rotation)*Math.PI/180;
-const x=Math.cos(angle)*wheelRadiusX;
-const y=Math.sin(angle)*wheelRadiusY;
-el.style.transform=`translate(${x}px,${y}px) rotate(${-rotation}deg)`; }); }
-positionLabels();
-let r=0,velocity=0;
-function adjustForMobile() {
-    const width = window.innerWidth;
-    if (width <= 1080) {
-        wheelRadiusX = window.innerHeight/2*0.7;
-        wheelRadiusY = window.innerHeight/2*0.7;
-    } else {
-        wheelRadiusX = window.innerHeight/2*1.05;
-        wheelRadiusY = window.innerHeight/2*0.98;
-    }
-    positionLabels(r);
+  const count=labelElements.length;
+  labelElements.forEach((el,i)=>{
+    const angle=(i*(360/count)+rotation)*Math.PI/180;
+    const x=Math.cos(angle)*wheelRadiusX;
+    const y=Math.sin(angle)*wheelRadiusY;
+    el.style.transform=`translate(${x}px,${y}px) rotate(${-rotation}deg)`;
+  });
 }
-window.addEventListener('resize',()=>{adjustForMobile();});
+positionLabels();
+
+let r=0,velocity=0;
+
+function adjustForMobile() {
+  const width = window.innerWidth;
+  if (width <= 1080) {
+    wheelRadiusX = window.innerHeight/2*0.7;
+    wheelRadiusY = window.innerHeight/2*0.7;
+  } else {
+    wheelRadiusX = window.innerHeight/2*1.05;
+    wheelRadiusY = window.innerHeight/2*0.98;
+  }
+  positionLabels(r);
+}
+window.addEventListener('resize',adjustForMobile);
 adjustForMobile();
+
+// wheel controls
 window.addEventListener('wheel',e=>{velocity-=e.deltaY*0.02;});
 let lastTouchY=null;
 window.addEventListener('touchstart',e=>{if(e.touches.length===1)lastTouchY=e.touches[0].clientY;});
-window.addEventListener('touchmove',e=>{if(e.touches.length===1&&lastTouchY!==null){const deltaY=e.touches[0].clientY-lastTouchY;velocity+=deltaY*0.05;lastTouchY=e.touches[0].clientY;}});
-window.addEventListener('touchend',e=>{lastTouchY=null;});
+window.addEventListener('touchmove',e=>{
+  if(e.touches.length===1&&lastTouchY!==null){
+    const deltaY=e.touches[0].clientY-lastTouchY;
+    velocity+=deltaY*0.05;
+    lastTouchY=e.touches[0].clientY;
+  }
+});
+window.addEventListener('touchend',()=>{lastTouchY=null;});
+
 function animateWheel(){
-r+=velocity*0.6;
-velocity*=0.95;
-if(Math.abs(velocity)<0.01)velocity=0;
-// keep centered perfectly
-wheel.style.transform=`translate(-50%,-50%) rotate(${r}deg)`;
-positionLabels(r);
-requestAnimationFrame(animateWheel);
+  r+=velocity*0.6;
+  velocity*=0.95;
+  if(Math.abs(velocity)<0.01)velocity=0;
+
+  // keep absolute fixed center (no drift)
+  wheel.style.transform=`translate(-50%,-50%) rotate(${r}deg)`;
+  wheel.style.top='50%';
+  wheel.style.left='50%';
+
+  positionLabels(r);
+  requestAnimationFrame(animateWheel);
 }
 animateWheel();
+
+/* dragons + lines stay untouched */
 (function createDragons(){
 const dragonCount=Math.floor(Math.random()*30)+20;
 const dragons=[];
@@ -134,6 +212,7 @@ requestAnimationFrame(animateDragons);
 }
 animateDragons();
 })();
+
 (function linesCanvas(){
 const c=document.getElementById("linesCanvas");
 const ctx=c.getContext("2d");
@@ -151,9 +230,18 @@ reset();
 function draw(){
 ctx.clearRect(0,0,c.width,c.height);
 const now=performance.now();
-lines.forEach(l=>{if(now-l.startTime>5000)return;ctx.beginPath();ctx.moveTo(l.x,0);ctx.lineTo(l.x+(Math.random()-0.5)*10,c.height);ctx.strokeStyle=l.color;ctx.lineWidth=l.width;ctx.stroke();});
+lines.forEach(l=>{
+if(now-l.startTime>5000)return;
+ctx.beginPath();
+ctx.moveTo(l.x,0);
+ctx.lineTo(l.x+(Math.random()-0.5)*10,c.height);
+ctx.strokeStyle=l.color;
+ctx.lineWidth=l.width;
+ctx.stroke();
+});
 if(lines.length&&now-lines[0].startTime>5000)reset();
-requestAnimationFrame(draw);}
+requestAnimationFrame(draw);
+}
 draw();
 })();
 </script>
