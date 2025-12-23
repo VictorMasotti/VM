@@ -33,6 +33,8 @@ body{
   object-fit:cover;
   transition:transform 0.2s;
   transform-style:preserve-3d; }
+
+/* Enlarged image */
 .enlarged-img{
   position:fixed;
   top:50%;
@@ -49,6 +51,11 @@ body{
 .enlarged-img.show{
   opacity:1;
   transform:translate(-50%,-50%) scale(1); }
+.enlarged-img.hide{
+  opacity:0;
+  transform:translate(-50%,-50%) scale(1.08); }
+
+/* Home button */
 #homeButton{
   position:fixed;
   width:62px;
@@ -58,17 +65,18 @@ body{
   cursor:pointer;
   background: rgba(255,255,255,0.25);
   backdrop-filter: blur(12px) saturate(180%);
-  box-shadow: 0 10px 25px rgba(0,0,0,0.28), inset 0 -3px 10px rgba(255,255,255,0.65);
+  box-shadow: 0 10px 25px rgba(0,0,0,0.28),
+              inset 0 -3px 10px rgba(255,255,255,0.65);
   border: 1px solid rgba(255,255,255,0.35);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
+  transition: transform 0.2s ease, box-shadow 0.2s ease; }
 #homeButton:hover{
   transform:scale(1.2);
-  box-shadow: 0 12px 30px rgba(0,0,0,0.35), inset 0 -4px 12px rgba(255,255,255,0.75);
-}
+  box-shadow: 0 12px 30px rgba(0,0,0,0.35),
+              inset 0 -4px 12px rgba(255,255,255,0.75); }
 </style>
 </head>
 <body>
+
 <div id="grid">
 <img src="globe.png"><img src="tee001.jpg"><img src="chrome.png"><img src="maxi.jpg">
 <img src="blue2.jpg"><img src="lvm.jpg"><img src="lvmm.jpg"><img src="yellow.png">
@@ -122,6 +130,7 @@ document.addEventListener('mousemove', e => {
   });
 });
 
+// ===== ENLARGED IMAGE WITH FADE-IN + FADE-OUT =====
 imgs.forEach(img => {
   img.addEventListener('click', e => {
     e.stopPropagation();
@@ -139,17 +148,67 @@ imgs.forEach(img => {
     });
   });
 });
+
 document.body.addEventListener('click', () => {
-  const existing = document.querySelector('.enlarged-img');
-  if (existing) existing.remove();
+  const img = document.querySelector('.enlarged-img');
+  if (!img) return;
+
+  img.classList.remove('show');
+  img.classList.add('hide');
+
+  setTimeout(() => {
+    if(img) img.remove();
+  }, 450); // match CSS transition
 });
 
+// ===== HOME BUTTON =====
 const homeButton = document.getElementById('homeButton');
 homeButton.style.top = Math.random() * (window.innerHeight - 70) + 'px';
 homeButton.style.left = Math.random() * (window.innerWidth - 70) + 'px';
 homeButton.addEventListener('click', () => {
   window.location.href = 'https://victormasotti.com/';
 });
+
+// ===== FROGGY GIF =====
+if (Math.random() < 0.33333) {
+  const froggy = document.createElement('img');
+  froggy.src = 'froggy.gif';
+  froggy.style.position = 'fixed';
+  froggy.style.height = (window.innerHeight*0.1)+'px';
+  froggy.style.zIndex = 99999;
+
+  const margin = 10;
+  const corners = [
+    { top: margin, left: margin },
+    { top: margin, right: margin },
+    { bottom: margin, left: margin },
+    { bottom: margin, right: margin }
+  ];
+  const chosen = corners[Math.floor(Math.random()*corners.length)];
+  Object.assign(froggy.style, chosen);
+
+  document.body.appendChild(froggy);
+}
+
+// ===== VIET.PNG BACKGROUND =====
+if (Math.random() < 0.2) {
+  const viet = document.createElement('img');
+  viet.src = 'viet.png';
+  viet.style.position = 'fixed';
+  viet.style.top = '0';
+  viet.style.left = '0';
+  viet.style.width = '100vw';
+  viet.style.height = '100vh';
+  viet.style.objectFit = 'cover';
+  viet.style.zIndex = -999;
+
+  const hue = Math.floor(Math.random()*360);
+  const saturate = 50 + Math.random()*50;
+  viet.style.filter = `hue-rotate(${hue}deg) saturate(${saturate}%)`;
+
+  document.body.appendChild(viet);
+}
 </script>
+
 </body>
 </html>
