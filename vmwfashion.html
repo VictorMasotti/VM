@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Victor fasHION AAAYAwww</title>
-
+<link rel="icon" type="image/png" href="pinkfav.png">
 <style>
 html,body{
   margin:0;
@@ -14,15 +14,12 @@ html,body{
   background:#FDFFE9;
   overflow:hidden;
   cursor:url('EARTH2.png'),auto;
-  font-family:'Inter',sans-serif;
-}
+  font-family:'Inter',sans-serif; }
 body{
   display:flex;
   justify-content:center;
   align-items:center;
-  perspective:1500px;
-}
-
+  perspective:1500px; }
 #grid{
   position:relative;
   display:grid;
@@ -30,16 +27,12 @@ body{
   grid-auto-rows:min-content;
   gap:5px;
   transform-style:preserve-3d;
-  transition:transform 0.2s;
-}
+  transition:transform 0.2s; }
 #grid img{
   width:100%;
   object-fit:cover;
   transition:transform 0.2s;
-  transform-style:preserve-3d;
-}
-
-/* Enlarged duplicate */
+  transform-style:preserve-3d; }
 .enlarged-img{
   position:fixed;
   top:50%;
@@ -52,15 +45,10 @@ body{
   pointer-events:auto;
   transition:
     opacity 0.35s ease,
-    transform 0.45s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-/* Final visible state */
+    transform 0.45s cubic-bezier(0.16, 1, 0.3, 1); }
 .enlarged-img.show{
   opacity:1;
-  transform:translate(-50%,-50%) scale(1);
-}
-
+  transform:translate(-50%,-50%) scale(1); }
 #homeButton{
   position:fixed;
   width:62px;
@@ -80,9 +68,7 @@ body{
 }
 </style>
 </head>
-
 <body>
-
 <div id="grid">
 <img src="globe.png"><img src="tee001.jpg"><img src="chrome.png"><img src="maxi.jpg">
 <img src="blue2.jpg"><img src="lvm.jpg"><img src="lvmm.jpg"><img src="yellow.png">
@@ -136,7 +122,6 @@ document.addEventListener('mousemove', e => {
   });
 });
 
-/* Duplicate with fade + zoom */
 imgs.forEach(img => {
   img.addEventListener('click', e => {
     e.stopPropagation();
@@ -147,17 +132,13 @@ imgs.forEach(img => {
     const dup = document.createElement('img');
     dup.src = img.src;
     dup.className = 'enlarged-img';
-
     document.body.appendChild(dup);
 
-    // Trigger animation
     requestAnimationFrame(() => {
       dup.classList.add('show');
     });
   });
 });
-
-/* Click anywhere to close */
 document.body.addEventListener('click', () => {
   const existing = document.querySelector('.enlarged-img');
   if (existing) existing.remove();
@@ -170,6 +151,5 @@ homeButton.addEventListener('click', () => {
   window.location.href = 'https://victormasotti.com/';
 });
 </script>
-
 </body>
 </html>
