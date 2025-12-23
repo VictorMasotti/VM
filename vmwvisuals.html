@@ -5,17 +5,14 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Vis___al w ORKvictor</title>
 <link rel="icon" type="image/x-icon" href="pinkfav.png">
+
 <style>
 html, body, .carousel, .carousel img, #homeButton {
   cursor: url('EARTH2.png'), auto !important;
 }
 
-.carousel {
-  cursor: grab;
-}
-.carousel:active {
-  cursor: grabbing;
-}
+.carousel { cursor: grab; }
+.carousel:active { cursor: grabbing; }
 
 html,body{
   margin:0;
@@ -76,9 +73,16 @@ html,body{
     transform 0.45s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
+/* Fade IN */
 .enlarged-img.show{
   opacity:1;
   transform:translate(-50%,-50%) scale(1);
+}
+
+/* Fade OUT + EXPAND */
+.enlarged-img.hide{
+  opacity:0;
+  transform:translate(-50%,-50%) scale(1.06);
 }
 
 #homeButton{
@@ -113,18 +117,18 @@ html,body{
 
 <section class="section" id="groupB">
   <div class="carousel">
-    <img src="coralb.png"><img src="EEE.png"><img src="BCC.png"><img src="pescheria.png"><img src="BCC.png">
-    <img src="Innerwordly.png"><img src="scattershot.png"><img src="STIQUE01.png">
-    <img src="breakTHROUGH.png"><img src="CORRETTO.png"><img src="Otherwordly.png">
-    <img src="ARCCRA 2025 FEB.png"><img src="CCC.png">
+    <img src="coralb.png"><img src="EEE.png"><img src="BCC.png"><img src="pescheria.png">
+    <img src="BCC.png"><img src="Innerwordly.png"><img src="scattershot.png">
+    <img src="STIQUE01.png"><img src="breakTHROUGH.png"><img src="CORRETTO.png">
+    <img src="Otherwordly.png"><img src="ARCCRA 2025 FEB.png"><img src="CCC.png">
   </div>
 </section>
 
 <section class="section" id="groupC">
   <div class="carousel">
-    <img src="NoodleCart1.png"><img src="juma.png"><img src="sky.png"><img src="neon.png"><img src="bird.png">
-    <img src="ssd.png"><img src="mobile.png"><img src="screeeen.png">
-    <img src="fishing.png"><img src="haunted.png">
+    <img src="NoodleCart1.png"><img src="juma.png"><img src="sky.png"><img src="neon.png">
+    <img src="bird.png"><img src="ssd.png"><img src="mobile.png">
+    <img src="screeeen.png"><img src="fishing.png"><img src="haunted.png">
   </div>
 </section>
 
@@ -196,7 +200,7 @@ document.querySelectorAll('.carousel').forEach(carousel=>{
     update();
   },{passive:false});
 
-  /* Duplicate with fade + zoom */
+  /* Duplicate with fade IN */
   imgs.forEach(img=>{
     img.addEventListener('click',e=>{
       e.stopPropagation();
@@ -216,11 +220,17 @@ document.querySelectorAll('.carousel').forEach(carousel=>{
   });
 });
 
-/* Click anywhere to close */
+
 document.body.addEventListener('click',()=>{
-  const existing=document.querySelector('.enlarged-img');
-  if(existing) existing.remove();
-});
+  const img=document.querySelector('.enlarged-img');
+  if(!img) return;
+
+  img.classList.remove('show');
+  img.classList.add('hide');
+
+  setTimeout(()=>{
+    img.remove();
+  }, 450); });
 
 const homeButton=document.getElementById('homeButton');
 homeButton.style.top=Math.random()*(window.innerHeight-70)+'px';
@@ -229,8 +239,5 @@ homeButton.addEventListener('click',()=>{
   window.location.href='https://victormasotti.com/';
 });
 </script>
-
 </body>
 </html>
-
-
