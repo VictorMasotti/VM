@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Victor fasHION^"' AAAYAwww</title>
+<title>Victor fasHION AAAYAwww</title>
 <link rel="icon" type="image/png" href="pinkfav.png">
 <style>
 html,body{
@@ -14,12 +14,14 @@ html,body{
   background:#FDFFE9;
   overflow:hidden;
   cursor:url('EARTH2.png'),auto;
-  font-family:'Inter',sans-serif; }
+  font-family:'Inter',sans-serif;
+}
 body{
   display:flex;
   justify-content:center;
   align-items:center;
-  perspective:1500px; }
+  perspective:1500px;
+}
 #grid{
   position:relative;
   display:grid;
@@ -27,12 +29,14 @@ body{
   grid-auto-rows:min-content;
   gap:5px;
   transform-style:preserve-3d;
-  transition:transform 0.2s; }
+  transition:transform 0.2s;
+}
 #grid img{
   width:100%;
   object-fit:cover;
   transition:transform 0.2s;
-  transform-style:preserve-3d; }
+  transform-style:preserve-3d;
+}
 
 /* Enlarged image */
 .enlarged-img{
@@ -47,13 +51,16 @@ body{
   pointer-events:auto;
   transition:
     opacity 0.35s ease,
-    transform 0.45s cubic-bezier(0.16, 1, 0.3, 1); }
+    transform 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+}
 .enlarged-img.show{
   opacity:1;
-  transform:translate(-50%,-50%) scale(1); }
+  transform:translate(-50%,-50%) scale(1);
+}
 .enlarged-img.hide{
   opacity:0;
-  transform:translate(-50%,-50%) scale(1.08); }
+  transform:translate(-50%,-50%) scale(1.08);
+}
 
 /* Home button */
 #homeButton{
@@ -65,22 +72,22 @@ body{
   cursor:pointer;
   background: rgba(255,255,255,0.25);
   backdrop-filter: blur(12px) saturate(180%);
-  box-shadow: 0 10px 25px rgba(0,0,0,0.28),
-              inset 0 -3px 10px rgba(255,255,255,0.65);
+  box-shadow: 0 10px 25px rgba(0,0,0,0.28), inset 0 -3px 10px rgba(255,255,255,0.65);
   border: 1px solid rgba(255,255,255,0.35);
-  transition: transform 0.2s ease, box-shadow 0.2s ease; }
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
 #homeButton:hover{
   transform:scale(1.2);
-  box-shadow: 0 12px 30px rgba(0,0,0,0.35),
-              inset 0 -4px 12px rgba(255,255,255,0.75); }
+  box-shadow: 0 12px 30px rgba(0,0,0,0.35), inset 0 -4px 12px rgba(255,255,255,0.75);
+}
 </style>
 </head>
 <body>
-
 <div id="grid">
-<!-- images here -->
+<!-- Your images (unchanged) -->
 <img src="globe.png"><img src="tee001.jpg"><img src="chrome.png"><img src="maxi.jpg">
-<!-- ...rest of your images remain unchanged -->
+<!-- ... rest of your images ... -->
+<img src="wf1.jpg"><img src="ww9.jpg">
 </div>
 
 <div id="homeButton"></div>
@@ -89,15 +96,14 @@ body{
 const grid = document.getElementById('grid');
 const imgs = [...grid.querySelectorAll('img')];
 
+// Grid hover effect
 document.addEventListener('mousemove', e => {
   const w = window.innerWidth;
   const h = window.innerHeight;
   const dx = (w/2 - e.clientX) / w * 2;
   const dy = (h/2 - e.clientY) / h * 2;
-
   grid.style.transform =
     `translate(${dx*100}px,${dy*100}px) rotateX(${dy*15}deg) rotateY(${-dx*15}deg)`;
-
   imgs.forEach(img => {
     const rect = img.getBoundingClientRect();
     const cx = rect.left + rect.width/2;
@@ -107,38 +113,28 @@ document.addEventListener('mousemove', e => {
   });
 });
 
-// ===== ENLARGED IMAGE WITH FADE-IN + FADE-OUT =====
+// Enlarged images
 imgs.forEach(img => {
   img.addEventListener('click', e => {
     e.stopPropagation();
-
     const existing = document.querySelector('.enlarged-img');
     if (existing) existing.remove();
-
     const dup = document.createElement('img');
     dup.src = img.src;
     dup.className = 'enlarged-img';
     document.body.appendChild(dup);
-
-    requestAnimationFrame(() => {
-      dup.classList.add('show');
-    });
+    requestAnimationFrame(() => dup.classList.add('show'));
   });
 });
-
 document.body.addEventListener('click', () => {
   const img = document.querySelector('.enlarged-img');
   if (!img) return;
-
   img.classList.remove('show');
   img.classList.add('hide');
-
-  setTimeout(() => {
-    if(img) img.remove();
-  }, 450); // match CSS transition
+  setTimeout(() => { if(img) img.remove(); }, 450);
 });
 
-// ===== HOME BUTTON =====
+// Home button
 const homeButton = document.getElementById('homeButton');
 homeButton.style.top = Math.random() * (window.innerHeight - 70) + 'px';
 homeButton.style.left = Math.random() * (window.innerWidth - 70) + 'px';
@@ -146,7 +142,7 @@ homeButton.addEventListener('click', () => {
   window.location.href = 'https://victormasotti.com/';
 });
 
-// ===== FROGG GIF (corner, 50% height) =====
+// ===== NEW: frogg.gif in a random corner =====
 if (Math.random() < 0.33333) {
   const frogg = document.createElement('img');
   frogg.src = 'frogg.gif';
@@ -154,7 +150,6 @@ if (Math.random() < 0.33333) {
   frogg.style.height = (window.innerHeight*0.5)+'px';
   frogg.style.width = 'auto';
   frogg.style.zIndex = 99999;
-
   const margin = 10;
   const corners = [
     { top: margin, left: margin },
@@ -162,31 +157,26 @@ if (Math.random() < 0.33333) {
     { bottom: margin, left: margin },
     { bottom: margin, right: margin }
   ];
-  const chosen = corners[Math.floor(Math.random()*corners.length)];
-  Object.assign(frogg.style, chosen);
-
+  Object.assign(frogg.style, corners[Math.floor(Math.random()*corners.length)]);
   document.body.appendChild(frogg);
 }
 
-// ===== VIET.PNG BACKGROUND =====
+// ===== NEW: viet.png background with random hue =====
 if (Math.random() < 0.2) {
   const viet = document.createElement('img');
   viet.src = 'viet.png';
   viet.style.position = 'fixed';
-  viet.style.top = '0';
-  viet.style.left = '0';
+  viet.style.top = 0;
+  viet.style.left = 0;
   viet.style.width = '100vw';
   viet.style.height = '100vh';
   viet.style.objectFit = 'cover';
   viet.style.zIndex = -999;
-
   const hue = Math.floor(Math.random()*360);
   const saturate = 50 + Math.random()*50;
   viet.style.filter = `hue-rotate(${hue}deg) saturate(${saturate}%)`;
-
   document.body.appendChild(viet);
 }
 </script>
-
 </body>
 </html>
