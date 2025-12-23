@@ -3,97 +3,233 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Visuuual w ORKvictor</title>
+<title>Vis___al w ORKvictor</title>
+
 <style>
 html, body, .carousel, .carousel img, #homeButton {
   cursor: url('EARTH2.png'), auto !important;
 }
+
 .carousel {
   cursor: grab;
 }
 .carousel:active {
   cursor: grabbing;
 }
-html,body{margin:0;padding:0;width:100%;height:100%;overflow:hidden;font-family:'Inter',sans-serif;background-color:rgb(253,255,233);}
-.section{width:100vw;display:flex;align-items:center;justify-content:center;perspective:1500px;overflow:hidden;position:relative}
-#groupB{height:45vh}#groupC{height:35vh}#groupA{height:20vh}
-.carousel{position:relative;width:100%;height:100%;transform-style:preserve-3d;display:flex;align-items:center;justify-content:center;user-select:none}
-.carousel img{position:absolute;max-height:100%;width:auto;transform-style:preserve-3d;border-radius:8px;transition:transform 0.3s ease,opacity 0.3s ease;}
-.enlarged-img{position:fixed !important;top:50% !important;left:50% !important;transform:translate(-50%,-50%) !important;height:95vh;width:auto;z-index:9999;transition:all 0.3s ease;pointer-events:auto;}
-#homeButton{position:fixed;width:62px;height:62px;border-radius:50%;z-index:9999;background: rgba(255,255,255,0.25);backdrop-filter: blur(12px) saturate(180%);box-shadow: 0 10px 25px rgba(0,0,0,0.28), inset 0 -3px 10px rgba(255,255,255,0.65);border: 1px solid rgba(255,255,255,0.35);transition: transform 0.2s ease, box-shadow 0.2s ease;}
-#homeButton:hover{transform:scale(1.2);box-shadow: 0 12px 30px rgba(0,0,0,0.35), inset 0 -4px 12px rgba(255,255,255,0.75);}
+
+html,body{
+  margin:0;
+  padding:0;
+  width:100%;
+  height:100%;
+  overflow:hidden;
+  font-family:'Inter',sans-serif;
+  background-color:rgb(253,255,233);
+}
+
+.section{
+  width:100vw;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  perspective:1500px;
+  overflow:hidden;
+  position:relative;
+}
+
+#groupA{height:20vh}
+#groupB{height:45vh}
+#groupC{height:35vh}
+
+.carousel{
+  position:relative;
+  width:100%;
+  height:100%;
+  transform-style:preserve-3d;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  user-select:none;
+}
+
+.carousel img{
+  position:absolute;
+  max-height:100%;
+  width:auto;
+  transform-style:preserve-3d;
+  border-radius:8px;
+  transition:transform 0.3s ease, opacity 0.3s ease;
+}
+
+/* Enlarged duplicate — SAME AS FASHION PAGE */
+.enlarged-img{
+  position:fixed;
+  top:50%;
+  left:50%;
+  height:95vh;
+  width:auto;
+  transform:translate(-50%,-50%) scale(0.96);
+  opacity:0;
+  z-index:9999;
+  pointer-events:auto;
+  transition:
+    opacity 0.35s ease,
+    transform 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.enlarged-img.show{
+  opacity:1;
+  transform:translate(-50%,-50%) scale(1);
+}
+
+#homeButton{
+  position:fixed;
+  width:62px;
+  height:62px;
+  border-radius:50%;
+  z-index:9999;
+  background: rgba(255,255,255,0.25);
+  backdrop-filter: blur(12px) saturate(180%);
+  box-shadow: 0 10px 25px rgba(0,0,0,0.28), inset 0 -3px 10px rgba(255,255,255,0.65);
+  border: 1px solid rgba(255,255,255,0.35);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+#homeButton:hover{
+  transform:scale(1.2);
+  box-shadow: 0 12px 30px rgba(0,0,0,0.35), inset 0 -4px 12px rgba(255,255,255,0.75);
+}
 </style>
 </head>
+
 <body>
+
 <section class="section" id="groupA">
-<div class="carousel">
-<img src="ab.jpg"><img src="st.jpg"><img src="jv.jpg"><img src="albuquerque5.jpg"><img src="chelsea.jpg"><img src="shibuya.jpg"><img src="kualalumpur3.jpg"><img src="lahabana1.jpg"><img src="telaviv1.jpg"><img src="sc2.jpg"><img src="sc4.jpg"><img src="sc3.jpg">
-</div>
+  <div class="carousel">
+    <img src="ab.jpg"><img src="st.jpg"><img src="jv.jpg"><img src="albuquerque5.jpg">
+    <img src="chelsea.jpg"><img src="shibuya.jpg"><img src="kualalumpur3.jpg">
+    <img src="lahabana1.jpg"><img src="telaviv1.jpg"><img src="sc2.jpg">
+    <img src="sc4.jpg"><img src="sc3.jpg">
+  </div>
 </section>
+
 <section class="section" id="groupB">
-<div class="carousel">
-<img src="EEE.png"><img src="BCC.png"><img src="pescheria.png"><img src="BCC.png"><img src="Innerwordly.png"><img src="scattershot.png"><img src="STIQUE01.png"><img src="breakTHROUGH.png"><img src="CORRETTO.png"><img src="Otherwordly.png"><img src="ARCCRA 2025 FEB.png"><img src="CCC.png">
-</div>
+  <div class="carousel">
+    <img src="EEE.png"><img src="BCC.png"><img src="pescheria.png"><img src="BCC.png">
+    <img src="Innerwordly.png"><img src="scattershot.png"><img src="STIQUE01.png">
+    <img src="breakTHROUGH.png"><img src="CORRETTO.png"><img src="Otherwordly.png">
+    <img src="ARCCRA 2025 FEB.png"><img src="CCC.png">
+  </div>
 </section>
+
 <section class="section" id="groupC">
-<div class="carousel">
-<img src="juma.png"><img src="sky.png"><img src="neon.png"><img src="bird.png"><img src="ssd.png"><img src="mobile.png"><img src="screeeen.png"><img src="fishing.png"><img src="haunted.png">
-</div>
+  <div class="carousel">
+    <img src="juma.png"><img src="sky.png"><img src="neon.png"><img src="bird.png">
+    <img src="ssd.png"><img src="mobile.png"><img src="screeeen.png">
+    <img src="fishing.png"><img src="haunted.png">
+  </div>
 </section>
+
 <div id="homeButton"></div>
 
 <script>
-function shuffleArray(arr){for(let i=arr.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[arr[i],arr[j]]=[arr[j],arr[i]]}return arr}
+function shuffleArray(arr){
+  for(let i=arr.length-1;i>0;i--){
+    const j=Math.floor(Math.random()*(i+1));
+    [arr[i],arr[j]]=[arr[j],arr[i]];
+  }
+  return arr;
+}
 
 document.querySelectorAll('.carousel').forEach(carousel=>{
-let imgs=[...carousel.querySelectorAll('img')]; imgs=shuffleArray(imgs); imgs.forEach(img=>carousel.appendChild(img))
-const N=imgs.length; let angle=0, isDown=false, startX, scrollLeft;
+  let imgs=[...carousel.querySelectorAll('img')];
+  imgs=shuffleArray(imgs);
+  imgs.forEach(img=>carousel.appendChild(img));
 
-function update(){imgs.forEach((img,i)=>{const a=i*(360/N)+angle; const r=carousel.clientWidth/2-100; const y=(Math.random()-0.5)*50; const z=(Math.random()-0.5)*200; img.style.transform=`rotateY(${a}deg) translateX(${r}px) translateY(${y}px) translateZ(${z}px)`})}
-imgs.forEach((img,i)=>{const a=i*(360/N); const r=carousel.clientWidth/2-100; const y=(Math.random()-0.5)*50; const z=(Math.random()-0.5)*200; img.style.transform=`rotateY(${a}deg) translateX(${r}px) translateY(${y}px) translateZ(${z}px)`})
+  const N=imgs.length;
+  let angle=0, isDown=false, startX, scrollLeft;
 
-// Mouse drag
-carousel.addEventListener('mousedown',e=>{isDown=true;startX=e.pageX;scrollLeft=angle})
-carousel.addEventListener('mouseup',()=>isDown=false)
-carousel.addEventListener('mouseleave',()=>isDown=false)
-carousel.addEventListener('mousemove',e=>{if(!isDown)return;e.preventDefault();angle=scrollLeft+(startX-e.pageX)/5;update()})
+  function update(){
+    imgs.forEach((img,i)=>{
+      const a=i*(360/N)+angle;
+      const r=carousel.clientWidth/2-100;
+      const y=(Math.random()-0.5)*50;
+      const z=(Math.random()-0.5)*200;
+      img.style.transform=
+        `rotateY(${a}deg) translateX(${r}px) translateY(${y}px) translateZ(${z}px)`;
+    });
+  }
 
-// Touch swipe
-let lastTouchX=null;
-carousel.addEventListener('touchstart',e=>{isDown=true;startX=e.touches[0].pageX;scrollLeft=angle;lastTouchX=startX})
-carousel.addEventListener('touchmove',e=>{if(!isDown)return; const touchX=e.touches[0].pageX; angle += (touchX-lastTouchX)/3; lastTouchX=touchX; update();})
-carousel.addEventListener('touchend',()=>{isDown=false; lastTouchX=null})
+  update();
 
-// Wheel scroll
-carousel.addEventListener('wheel',e=>{e.preventDefault(); angle+=e.deltaY/2; update()},{passive:false})
+  carousel.addEventListener('mousedown',e=>{
+    isDown=true; startX=e.pageX; scrollLeft=angle;
+  });
+  carousel.addEventListener('mouseup',()=>isDown=false);
+  carousel.addEventListener('mouseleave',()=>isDown=false);
+  carousel.addEventListener('mousemove',e=>{
+    if(!isDown) return;
+    angle=scrollLeft+(startX-e.pageX)/5;
+    update();
+  });
 
-// Tap/click to enlarge (creates duplicate)
-imgs.forEach(img=>{
-  img.addEventListener('click',e=>{
-    e.stopPropagation();
-    // Remove existing enlarged if any
-    const existing = document.querySelector('.enlarged-img');
-    if(existing) existing.remove();
+  let lastTouchX=null;
+  carousel.addEventListener('touchstart',e=>{
+    isDown=true;
+    startX=e.touches[0].pageX;
+    scrollLeft=angle;
+    lastTouchX=startX;
+  });
+  carousel.addEventListener('touchmove',e=>{
+    if(!isDown) return;
+    const touchX=e.touches[0].pageX;
+    angle+=(touchX-lastTouchX)/3;
+    lastTouchX=touchX;
+    update();
+  });
+  carousel.addEventListener('touchend',()=>{
+    isDown=false;
+    lastTouchX=null;
+  });
 
-    const dup = document.createElement('img');
-    dup.src = img.src;
-    dup.className = 'enlarged-img';
-    dup.style.height = (window.innerHeight*0.95)+'px';
-    dup.style.width = 'auto';
-    document.body.appendChild(dup);
+  carousel.addEventListener('wheel',e=>{
+    e.preventDefault();
+    angle+=e.deltaY/2;
+    update();
+  },{passive:false});
+
+  /* Duplicate with fade + zoom */
+  imgs.forEach(img=>{
+    img.addEventListener('click',e=>{
+      e.stopPropagation();
+
+      const existing=document.querySelector('.enlarged-img');
+      if(existing) existing.remove();
+
+      const dup=document.createElement('img');
+      dup.src=img.src;
+      dup.className='enlarged-img';
+      document.body.appendChild(dup);
+
+      requestAnimationFrame(()=>{
+        dup.classList.add('show');
+      });
+    });
   });
 });
 
-// Clicking anywhere closes enlarged images
-document.body.addEventListener('click',()=>{const existing = document.querySelector('.enlarged-img'); if(existing) existing.remove();})
-
-update();
-})
+/* Click anywhere to close */
+document.body.addEventListener('click',()=>{
+  const existing=document.querySelector('.enlarged-img');
+  if(existing) existing.remove();
+});
 
 const homeButton=document.getElementById('homeButton');
 homeButton.style.top=Math.random()*(window.innerHeight-70)+'px';
 homeButton.style.left=Math.random()*(window.innerWidth-70)+'px';
-homeButton.addEventListener('click',()=>{window.location.href='https://victormasotti.com/'})
+homeButton.addEventListener('click',()=>{
+  window.location.href='https://victormasotti.com/';
+});
 </script>
+
 </body>
 </html>
