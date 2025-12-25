@@ -31,8 +31,9 @@ const labels=[
 {text:'W/FASHION',href:'vmwfashion.html'},
 {text:'W/MUSIC',href:'vmwmusic.html'},
 {text:'W/CINEMA',href:'vmwcinema.html'},
-{text:'NOTEPAD',href:'vmnotepad.html'}
-{text:'W/VISUALS',href:'vmwvisuals.html'}, ];
+{text:'NOTEPAD',href:'vmnotepad.html'},
+{text:'W/VISUALS',href:'vmwvisuals.html'},
+];
 let wheelRadiusX=window.innerHeight/2*1.05;
 let wheelRadiusY=window.innerHeight/2*0.98;
 let labelElements=[];
@@ -53,7 +54,8 @@ function positionLabels(rotation=0){
     const x=Math.cos(angle)*wheelRadiusX;
     const y=Math.sin(angle)*wheelRadiusY;
     el.style.transform=`translate(${x}px,${y}px) rotate(${-rotation}deg)`;
-  }); }
+  });
+}
 positionLabels();
 let r=0,velocity=0;
 function adjustForMobile() {
@@ -66,8 +68,10 @@ function adjustForMobile() {
         wheelRadiusY = window.innerHeight/2*0.98;
     } else {
         wheelRadiusX = window.innerHeight/2*1.05;
-        wheelRadiusY = window.innerHeight/2*0.98;     }
-    positionLabels(r); }
+        wheelRadiusY = window.innerHeight/2*0.98;
+    }
+    positionLabels(r);
+}
 window.addEventListener('resize',()=>{adjustForMobile();});
 adjustForMobile();
 window.addEventListener('wheel',e=>{velocity-=e.deltaY*0.02;});
@@ -81,8 +85,10 @@ function animateWheel(){
   if(Math.abs(velocity)<0.01)velocity=0;
   wheel.style.transform=`rotate(${r}deg)`;
   positionLabels(r);
-  requestAnimationFrame(animateWheel); }
+  requestAnimationFrame(animateWheel);
+}
 animateWheel();
+
 (function createDragons(){
   const dragonCount=Math.floor(Math.random()*30)+20;
   const dragons=[];
@@ -111,8 +117,10 @@ animateWheel();
       rotateOffset:Math.random()*Math.PI*2,
       irregular:Math.random()<0.3||crazy,
       crazy:crazy,
-      rotationSpeed:(Math.random()-0.5)*0.2    });
-    scales.push({base:1,delta:Math.random()*0.02+0.01,current:1,direction:Math.random()>0.5?1:-1});  }
+      rotationSpeed:(Math.random()-0.5)*0.2
+    });
+    scales.push({base:1,delta:Math.random()*0.02+0.01,current:1,direction:Math.random()>0.5?1:-1});
+  }
   function animateDragons(){
     dragons.forEach((dragon,i)=>{
       const o=orbits[i];
@@ -124,13 +132,16 @@ animateWheel();
       let y=o.centerY+o.radiusY*Math.sin(o.angle+o.rotateOffset);
       if(o.irregular){
         x+=Math.sin(o.angle*3+i)*30;
-        y+=Math.cos(o.angle*2+i)*20;       }
+        y+=Math.cos(o.angle*2+i)*20;
+      }
       const rot=o.crazy?o.angle*3+i*0.5:0;
       dragon.style.transform=`translate(${x}px,${y}px) scale(${s.current}) rotate(${rot}rad)`;
     });
-    requestAnimationFrame(animateDragons);   }
+    requestAnimationFrame(animateDragons);
+  }
   animateDragons();
 })();
+
 (function linesCanvas(){
   const c=document.getElementById("linesCanvas");
   const ctx=c.getContext("2d");
@@ -149,7 +160,9 @@ animateWheel();
         width:4+Math.random()*6,
         color:`hsl(${Math.random()*360},80%,50%)`,
         startTime:performance.now()
-      });     }   }
+      });
+    }
+  }
   reset();
   function draw(){
     ctx.clearRect(0,0,c.width,c.height);
@@ -164,7 +177,8 @@ animateWheel();
       ctx.stroke();
     });
     if(lines.length&&now-lines[0].startTime>5000)reset();
-    requestAnimationFrame(draw);   }
+    requestAnimationFrame(draw);
+  }
   draw();
 })();
 </script>
