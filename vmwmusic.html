@@ -3,105 +3,192 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>MusicVIC TOR "/'*</title>
+<title>MusicVIC TOR</title>
 <link rel="icon" type="image/x-icon" href="pinkfav.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Jacquard+24+Charted&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Pinyon+Script&display=swap" rel="stylesheet">
 <style>
-html, body {
-  margin:0; padding:0;
-  width:100%; height:100%;
-  background: rgb(253,255,233);
-  font-family: 'Inter', sans-serif;
+html,body{
+  margin:0;
+  padding:0;
+  width:100%;
+  height:100%;
   overflow:hidden;
+  font-family:'Inter',sans-serif;
+  background:#000;
 }
 
-#albumCover {
+canvas#bgCanvas{
+  position:fixed;
+  top:0;
+  left:0;
+  width:100%;
+  height:100%;
+  z-index:0;
+}
+
+#album{
   position:fixed;
   top:0;
   left:0;
   height:66vh;
   width:auto;
+  z-index:10;
 }
 
-#songTitle {
+#scrollText{
   position:fixed;
-  top:50%;
+  top:10%;
   left:-100%;
-  white-space: nowrap;
-  font-family: 'Jacquard 24 Charted', system-ui;
-  font-size:10vh;
-  font-weight:400;
-  animation: scrollText 10s linear infinite;
-  cursor: default;
+  font-family: 'Pinyon Script', cursive;
+  font-size:7vh;
+  white-space:nowrap;
+  color:white;
+  z-index:20;
 }
 
-@keyframes scrollText {
-  0% { left: -100%; }
-  50% { left: 100%; }
-  100% { left: -100%; }
-}
-
-#homeButton, #pinkButton {
+#homeButton, #pinkButton{
   position:fixed;
-  width:62px;
-  height:62px;
   border-radius:50%;
-  z-index:99999;
-  background: rgba(255,255,255,0.25);
+  cursor:pointer;
   backdrop-filter: blur(12px) saturate(180%);
   box-shadow: 0 10px 25px rgba(0,0,0,0.28), inset 0 -3px 10px rgba(255,255,255,0.65);
   border:1px solid rgba(255,255,255,0.35);
+  z-index:50;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-#homeButton:hover, #pinkButton:hover {
+#homeButton{
+  width:62px;
+  height:62px;
+  background: rgba(255,255,255,0.25);
+}
+
+#pinkButton{
+  width:110px;
+  height:110px;
+  background: rgba(255,50,180,0.35);
+  border-radius:25%;
+}
+
+#homeButton:hover, #pinkButton:hover{
   transform:scale(1.2);
-  box-shadow: 0 12px 30px rgba(0,0,0,0.35), inset 0 -4px 12px rgba(255,255,255,0.75);
+  box-shadow:0 12px 30px rgba(0,0,0,0.35), inset 0 -4px 12px rgba(255,255,255,0.75);
 }
 
-#pinkButton {
-  width:112px; height:112px;
-  border-radius:12px;
-  background: rgba(255,182,193,0.35);
-  backdrop-filter: blur(14px) saturate(200%);
-  border:1px solid rgba(255,192,203,0.55);
+audio{
+  display:none;
 }
-
 </style>
 </head>
 <body>
 
-<img id="albumCover" src="breakTHROUGH.png">
-<div id="songTitle">BREAKTHROUGH</div>
-<audio id="audio" src="breakTHROUGH.mp3"></audio>
+<canvas id="bgCanvas"></canvas>
+
+<img id="album" src="breakTHROUGH.png" alt="album">
+
+<div id="scrollText">breakTHROUGH</div>
 
 <div id="homeButton"></div>
 <div id="pinkButton"></div>
 
+<audio id="music" src="breakTHROUGH.mp3"></audio>
+
 <script>
-// AUDIO PLAY ON TEXT START
-const audio = document.getElementById('audio');
-const text = document.getElementById('songTitle');
-text.addEventListener('animationiteration', ()=>{}); // keep anim looping
-audio.play().catch(()=>{}); // attempt autoplay
+// ==== PIXELATED BACKGROUND ====
+const canvas = document.getElementById('bgCanvas');
+const ctx = canvas.getContext('2d');
+let pixelSize = 20;
 
-// RANDOM POSITIONING
-function placeButtons() {
-  const home = document.getElementById('homeButton');
-  const pink = document.getElementById('pinkButton');
-  const h = window.innerHeight, w = window.innerWidth;
-
-  // Both buttons overlap at first
-  const topPos = Math.random()*(h-120);
-  const leftPos = Math.random()*(w-120);
-  home.style.top = topPos + 'px';
-  home.style.left = leftPos + 'px';
-  pink.style.top = topPos + 'px';
-  pink.style.left = leftPos + 'px';
+function resizeCanvas(){
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
 }
-placeButtons();
+window.addEventListener('resize', resizeCanvas);
+resizeCanvas();
 
+function drawPixels(){
+  for(let y=0; y<canvas.height; y+=pixelSize){
+    for(let x=0; x<canvas.width; x+=pixelSize){
+      const r = Math.floor(Math.random()*255);
+      const g = Math.floor(Math.random()*255);
+      const b = Math.floor(Math.random()*255);
+      ctx.fillStyle = `rgb(${r},${g},${b})`;
+      ctx.fillRect(x,y,pixelSize,pixelSize);
+    }
+  }
+}
+setInterval(drawPixels, 500);
+
+// ==== RANDOM IMAGINED OBJECTS ====
+const objects = ['animal','town','landscape'];
+function drawObject(){
+  const type = objects[Math.floor(Math.random()*objects.length)];
+  const x = Math.random()*canvas.width*0.8;
+  const y = Math.random()*canvas.height*0.7 + canvas.height*0.1;
+  const size = 30 + Math.random()*70;
+  const colored = Math.random()<0.15;
+  ctx.save();
+  ctx.translate(x,y);
+  if(!colored) ctx.filter='grayscale(100%)';
+  ctx.fillStyle = colored ? `hsl(${Math.random()*360},80%,60%)` : '#fff';
+  ctx.strokeStyle = '#fff';
+  ctx.lineWidth=2;
+
+  if(type==='animal'){ // simple bird silhouette
+    ctx.beginPath();
+    ctx.moveTo(0,0);
+    ctx.lineTo(size/2,-size/2);
+    ctx.lineTo(size,0);
+    ctx.stroke();
+  } else if(type==='town'){ // simple buildings
+    ctx.fillRect(0,0,size/3,size);
+    ctx.fillRect(size/2,0,size/4,size*0.6);
+  } else if(type==='landscape'){ // hill and sun
+    ctx.beginPath();
+    ctx.arc(size/2,size/2,size/2,Math.PI,0);
+    ctx.fill();
+    ctx.beginPath();
+    ctx.arc(size*1.2,-size/3,size/4,0,Math.PI*2);
+    ctx.fill();
+  }
+  ctx.restore();
+}
+setInterval(drawObject, 700);
+
+// ==== SCROLLING TEXT + MUSIC ====
+const scrollText = document.getElementById('scrollText');
+const music = document.getElementById('music');
+let textX = -scrollText.offsetWidth;
+let start = false;
+
+function animateText(){
+  if(!start){
+    start = true;
+    music.play().catch(()=>{}); // start music when text moves
+  }
+  textX += 2;
+  if(textX > window.innerWidth) textX = -scrollText.offsetWidth;
+  scrollText.style.left = textX+'px';
+  requestAnimationFrame(animateText);
+}
+animateText();
+
+// ==== BUTTONS ====
 const homeButton = document.getElementById('homeButton');
-homeButton.addEventLi
+const pinkButton = document.getElementById('pinkButton');
+
+function randomizeButton(button){
+  button.style.top = Math.random()*(window.innerHeight-70)+'px';
+  button.style.left = Math.random()*(window.innerWidth-70)+'px';
+}
+randomizeButton(homeButton);
+randomizeButton(pinkButton);
+
+homeButton.addEventListener('click',()=>{window.location.href='https://victormasotti.com/';});
+pinkButton.addEventListener('click',()=>{alert("Random song would play!");});
+</script>
+
+</body>
+</html>
