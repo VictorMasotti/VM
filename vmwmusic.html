@@ -3,19 +3,17 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>MusicVIC TOR</title>
+<title>MusicVIC TOR "/'*</title>
 <link rel="icon" type="image/x-icon" href="pinkfav.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Jacquard+24+Charted&display=swap" rel="stylesheet">
 <style>
 html, body {
-  margin:0;
-  padding:0;
-  width:100%;
-  height:100%;
+  margin:0; padding:0;
+  width:100%; height:100%;
   background: rgb(253,255,233);
-  font-family:'Inter', sans-serif;
+  font-family: 'Inter', sans-serif;
   overflow:hidden;
 }
 
@@ -25,135 +23,85 @@ html, body {
   left:0;
   height:66vh;
   width:auto;
-  object-fit:cover;
-  z-index:1;
 }
 
 #songTitle {
   position:fixed;
-  font-family: "Jacquard 24 Charted", system-ui;
-  font-weight:400;
-  font-size:5vh;
+  top:50%;
+  left:-100%;
   white-space: nowrap;
-  pointer-events:none;
-  z-index:9999;
-  bottom:20%; /* will be randomized in JS */
-  left: -100%;
+  font-family: 'Jacquard 24 Charted', system-ui;
+  font-size:10vh;
+  font-weight:400;
+  animation: scrollText 10s linear infinite;
+  cursor: default;
 }
 
-button {
+@keyframes scrollText {
+  0% { left: -100%; }
+  50% { left: 100%; }
+  100% { left: -100%; }
+}
+
+#homeButton, #pinkButton {
   position:fixed;
-  z-index:10000;
-  cursor:pointer;
+  width:62px;
+  height:62px;
   border-radius:50%;
-  border:1px solid rgba(255,255,255,0.35);
-  backdrop-filter: blur(12px) saturate(180%);
+  z-index:99999;
   background: rgba(255,255,255,0.25);
+  backdrop-filter: blur(12px) saturate(180%);
   box-shadow: 0 10px 25px rgba(0,0,0,0.28), inset 0 -3px 10px rgba(255,255,255,0.65);
+  border:1px solid rgba(255,255,255,0.35);
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
-button:hover {
-  transform: scale(1.2);
+
+#homeButton:hover, #pinkButton:hover {
+  transform:scale(1.2);
   box-shadow: 0 12px 30px rgba(0,0,0,0.35), inset 0 -4px 12px rgba(255,255,255,0.75);
 }
 
-#homeButton {
-  width:62px;
-  height:62px;
-}
-
-#randomButton {
-  width: 111px; /* 1.8x */
-  height: 111px;
-  background: rgba(255,200,220,0.35);
-  right:0;
+#pinkButton {
+  width:112px; height:112px;
+  border-radius:12px;
+  background: rgba(255,182,193,0.35);
+  backdrop-filter: blur(14px) saturate(200%);
+  border:1px solid rgba(255,192,203,0.55);
 }
 
 </style>
 </head>
 <body>
 
-<img id="albumCover" src="breakTHROUGH.png" alt="Album">
+<img id="albumCover" src="breakTHROUGH.png">
+<div id="songTitle">BREAKTHROUGH</div>
+<audio id="audio" src="breakTHROUGH.mp3"></audio>
 
-<div id="songTitle">breakTHROUGH</div>
-<audio id="audio" src="breakTHROUGH.mp3" loop></audio>
-
-<button id="homeButton"></button>
-<button id="randomButton"></button>
+<div id="homeButton"></div>
+<div id="pinkButton"></div>
 
 <script>
-// ===== Home Button Position & Click =====
-const homeButton = document.getElementById('homeButton');
-function randomHomePos() {
-  homeButton.style.top = Math.random()*(window.innerHeight-70)+'px';
-  homeButton.style.left = Math.random()*(window.innerWidth-70)+'px';
-}
-randomHomePos();
-homeButton.addEventListener('click', ()=>window.location.href='https://victormasotti.com/');
-
-// ===== Random Button Right-Half Only =====
-const randomButton = document.getElementById('randomButton');
-function randomRightHalfPos() {
-  const minX = window.innerWidth/2;
-  const maxX = window.innerWidth - randomButton.offsetWidth;
-  const x = Math.random()*(maxX - minX) + minX;
-  const y = Math.random()*(window.innerHeight - randomButton.offsetHeight);
-  randomButton.style.left = x+'px';
-  randomButton.style.top = y+'px';
-}
-randomRightHalfPos();
-
-const songs = [
-  {title:'breakTHROUGH', file:'breakTHROUGH.mp3'},
-  // add more song objects here
-];
-randomButton.addEventListener('click', ()=>{
-  const choice = songs[Math.floor(Math.random()*songs.length)];
-  document.getElementById('albumCover').src = choice.file.replace('.mp3','.png');
-  document.getElementById('songTitle').textContent = choice.title;
-  audio.src = choice.file;
-  audio.play().catch(()=>{});
-  randomRightHalfPos();
-});
-
-// ===== Scrolling Title =====
-const title = document.getElementById('songTitle');
+// AUDIO PLAY ON TEXT START
 const audio = document.getElementById('audio');
-let firstMove = true;
+const text = document.getElementById('songTitle');
+text.addEventListener('animationiteration', ()=>{}); // keep anim looping
+audio.play().catch(()=>{}); // attempt autoplay
 
-// Random vertical position between 20% and 80% from bottom
-function randomY() {
-  const min = window.innerHeight*0.2;
-  const max = window.innerHeight*0.8;
-  title.style.bottom = Math.random()*(max-min)+min+'px';
+// RANDOM POSITIONING
+function placeButtons() {
+  const home = document.getElementById('homeButton');
+  const pink = document.getElementById('pinkButton');
+  const h = window.innerHeight, w = window.innerWidth;
+
+  // Both buttons overlap at first
+  const topPos = Math.random()*(h-120);
+  const leftPos = Math.random()*(w-120);
+  home.style.top = topPos + 'px';
+  home.style.left = leftPos + 'px';
+  pink.style.top = topPos + 'px';
+  pink.style.left = leftPos + 'px';
 }
-randomY();
+placeButtons();
 
-let x = -title.offsetWidth;
-const speed = 1.2; // pixels per frame
-
-function animateTitle(){
-  x += speed;
-  if(x > window.innerWidth) x = -title.offsetWidth;
-  // easing: slight sine ease
-  const easeX = x + Math.sin(Date.now()/200)*20;
-  title.style.transform = `translateX(${easeX}px)`;
-
-  if(firstMove){
-    firstMove=false;
-    audio.play().catch(()=>{});
-  }
-
-  requestAnimationFrame(animateTitle);
-}
-animateTitle();
-
-// ===== Window resize adjustments =====
-window.addEventListener('resize', ()=>{
-  randomRightHalfPos();
-  randomY();
-});
-
-</script>
-</body>
-</html>
+const homeButton = document.getElementById('homeButton');
+homeButton.addEventLi
