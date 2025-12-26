@@ -3,51 +3,157 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>MusicVIC TOR "/'*</title>
+<title>MusicVIC TOR</title>
 <link rel="icon" type="image/x-icon" href="pinkfav.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Jacquard+24+Charted&display=swap" rel="stylesheet">
 <style>
-html,body{margin:0;padding:0;width:100%;height:100%;overflow:hidden;background-color:rgb(253,255,233);font-family:system-ui,sans-serif;position:relative}
-#albumCover{position:absolute;top:0;left:0;height:66vh;width:auto;object-fit:cover;z-index:10}
-.track-title{position:absolute;font-family:"Jacquard 24 Charted",system-ui;font-weight:400;font-size:10vh;white-space:nowrap;z-index:20;animation:scrollTitle 15s linear infinite;animation-timing-function:cubic-bezier(0.25,0.1,0.25,1)}
-@keyframes scrollTitle{0%{transform:translateX(100%)}100%{transform:translateX(-100%)}}
-.button{position:fixed;border-radius:50%;z-index:9999;background:rgba(255,255,255,0.25);backdrop-filter:blur(12px) saturate(180%);box-shadow:0 10px 25px rgba(0,0,0,0.28),inset 0 -3px 10px rgba(255,255,255,0.65);border:1px solid rgba(255,255,255,0.35);transition:transform 0.2s ease,box-shadow 0.2s ease;cursor:pointer}
-.button:hover{transform:scale(1.2);box-shadow:0 12px 30px rgba(0,0,0,0.35),inset 0 -4px 12px rgba(255,255,255,0.75)}
-#homeButton{width:62px;height:62px}
-#secondButton{width:111.6px;height:111.6px;background:rgba(255,200,220,0.25)}
-@media(max-width:768px){#albumCover{height:50vh}.track-title{font-size:8vh}}
+html, body {
+  margin:0;
+  padding:0;
+  width:100%;
+  height:100%;
+  background: rgb(253,255,233);
+  font-family:'Inter', sans-serif;
+  overflow:hidden;
+}
+
+#albumCover {
+  position:fixed;
+  top:0;
+  left:0;
+  height:66vh;
+  width:auto;
+  object-fit:cover;
+  z-index:1;
+}
+
+#songTitle {
+  position:fixed;
+  font-family: "Jacquard 24 Charted", system-ui;
+  font-weight:400;
+  font-size:5vh;
+  white-space: nowrap;
+  pointer-events:none;
+  z-index:9999;
+  bottom:20%; /* will be randomized in JS */
+  left: -100%;
+}
+
+button {
+  position:fixed;
+  z-index:10000;
+  cursor:pointer;
+  border-radius:50%;
+  border:1px solid rgba(255,255,255,0.35);
+  backdrop-filter: blur(12px) saturate(180%);
+  background: rgba(255,255,255,0.25);
+  box-shadow: 0 10px 25px rgba(0,0,0,0.28), inset 0 -3px 10px rgba(255,255,255,0.65);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+button:hover {
+  transform: scale(1.2);
+  box-shadow: 0 12px 30px rgba(0,0,0,0.35), inset 0 -4px 12px rgba(255,255,255,0.75);
+}
+
+#homeButton {
+  width:62px;
+  height:62px;
+}
+
+#randomButton {
+  width: 111px; /* 1.8x */
+  height: 111px;
+  background: rgba(255,200,220,0.35);
+  right:0;
+}
+
 </style>
 </head>
 <body>
-<img id="albumCover" src="breakTHROUGH.png" alt="Album Cover">
-<div id="trackTitle" class="track-title">Breakthrough</div>
-<audio id="audioTrack" src="breakTHROUGH.mp3" autoplay></audio>
-<div id="homeButton" class="button"></div>
-<div id="secondButton" class="button"></div>
+
+<img id="albumCover" src="breakTHROUGH.png" alt="Album">
+
+<div id="songTitle">breakTHROUGH</div>
+<audio id="audio" src="breakTHROUGH.mp3" loop></audio>
+
+<button id="homeButton"></button>
+<button id="randomButton"></button>
+
 <script>
-const randomBetween=(min,max)=>Math.random()*(max-min)+min
-const homeButton=document.getElementById('homeButton')
-homeButton.style.top=randomBetween(0,window.innerHeight-70)+'px'
-homeButton.style.left=randomBetween(0,window.innerWidth-70)+'px'
-homeButton.addEventListener('click',()=>{window.location.href='https://victormasotti.com/'})
-const secondButton=document.getElementById('secondButton')
-function positionSecondButton(){secondButton.style.top=randomBetween(0,window.innerHeight-120)+'px';secondButton.style.left=randomBetween(window.innerWidth/2,window.innerWidth-120)+'px'}
-positionSecondButton()
-secondButton.addEventListener('click',()=>{
-const titles=["Breakthrough","Eclipse","Reverie","Cascade"]
-const audios=["breakTHROUGH.mp3","eclipse.mp3","reverie.mp3","cascade.mp3"]
-const idx=Math.floor(Math.random()*titles.length)
-document.getElementById('trackTitle').textContent=titles[idx]
-const audio=document.getElementById('audioTrack')
-audio.src=audios[idx]
-audio.play()
-positionSecondButton()
-})
-const trackTitle=document.getElementById('trackTitle')
-trackTitle.style.top=randomBetween(window.innerHeight*0.2,window.innerHeight)+'px'
-window.addEventListener('resize',()=>{trackTitle.style.top=randomBetween(window.innerHeight*0.2,window.innerHeight)+'px'})
+// ===== Home Button Position & Click =====
+const homeButton = document.getElementById('homeButton');
+function randomHomePos() {
+  homeButton.style.top = Math.random()*(window.innerHeight-70)+'px';
+  homeButton.style.left = Math.random()*(window.innerWidth-70)+'px';
+}
+randomHomePos();
+homeButton.addEventListener('click', ()=>window.location.href='https://victormasotti.com/');
+
+// ===== Random Button Right-Half Only =====
+const randomButton = document.getElementById('randomButton');
+function randomRightHalfPos() {
+  const minX = window.innerWidth/2;
+  const maxX = window.innerWidth - randomButton.offsetWidth;
+  const x = Math.random()*(maxX - minX) + minX;
+  const y = Math.random()*(window.innerHeight - randomButton.offsetHeight);
+  randomButton.style.left = x+'px';
+  randomButton.style.top = y+'px';
+}
+randomRightHalfPos();
+
+const songs = [
+  {title:'breakTHROUGH', file:'breakTHROUGH.mp3'},
+  // add more song objects here
+];
+randomButton.addEventListener('click', ()=>{
+  const choice = songs[Math.floor(Math.random()*songs.length)];
+  document.getElementById('albumCover').src = choice.file.replace('.mp3','.png');
+  document.getElementById('songTitle').textContent = choice.title;
+  audio.src = choice.file;
+  audio.play().catch(()=>{});
+  randomRightHalfPos();
+});
+
+// ===== Scrolling Title =====
+const title = document.getElementById('songTitle');
+const audio = document.getElementById('audio');
+let firstMove = true;
+
+// Random vertical position between 20% and 80% from bottom
+function randomY() {
+  const min = window.innerHeight*0.2;
+  const max = window.innerHeight*0.8;
+  title.style.bottom = Math.random()*(max-min)+min+'px';
+}
+randomY();
+
+let x = -title.offsetWidth;
+const speed = 1.2; // pixels per frame
+
+function animateTitle(){
+  x += speed;
+  if(x > window.innerWidth) x = -title.offsetWidth;
+  // easing: slight sine ease
+  const easeX = x + Math.sin(Date.now()/200)*20;
+  title.style.transform = `translateX(${easeX}px)`;
+
+  if(firstMove){
+    firstMove=false;
+    audio.play().catch(()=>{});
+  }
+
+  requestAnimationFrame(animateTitle);
+}
+animateTitle();
+
+// ===== Window resize adjustments =====
+window.addEventListener('resize', ()=>{
+  randomRightHalfPos();
+  randomY();
+});
+
 </script>
 </body>
 </html>
