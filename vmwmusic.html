@@ -9,110 +9,194 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Pinyon+Script&display=swap" rel="stylesheet">
 <style>
-html, body {
+html, body{
   margin:0;
   padding:0;
   width:100%;
   height:100%;
-  background:#f2f2f2;
-  font-family:'Inter',sans-serif;
-  display:flex;
-  flex-direction:column;
-  box-sizing:border-box;
-}
-
-.section {
-  display:flex;
-  width:100%;
-  flex:1;
-  border:2.75% solid #333;
-  border-radius:12px;
-  margin:0;
-  box-sizing:border-box;
   overflow:hidden;
+  font-family:'Inter',sans-serif;
+  background:#C9CED4;
 }
 
-#sectionA {
-  display:flex;
-}
-
-.block {
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  border:1px solid #333;
-  background:#eaeaea;
-  box-sizing:border-box;
-  margin:0;
-  position:relative;
-}
-
-.block-button {
-  width:75%;
-  height:75%;
-  background:#f5f5f5;
-  border:1px solid #555;
-  border-radius:8px;
-  box-shadow: inset -2px -2px 6px rgba(255,255,255,0.7), inset 2px 2px 6px rgba(0,0,0,0.15);
-  transition: transform 0.2s cubic-bezier(0.25,0.8,0.25,1), box-shadow 0.3s ease;
-}
-.block-button:active {
-  transform:translateY(3px);
-  box-shadow: inset 2px 2px 6px rgba(0,0,0,0.15), inset -2px -2px 6px rgba(255,255,255,0.7);
-}
-
-#sectionB, #sectionC {
-  background:#eaeaea;
-}
-
-.block-small-container {
+.container{
+  position:absolute;
+  top:2vh;
+  left:2vw;
+  width:calc(100% - 4vw);
+  height:calc(100% - 4vh);
   display:flex;
   flex-direction:column;
-  justify-content:space-between;
-  flex:1;
+  gap:0.4vh;
+  border-radius:2vh;
+  box-sizing:border-box;
+  background:#C9CED4;
 }
 
-.block-small-top {
+section{
+  flex:1;
+  display:flex;
+  flex-wrap:wrap;
+  gap:0.5vh;
+  border-radius:1.5vh;
+  padding:0.5vh;
+  box-sizing:border-box;
+  background:#2F3035;
+}
+
+.sectionA .block1, 
+.sectionA .block2, 
+.sectionA .block5{
+  flex:1;
+  border-radius:1.5vh;
+  background:#C9CED4;
+  position:relative;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.25), inset 0 -2px 6px rgba(0,0,0,0.15);
+}
+
+.sectionA .block3_4{
+  flex:2;
+  border-radius:1.5vh;
+  background:#111111;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.25), inset 0 -2px 6px rgba(0,0,0,0.15);
+}
+
+.block2{
+  flex-direction:column;
+  gap:0.4vh;
+}
+
+.block2 .topHalf{
   flex:1;
   display:flex;
   justify-content:center;
   align-items:center;
-  border-bottom:1px solid #333;
 }
 
-.block-small-bottom {
+.block2 .bottomHalf{
   flex:1;
   display:flex;
   justify-content:space-around;
   align-items:center;
 }
 
-.block-small-bottom .block-button {
-  width:40%;
-  height:70%;
+button{
+  width:80%;
+  height:80%;
+  background:#C9CED4;
+  border:1px solid #2F3035;
+  border-radius:1vh;
+  box-shadow:2px 2px 8px rgba(0,0,0,0.2), inset 0 -2px 4px rgba(0,0,0,0.15);
+  cursor:pointer;
+  transition: transform 0.2s ease-out, box-shadow 0.2s ease-out;
+}
+
+button:active{
+  transform:translateY(3px);
+  box-shadow:1px 1px 4px rgba(0,0,0,0.3), inset 0 -1px 2px rgba(0,0,0,0.1);
+  transition: transform 2s cubic-bezier(0.25,1,0.5,1), box-shadow 2s cubic-bezier(0.25,1,0.5,1);
+}
+
+.block1 canvas{
+  width:100%;
+  height:100%;
+  border-radius:1vh;
+  image-rendering: pixelated;
+}
+
+.sectionB .block, .sectionC .block{
+  flex:1 0 calc(10% - 0.5vh);
+  height:calc(50% - 0.25vh);
+  border-radius:1vh;
+  background:#C9CED4;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.25), inset 0 -2px 6px rgba(0,0,0,0.15);
 }
 </style>
 </head>
 <body>
-
-<div class="section" id="sectionA">
-  <div class="block" style="flex:1;"><div class="block-button"></div></div>
-  
-  <div class="block block-small-container" style="flex:1;">
-    <div class="block-small-top"><div class="block-button"></div></div>
-    <div class="block-small-bottom">
-      <div class="block-button"></div>
-      <div class="block-button"></div>
+<div class="container">
+  <section class="section sectionA">
+    <div class="block block1"><canvas id="dotMatrix"></canvas></div>
+    <div class="block block2">
+      <div class="topHalf"><button></button></div>
+      <div class="bottomHalf">
+        <button></button><button></button>
+      </div>
     </div>
-  </div>
-  
-  <div class="block" style="flex:2; background:black;"></div>
-  <div class="block" style="flex:2; background:black;"></div>
-  <div class="block" style="flex:1;"><div class="block-button"></div></div>
+    <div class="block block3_4"></div>
+    <div class="block block5"><button></button></div>
+  </section>
+
+  <section class="section sectionB">
+    <!-- 20 blocks -->
+    <div class="block"></div><div class="block"></div><div class="block"></div><div class="block"></div><div class="block"></div>
+    <div class="block"></div><div class="block"></div><div class="block"></div><div class="block"></div><div class="block"></div>
+    <div class="block"></div><div class="block"></div><div class="block"></div><div class="block"></div><div class="block"></div>
+    <div class="block"></div><div class="block"></div><div class="block"></div><div class="block"></div><div class="block"></div>
+  </section>
+
+  <section class="section sectionC">
+    <!-- 20 blocks -->
+    <div class="block"></div><div class="block"></div><div class="block"></div><div class="block"></div><div class="block"></div>
+    <div class="block"></div><div class="block"></div><div class="block"></div><div class="block"></div><div class="block"></div>
+    <div class="block"></div><div class="block"></div><div class="block"></div><div class="block"></div><div class="block"></div>
+    <div class="block"></div><div class="block"></div><div class="block"></div><div class="block"></div><div class="block"></div>
+  </section>
 </div>
 
-<div class="section" id="sectionB"></div>
-<div class="section" id="sectionC"></div>
+<script>
+const canvas = document.getElementById('dotMatrix');
+const ctx = canvas.getContext('2d');
 
+function resizeCanvas(){
+  canvas.width = canvas.offsetWidth;
+  canvas.height = canvas.offsetHeight;
+}
+resizeCanvas();
+window.addEventListener('resize', resizeCanvas);
+
+const gridSize = 19;
+const dotRadius = 5;
+
+function drawPixelatedCircle(){
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  const centerX = canvas.width/2;
+  const centerY = canvas.height/2;
+  const radius = Math.min(canvas.width, canvas.height)/2 * 0.85;
+  const spacingX = (2*radius)/(gridSize-1);
+  const spacingY = (2*radius)/(gridSize-1);
+
+  for(let r=0; r<gridSize; r++){
+    for(let c=0; c<gridSize; c++){
+      const x = centerX - radius + c*spacingX;
+      const y = centerY - radius + r*spacingY;
+      const dx = x - centerX;
+      const dy = y - centerY;
+      if(dx*dx + dy*dy <= radius*radius){
+        let chance = 0.9 - (Math.sqrt(dx*dx + dy*dy)/radius)*0.75;
+        if(Math.random() < chance){
+          const rand = Math.random();
+          let color = '#222';
+          if(rand < 0.01) color = '#FFAA33';
+          else if(rand < 0.03) color = '#FFFF66';
+          ctx.beginPath();
+          ctx.arc(x, y, dotRadius, 0, Math.PI*2);
+          ctx.fillStyle = color;
+          ctx.fill();
+        }
+      }
+    }
+  }
+}
+
+setInterval(drawPixelatedCircle, 132);
+drawPixelatedCircle();
+</script>
 </body>
 </html>
