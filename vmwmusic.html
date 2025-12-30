@@ -6,83 +6,129 @@
 <title>MusicVIC TOR</title>
 <link rel="icon" type="image/x-icon" href="pinkfav.png">
 <style>
-html,body{margin:0;padding:0;width:100%;height:100%;overflow:hidden;font-family:'Inter',sans-serif}
-.container{position:absolute;top:2vh;left:2vw;width:calc(100% - 4vw);height:calc(100% - 4vh);display:flex;flex-direction:column;gap:0.4vh;border-radius:2vh}
+/* FULL PAGE BASE BACKGROUND */
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  font-family: 'Inter', sans-serif;
+  background-color: #C9CED4; /* absolute bottom background */
+}
+
+/* CONTAINER */
+.container {
+  position: absolute;
+  top: 2vh;
+  left: 2vw;
+  width: calc(100% - 4vw);
+  height: calc(100% - 4vh);
+  display: flex;
+  flex-direction: column;
+  gap: 0.4vh;
+  border-radius: 2vh;
+  /* background removed so bottom background shows through */
+}
 
 /* SECTION A */
-.sectionA{flex:0 0 33%; display:flex; flex-wrap:wrap; gap:0.5vh; padding:0.5vh; border-radius:1.5vh; background:#2F3035; position:relative;}
-.sectionA .block1,.sectionA .block2,.sectionA .block5{
-  flex:1; background:#C9CED4; border-radius:1.5vh; display:flex; justify-content:center; align-items:center;
-  box-shadow:0 4px 8px rgba(0,0,0,0.25), inset 0 -2px 6px rgba(0,0,0,0.15);
+.sectionA {
+  flex: 0 0 33%;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5vh;
+  padding: 0.5vh;
+  border-radius: 1.5vh;
+  background: #2F3035;
+  position: relative;
 }
-.sectionA .block3_4{flex:2; border-radius:1.5vh; background:#111; overflow:hidden}
+.sectionA .block1, .sectionA .block2, .sectionA .block5 {
+  flex: 1;
+  background: #C9CED4;
+  border-radius: 1.5vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.25), inset 0 -2px 6px rgba(0,0,0,0.15);
+}
+.sectionA .block3_4 {
+  flex: 2;
+  border-radius: 1.5vh;
+  background: #111;
+  overflow: hidden;
+}
 
 /* SECTION B & C styled like A */
-.sectionB, .sectionC{
-  display:flex;
-  flex-wrap:wrap;
-  gap:0.5vh;
-  padding:0.5vh;
-  border-radius:1.5vh;
-  background:#2F3035;
-  position:relative;
+.sectionB, .sectionC {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5vh;
+  padding: 0.5vh;
+  border-radius: 1.5vh;
+  background: #2F3035;
+  position: relative;
 }
 
-/* SECTION B BLOCKS */
-.sectionB .block, .sectionC .block{
-  flex:1 0 calc(10% - 0.5vh);
-  aspect-ratio:1/1;
-  background:#C9CED4;
-  border-radius:1.5vh;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  position:relative;
-  overflow:hidden;
-  box-shadow:0 4px 8px rgba(0,0,0,0.25), inset 0 -2px 6px rgba(0,0,0,0.15);
+/* SECTION B & C BLOCKS */
+.sectionB .block, .sectionC .block {
+  flex: 1 0 calc(10% - 0.5vh);
+  aspect-ratio: 1/1;
+  background: #C9CED4;
+  border-radius: 1.5vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.25), inset 0 -2px 6px rgba(0,0,0,0.15);
 }
 
 /* GLASS BUTTONS */
-.glassButton{
-  width:75%;
-  height:75%;
-  border-radius:50%;
-  position:relative;
-  background:linear-gradient(145deg,rgba(255,255,255,0.28),rgba(255,255,255,0.06));
+.glassButton {
+  width: 75%;
+  height: 75%;
+  border-radius: 50%;
+  position: relative;
+  background: linear-gradient(145deg, rgba(255,255,255,0.28), rgba(255,255,255,0.06));
   backdrop-filter: blur(10px);
-  box-shadow:4px 4px 10px rgba(0,0,0,0.32), inset 0 -4px 8px rgba(0,0,0,0.28), inset 0 2px 4px rgba(255,255,255,0.45);
-  will-change:transform;
+  box-shadow: 4px 4px 10px rgba(0,0,0,0.32), inset 0 -4px 8px rgba(0,0,0,0.28), inset 0 2px 4px rgba(255,255,255,0.45);
+  will-change: transform;
 }
-.blockInnerCircle{
-  position:absolute;
-  width:55%; height:55%;
-  top:22.5%; left:22.5%;
-  border-radius:50%;
-  box-shadow:inset 0 2px 4px rgba(255,255,255,0.35), inset 0 -3px 6px rgba(0,0,0,0.35);
+.blockInnerCircle {
+  position: absolute;
+  width: 55%; height: 55%;
+  top: 22.5%; left: 22.5%;
+  border-radius: 50%;
+  box-shadow: inset 0 2px 4px rgba(255,255,255,0.35), inset 0 -3px 6px rgba(0,0,0,0.35);
 }
-.secondaryCircle{
-  position:absolute; inset:0;
-  border-radius:50%;
-  background:radial-gradient(circle at 30% 30%,rgba(255,255,255,0.35),rgba(0,0,0,0.15));
-  box-shadow:inset 0 3px 6px rgba(255,255,255,0.25), inset 0 -6px 10px rgba(0,0,0,0.45);
-  pointer-events:none;
+.secondaryCircle {
+  position: absolute; inset: 0;
+  border-radius: 50%;
+  background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.35), rgba(0,0,0,0.15));
+  box-shadow: inset 0 3px 6px rgba(255,255,255,0.25), inset 0 -6px 10px rgba(0,0,0,0.45);
+  pointer-events: none;
 }
 
 /* SECTION C FLEXIBLE */
-.sectionC{
-  flex:1 1 auto;
-  align-items:stretch;
-  justify-content:space-between;
-  border-bottom:2px solid #2F3035;
+.sectionC {
+  flex: 1 1 auto;
+  align-items: stretch;
+  justify-content: space-between;
+  border-bottom: 2px solid #2F3035;
 }
-.sectionC .block{
-  flex:1 0 calc(10% - 0.5vh);
-  display:flex;
-  justify-content:center;
-  align-items:stretch;
+.sectionC .block {
+  flex: 1 0 calc(10% - 0.5vh);
+  display: flex;
+  justify-content: center;
+  align-items: stretch;
 }
 
-.block1 canvas{width:100%;height:100%;image-rendering:pixelated}
+/* CANVAS DOT MATRIX */
+.block1 canvas {
+  width: 100%;
+  height: 100%;
+  image-rendering: pixelated;
+}
 </style>
 </head>
 <body>
@@ -101,48 +147,48 @@ html,body{margin:0;padding:0;width:100%;height:100%;overflow:hidden;font-family:
 </div>
 
 <script>
-// MATRIX
-const canvas=document.getElementById('dotMatrix'),ctx=canvas.getContext('2d');
-function resize(){canvas.width=canvas.offsetWidth;canvas.height=canvas.offsetHeight}
-resize();window.addEventListener('resize',resize);
+// MATRIX DOTS
+const canvas = document.getElementById('dotMatrix'), ctx = canvas.getContext('2d');
+function resize() { canvas.width = canvas.offsetWidth; canvas.height = canvas.offsetHeight; }
+resize(); window.addEventListener('resize', resize);
 
-const gs=19,dr=4;
+const gs = 20, dr = 4;
 function draw(){
   ctx.clearRect(0,0,canvas.width,canvas.height);
-  const cx=canvas.width/2,cy=canvas.height/2,r=Math.min(canvas.width,canvas.height)/2*0.85,s=(2*r)/(gs-1);
+  const cx = canvas.width/2, cy = canvas.height/2, r = Math.min(canvas.width,canvas.height)/2*0.85, s = (2*r)/(gs-1);
   for(let y=0;y<gs;y++)for(let x=0;x<gs;x++){
-    const px=cx-r+x*s,py=cy-r+y*s,dx=px-cx,dy=py-cy;
-    if(dx*dx+dy*dy<=r*r){
-      const rnd=Math.random()*100;
+    const px=cx-r+x*s, py=cy-r+y*s, dx=px-cx, dy=py-cy;
+    if(dx*dx+dy*dy <= r*r){
+      const rnd = Math.random()*99;
       let col='#000';
       if(rnd<2) col='#ff8000';
       else if(rnd<2.6) col='#ffb343';
       else if(rnd<3) col='#40bcf4';
       ctx.beginPath();
-      ctx.arc(px,py,dr,0,2*Math.PI);
+      ctx.arc(px, py, dr, 0, 2*Math.PI);
       ctx.fillStyle=col;
       ctx.fill();
     }
   }
 }
-setInterval(draw,265);draw();
+setInterval(draw,265); draw();
 
 // CREATE BLOCKS
-function createBlocks(section,num){
+function createBlocks(section, num){
   for(let i=0;i<num;i++){
-    const block=document.createElement('div');block.className='block';
-    const btn=document.createElement('div');btn.className='glassButton';
-    btn.addEventListener('click',()=>{
-      const s=document.createElement('div');s.className='secondaryCircle';
+    const block=document.createElement('div'); block.className='block';
+    const btn=document.createElement('div'); btn.className='glassButton';
+    btn.addEventListener('click', ()=>{
+      const s=document.createElement('div'); s.className='secondaryCircle';
       btn.appendChild(s);
-      s.animate([{transform:'scale(1)',opacity:1},{transform:'scale(0.82)',opacity:0}],{duration:900,easing:'cubic-bezier(0.25,1,0.5,1)'});
+      s.animate([{transform:'scale(1)',opacity:1},{transform:'scale(0.82)',opacity:0}], {duration:900, easing:'cubic-bezier(0.25,1,0.5,1)'});
       setTimeout(()=>s.remove(),900);
       const nova=document.createElement('div');
-      nova.style.position='absolute';nova.style.top='50%';nova.style.left='50%';
-      nova.style.width='100%';nova.style.height='100%';nova.style.transform='translate(-50%,-50%)';
-      nova.style.borderRadius='50%';nova.style.background='rgba(180,180,180,0.5)';nova.style.filter='blur(4px)';nova.style.pointerEvents='none';
+      nova.style.position='absolute'; nova.style.top='50%'; nova.style.left='50%';
+      nova.style.width='100%'; nova.style.height='100%'; nova.style.transform='translate(-50%,-50%)';
+      nova.style.borderRadius='50%'; nova.style.background='rgba(180,180,180,0.5)'; nova.style.filter='blur(4px)'; nova.style.pointerEvents='none';
       btn.appendChild(nova);
-      nova.animate([{transform:'translate(-50%,-50%) scale(1)',opacity:1},{transform:'translate(-50%,-50%) scale(1.4)',opacity:0}],{duration:1100,easing:'ease-out'});
+      nova.animate([{transform:'translate(-50%,-50%) scale(1)',opacity:1},{transform:'translate(-50%,-50%) scale(1.4)',opacity:0}], {duration:1100, easing:'ease-out'});
       setTimeout(()=>nova.remove(),1100);
     });
     block.appendChild(btn);
@@ -150,25 +196,25 @@ function createBlocks(section,num){
   }
 }
 
-const sectionB=document.getElementById('sectionB');createBlocks(sectionB,20);
-const sectionC=document.getElementById('sectionC');createBlocks(sectionC,10);
+const sectionB = document.getElementById('sectionB'); createBlocks(sectionB,20);
+const sectionC = document.getElementById('sectionC'); createBlocks(sectionC,10);
 
 // COLOR BUTTONS
-const colors=['#ff8000','#00e054','#ffb343','#40bcf4'];
+const colors = ['#ff8000','#00e054','#ffb343','#40bcf4'];
 [...sectionB.children].slice(4,8).forEach((block,i)=>{
-  const c=document.createElement('div');c.className='blockInnerCircle';
-  c.style.background=colors[i];
+  const c = document.createElement('div'); c.className='blockInnerCircle';
+  c.style.background = colors[i];
   block.querySelector('.glassButton').appendChild(c);
 });
 
-// CURSOR FOLLOW
-document.addEventListener('mousemove',e=>{
+// CURSOR FOLLOW - applies to both sections currently
+document.addEventListener('mousemove', e=>{
   [...sectionB.children,...sectionC.children].forEach(block=>{
-    const btn=block.querySelector('.glassButton');
-    if(!btn)return;
-    const r=block.getBoundingClientRect(),dx=e.clientX-(r.left+r.width/2),dy=e.clientY-(r.top+r.height/2),dist=Math.hypot(dx,dy);
-    const strength=Math.max(0,1-dist/120)*2;
-    btn.style.transform=`translate(${dx*0.25*strength}px,${dy*0.25*strength}px) scale(${1+strength*0.05})`;
+    const btn = block.querySelector('.glassButton');
+    if(!btn) return;
+    const r = block.getBoundingClientRect(), dx = e.clientX-(r.left+r.width/2), dy = e.clientY-(r.top+r.height/2), dist = Math.hypot(dx,dy);
+    const strength = Math.max(0,1-dist/120)*2;
+    btn.style.transform = `translate(${dx*0.25*strength}px,${dy*0.25*strength}px) scale(${1+strength*0.05})`;
   })
 });
 </script>
