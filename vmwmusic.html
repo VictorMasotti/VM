@@ -102,7 +102,7 @@ html, body {
               inset 0 -2px 6px rgba(0,0,0,0.15);
 }
 
-/* GLASS BUTTON (ORIGINAL) */
+/* GLASS BUTTON */
 .glassButton {
   width: 75%;
   height: 75%;
@@ -193,7 +193,32 @@ html, body {
 </div>
 
 <script>
-/* RANDOM IMAGE (BLOCK 2) */
+/* =======================
+   AUDIO (RANDOM START)
+======================= */
+const audio = new Audio('breakTHROUGH.mp3');
+audio.preload = 'auto';
+
+let audioUnlocked = false;
+const unlockAudio = () => {
+  if (!audioUnlocked) {
+    audio.play().catch(()=>{});
+    audioUnlocked = true;
+    document.removeEventListener('click', unlockAudio);
+  }
+};
+document.addEventListener('click', unlockAudio);
+
+/* Restart audio at random time on Block 5 click */
+document.querySelector('.block5 .glassButton')
+  .addEventListener('click', () => {
+    const maxTime = 85; // seconds (1:25)
+    const randomTime = Math.random() * maxTime;
+    audio.currentTime = randomTime;
+    audio.play().catch(()=>{});
+  });
+
+/* RANDOM IMAGE */
 const imgs = ['corala.png','scattershot.png'];
 document.getElementById('randomImage').src =
   imgs[Math.floor(Math.random()*imgs.length)];
@@ -227,7 +252,7 @@ function draw(){
 }
 setInterval(draw,265); draw();
 
-/* BUTTON CREATION (ORIGINAL) */
+/* BUTTON CREATION */
 function createBlocks(section,num){
   for(let i=0;i<num;i++){
     const block=document.createElement('div');
@@ -285,28 +310,11 @@ const colors=['#ff8000','#00e054','#ffb343','#40bcf4'];
 });
 
 /* APPLY SAME 4 COLORS TO BLOCK 5 */
-colors.forEach((col,i)=>{
+colors.forEach(col=>{
   const c=document.createElement('div');
   c.className='blockInnerCircle';
   c.style.background=col;
   document.querySelector('.block5 .glassButton').appendChild(c);
-});
-
-/* CURSOR FOLLOW (ORIGINAL) */
-document.addEventListener('mousemove',e=>{
-  [...sectionB.children,...sectionC.children,document.querySelector('.block5')]
-  .forEach(block=>{
-    const btn=block.querySelector('.glassButton');
-    if(!btn) return;
-    const r=block.getBoundingClientRect();
-    const dx=e.clientX-(r.left+r.width/2);
-    const dy=e.clientY-(r.top+r.height/2);
-    const dist=Math.hypot(dx,dy);
-    const strength=Math.max(0,1-dist/120)*2;
-    btn.style.transform=
-      `translate(${dx*0.25*strength}px,${dy*0.25*strength}px)
-       scale(${1+strength*0.05})`;
-  });
 });
 </script>
 
