@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>MusicVIC TOR</title>
+<title>MusicVIC---TOR</title>
 <link rel="icon" type="image/x-icon" href="pinkfav.png">
 
 <style>
@@ -94,6 +94,9 @@ html, body {
   height: 75%;
   border-radius: 50%;
   position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   background: linear-gradient(
     145deg,
     rgba(255,255,255,0.28),
@@ -140,6 +143,12 @@ html, body {
   height: 100%;
   image-rendering: pixelated;
 }
+.glassButton img {
+  width: 60%; /* reduced by 20% */
+  height: 60%;
+  object-fit: contain;
+  pointer-events: none;
+}
 </style>
 </head>
 
@@ -172,25 +181,15 @@ html, body {
 </div>
 
 <script>
-/* =========================
-   AUDIO
-========================= */
+/* AUDIO */
 const audio = new Audio('breakTHROUGH.mp3');
 audio.preload = 'auto';
-
-/* Play immediately when GIF loads */
 const gif = document.querySelector('.block3_4 img');
-gif.addEventListener('load', () => {
-    audio.play().catch(()=>{});
-});
+gif.addEventListener('load', () => { audio.play().catch(()=>{}); });
 
-/* Fallback unlock on click */
 let audioUnlocked = false;
 document.addEventListener('click', () => {
-    if(!audioUnlocked){
-        audio.play().catch(()=>{});
-        audioUnlocked = true;
-    }
+    if(!audioUnlocked){ audio.play().catch(()=>{}); audioUnlocked = true; }
 });
 
 /* RANDOM IMAGE */
@@ -228,14 +227,15 @@ function draw(){
 setInterval(draw,265); draw();
 
 /* BUTTON CREATION */
-function createBlocks(section,num){
+function createBlocks(section,num,addHomeIcon=false){
   for(let i=0;i<num;i++){
     const block=document.createElement('div');
     block.className='block';
     const btn=document.createElement('div');
     btn.className='glassButton';
 
-    btn.addEventListener('click',()=>{
+    // Click ripple effect
+    btn.addEventListener('click',()=>{      
       const s=document.createElement('div');
       s.className='secondaryCircle';
       btn.appendChild(s);
@@ -265,6 +265,27 @@ function createBlocks(section,num){
       setTimeout(()=>nova.remove(),1100);
     });
 
+    // Home icon for first block
+    if(addHomeIcon && i===0){
+      const link = document.createElement('a');
+      link.href = 'https://victormasotti.com/';
+      link.style.display = 'flex';
+      link.style.justifyContent = 'center';
+      link.style.alignItems = 'center';
+      link.style.width = '100%';
+      link.style.height = '100%';
+
+      const homeIcon = document.createElement('img');
+      homeIcon.src = 'home.png';
+      homeIcon.style.width = '60%'; // reduced size
+      homeIcon.style.height = '60%';
+      homeIcon.style.objectFit = 'contain';
+      homeIcon.style.pointerEvents = 'none';
+
+      link.appendChild(homeIcon);
+      btn.appendChild(link);
+    }
+
     block.appendChild(btn);
     section.appendChild(block);
   }
@@ -272,10 +293,10 @@ function createBlocks(section,num){
 
 const sectionB=document.getElementById('sectionB');
 const sectionC=document.getElementById('sectionC');
-createBlocks(sectionB,20);
+createBlocks(sectionB,20,true);
 createBlocks(sectionC,10);
 
-/* ORIGINAL 4 COLOR BUTTONS */
+/* 4-color inner circles */
 const colors=['#ff8000','#00e054','#ffb343','#40bcf4'];
 [...sectionB.children].slice(4,8).forEach((block,i)=>{
   const c=document.createElement('div');
@@ -283,8 +304,6 @@ const colors=['#ff8000','#00e054','#ffb343','#40bcf4'];
   c.style.background=colors[i];
   block.querySelector('.glassButton').appendChild(c);
 });
-
-/* APPLY SAME 4 COLORS TO BLOCK 5 */
 colors.forEach(col=>{
   const c=document.createElement('div');
   c.className='blockInnerCircle';
@@ -292,15 +311,15 @@ colors.forEach(col=>{
   document.querySelector('.block5 .glassButton').appendChild(c);
 });
 
-/* RANDOM TIME ON BLOCK 5 CLICK */
+/* Block5 random time */
 document.querySelector('.block5 .glassButton').addEventListener('click', () => {
-    const maxTime = 85; // 1:25
+    const maxTime = 85;
     const randomTime = Math.random() * maxTime;
     audio.currentTime = randomTime;
     audio.play().catch(()=>{});
 });
 
-/* CURSOR FOLLOW */
+/* Cursor follow - independent blocks */
 document.addEventListener('mousemove',e=>{
   [...sectionB.children,...sectionC.children,document.querySelector('.block5')]
   .forEach(block=>{
@@ -317,6 +336,5 @@ document.addEventListener('mousemove',e=>{
   });
 });
 </script>
-
 </body>
 </html>
