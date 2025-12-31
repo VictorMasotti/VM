@@ -19,16 +19,7 @@ html,body{
   cursor:url('EARTH2.png'),auto;
 }
 
-/* ================= Z-LAYER STACK ================= */
-/*
-0  background
-5  glass
-8  images
-12 noise
-50 wheel text
-100 footer
-*/
-
+/* ===== GLASS + NOISE ===== */
 #glass{
   position:fixed;
   inset:0;
@@ -37,25 +28,23 @@ html,body{
   z-index:5;
   pointer-events:none;
 }
-
 #noise{
   position:fixed;
   inset:0;
-  background:
-    repeating-linear-gradient(
-      to bottom,
-      rgba(0,0,0,0.06),
-      rgba(0,0,0,0.06) 1px,
-      transparent 1px,
-      transparent 3px
-    );
+  background:repeating-linear-gradient(
+    to bottom,
+    rgba(0,0,0,0.06),
+    rgba(0,0,0,0.06) 1px,
+    transparent 1px,
+    transparent 3px
+  );
   mix-blend-mode:overlay;
   opacity:0.25;
-  z-index:12;
+  z-index:20;
   pointer-events:none;
 }
 
-/* ================= WHEEL ================= */
+/* ===== WHEEL (ALWAYS TOP) ===== */
 #wheel{
   position:fixed;
   top:0;
@@ -66,9 +55,8 @@ html,body{
   display:flex;
   justify-content:center;
   align-items:center;
-  z-index:50;
+  z-index:1000;
 }
-
 .label{
   position:absolute;
   font-size:4.2vh;
@@ -80,40 +68,47 @@ html,body{
   text-decoration:none;
 }
 
-/* ================= IMAGES ================= */
+/* ===== IMAGES ===== */
 #dragon-container img{
   position:fixed;
   z-index:8;
   pointer-events:none;
-  filter:
-    drop-shadow(0 30px 45px rgba(0,0,0,0.45));
-  animation: wave 6s ease-in-out infinite;
+  filter:drop-shadow(0 30px 45px rgba(0,0,0,0.45));
+  transition:transform 0.05s linear;
 }
 
-/* subtle organic distortion */
-@keyframes wave{
-  0%{transform:translate(var(--x),var(--y)) rotate(var(--r)) skewX(0deg);}
-  50%{transform:translate(var(--x),calc(var(--y) + 12px)) rotate(calc(var(--r) + 0.1rad)) skewX(1deg);}
-  100%{transform:translate(var(--x),var(--y)) rotate(var(--r)) skewX(0deg);}
-}
-
-/* ================= RANDOM NUMBERS ================= */
+/* ===== NUMBERS STACK ===== */
 #numbers{
   position:fixed;
   bottom:5vh;
-  right:5vw;
+  right:3vw;
   width:60vw;
-  text-align:left;
-  font-weight:300;
+  z-index:17;
+  font-family:Inter,sans-serif;
+  font-size:clamp(11px,1.35vw,20px);
   letter-spacing:0.18em;
-  font-size:clamp(10px,1.2vw,18px);
   color:rgba(0,0,0,0.6);
-  z-index:15;
-  font-variant-numeric: tabular-nums;
-  user-select:none;
+  pointer-events:none;
+}
+.num-line{
+  animation:fadeOut 6s forwards;
+}
+@keyframes fadeOut{
+  0%{opacity:1}
+  100%{opacity:0; transform:translateY(-20px)}
 }
 
-/* ================= FOOTER ================= */
+/* ===== RANDOM TEXT BLOCK ===== */
+#random-text{
+  position:fixed;
+  z-index:18;
+  font-size:clamp(10px,1vw,16px);
+  opacity:0.35;
+  max-width:40vw;
+  pointer-events:none;
+}
+
+/* ===== FOOTER ===== */
 #below{
   position:fixed;
   bottom:12px;
@@ -134,38 +129,27 @@ html,body{
 <div id="wheel"></div>
 <div id="dragon-container"></div>
 <div id="numbers"></div>
+<div id="random-text"></div>
 
-<p id="below">ALL RIGHTS RESERVED | © 2025 VICTOR MASOTTI</p>
+<p id="below">ALL RIGHTS RESERVED | © 2026 VICTOR MASOTTI</p>
 
 <script>
-/* ================= BACKGROUND ENGINE ================= */
+/* ===== BACKGROUND ===== */
 const colors=["#309e6d","#ed4302","#d7cfbd","#d8dbe2"];
-function shuffle(a){
-  return a.sort(()=>Math.random()-0.5);
-}
-function cycle(){
-  const order=shuffle([...colors]);
-  let i=0;
-  const step=30000/order.length;
-  function next(){
-    document.body.style.background=order[i++];
-    if(i<order.length) setTimeout(next,step);
+function shuffle(a){return a.sort(()=>Math.random()-0.5);}
+(function cycle(){
+  const o=shuffle([...colors]); let i=0;
+  const step=30000/o.length;
+  (function n(){
+    document.body.style.background=o[i++];
+    if(i<o.length) setTimeout(n,step);
     else setTimeout(cycle,200);
-  }
-  next();
-}
-cycle();
+  })();
+})();
 
-/* ================= WHEEL ================= */
+/* ===== WHEEL ===== */
 const wheel=document.getElementById("wheel");
-const labels=[
-"VICTOR MASOTTI",
-"W/FASHION",
-"W/MUSIC",
-"W/CINEMA",
-"NOTEPAD",
-"W/VISUALS"
-];
+const labels=["VICTOR MASOTTI","W/FASHION","W/MUSIC","W/CINEMA","NOTEPAD","W/VISUALS"];
 const els=[];
 labels.forEach(t=>{
   const d=document.createElement("div");
@@ -174,46 +158,72 @@ labels.forEach(t=>{
   wheel.appendChild(d);
   els.push(d);
 });
-
 let r=0,v=0;
-function pos(){
-  els.forEach((el,i)=>{
-    const a=(i*360/els.length+r)*Math.PI/180;
-    el.style.transform=`translate(${Math.cos(a)*window.innerHeight/2}px,${Math.sin(a)*window.innerHeight/2}px) rotate(${-r}deg)`;
-  });
-}
 window.addEventListener("wheel",e=>v-=e.deltaY*0.02);
 (function anim(){
-  r+=v*0.6;
-  v*=0.94;
+  r+=v*0.6; v*=0.94;
   wheel.style.transform=`rotate(${r}deg)`;
-  pos();
+  els.forEach((el,i)=>{
+    const a=(i*360/els.length+r)*Math.PI/180;
+    el.style.transform=`translate(${Math.cos(a)*innerHeight/2}px,${Math.sin(a)*innerHeight/2}px) rotate(${-r}deg)`;
+  });
   requestAnimationFrame(anim);
 })();
 
-/* ================= IMAGES + DEPTH SHADOW ================= */
+/* ===== IMAGES + CURSOR REPULSION ===== */
 const container=document.getElementById("dragon-container");
 const imgs=["corala.png","eartth.png","mondo.png","terra.png"];
+const dragons=[];
 for(let i=0;i<30;i++){
   const img=document.createElement("img");
   img.src=imgs[Math.floor(Math.random()*imgs.length)];
-  const x=Math.random()*innerWidth;
-  const y=Math.random()*innerHeight;
-  const r=Math.random()*2;
-  img.style.width=40+Math.random()*140+"px";
-  img.style.setProperty("--x",x+"px");
-  img.style.setProperty("--y",y+"px");
-  img.style.setProperty("--r",r+"rad");
+  img.x=Math.random()*innerWidth;
+  img.y=Math.random()*innerHeight;
+  img.size=40+Math.random()*140;
+  img.style.width=img.size+"px";
   container.appendChild(img);
+  dragons.push(img);
 }
+let mx=0,my=0;
+window.addEventListener("mousemove",e=>{mx=e.clientX;my=e.clientY;});
+(function move(){
+  dragons.forEach(d=>{
+    let dx=d.x-mx, dy=d.y-my;
+    const dist=Math.hypot(dx,dy);
+    if(dist<200){
+      const f=(200-dist)/200*8;
+      d.x+=dx/dist*f;
+      d.y+=dy/dist*f;
+    }
+    d.style.transform=`translate(${d.x}px,${d.y}px)`;
+  });
+  requestAnimationFrame(move);
+})();
 
-/* ================= RANDOM NUMBERS ================= */
-const num=document.getElementById("numbers");
+/* ===== RANDOM NUMBERS STACK ===== */
+const nums=document.getElementById("numbers");
 setInterval(()=>{
-  let s="";
-  for(let i=0;i<20;i++) s+=Math.floor(Math.random()*10)+" ";
-  num.textContent=s;
+  const spawn=Math.floor(Math.random()*11);
+  for(let i=0;i<spawn;i++){
+    const line=document.createElement("div");
+    line.className="num-line";
+    line.textContent=Array.from({length:20},()=>Math.floor(Math.random()*10)).join(" ");
+    nums.appendChild(line);
+    setTimeout(()=>line.remove(),6000);
+  }
 },200);
+
+/* ===== RANDOM TEXT BLOCK ===== */
+const words="hyper real noise signal flux static void frame bleed vector offset render artifact ghost data".split(" ");
+const rt=document.getElementById("random-text");
+setInterval(()=>{
+  rt.style.left=Math.random()*60+"vw";
+  rt.style.top=Math.random()*60+"vh";
+  rt.textContent=Array.from({length:30},()=>Math.random()<0.4
+    ? words[Math.floor(Math.random()*words.length)]
+    : String.fromCharCode(97+Math.random()*26)
+  ).join(" ");
+},1200);
 </script>
 
 </body>
