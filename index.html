@@ -5,10 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Victor</title>
 
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400;500&display=swap" rel="stylesheet">
-<link rel="icon" type="image/x-icon" href="wone.png">
+<link rel="icon" href="wone.png">
 
 <style>
 html,body{
@@ -16,45 +14,48 @@ html,body{
   height:100%;
   overflow:hidden;
   font-family:'Inter',sans-serif;
-  cursor: url('EARTH2.png'), auto;
   background:#309e6d;
-  transition: background 2.8s cubic-bezier(.4,0,.2,1);
+  transition:background 2.6s ease;
+  cursor:url('EARTH2.png'),auto;
 }
 
+/* ================= Z-LAYER STACK ================= */
+/*
+0  background
+5  glass
+8  images
+12 noise
+50 wheel text
+100 footer
+*/
 
-#fx-layer,
-#fx-noise,
-#fx-scanlines{
+#glass{
   position:fixed;
   inset:0;
-  pointer-events:none;
+  backdrop-filter: blur(14px) saturate(120%);
+  background:rgba(255,255,255,0.06);
   z-index:5;
+  pointer-events:none;
 }
 
-#fx-layer{
-  backdrop-filter: blur(0px) saturate(100%);
-  transition: backdrop-filter 1.2s ease, background 1.2s ease;
-}
-
-#fx-noise{
-  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.08'/%3E%3C/svg%3E");
-  mix-blend-mode: overlay;
-  opacity:0.15;
-}
-
-#fx-scanlines{
-  background: repeating-linear-gradient(
-    to bottom,
-    rgba(0,0,0,0.06),
-    rgba(0,0,0,0.06) 1px,
-    transparent 1px,
-    transparent 3px
-  );
-  mix-blend-mode: overlay;
+#noise{
+  position:fixed;
+  inset:0;
+  background:
+    repeating-linear-gradient(
+      to bottom,
+      rgba(0,0,0,0.06),
+      rgba(0,0,0,0.06) 1px,
+      transparent 1px,
+      transparent 3px
+    );
+  mix-blend-mode:overlay;
   opacity:0.25;
+  z-index:12;
+  pointer-events:none;
 }
 
-/* === ORIGINAL STYLES === */
+/* ================= WHEEL ================= */
 #wheel{
   position:fixed;
   top:0;
@@ -65,36 +66,54 @@ html,body{
   display:flex;
   justify-content:center;
   align-items:center;
-  background:rgba(255,255,255,0);
+  z-index:50;
 }
 
 .label{
   position:absolute;
-  transform-origin:0 50%;
   font-size:4.2vh;
   font-weight:500;
-  text-align:center;
+  transform-origin:0 50%;
 }
 .label a{
   color:black;
   text-decoration:none;
 }
 
-canvas{
-  position:fixed;
-  top:0;
-  left:0;
-  z-index:10;
-  pointer-events:none;
-}
-
+/* ================= IMAGES ================= */
 #dragon-container img{
   position:fixed;
+  z-index:8;
   pointer-events:none;
-  z-index:90;
-  transition:transform 0.1s linear;
+  filter:
+    drop-shadow(0 30px 45px rgba(0,0,0,0.45));
+  animation: wave 6s ease-in-out infinite;
 }
 
+/* subtle organic distortion */
+@keyframes wave{
+  0%{transform:translate(var(--x),var(--y)) rotate(var(--r)) skewX(0deg);}
+  50%{transform:translate(var(--x),calc(var(--y) + 12px)) rotate(calc(var(--r) + 0.1rad)) skewX(1deg);}
+  100%{transform:translate(var(--x),var(--y)) rotate(var(--r)) skewX(0deg);}
+}
+
+/* ================= RANDOM NUMBERS ================= */
+#numbers{
+  position:fixed;
+  bottom:5vh;
+  right:5vw;
+  width:60vw;
+  text-align:left;
+  font-weight:300;
+  letter-spacing:0.18em;
+  font-size:clamp(10px,1.2vw,18px);
+  color:rgba(0,0,0,0.6);
+  z-index:15;
+  font-variant-numeric: tabular-nums;
+  user-select:none;
+}
+
+/* ================= FOOTER ================= */
 #below{
   position:fixed;
   bottom:12px;
@@ -102,131 +121,100 @@ canvas{
   text-align:center;
   font-size:10px;
   color:rgba(0,0,0,0.6);
-  z-index:200;
-  margin:0;
+  z-index:100;
 }
 </style>
 </head>
 
 <body>
 
-<div id="fx-layer"></div>
-<div id="fx-noise"></div>
-<div id="fx-scanlines"></div>
+<div id="glass"></div>
+<div id="noise"></div>
 
 <div id="wheel"></div>
 <div id="dragon-container"></div>
-<canvas id="linesCanvas"></canvas>
+<div id="numbers"></div>
 
 <p id="below">ALL RIGHTS RESERVED | © 2025 VICTOR MASOTTI</p>
 
 <script>
-/* ===========================
-   BACKGROUND RANDOM ENGINE
-=========================== */
-const COLORS = ["#309e6d","#ed4302","#d7cfbd","#d8dbe2"];
-let shuffled = [];
-let index = 0;
-
-function shuffleOnce(arr){
-  const a=[...arr];
-  for(let i=a.length-1;i>0;i--){
-    const j=Math.floor(Math.random()*(i+1));
-    [a[i],a[j]]=[a[j],a[i]];
-  }
-  return a;
+/* ================= BACKGROUND ENGINE ================= */
+const colors=["#309e6d","#ed4302","#d7cfbd","#d8dbe2"];
+function shuffle(a){
+  return a.sort(()=>Math.random()-0.5);
 }
-
-function startBackgroundCycle(){
-  shuffled = shuffleOnce(COLORS);
-  index = 0;
-  const segment = 30000 / shuffled.length;
-
+function cycle(){
+  const order=shuffle([...colors]);
+  let i=0;
+  const step=30000/order.length;
   function next(){
-    document.body.style.background = shuffled[index];
-
-    index++;
-    if(index < shuffled.length){
-      setTimeout(next, segment);
-    } else {
-      setTimeout(startBackgroundCycle, 200);
-    }
+    document.body.style.background=order[i++];
+    if(i<order.length) setTimeout(next,step);
+    else setTimeout(cycle,200);
   }
   next();
 }
+cycle();
 
-startBackgroundCycle();
-
-/* ===========================
-   CHAOTIC GLASS + GLITCH
-=========================== */
-const fxLayer = document.getElementById("fx-layer");
-
-setInterval(()=>{
-  const blur = Math.random()*18;
-  const sat = 90 + Math.random()*60;
-  const alpha = Math.random()*0.12;
-
-  fxLayer.style.backdropFilter = `blur(${blur}px) saturate(${sat}%)`;
-  fxLayer.style.background = `rgba(255,255,255,${alpha})`;
-}, 1200 + Math.random()*2000);
-
-setInterval(()=>{
-  document.getElementById("fx-noise").style.opacity = 0.08 + Math.random()*0.25;
-  document.getElementById("fx-scanlines").style.opacity = 0.15 + Math.random()*0.35;
-}, 600);
-
-/* ===========================
-   ORIGINAL JS (UNTOUCHED)
-=========================== */
+/* ================= WHEEL ================= */
 const wheel=document.getElementById("wheel");
 const labels=[
-{text:'VICTOR MASOTTI',href:'index.html'},
-{text:'W/FASHION',href:'vmwfashion.html'},
-{text:'W/MUSIC',href:'vmwmusic.html'},
-{text:'W/CINEMA',href:'vmwcinema.html'},
-{text:'NOTEPAD',href:'vmnotepad.html'},
-{text:'W/VISUALS',href:'vmwvisuals.html'},
+"VICTOR MASOTTI",
+"W/FASHION",
+"W/MUSIC",
+"W/CINEMA",
+"NOTEPAD",
+"W/VISUALS"
 ];
-
-let wheelRadiusX=window.innerHeight/2*1.05;
-let wheelRadiusY=window.innerHeight/2*0.98;
-let labelElements=[];
-
-labels.forEach(l=>{
-  const div=document.createElement('div');
-  div.className='label';
-  const a=document.createElement('a');
-  a.href=l.href;
-  a.textContent=l.text;
-  div.appendChild(a);
-  wheel.appendChild(div);
-  labelElements.push(div);
+const els=[];
+labels.forEach(t=>{
+  const d=document.createElement("div");
+  d.className="label";
+  d.innerHTML=`<a href="#">${t}</a>`;
+  wheel.appendChild(d);
+  els.push(d);
 });
 
-function positionLabels(rotation=0){
-  const count=labelElements.length;
-  labelElements.forEach((el,i)=>{
-    const angle=(i*(360/count)+rotation)*Math.PI/180;
-    const x=Math.cos(angle)*wheelRadiusX;
-    const y=Math.sin(angle)*wheelRadiusY;
-    el.style.transform=`translate(${x}px,${y}px) rotate(${-rotation}deg)`;
+let r=0,v=0;
+function pos(){
+  els.forEach((el,i)=>{
+    const a=(i*360/els.length+r)*Math.PI/180;
+    el.style.transform=`translate(${Math.cos(a)*window.innerHeight/2}px,${Math.sin(a)*window.innerHeight/2}px) rotate(${-r}deg)`;
   });
 }
-positionLabels();
-
-let r=0,velocity=0;
-window.addEventListener('wheel',e=>velocity-=e.deltaY*0.02);
-
-function animateWheel(){
-  r+=velocity*0.6;
-  velocity*=0.95;
-  if(Math.abs(velocity)<0.01)velocity=0;
+window.addEventListener("wheel",e=>v-=e.deltaY*0.02);
+(function anim(){
+  r+=v*0.6;
+  v*=0.94;
   wheel.style.transform=`rotate(${r}deg)`;
-  positionLabels(r);
-  requestAnimationFrame(animateWheel);
+  pos();
+  requestAnimationFrame(anim);
+})();
+
+/* ================= IMAGES + DEPTH SHADOW ================= */
+const container=document.getElementById("dragon-container");
+const imgs=["corala.png","eartth.png","mondo.png","terra.png"];
+for(let i=0;i<30;i++){
+  const img=document.createElement("img");
+  img.src=imgs[Math.floor(Math.random()*imgs.length)];
+  const x=Math.random()*innerWidth;
+  const y=Math.random()*innerHeight;
+  const r=Math.random()*2;
+  img.style.width=40+Math.random()*140+"px";
+  img.style.setProperty("--x",x+"px");
+  img.style.setProperty("--y",y+"px");
+  img.style.setProperty("--r",r+"rad");
+  container.appendChild(img);
 }
-animateWheel();
+
+/* ================= RANDOM NUMBERS ================= */
+const num=document.getElementById("numbers");
+setInterval(()=>{
+  let s="";
+  for(let i=0;i<20;i++) s+=Math.floor(Math.random()*10)+" ";
+  num.textContent=s;
+},200);
 </script>
+
 </body>
 </html>
