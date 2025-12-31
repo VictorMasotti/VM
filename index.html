@@ -74,7 +74,6 @@ html,body{
   z-index:8;
   pointer-events:none;
   filter:drop-shadow(0 30px 45px rgba(0,0,0,0.45));
-  transition:transform 0.05s linear;
 }
 
 /* ===== NUMBERS STACK ===== */
@@ -84,7 +83,6 @@ html,body{
   right:3vw;
   width:60vw;
   z-index:17;
-  font-family:Inter,sans-serif;
   font-size:clamp(11px,1.35vw,20px);
   letter-spacing:0.18em;
   color:rgba(0,0,0,0.6);
@@ -94,11 +92,10 @@ html,body{
   animation:fadeOut 6s forwards;
 }
 @keyframes fadeOut{
-  0%{opacity:1}
-  100%{opacity:0; transform:translateY(-20px)}
+  to{opacity:0; transform:translateY(-20px)}
 }
 
-/* ===== RANDOM TEXT BLOCK ===== */
+/* ===== RANDOM TEXT ===== */
 #random-text{
   position:fixed;
   z-index:18;
@@ -131,7 +128,7 @@ html,body{
 <div id="numbers"></div>
 <div id="random-text"></div>
 
-<p id="below">ALL RIGHTS RESERVED | © 2026 VICTOR MASOTTI</p>
+<p id="below">ALL RIGHTS RESERVED | © 2025 VICTOR MASOTTI</p>
 
 <script>
 /* ===== BACKGROUND ===== */
@@ -170,56 +167,89 @@ window.addEventListener("wheel",e=>v-=e.deltaY*0.02);
   requestAnimationFrame(anim);
 })();
 
-/* ===== IMAGES + CURSOR REPULSION ===== */
+/* ===== IMAGES: RESTORED CHAOS + CURSOR FORCE ===== */
 const container=document.getElementById("dragon-container");
-const imgs=["corala.png","eartth.png","mondo.png","terra.png"];
+const sources=["corala.png","eartth.png","mondo.png","terra.png","solare.png","circo.png"];
 const dragons=[];
+
 for(let i=0;i<30;i++){
   const img=document.createElement("img");
-  img.src=imgs[Math.floor(Math.random()*imgs.length)];
-  img.x=Math.random()*innerWidth;
-  img.y=Math.random()*innerHeight;
-  img.size=40+Math.random()*140;
-  img.style.width=img.size+"px";
+  img.src=sources[Math.floor(Math.random()*sources.length)];
+  img.style.width=40+Math.random()*140+"px";
   container.appendChild(img);
-  dragons.push(img);
+
+  dragons.push({
+    el:img,
+    angle:Math.random()*Math.PI*2,
+    speed:0.001+Math.random()*0.005,
+    rx:100+Math.random()*innerWidth,
+    ry:100+Math.random()*innerHeight,
+    cx:Math.random()*innerWidth,
+    cy:Math.random()*innerHeight,
+    wobble:Math.random(),
+    rot:Math.random()*2,
+    rotSpeed:(Math.random()-0.5)*0.01,
+    scale:0.6+Math.random()*2,
+    scaleDir:Math.random()>0.5?1:-1,
+    ox:0, oy:0
+  });
 }
+
 let mx=0,my=0;
 window.addEventListener("mousemove",e=>{mx=e.clientX;my=e.clientY;});
-(function move(){
+
+(function animate(){
   dragons.forEach(d=>{
-    let dx=d.x-mx, dy=d.y-my;
+    d.angle+=d.speed;
+    d.rot+=d.rotSpeed;
+
+    d.scale+=d.scaleDir*0.002;
+    if(d.scale>2.4||d.scale<0.6) d.scaleDir*=-1;
+
+    const bx=d.cx+Math.cos(d.angle)*d.rx+Math.sin(d.angle*3)*30*d.wobble;
+    const by=d.cy+Math.sin(d.angle)*d.ry+Math.cos(d.angle*2)*20*d.wobble;
+
+    const dx=bx+d.ox-mx;
+    const dy=by+d.oy-my;
     const dist=Math.hypot(dx,dy);
+
     if(dist<200){
-      const f=(200-dist)/200*8;
-      d.x+=dx/dist*f;
-      d.y+=dy/dist*f;
+      const f=(200-dist)/200*10;
+      d.ox+=dx/dist*f;
+      d.oy+=dy/dist*f;
     }
-    d.style.transform=`translate(${d.x}px,${d.y}px)`;
+
+    d.ox*=0.9;
+    d.oy*=0.9;
+
+    d.el.style.transform=
+      `translate(${bx+d.ox}px,${by+d.oy}px)
+       rotate(${d.rot}rad)
+       scale(${d.scale})`;
   });
-  requestAnimationFrame(move);
+  requestAnimationFrame(animate);
 })();
 
-/* ===== RANDOM NUMBERS STACK ===== */
+/* ===== RANDOM NUMBERS ===== */
 const nums=document.getElementById("numbers");
 setInterval(()=>{
-  const spawn=Math.floor(Math.random()*11);
-  for(let i=0;i<spawn;i++){
-    const line=document.createElement("div");
-    line.className="num-line";
-    line.textContent=Array.from({length:20},()=>Math.floor(Math.random()*10)).join(" ");
-    nums.appendChild(line);
-    setTimeout(()=>line.remove(),6000);
+  const count=Math.floor(Math.random()*11);
+  for(let i=0;i<count;i++){
+    const l=document.createElement("div");
+    l.className="num-line";
+    l.textContent=Array.from({length:20},()=>Math.floor(Math.random()*10)).join(" ");
+    nums.appendChild(l);
+    setTimeout(()=>l.remove(),6000);
   }
 },200);
 
-/* ===== RANDOM TEXT BLOCK ===== */
-const words="hyper real noise signal flux static void frame bleed vector offset render artifact ghost data".split(" ");
+/* ===== RANDOM TEXT ===== */
 const rt=document.getElementById("random-text");
+const words="hyper real noise flux static vector ghost render data offset".split(" ");
 setInterval(()=>{
   rt.style.left=Math.random()*60+"vw";
   rt.style.top=Math.random()*60+"vh";
-  rt.textContent=Array.from({length:30},()=>Math.random()<0.4
+  rt.textContent=Array.from({length:32},()=>Math.random()<0.4
     ? words[Math.floor(Math.random()*words.length)]
     : String.fromCharCode(97+Math.random()*26)
   ).join(" ");
