@@ -19,6 +19,11 @@ html,body{
   cursor:url('EARTH2.png'),auto;
 }
 
+/* FORCE CUSTOM CURSOR EVERYWHERE */
+a, a:hover, a:active, a:visited {
+  cursor:url('EARTH2.png'),auto;
+}
+
 /* ===== GLASS + NOISE ===== */
 #glass{
   position:fixed;
@@ -128,7 +133,7 @@ html,body{
 <div id="numbers"></div>
 <div id="random-text"></div>
 
-<p id="below">ALL RIGHTS RESERVED | © 2025 VICTOR MASOTTI</p>
+<p id="below">ALL RIGHTS RESERVED | © 2026 VICTOR MASOTTI | © VICTOR 360 </p>
 
 <script>
 /* ===== BACKGROUND ===== */
@@ -144,35 +149,54 @@ function shuffle(a){return a.sort(()=>Math.random()-0.5);}
   })();
 })();
 
-/* ===== WHEEL ===== */
+/* ===== WHEEL WITH LINKS (RESTORED) ===== */
 const wheel=document.getElementById("wheel");
-const labels=["VICTOR MASOTTI","W/FASHION","W/MUSIC","W/CINEMA","NOTEPAD","W/VISUALS"];
+const labels=[
+  {text:"VICTOR MASOTTI", href:"index.html"},
+  {text:"W/FASHION", href:"vmwfashion.html"},
+  {text:"W/MUSIC", href:"vmwmusic.html"},
+  {text:"W/CINEMA", href:"vmwcinema.html"},
+  {text:"NOTEPAD", href:"vmnotepad.html"},
+  {text:"W/VISUALS", href:"vmwvisuals.html"}
+];
+
 const els=[];
-labels.forEach(t=>{
+labels.forEach(l=>{
   const d=document.createElement("div");
   d.className="label";
-  d.innerHTML=`<a href="#">${t}</a>`;
+  const a=document.createElement("a");
+  a.href=l.href;
+  a.textContent=l.text;
+  d.appendChild(a);
   wheel.appendChild(d);
   els.push(d);
 });
+
 let r=0,v=0;
 window.addEventListener("wheel",e=>v-=e.deltaY*0.02);
+
 (function anim(){
   r+=v*0.6; v*=0.94;
   wheel.style.transform=`rotate(${r}deg)`;
   els.forEach((el,i)=>{
     const a=(i*360/els.length+r)*Math.PI/180;
-    el.style.transform=`translate(${Math.cos(a)*innerHeight/2}px,${Math.sin(a)*innerHeight/2}px) rotate(${-r}deg)`;
+    el.style.transform=
+      `translate(${Math.cos(a)*innerHeight/2}px,${Math.sin(a)*innerHeight/2}px)
+       rotate(${-r}deg)`;
   });
   requestAnimationFrame(anim);
 })();
 
-/* ===== IMAGES: RESTORED CHAOS + CURSOR FORCE ===== */
+/* ===== IMAGES (COUNT ADJUSTED) ===== */
 const container=document.getElementById("dragon-container");
-const sources=["corala.png","eartth.png","mondo.png","terra.png","solare.png","circo.png"];
-const dragons=[];
+const sources=["corala.png","eartth.png","mondo.png","terra.png","solare.png","circo.png","tipo.png","cal.png"];
 
-for(let i=0;i<30;i++){
+let imageCount=36;
+if(innerWidth<1080) imageCount=18;
+if(innerWidth>2200) imageCount=48;
+
+const dragons=[];
+for(let i=0;i<imageCount;i++){
   const img=document.createElement("img");
   img.src=sources[Math.floor(Math.random()*sources.length)];
   img.style.width=40+Math.random()*140+"px";
@@ -202,7 +226,6 @@ window.addEventListener("mousemove",e=>{mx=e.clientX;my=e.clientY;});
   dragons.forEach(d=>{
     d.angle+=d.speed;
     d.rot+=d.rotSpeed;
-
     d.scale+=d.scaleDir*0.002;
     if(d.scale>2.4||d.scale<0.6) d.scaleDir*=-1;
 
