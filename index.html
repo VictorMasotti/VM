@@ -198,45 +198,56 @@ window.addEventListener("wheel",e=>v-=e.deltaY*0.02);
 // Touch support for spinning - optimized for smooth performance
 let touchStartY = null;
 let lastTouchY = null;
-let touchVelocities = [];
+let lastTouchTime = null;
+let isTouching = false;
 
 wheel.addEventListener("touchstart", e => {
+  e.preventDefault(); // Prevent scrolling interference
   touchStartY = e.touches[0].clientY;
   lastTouchY = touchStartY;
-  touchVelocities = [];
-  v *= 0.5; // Gentle slowdown instead of full stop
-}, {passive: true});
+  lastTouchTime = Date.now();
+  isTouching = true;
+});
 
 wheel.addEventListener("touchmove", e => {
-  if (touchStartY === null) return;
+  e.preventDefault(); // Prevent scrolling interference
+  if (!isTouching) return;
   
   const currentY = e.touches[0].clientY;
-  const deltaY = lastTouchY - currentY;
+  const currentTime = Date.now();
+  const deltaY = currentY - lastTouchY;
+  const deltaTime = currentTime - lastTouchTime;
   
-  // Smoother, more responsive sensitivity
-  v -= deltaY * 0.12;
-  
-  // Track velocities for momentum calculation
-  touchVelocities.push(deltaY);
-  if (touchVelocities.length > 3) touchVelocities.shift();
-  
-  lastTouchY = currentY;
-}, {passive: true});
-
-wheel.addEventListener("touchend", e => {
-  // Calculate average velocity for smooth momentum
-  if (touchVelocities.length > 0) {
-    const avgVelocity = touchVelocities.reduce((a, b) => a + b, 0) / touchVelocities.length;
-    v -= avgVelocity * 0.8; // Add momentum boost on release
+  if (deltaTime > 0) {
+    // Calculate velocity and apply smoothly
+    const velocity = deltaY / deltaTime;
+    v += velocity * 2.5;
   }
   
+  lastTouchY = currentY;
+  lastTouchTime = currentTime;
+});
+
+wheel.addEventListener("touchend", e => {
+  e.preventDefault();
+  isTouching = false;
   touchStartY = null;
   lastTouchY = null;
-  touchVelocities = [];
-}, {passive: true});
+  lastTouchTime = null;
+});
+
+wheel.addEventListener("touchcancel", e => {
+  // Handle interrupted touches
+  isTouching = false;
+  touchStartY = null;
+  lastTouchY = null;
+  lastTouchTime = null;
+});
 
 (function anim(){
-  r+=v*0.6; v*=0.94;
+  r+=v*0.6; 
+  // Less friction for smoother touch experience
+  v*=0.96;
   wheel.style.transform=`rotate(${r}deg)`;
   els.forEach((el,i)=>{
     const a=(i*360/els.length+r)*Math.PI/180;
@@ -249,7 +260,7 @@ wheel.addEventListener("touchend", e => {
 
 /* ===== IMAGES (COUNT ADJUSTED) ===== */
 const container=document.getElementById("dragon-container");
-const sources=["corala.png","eartth.png","mondo.png","terra.png","solare.png","circo.png","tipo.png"];
+const sources=["corala.png","eartth.png","mondo.png","terra.png","solare.png","circo.png","tipo.png","cal.png"];
 
 let imageCount=36;
 if(innerWidth<1080) imageCount=18;
