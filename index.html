@@ -23,6 +23,7 @@ html,body{
   user-select: none;
 }
 
+/* FORCE CUSTOM CURSOR EVERYWHERE */
 a, a:hover, a:active, a:visited {
   cursor:url('EARTH2.png'),auto;
   -webkit-tap-highlight-color: transparent;
@@ -257,9 +258,8 @@ wheel.addEventListener("touchcancel", e => {
   requestAnimationFrame(anim);
 })();
 
-/* ===== IMAGES (COUNT ADJUSTED) ===== */
 const container=document.getElementById("dragon-container");
-const sources=["corala.png","eartth.png","mondo.png","terra.png","solare.png","circo.png","tipo.png","cal.png"];
+const sources=["corala.png","eartth.png","mondo.png","terra.png","solare.png","circo.png","tipo.png"];
 
 let imageCount=36;
 if(innerWidth<1080) imageCount=18;
@@ -351,4 +351,3 @@ setInterval(()=>{
 
 </body>
 </html>
-
