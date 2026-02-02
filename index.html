@@ -17,11 +17,22 @@ html,body{
   background:#309e6d;
   transition:background 2.6s ease;
   cursor:url('EARTH2.png'),auto;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
 }
 
 /* FORCE CUSTOM CURSOR EVERYWHERE */
 a, a:hover, a:active, a:visited {
   cursor:url('EARTH2.png'),auto;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Remove blue highlight on touch */
+* {
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
 }
 
 /* ===== GLASS + NOISE ===== */
@@ -61,6 +72,7 @@ a, a:hover, a:active, a:visited {
   justify-content:center;
   align-items:center;
   z-index:1000;
+  touch-action: none;
 }
 .label{
   position:absolute;
@@ -71,6 +83,8 @@ a, a:hover, a:active, a:visited {
 .label a{
   color:black;
   text-decoration:none;
+  -webkit-tap-highlight-color: transparent;
+  outline: none;
 }
 
 /* ===== IMAGES ===== */
@@ -149,7 +163,7 @@ function shuffle(a){return a.sort(()=>Math.random()-0.5);}
   })();
 })();
 
-/* ===== WHEEL WITH LINKS (RESTORED) ===== */
+/* ===== WHEEL WITH LINKS + TOUCH SUPPORT ===== */
 const wheel=document.getElementById("wheel");
 const labels=[
   {text:"VICTOR MASOTTI", href:"index.html"},
@@ -173,7 +187,46 @@ labels.forEach(l=>{
 });
 
 let r=0,v=0;
+
+// Mouse wheel support
 window.addEventListener("wheel",e=>v-=e.deltaY*0.02);
+
+// Touch support for spinning
+let touchStartY = null;
+let touchStartAngle = null;
+let lastTouchY = null;
+let lastTouchTime = null;
+
+wheel.addEventListener("touchstart", e => {
+  touchStartY = e.touches[0].clientY;
+  touchStartAngle = r;
+  lastTouchY = touchStartY;
+  lastTouchTime = Date.now();
+  v = 0; // Stop any existing momentum
+}, {passive: true});
+
+wheel.addEventListener("touchmove", e => {
+  if (touchStartY === null) return;
+  
+  const currentY = e.touches[0].clientY;
+  const deltaY = lastTouchY - currentY;
+  const currentTime = Date.now();
+  
+  // Apply rotation based on vertical swipe
+  v -= deltaY * 0.08;
+  
+  lastTouchY = currentY;
+  lastTouchTime = currentTime;
+}, {passive: true});
+
+wheel.addEventListener("touchend", e => {
+  // Add momentum based on final velocity
+  // The velocity is already set from touchmove, so it will continue naturally
+  touchStartY = null;
+  touchStartAngle = null;
+  lastTouchY = null;
+  lastTouchTime = null;
+}, {passive: true});
 
 (function anim(){
   r+=v*0.6; v*=0.94;
@@ -189,7 +242,7 @@ window.addEventListener("wheel",e=>v-=e.deltaY*0.02);
 
 /* ===== IMAGES (COUNT ADJUSTED) ===== */
 const container=document.getElementById("dragon-container");
-const sources=["corala.png","eartth.png","mondo.png","terra.png","solare.png","circo.png","tipo.png","cal.png"];
+const sources=["corala.png","eartth.png","mondo.png","terra.png","solare.png","circo.png","tipo.png"];
 
 let imageCount=36;
 if(innerWidth<1080) imageCount=18;
