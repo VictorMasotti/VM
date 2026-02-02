@@ -152,12 +152,16 @@ a, a:hover, a:active, a:visited {
 <script>
 /* ===== BACKGROUND ===== */
 const colors=["#309e6d","#ed4302","#d7cfbd","#d8dbe2"];
+const extraColors=["#1270b8","#1aa167","#ce2021","#ffc003","#bdbdbd","#e8dcc8","#c9b8a0","#f0e6d2"];
 function shuffle(a){return a.sort(()=>Math.random()-0.5);}
 (function cycle(){
   const o=shuffle([...colors]); let i=0;
   const step=30000/o.length;
   (function n(){
-    document.body.style.background=o[i++];
+    // 10% chance for each extra color to appear
+    const useExtra = Math.random() < 0.10;
+    const extraColor = extraColors[Math.floor(Math.random() * extraColors.length)];
+    document.body.style.background = useExtra ? extraColor : o[i++];
     if(i<o.length) setTimeout(n,step);
     else setTimeout(cycle,200);
   })();
@@ -191,18 +195,16 @@ let r=0,v=0;
 // Mouse wheel support
 window.addEventListener("wheel",e=>v-=e.deltaY*0.02);
 
-// Touch support for spinning
+// Touch support for spinning - optimized for smooth performance
 let touchStartY = null;
-let touchStartAngle = null;
 let lastTouchY = null;
-let lastTouchTime = null;
+let touchVelocities = [];
 
 wheel.addEventListener("touchstart", e => {
   touchStartY = e.touches[0].clientY;
-  touchStartAngle = r;
   lastTouchY = touchStartY;
-  lastTouchTime = Date.now();
-  v = 0; // Stop any existing momentum
+  touchVelocities = [];
+  v *= 0.5; // Gentle slowdown instead of full stop
 }, {passive: true});
 
 wheel.addEventListener("touchmove", e => {
@@ -210,22 +212,27 @@ wheel.addEventListener("touchmove", e => {
   
   const currentY = e.touches[0].clientY;
   const deltaY = lastTouchY - currentY;
-  const currentTime = Date.now();
   
-  // Apply rotation based on vertical swipe
-  v -= deltaY * 0.08;
+  // Smoother, more responsive sensitivity
+  v -= deltaY * 0.12;
+  
+  // Track velocities for momentum calculation
+  touchVelocities.push(deltaY);
+  if (touchVelocities.length > 3) touchVelocities.shift();
   
   lastTouchY = currentY;
-  lastTouchTime = currentTime;
 }, {passive: true});
 
 wheel.addEventListener("touchend", e => {
-  // Add momentum based on final velocity
-  // The velocity is already set from touchmove, so it will continue naturally
+  // Calculate average velocity for smooth momentum
+  if (touchVelocities.length > 0) {
+    const avgVelocity = touchVelocities.reduce((a, b) => a + b, 0) / touchVelocities.length;
+    v -= avgVelocity * 0.8; // Add momentum boost on release
+  }
+  
   touchStartY = null;
-  touchStartAngle = null;
   lastTouchY = null;
-  lastTouchTime = null;
+  touchVelocities = [];
 }, {passive: true});
 
 (function anim(){
