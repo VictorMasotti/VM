@@ -73,12 +73,27 @@ a, a:hover, a:active, a:visited {
   align-items:center;
   z-index:1000;
   touch-action: none;
+  will-change: transform;
 }
+
+/* Mobile portrait mode - smaller wheel */
+@media (orientation: portrait) {
+  #wheel{
+    width:66vw; /* 40% smaller: 110vw * 0.6 = 66vw */
+    height:60vh;
+    left:-27vw;
+  }
+  .label{
+    font-size:2.5vh; /* Also scale down text */
+  }
+}
+
 .label{
   position:absolute;
   font-size:4.2vh;
   font-weight:500;
   transform-origin:0 50%;
+  will-change: transform;
 }
 .label a{
   color:black;
@@ -93,6 +108,8 @@ a, a:hover, a:active, a:visited {
   z-index:8;
   pointer-events:none;
   filter:drop-shadow(0 30px 45px rgba(0,0,0,0.45));
+  will-change: transform;
+  transform: translate3d(0,0,0);
 }
 
 /* ===== NUMBERS STACK ===== */
@@ -258,8 +275,9 @@ wheel.addEventListener("touchcancel", e => {
   requestAnimationFrame(anim);
 })();
 
+/* ===== IMAGES (COUNT ADJUSTED) ===== */
 const container=document.getElementById("dragon-container");
-const sources=["corala.png","eartth.png","mondo.png","terra.png","solare.png","circo.png","tipo.png"];
+const sources=["corala.png","eartth.png","mondo.png","terra.png","solare.png","circo.png","tipo.png","cal.png"];
 
 let imageCount=36;
 if(innerWidth<1080) imageCount=18;
@@ -326,7 +344,7 @@ window.addEventListener("mousemove",e=>{mx=e.clientX;my=e.clientY;});
 /* ===== RANDOM NUMBERS ===== */
 const nums=document.getElementById("numbers");
 setInterval(()=>{
-  const count=Math.floor(Math.random()*11);
+  const count=Math.floor(Math.random()*3); // Reduced from 5 to 3
   for(let i=0;i<count;i++){
     const l=document.createElement("div");
     l.className="num-line";
@@ -334,7 +352,7 @@ setInterval(()=>{
     nums.appendChild(l);
     setTimeout(()=>l.remove(),6000);
   }
-},200);
+},800); // Increased from 400ms to 800ms
 
 /* ===== RANDOM TEXT ===== */
 const rt=document.getElementById("random-text");
@@ -346,7 +364,7 @@ setInterval(()=>{
     ? words[Math.floor(Math.random()*words.length)]
     : String.fromCharCode(97+Math.random()*26)
   ).join(" ");
-},1200);
+},2000); // Increased from 1200ms to 2000ms
 </script>
 
 </body>
