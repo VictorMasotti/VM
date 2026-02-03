@@ -23,6 +23,18 @@ html,body{
   user-select: none;
 }
 
+/* Desktop landscape - 3D perspective warp */
+@media (orientation: landscape) {
+  body {
+    perspective: 800px;
+    perspective-origin: 50% 50%;
+  }
+  
+  #glass, #wheel, #dragon-container, #numbers, #random-text {
+    transform-style: preserve-3d;
+  }
+}
+
 /* FORCE CUSTOM CURSOR EVERYWHERE */
 a, a:hover, a:active, a:visited {
   cursor:url('EARTH2.png'),auto;
@@ -339,6 +351,7 @@ for(let i=0;i<imageCount;i++){
 
 let mx=0,my=0;
 let isPortrait = window.innerHeight > window.innerWidth;
+let centerX = window.innerWidth / 2; // Cache center calculation
 
 // Only track mouse on desktop/landscape
 if (!isPortrait) {
@@ -348,6 +361,7 @@ if (!isPortrait) {
 // Update portrait detection on resize
 window.addEventListener("resize", () => {
   isPortrait = window.innerHeight > window.innerWidth;
+  centerX = window.innerWidth / 2; // Update cached center
 });
 
 (function animate(){
@@ -376,10 +390,26 @@ window.addEventListener("resize", () => {
     d.ox*=0.9;
     d.oy*=0.9;
 
-    d.el.style.transform=
-      `translate(${bx+d.ox}px,${by+d.oy}px)
-       rotate(${d.rot}rad)
-       scale(${d.scale})`;
+    // Apply 3D warp effect on desktop landscape - optimized
+    if (!isPortrait) {
+      const distFromCenter = (bx + d.ox) - centerX;
+      const warpIntensity = distFromCenter / centerX;
+      const rotateY = warpIntensity * 35;
+      const translateZ = -Math.abs(warpIntensity) * 200;
+      
+      d.el.style.transform=
+        `translate(${bx+d.ox}px,${by+d.oy}px)
+         translateZ(${translateZ}px)
+         rotateY(${rotateY}deg)
+         rotate(${d.rot}rad)
+         scale(${d.scale})`;
+    } else {
+      // Simple transform for mobile (no 3D calculations)
+      d.el.style.transform=
+        `translate(${bx+d.ox}px,${by+d.oy}px)
+         rotate(${d.rot}rad)
+         scale(${d.scale})`;
+    }
   });
   requestAnimationFrame(animate);
 })();
@@ -412,4 +442,3 @@ setInterval(()=>{
 
 </body>
 </html>
-
