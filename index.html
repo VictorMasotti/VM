@@ -79,12 +79,13 @@ a, a:hover, a:active, a:visited {
 /* Mobile portrait mode - smaller wheel */
 @media (orientation: portrait) {
   #wheel{
-    width:66vw; /* 40% smaller: 110vw * 0.6 = 66vw */
-    height:60vh;
-    left:-27vw;
+    width:50vw; /* Much smaller for iPhone */
+    height:50vh;
+    left:-10vw; /* Position so half is visible */
+    top:10vh; /* Center it vertically better */
   }
   .label{
-    font-size:2.5vh; /* Also scale down text */
+    font-size:2.2vh; /* Scale down text proportionally */
   }
 }
 
@@ -208,15 +209,31 @@ labels.forEach(l=>{
 });
 
 let r=0,v=0;
+let scrollAcceleration = 1; // Acceleration multiplier
+let lastScrollTime = Date.now();
 
-// Mouse wheel support
-window.addEventListener("wheel",e=>v-=e.deltaY*0.02);
+// Mouse wheel support with acceleration
+window.addEventListener("wheel",e=>{
+  const currentTime = Date.now();
+  const timeDiff = currentTime - lastScrollTime;
+  
+  // If scrolling quickly (short time between scrolls), increase acceleration
+  if (timeDiff < 100) {
+    scrollAcceleration = Math.min(scrollAcceleration * 1.15, 3.5); // Max 3.5x speed
+  } else {
+    scrollAcceleration = Math.max(scrollAcceleration * 0.85, 1); // Decay back to 1x
+  }
+  
+  v -= e.deltaY * 0.02 * scrollAcceleration;
+  lastScrollTime = currentTime;
+});
 
 // Touch support for spinning - optimized for smooth performance
 let touchStartY = null;
 let lastTouchY = null;
 let lastTouchTime = null;
 let isTouching = false;
+let touchAcceleration = 1; // Acceleration multiplier for touch
 
 wheel.addEventListener("touchstart", e => {
   e.preventDefault(); // Prevent scrolling interference
@@ -224,6 +241,7 @@ wheel.addEventListener("touchstart", e => {
   lastTouchY = touchStartY;
   lastTouchTime = Date.now();
   isTouching = true;
+  touchAcceleration = 1; // Reset acceleration
 });
 
 wheel.addEventListener("touchmove", e => {
@@ -236,9 +254,19 @@ wheel.addEventListener("touchmove", e => {
   const deltaTime = currentTime - lastTouchTime;
   
   if (deltaTime > 0) {
-    // Calculate velocity and apply smoothly
-    const velocity = deltaY / deltaTime;
-    v += velocity * 2.5;
+    // Calculate base velocity
+    const baseVelocity = deltaY / deltaTime;
+    
+    // Increase acceleration based on swipe speed
+    const swipeSpeed = Math.abs(baseVelocity);
+    if (swipeSpeed > 0.5) {
+      touchAcceleration = Math.min(touchAcceleration * 1.2, 4); // Max 4x speed
+    } else {
+      touchAcceleration = Math.max(touchAcceleration * 0.9, 1); // Decay to 1x
+    }
+    
+    // Apply velocity with acceleration
+    v += baseVelocity * 2.5 * touchAcceleration;
   }
   
   lastTouchY = currentY;
@@ -251,6 +279,7 @@ wheel.addEventListener("touchend", e => {
   touchStartY = null;
   lastTouchY = null;
   lastTouchTime = null;
+  touchAcceleration = 1; // Reset for next touch
 });
 
 wheel.addEventListener("touchcancel", e => {
@@ -259,6 +288,7 @@ wheel.addEventListener("touchcancel", e => {
   touchStartY = null;
   lastTouchY = null;
   lastTouchTime = null;
+  touchAcceleration = 1;
 });
 
 (function anim(){
@@ -308,7 +338,17 @@ for(let i=0;i<imageCount;i++){
 }
 
 let mx=0,my=0;
-window.addEventListener("mousemove",e=>{mx=e.clientX;my=e.clientY;});
+let isPortrait = window.innerHeight > window.innerWidth;
+
+// Only track mouse on desktop/landscape
+if (!isPortrait) {
+  window.addEventListener("mousemove",e=>{mx=e.clientX;my=e.clientY;});
+}
+
+// Update portrait detection on resize
+window.addEventListener("resize", () => {
+  isPortrait = window.innerHeight > window.innerWidth;
+});
 
 (function animate(){
   dragons.forEach(d=>{
@@ -320,14 +360,17 @@ window.addEventListener("mousemove",e=>{mx=e.clientX;my=e.clientY;});
     const bx=d.cx+Math.cos(d.angle)*d.rx+Math.sin(d.angle*3)*30*d.wobble;
     const by=d.cy+Math.sin(d.angle)*d.ry+Math.cos(d.angle*2)*20*d.wobble;
 
-    const dx=bx+d.ox-mx;
-    const dy=by+d.oy-my;
-    const dist=Math.hypot(dx,dy);
+    // Only apply mouse repulsion on desktop/landscape
+    if (!isPortrait) {
+      const dx=bx+d.ox-mx;
+      const dy=by+d.oy-my;
+      const dist=Math.hypot(dx,dy);
 
-    if(dist<200){
-      const f=(200-dist)/200*10;
-      d.ox+=dx/dist*f;
-      d.oy+=dy/dist*f;
+      if(dist<200){
+        const f=(200-dist)/200*10;
+        d.ox+=dx/dist*f;
+        d.oy+=dy/dist*f;
+      }
     }
 
     d.ox*=0.9;
