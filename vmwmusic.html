@@ -67,6 +67,14 @@ html, body {
   height: 100%;
   object-fit: cover;
 }
+.sectionB {
+  flex: 0 0 auto;
+  min-height: 33%;
+}
+.sectionC {
+  flex: 1 1 auto;
+  min-height: 20%;
+}
 .sectionB, .sectionC {
   display: flex;
   flex-wrap: wrap;
@@ -76,7 +84,7 @@ html, body {
   background: #2F3035;
   position: relative;
 }
-.sectionB .block, .sectionC .block {
+.sectionB .block {
   flex: 1 0 calc(10% - 0.5vh);
   aspect-ratio: 1/1;
   background: #C9CED4;
@@ -89,9 +97,24 @@ html, body {
   box-shadow: 0 4px 8px rgba(0,0,0,0.25),
               inset 0 -2px 6px rgba(0,0,0,0.15);
 }
+.sectionC .block {
+  flex: 1 0 calc(10% - 0.5vh);
+  width: calc(10% - 0.5vh);
+  background: #C9CED4;
+  border-radius: 1.5vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.25),
+              inset 0 -2px 6px rgba(0,0,0,0.15);
+}
 .glassButton {
   width: 75%;
-  height: 75%;
+  height: auto;
+  aspect-ratio: 1/1;
+  max-height: 75%;
   border-radius: 50%;
   position: relative;
   display: flex;
