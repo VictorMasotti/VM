@@ -23,18 +23,6 @@ html,body{
   user-select: none;
 }
 
-/* Desktop landscape - 3D perspective warp */
-@media (orientation: landscape) {
-  body {
-    perspective: 800px;
-    perspective-origin: 50% 50%;
-  }
-  
-  #glass, #wheel, #dragon-container, #numbers, #random-text {
-    transform-style: preserve-3d;
-  }
-}
-
 /* FORCE CUSTOM CURSOR EVERYWHERE */
 a, a:hover, a:active, a:visited {
   cursor:url('EARTH2.png'),auto;
@@ -72,6 +60,16 @@ a, a:hover, a:active, a:visited {
   pointer-events:none;
 }
 
+/* ===== HEIGHTMAP CANVAS ===== */
+#heightmap{
+  position:fixed;
+  inset:0;
+  width:100%;
+  height:100%;
+  z-index:3;
+  pointer-events:none;
+}
+
 /* ===== WHEEL (ALWAYS TOP) ===== */
 #wheel{
   position:fixed;
@@ -91,13 +89,19 @@ a, a:hover, a:active, a:visited {
 /* Mobile portrait mode - smaller wheel */
 @media (orientation: portrait) {
   #wheel{
-    width:50vw; /* Much smaller for iPhone */
-    height:50vh;
-    left:-10vw; /* Position so half is visible */
-    top:10vh; /* Center it vertically better */
+    width:100vw; /* Full screen width */
+    height:100vh; /* Full screen height */
+    left:0; /* Cover entire screen */
+    top:0;
   }
   .label{
     font-size:2.2vh; /* Scale down text proportionally */
+  }
+  
+  /* Disable pointer events on images for mobile portrait */
+  #dragon-container {
+    pointer-events: none;
+    touch-action: none;
   }
 }
 
@@ -171,6 +175,8 @@ a, a:hover, a:active, a:visited {
 
 <div id="glass"></div>
 <div id="noise"></div>
+
+<canvas id="heightmap"></canvas>
 
 <div id="wheel"></div>
 <div id="dragon-container"></div>
@@ -351,7 +357,6 @@ for(let i=0;i<imageCount;i++){
 
 let mx=0,my=0;
 let isPortrait = window.innerHeight > window.innerWidth;
-let centerX = window.innerWidth / 2; // Cache center calculation
 
 // Only track mouse on desktop/landscape
 if (!isPortrait) {
@@ -361,7 +366,6 @@ if (!isPortrait) {
 // Update portrait detection on resize
 window.addEventListener("resize", () => {
   isPortrait = window.innerHeight > window.innerWidth;
-  centerX = window.innerWidth / 2; // Update cached center
 });
 
 (function animate(){
@@ -390,29 +394,130 @@ window.addEventListener("resize", () => {
     d.ox*=0.9;
     d.oy*=0.9;
 
-    // Apply 3D warp effect on desktop landscape - optimized
-    if (!isPortrait) {
-      const distFromCenter = (bx + d.ox) - centerX;
-      const warpIntensity = distFromCenter / centerX;
-      const rotateY = warpIntensity * 35;
-      const translateZ = -Math.abs(warpIntensity) * 200;
-      
-      d.el.style.transform=
-        `translate(${bx+d.ox}px,${by+d.oy}px)
-         translateZ(${translateZ}px)
-         rotateY(${rotateY}deg)
-         rotate(${d.rot}rad)
-         scale(${d.scale})`;
-    } else {
-      // Simple transform for mobile (no 3D calculations)
-      d.el.style.transform=
-        `translate(${bx+d.ox}px,${by+d.oy}px)
-         rotate(${d.rot}rad)
-         scale(${d.scale})`;
-    }
+    d.el.style.transform=
+      `translate(${bx+d.ox}px,${by+d.oy}px)
+       rotate(${d.rot}rad)
+       scale(${d.scale})`;
   });
   requestAnimationFrame(animate);
 })();
+
+/* ===== HEIGHTMAP BLUR EFFECT ===== */
+const canvas = document.getElementById("heightmap");
+const ctx = canvas.getContext("2d");
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+
+// Create height map grid
+const gridSize = 60;
+const cols = Math.ceil(canvas.width / gridSize);
+const rows = Math.ceil(canvas.height / gridSize);
+const heightMap = [];
+
+// Initialize height map with mostly low blur values
+for (let i = 0; i < rows; i++) {
+  heightMap[i] = [];
+  for (let j = 0; j < cols; j++) {
+    // 90% chance of low blur (0-20), 10% chance of higher
+    const rand = Math.random();
+    let initialBlur;
+    if (rand < 0.9) {
+      initialBlur = Math.random() * 20; // Most areas: 0-20% blur
+    } else {
+      initialBlur = 20 + Math.random() * 70; // Rare: 20-90% blur
+    }
+    
+    heightMap[i][j] = {
+      blur: initialBlur,
+      targetBlur: initialBlur,
+      speed: 0.3 + Math.random() * 0.7
+    };
+  }
+}
+
+// Create some "storm centers" that move around
+const storms = [];
+for (let i = 0; i < 3; i++) {
+  storms.push({
+    x: Math.random() * cols,
+    y: Math.random() * rows,
+    dx: (Math.random() - 0.5) * 0.1,
+    dy: (Math.random() - 0.5) * 0.1,
+    radius: 3 + Math.random() * 4,
+    intensity: 60 + Math.random() * 30
+  });
+}
+
+// Animate height map
+(function animateHeightMap() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  
+  // Move storms
+  storms.forEach(storm => {
+    storm.x += storm.dx;
+    storm.y += storm.dy;
+    
+    // Bounce off edges
+    if (storm.x < 0 || storm.x > cols) storm.dx *= -1;
+    if (storm.y < 0 || storm.y > rows) storm.dy *= -1;
+    
+    // Occasionally change direction
+    if (Math.random() < 0.01) {
+      storm.dx = (Math.random() - 0.5) * 0.1;
+      storm.dy = (Math.random() - 0.5) * 0.1;
+    }
+  });
+  
+  for (let i = 0; i < rows; i++) {
+    for (let j = 0; j < cols; j++) {
+      const cell = heightMap[i][j];
+      
+      // Calculate influence from nearby storms
+      let stormInfluence = 0;
+      storms.forEach(storm => {
+        const dist = Math.hypot(j - storm.x, i - storm.y);
+        if (dist < storm.radius) {
+          const influence = (1 - dist / storm.radius) * storm.intensity;
+          stormInfluence = Math.max(stormInfluence, influence);
+        }
+      });
+      
+      // Set target blur based on storm influence
+      if (stormInfluence > 10) {
+        cell.targetBlur = stormInfluence;
+      } else {
+        // Default to low blur
+        if (Math.random() < 0.002) {
+          cell.targetBlur = Math.random() * 15;
+        }
+      }
+      
+      // Smoothly transition to target blur
+      cell.blur += (cell.targetBlur - cell.blur) * 0.05;
+      
+      // Only draw if there's noticeable blur
+      if (cell.blur > 2) {
+        const x = j * gridSize;
+        const y = i * gridSize;
+        const blurAmount = cell.blur;
+        const alpha = Math.min(blurAmount / 120, 0.5);
+        
+        ctx.filter = `blur(${blurAmount}px)`;
+        ctx.fillStyle = `rgba(0, 100, 255, ${alpha})`;
+        ctx.fillRect(x, y, gridSize, gridSize);
+      }
+    }
+  }
+  
+  ctx.filter = 'none';
+  requestAnimationFrame(animateHeightMap);
+})();
+
+// Resize handler
+window.addEventListener("resize", () => {
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+});
 
 /* ===== RANDOM NUMBERS ===== */
 const nums=document.getElementById("numbers");
