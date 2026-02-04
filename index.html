@@ -60,6 +60,458 @@ a, a:hover, a:active, a:visited {
   pointer-events:none;
 }
 
+/* ===== BLUR MAP ===== */
+#blur-map{
+  position:fixed;
+  inset:0;
+  width:100%;
+  height:100%;
+  z-index:3;
+  pointer-events:none;
+  fill:rgba(0,100,255,0.3);
+}
+
+/* ===== WHEEL (ALWAYS TOP) ===== */
+#wheel{
+  position:fixed;
+  top:0;
+  left:-45vw;
+  width:110vw;
+  height:100vh;
+  border-radius:50%;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  z-index:1000;
+  touch-action: none;
+  will-change: transform;
+}
+
+/* Mobile portrait mode - smaller wheel */
+@media (orientation: portrait) {
+  #wheel{
+    width:100vw; /* Full screen width */
+    height:100vh; /* Full screen height */
+    left:0; /* Cover entire screen */
+    top:0;
+  }
+  .label{
+    font-size:2.2vh; /* Scale down text proportionally */
+  }
+  
+  /* Disable pointer events on images for mobile portrait */
+  #dragon-container {
+    pointer-events: none;
+    touch-action: none;
+  }
+}
+
+.label{
+  position:absolute;
+  font-size:4.2vh;
+  font-weight:500;
+  transform-origin:0 50%;
+  will-change: transform;
+}
+.label a{
+  color:black;
+  text-decoration:none;
+  -webkit-tap-highlight-color: transparent;
+  outline: none;
+}
+
+/* ===== IMAGES ===== */
+#dragon-container img{
+  position:fixed;
+  z-index:8;
+  pointer-events:none;
+  filter:drop-shadow(0 30px 45px rgba(0,0,0,0.45));
+  will-change: transform;
+  transform: translate3d(0,0,0);
+}
+
+/* ===== NUMBERS STACK ===== */
+#numbers{
+  position:fixed;
+  bottom:5vh;
+  right:3vw;
+  width:60vw;
+  z-index:17;
+  font-size:clamp(11px,1.35vw,20px);
+  letter-spacing:0.18em;
+  color:rgba(0,0,0,0.6);
+  pointer-events:none;
+}
+.num-line{
+  animation:fadeOut 6s forwards;
+}
+@keyframes fadeOut{
+  to{opacity:0; transform:translateY(-20px)}
+}
+
+/* ===== RANDOM TEXT ===== */
+#random-text{
+  position:fixed;
+  z-index:18;
+  font-size:clamp(10px,1vw,16px);
+  opacity:0.35;
+  max-width:40vw;
+  pointer-events:none;
+}
+
+/* ===== FOOTER ===== */
+#below{
+  position:fixed;
+  bottom:12px;
+  width:100%;
+  text-align:center;
+  font-size:10px;
+  color:rgba(0,0,0,0.6);
+  z-index:100;
+}
+</style>
+</head>
+
+<body>
+
+<div id="glass"></div>
+<div id="noise"></div>
+
+<svg id="blur-map" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <filter id="blur-filter">
+      <feTurbulence type="fractalNoise" baseFrequency="0.003" numOctaves="3" seed="2">
+        <animate attributeName="baseFrequency" 
+                 values="0.003;0.004;0.003" 
+                 dur="20s" 
+                 repeatCount="indefinite"/>
+      </feTurbulence>
+      <feColorMatrix type="hueRotate" values="200">
+        <animate attributeName="values" 
+                 from="200" 
+                 to="240" 
+                 dur="15s" 
+                 repeatCount="indefinite"/>
+      </feColorMatrix>
+      <feGaussianBlur stdDeviation="40"/>
+    </filter>
+  </defs>
+  <rect width="100%" height="100%" filter="url(#blur-filter)" opacity="0.15"/>
+</svg>
+
+<div id="wheel"></div>
+<div id="dragon-container"></div>
+<div id="numbers"></div>
+<div id="random-text"></div>
+
+<p id="below">ALL RIGHTS RESERVED | © 2026 VICTOR MASOTTI | © VICTOR 360 </p>
+
+<script>
+/* ===== BACKGROUND ===== */
+const colors=["#309e6d","#ed4302","#d7cfbd","#d8dbe2"];
+const extraColors=["#1270b8","#1aa167","#ce2021","#ffc003","#bdbdbd","#e8dcc8","#c9b8a0","#f0e6d2"];
+function shuffle(a){return a.sort(()=>Math.random()-0.5);}
+(function cycle(){
+  const o=shuffle([...colors]); let i=0;
+  const step=30000/o.length;
+  (function n(){
+    // 10% chance for each extra color to appear
+    const useExtra = Math.random() < 0.10;
+    const extraColor = extraColors[Math.floor(Math.random() * extraColors.length)];
+    document.body.style.background = useExtra ? extraColor : o[i++];
+    if(i<o.length) setTimeout(n,step);
+    else setTimeout(cycle,200);
+  })();
+})();
+
+/* ===== WHEEL WITH LINKS + TOUCH SUPPORT ===== */
+const wheel=document.getElementById("wheel");
+const labels=[
+  {text:"VICTOR MASOTTI", href:"index.html"},
+  {text:"W/FASHION", href:"vmwfashion.html"},
+  {text:"W/MUSIC", href:"vmwmusic.html"},
+  {text:"W/CINEMA", href:"vmwcinema.html"},
+  {text:"NOTEPAD", href:"vmnotepad.html"},
+  {text:"W/VISUALS", href:"vmwvisuals.html"}
+];
+
+const els=[];
+labels.forEach(l=>{
+  const d=document.createElement("div");
+  d.className="label";
+  const a=document.createElement("a");
+  a.href=l.href;
+  a.textContent=l.text;
+  d.appendChild(a);
+  wheel.appendChild(d);
+  els.push(d);
+});
+
+let r=0,v=0;
+let scrollAcceleration = 1; // Acceleration multiplier
+let lastScrollTime = Date.now();
+
+// Mouse wheel support with acceleration
+window.addEventListener("wheel",e=>{
+  const currentTime = Date.now();
+  const timeDiff = currentTime - lastScrollTime;
+  
+  // If scrolling quickly (short time between scrolls), increase acceleration
+  if (timeDiff < 100) {
+    scrollAcceleration = Math.min(scrollAcceleration * 1.15, 3.5); // Max 3.5x speed
+  } else {
+    scrollAcceleration = Math.max(scrollAcceleration * 0.85, 1); // Decay back to 1x
+  }
+  
+  v -= e.deltaY * 0.02 * scrollAcceleration;
+  lastScrollTime = currentTime;
+});
+
+// Touch support for spinning - optimized for smooth performance
+let touchStartY = null;
+let lastTouchY = null;
+let lastTouchTime = null;
+let isTouching = false;
+let touchAcceleration = 1; // Acceleration multiplier for touch
+
+wheel.addEventListener("touchstart", e => {
+  e.preventDefault(); // Prevent scrolling interference
+  touchStartY = e.touches[0].clientY;
+  lastTouchY = touchStartY;
+  lastTouchTime = Date.now();
+  isTouching = true;
+  touchAcceleration = 1; // Reset acceleration
+});
+
+wheel.addEventListener("touchmove", e => {
+  e.preventDefault(); // Prevent scrolling interference
+  if (!isTouching) return;
+  
+  const currentY = e.touches[0].clientY;
+  const currentTime = Date.now();
+  const deltaY = currentY - lastTouchY;
+  const deltaTime = currentTime - lastTouchTime;
+  
+  if (deltaTime > 0) {
+    // Calculate base velocity
+    const baseVelocity = deltaY / deltaTime;
+    
+    // Increase acceleration based on swipe speed
+    const swipeSpeed = Math.abs(baseVelocity);
+    if (swipeSpeed > 0.5) {
+      touchAcceleration = Math.min(touchAcceleration * 1.2, 4); // Max 4x speed
+    } else {
+      touchAcceleration = Math.max(touchAcceleration * 0.9, 1); // Decay to 1x
+    }
+    
+    // Apply velocity with acceleration
+    v += baseVelocity * 2.5 * touchAcceleration;
+  }
+  
+  lastTouchY = currentY;
+  lastTouchTime = currentTime;
+});
+
+wheel.addEventListener("touchend", e => {
+  e.preventDefault();
+  isTouching = false;
+  touchStartY = null;
+  lastTouchY = null;
+  lastTouchTime = null;
+  touchAcceleration = 1; // Reset for next touch
+});
+
+wheel.addEventListener("touchcancel", e => {
+  // Handle interrupted touches
+  isTouching = false;
+  touchStartY = null;
+  lastTouchY = null;
+  lastTouchTime = null;
+  touchAcceleration = 1;
+});
+
+(function anim(){
+  r+=v*0.6; 
+  // Less friction for smoother touch experience
+  v*=0.96;
+  wheel.style.transform=`rotate(${r}deg)`;
+  els.forEach((el,i)=>{
+    const a=(i*360/els.length+r)*Math.PI/180;
+    el.style.transform=
+      `translate(${Math.cos(a)*innerHeight/2}px,${Math.sin(a)*innerHeight/2}px)
+       rotate(${-r}deg)`;
+  });
+  requestAnimationFrame(anim);
+})();
+
+/* ===== IMAGES (COUNT ADJUSTED) ===== */
+const container=document.getElementById("dragon-container");
+const sources=["corala.png","eartth.png","mondo.png","terra.png","solare.png","circo.png","tipo.png","arc.png","break.png","other.png","pink.png","stique.png"];
+
+let imageCount=36;
+if(innerWidth<1080) imageCount=18;
+if(innerWidth>2200) imageCount=48;
+
+const dragons=[];
+for(let i=0;i<imageCount;i++){
+  const img=document.createElement("img");
+  img.src=sources[Math.floor(Math.random()*sources.length)];
+  img.style.width=40+Math.random()*140+"px";
+  container.appendChild(img);
+
+  dragons.push({
+    el:img,
+    angle:Math.random()*Math.PI*2,
+    speed:0.001+Math.random()*0.005,
+    rx:100+Math.random()*innerWidth,
+    ry:100+Math.random()*innerHeight,
+    cx:Math.random()*innerWidth,
+    cy:Math.random()*innerHeight,
+    wobble:Math.random(),
+    rot:Math.random()*2,
+    rotSpeed:(Math.random()-0.5)*0.01,
+    scale:0.6+Math.random()*2,
+    scaleDir:Math.random()>0.5?1:-1,
+    ox:0, oy:0
+  });
+}
+
+let mx=0,my=0;
+let isPortrait = window.innerHeight > window.innerWidth;
+
+// Only track mouse on desktop/landscape
+if (!isPortrait) {
+  window.addEventListener("mousemove",e=>{mx=e.clientX;my=e.clientY;});
+}
+
+// Update portrait detection on resize
+window.addEventListener("resize", () => {
+  isPortrait = window.innerHeight > window.innerWidth;
+});
+
+(function animate(){
+  dragons.forEach(d=>{
+    d.angle+=d.speed;
+    d.rot+=d.rotSpeed;
+    d.scale+=d.scaleDir*0.002;
+    if(d.scale>2.4||d.scale<0.6) d.scaleDir*=-1;
+
+    const bx=d.cx+Math.cos(d.angle)*d.rx+Math.sin(d.angle*3)*30*d.wobble;
+    const by=d.cy+Math.sin(d.angle)*d.ry+Math.cos(d.angle*2)*20*d.wobble;
+
+    // Only apply mouse repulsion on desktop/landscape
+    if (!isPortrait) {
+      const dx=bx+d.ox-mx;
+      const dy=by+d.oy-my;
+      const dist=Math.hypot(dx,dy);
+
+      if(dist<200){
+        const f=(200-dist)/200*10;
+        d.ox+=dx/dist*f;
+        d.oy+=dy/dist*f;
+      }
+    }
+
+    d.ox*=0.9;
+    d.oy*=0.9;
+
+    d.el.style.transform=
+      `translate(${bx+d.ox}px,${by+d.oy}px)
+       rotate(${d.rot}rad)
+       scale(${d.scale})`;
+  });
+  requestAnimationFrame(animate);
+})();
+
+/* ===== RANDOM NUMBERS ===== */
+const nums=document.getElementById("numbers");
+setInterval(()=>{
+  const count=Math.floor(Math.random()*3); // Reduced from 5 to 3
+  for(let i=0;i<count;i++){
+    const l=document.createElement("div");
+    l.className="num-line";
+    l.textContent=Array.from({length:20},()=>Math.floor(Math.random()*10)).join(" ");
+    nums.appendChild(l);
+    setTimeout(()=>l.remove(),6000);
+  }
+},800); // Increased from 400ms to 800ms
+
+/* ===== RANDOM TEXT ===== */
+const rt=document.getElementById("random-text");
+const words="hyper real noise flux static vector ghost render data offset".split(" ");
+setInterval(()=>{
+  rt.style.left=Math.random()*60+"vw";
+  rt.style.top=Math.random()*60+"vh";
+  rt.textContent=Array.from({length:32},()=>Math.random()<0.4
+    ? words[Math.floor(Math.random()*words.length)]
+    : String.fromCharCode(97+Math.random()*26)
+  ).join(" ");
+},2000); // Increased from 1200ms to 2000ms
+</script>
+
+</body>
+</html><!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Victor</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400;500&display=swap" rel="stylesheet">
+<link rel="icon" href="wone.png">
+
+<style>
+html,body{
+  margin:0;
+  height:100%;
+  overflow:hidden;
+  font-family:'Inter',sans-serif;
+  background:#309e6d;
+  transition:background 2.6s ease;
+  cursor:url('EARTH2.png'),auto;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+/* FORCE CUSTOM CURSOR EVERYWHERE */
+a, a:hover, a:active, a:visited {
+  cursor:url('EARTH2.png'),auto;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Remove blue highlight on touch */
+* {
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+}
+
+/* ===== GLASS + NOISE ===== */
+#glass{
+  position:fixed;
+  inset:0;
+  backdrop-filter: blur(14px) saturate(120%);
+  background:rgba(255,255,255,0.06);
+  z-index:5;
+  pointer-events:none;
+}
+#noise{
+  position:fixed;
+  inset:0;
+  background:repeating-linear-gradient(
+    to bottom,
+    rgba(0,0,0,0.06),
+    rgba(0,0,0,0.06) 1px,
+    transparent 1px,
+    transparent 3px
+  );
+  mix-blend-mode:overlay;
+  opacity:0.25;
+  z-index:20;
+  pointer-events:none;
+}
+
 /* ===== HEIGHTMAP CANVAS ===== */
 #heightmap{
   position:fixed;
@@ -547,3 +999,4 @@ setInterval(()=>{
 
 </body>
 </html>
+
