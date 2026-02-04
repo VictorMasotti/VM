@@ -15,6 +15,24 @@ html, body {
   overflow: hidden;
   font-family: 'Inter', sans-serif;
   background-color: #C9CED4;
+  cursor: url('EARTH2.png'), auto;
+}
+
+/* FORCE CUSTOM CURSOR EVERYWHERE */
+*, a, a:hover, a:active, a:visited, button, div, .glassButton {
+  cursor: url('EARTH2.png'), auto !important;
+}
+
+-webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+/* Remove blue highlight on touch */
+* {
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
 }
 .container {
   position: absolute;
@@ -318,6 +336,22 @@ const sectionB=document.getElementById('sectionB');
 const sectionC=document.getElementById('sectionC');
 createBlocks(sectionB,20,true);
 createBlocks(sectionC,10);
+
+/* Volume controls for buttons 2 and 3 */
+const button2 = sectionB.children[1]; // Second button (index 1)
+const button3 = sectionB.children[2]; // Third button (index 2)
+
+// Button 2: Lower volume by 5%
+button2.querySelector('.glassButton').addEventListener('click', () => {
+  audio.volume = Math.max(0, audio.volume - 0.05);
+  console.log('Volume decreased to:', Math.round(audio.volume * 100) + '%');
+});
+
+// Button 3: Raise volume by 5%
+button3.querySelector('.glassButton').addEventListener('click', () => {
+  audio.volume = Math.min(1, audio.volume + 0.05);
+  console.log('Volume increased to:', Math.round(audio.volume * 100) + '%');
+});
 
 /* 4-color inner circles */
 const colors=['#ff8000','#00e054','#ffb343','#40bcf4'];
