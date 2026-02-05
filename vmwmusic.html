@@ -341,16 +341,86 @@ createBlocks(sectionC,10);
 const button2 = sectionB.children[1]; // Second button (index 1)
 const button3 = sectionB.children[2]; // Third button (index 2)
 
-// Button 2: Lower volume by 5%
-button2.querySelector('.glassButton').addEventListener('click', () => {
+// Button 2: Lower volume by 5% with subtle orange shade
+button2.querySelector('.glassButton').addEventListener('click', (e) => {
   audio.volume = Math.max(0, audio.volume - 0.05);
   console.log('Volume decreased to:', Math.round(audio.volume * 100) + '%');
+  
+  e.stopPropagation();
+  
+  const btn = button2.querySelector('.glassButton');
+  
+  // Subtle orange tinted secondary circle
+  const s = document.createElement('div');
+  s.className = 'secondaryCircle';
+  s.style.background = 'radial-gradient(circle at 30% 30%, rgba(255, 128, 0, 0.2), rgba(0, 0, 0, 0.15))';
+  btn.appendChild(s);
+  s.animate(
+    [{transform:'scale(1)',opacity:1},{transform:'scale(0.82)',opacity:0}],
+    {duration:900,easing:'cubic-bezier(0.25,1,0.5,1)'}
+  );
+  setTimeout(()=>s.remove(),900);
+
+  // Subtle orange nova
+  const nova = document.createElement('div');
+  nova.style.position = 'absolute';
+  nova.style.top = '50%';
+  nova.style.left = '50%';
+  nova.style.width = '100%';
+  nova.style.height = '100%';
+  nova.style.transform = 'translate(-50%,-50%)';
+  nova.style.borderRadius = '50%';
+  nova.style.background = 'rgba(255, 128, 0, 0.25)';
+  nova.style.filter = 'blur(6px)';
+  nova.style.pointerEvents = 'none';
+  btn.appendChild(nova);
+  nova.animate(
+    [{transform:'translate(-50%,-50%) scale(1)',opacity:1},
+     {transform:'translate(-50%,-50%) scale(1.4)',opacity:0}],
+    {duration:1100,easing:'ease-out'}
+  );
+  setTimeout(()=>nova.remove(),1100);
 });
 
-// Button 3: Raise volume by 5%
-button3.querySelector('.glassButton').addEventListener('click', () => {
+// Button 3: Raise volume by 5% with subtle turquoise shade
+button3.querySelector('.glassButton').addEventListener('click', (e) => {
   audio.volume = Math.min(1, audio.volume + 0.05);
   console.log('Volume increased to:', Math.round(audio.volume * 100) + '%');
+  
+  e.stopPropagation();
+  
+  const btn = button3.querySelector('.glassButton');
+  
+  // Subtle turquoise tinted secondary circle
+  const s = document.createElement('div');
+  s.className = 'secondaryCircle';
+  s.style.background = 'radial-gradient(circle at 30% 30%, rgba(64, 188, 244, 0.25), rgba(0, 0, 0, 0.15))';
+  btn.appendChild(s);
+  s.animate(
+    [{transform:'scale(1)',opacity:1},{transform:'scale(0.82)',opacity:0}],
+    {duration:900,easing:'cubic-bezier(0.25,1,0.5,1)'}
+  );
+  setTimeout(()=>s.remove(),900);
+
+  // Subtle turquoise nova
+  const nova = document.createElement('div');
+  nova.style.position = 'absolute';
+  nova.style.top = '50%';
+  nova.style.left = '50%';
+  nova.style.width = '100%';
+  nova.style.height = '100%';
+  nova.style.transform = 'translate(-50%,-50%)';
+  nova.style.borderRadius = '50%';
+  nova.style.background = 'rgba(64, 188, 244, 0.3)';
+  nova.style.filter = 'blur(6px)';
+  nova.style.pointerEvents = 'none';
+  btn.appendChild(nova);
+  nova.animate(
+    [{transform:'translate(-50%,-50%) scale(1)',opacity:1},
+     {transform:'translate(-50%,-50%) scale(1.4)',opacity:0}],
+    {duration:1100,easing:'ease-out'}
+  );
+  setTimeout(()=>nova.remove(),1100);
 });
 
 /* 4-color inner circles */
