@@ -323,30 +323,42 @@ window.addEventListener("wheel",e=>{
 
 // Touch support for spinning - optimized for smooth performance
 let touchStartY = null;
+let touchStartX = null;
 let lastTouchY = null;
 let lastTouchTime = null;
 let isTouching = false;
+let hasMoved = false;
 let touchAcceleration = 1; // Acceleration multiplier for touch
 
 wheel.addEventListener("touchstart", e => {
-  e.preventDefault(); // Prevent scrolling interference
   touchStartY = e.touches[0].clientY;
+  touchStartX = e.touches[0].clientX;
   lastTouchY = touchStartY;
   lastTouchTime = Date.now();
   isTouching = true;
+  hasMoved = false;
   touchAcceleration = 1; // Reset acceleration
-});
+}, {passive: true});
 
 wheel.addEventListener("touchmove", e => {
-  e.preventDefault(); // Prevent scrolling interference
   if (!isTouching) return;
   
   const currentY = e.touches[0].clientY;
+  const currentX = e.touches[0].clientX;
   const currentTime = Date.now();
   const deltaY = currentY - lastTouchY;
   const deltaTime = currentTime - lastTouchTime;
   
-  if (deltaTime > 0) {
+  // Check if user has moved enough to be considered dragging (not a tap)
+  const totalMoveY = Math.abs(currentY - touchStartY);
+  const totalMoveX = Math.abs(currentX - touchStartX);
+  
+  if (totalMoveY > 10 || totalMoveX > 10) {
+    hasMoved = true;
+    e.preventDefault(); // Only prevent if actually dragging
+  }
+  
+  if (deltaTime > 0 && hasMoved) {
     // Calculate base velocity
     const baseVelocity = deltaY / deltaTime;
     
@@ -364,25 +376,28 @@ wheel.addEventListener("touchmove", e => {
   
   lastTouchY = currentY;
   lastTouchTime = currentTime;
-});
+}, {passive: false});
 
 wheel.addEventListener("touchend", e => {
-  e.preventDefault();
   isTouching = false;
   touchStartY = null;
+  touchStartX = null;
   lastTouchY = null;
   lastTouchTime = null;
   touchAcceleration = 1; // Reset for next touch
-});
+  hasMoved = false;
+}, {passive: true});
 
 wheel.addEventListener("touchcancel", e => {
   // Handle interrupted touches
   isTouching = false;
   touchStartY = null;
+  touchStartX = null;
   lastTouchY = null;
   lastTouchTime = null;
   touchAcceleration = 1;
-});
+  hasMoved = false;
+}, {passive: true});
 
 (function anim(){
   r+=v*0.6; 
