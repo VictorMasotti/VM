@@ -125,6 +125,8 @@ a, a:hover, a:active, a:visited, button, input[type="button"], input[type="submi
   outline: none;
   cursor:url('EARTH2.png'),auto !important;
   pointer-events: auto;
+  padding: 2vh 3vw; /* Larger touch target for mobile */
+  display: inline-block;
 }
 
 /* ===== IMAGES ===== */
@@ -451,10 +453,10 @@ window.addEventListener("resize", () => {
     const bx=d.cx+Math.cos(d.angle)*d.rx+Math.sin(d.angle*3)*30*d.wobble;
     const by=d.cy+Math.sin(d.angle)*d.ry+Math.cos(d.angle*2)*20*d.wobble;
 
-    // Only apply mouse repulsion on desktop/landscape
+    // Only apply mouse repulsion on desktop/landscape (NOT on portrait/mobile)
     if (!isPortrait) {
       const dx=bx+d.ox-mx;
-      const dy=by+d.oy-my;
+      const dy=bx+d.oy-my;
       const dist=Math.hypot(dx,dy);
 
       if(dist<200){
