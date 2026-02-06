@@ -46,7 +46,9 @@ html, body {
   border-radius: 2vh;
 }
 .sectionA {
-  flex: 0 0 33%;
+  flex: 0 0 auto;
+  max-width: 100%;
+  aspect-ratio: 5 / 1;
   display: flex;
   flex-wrap: wrap;
   gap: 0.5vh;
@@ -58,7 +60,8 @@ html, body {
 .sectionA .block1,
 .sectionA .block2,
 .sectionA .block5 {
-  flex: 1;
+  flex: 1 0 calc(20% - 0.5vh);
+  aspect-ratio: 1 / 1;
   background: #C9CED4;
   border-radius: 1.5vh;
   display: flex;
@@ -69,7 +72,8 @@ html, body {
               inset 0 -2px 6px rgba(0,0,0,0.15);
 }
 .sectionA .block3_4 {
-  flex: 2;
+  flex: 2 0 calc(40% - 0.5vh);
+  aspect-ratio: 2 / 1;
   border-radius: 1.5vh;
   background: #111;
   overflow: hidden;
@@ -87,7 +91,28 @@ html, body {
 }
 .sectionB {
   flex: 0 0 auto;
-  min-height: 33%;
+  max-width: 100%;
+  aspect-ratio: 5 / 1;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5vh;
+  padding: 0.5vh;
+  border-radius: 1.5vh;
+  background: #2F3035;
+  position: relative;
+}
+.sectionB .block {
+  flex: 1 0 calc(10% - 0.5vh);
+  aspect-ratio: 1/1;
+  background: #C9CED4;
+  border-radius: 1.5vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.25),
+              inset 0 -2px 6px rgba(0,0,0,0.15);
 }
 .sectionC {
   flex: 1 1 auto;
@@ -124,9 +149,57 @@ html, body {
   justify-content: center;
   align-items: center;
   position: relative;
-  overflow: hidden;
+  overflow: visible;
   box-shadow: 0 4px 8px rgba(0,0,0,0.25),
               inset 0 -2px 6px rgba(0,0,0,0.15);
+  padding: 5% 0;
+}
+
+.sectionC .sliderTrack {
+  position: absolute;
+  top: 5%;
+  bottom: 5%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 8px;
+  background: linear-gradient(
+    180deg,
+    rgba(255,255,255,0.4),
+    rgba(0,0,0,0.15)
+  );
+  border-radius: 4px;
+  box-shadow: 
+    inset 0 2px 4px rgba(0,0,0,0.3),
+    inset 0 -2px 4px rgba(255,255,255,0.2);
+}
+
+.sectionC .sliderKnob {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 60%;
+  aspect-ratio: 1/1;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle at 35% 35%,
+    rgba(255,255,255,0.5),
+    rgba(255,255,255,0.15) 40%,
+    rgba(0,0,0,0.05)
+  );
+  backdrop-filter: blur(10px);
+  box-shadow:
+    6px 6px 12px rgba(0,0,0,0.3),
+    inset 0 2px 4px rgba(255,255,255,0.5),
+    inset 0 -2px 4px rgba(0,0,0,0.2);
+  border: 1px solid rgba(255,255,255,0.3);
+  cursor: grab;
+  touch-action: none;
+  z-index: 10;
+}
+
+.sectionC .sliderKnob:active {
+  cursor: grabbing;
 }
 .glassButton {
   width: 75%;
@@ -140,32 +213,45 @@ html, body {
   align-items: center;
   background: linear-gradient(
     145deg,
-    rgba(255,255,255,0.28),
-    rgba(255,255,255,0.06)
+    rgba(255,255,255,0.35),
+    rgba(255,255,255,0.08)
   );
-  backdrop-filter: blur(10px);
+  backdrop-filter: blur(14px) saturate(130%);
   box-shadow:
-    4px 4px 10px rgba(0,0,0,0.32),
-    inset 0 -4px 8px rgba(0,0,0,0.28),
-    inset 0 2px 4px rgba(255,255,255,0.45);
+    6px 6px 16px rgba(0,0,0,0.35),
+    10px 10px 24px rgba(0,0,0,0.25),
+    inset 0 -6px 12px rgba(0,0,0,0.35),
+    inset 0 3px 6px rgba(255,255,255,0.55),
+    inset -3px -3px 8px rgba(0,0,0,0.2),
+    inset 3px 3px 8px rgba(255,255,255,0.3);
   will-change: transform;
+  border: 1px solid rgba(255,255,255,0.2);
+  overflow: hidden;
+}
+
+.glassButton::before {
+  content: '';
+  position: absolute;
+  top: 5%;
+  left: 5%;
+  width: 45%;
+  height: 45%;
+  background: radial-gradient(
+    circle at 35% 35%,
+    rgba(255,255,255,0.65) 0%,
+    rgba(255,255,255,0.35) 25%,
+    rgba(255,255,255,0.12) 50%,
+    transparent 75%
+  );
+  border-radius: 50%;
+  filter: blur(3px);
+  pointer-events: none;
+  clip-path: polygon(0 0, 100% 0, 0 100%);
 }
 .block5 .glassButton {
   width: 75%;
   height: 75%;
-  border: 2px solid rgba(0, 0, 0, 0.6);
-  box-shadow:
-    0 8px 16px rgba(0,0,0,0.4),
-    0 4px 8px rgba(0,0,0,0.3),
-    inset 0 1px 0 rgba(255,255,255,0.6),
-    inset 0 -1px 0 rgba(0,0,0,0.3),
-    inset -2px -4px 8px rgba(0,0,0,0.25),
-    inset 2px 4px 8px rgba(255,255,255,0.4);
-  background: linear-gradient(
-    145deg,
-    rgba(255,255,255,0.35),
-    rgba(255,255,255,0.08)
-  );
+  transition: all 5s ease-in-out;
 }
 .blockInnerCircle {
   position: absolute;
@@ -350,6 +436,83 @@ const sectionC=document.getElementById('sectionC');
 createBlocks(sectionB,20,true);
 createBlocks(sectionC,10);
 
+/* Create sliders for Section C */
+[...sectionC.children].forEach((block, index) => {
+  // Remove glass button if exists
+  const existingBtn = block.querySelector('.glassButton');
+  if (existingBtn) existingBtn.remove();
+  
+  // Create slider track
+  const track = document.createElement('div');
+  track.className = 'sliderTrack';
+  block.appendChild(track);
+  
+  // Create slider knob
+  const knob = document.createElement('div');
+  knob.className = 'sliderKnob';
+  block.appendChild(knob);
+  
+  // Slider state
+  let isDragging = false;
+  let sliderValue = 50; // 0-100, default middle
+  
+  function updateKnobPosition(value) {
+    const trackHeight = track.offsetHeight;
+    const knobHeight = knob.offsetHeight;
+    const maxTravel = trackHeight - knobHeight;
+    const position = (1 - value / 100) * maxTravel; // Inverted: top = 100, bottom = 0
+    knob.style.top = `calc(5% + ${position}px)`;
+  }
+  
+  function handleMove(clientY) {
+    if (!isDragging) return;
+    
+    const rect = block.getBoundingClientRect();
+    const trackTop = rect.top + rect.height * 0.05;
+    const trackBottom = rect.bottom - rect.height * 0.05;
+    const trackHeight = trackBottom - trackTop;
+    
+    const relativeY = Math.max(0, Math.min(trackHeight, clientY - trackTop));
+    sliderValue = Math.round((1 - relativeY / trackHeight) * 100);
+    
+    updateKnobPosition(sliderValue);
+    console.log(`Slider ${index + 1}: ${sliderValue}%`);
+  }
+  
+  // Mouse events
+  knob.addEventListener('mousedown', (e) => {
+    isDragging = true;
+    e.preventDefault();
+  });
+  
+  document.addEventListener('mousemove', (e) => {
+    if (isDragging) handleMove(e.clientY);
+  });
+  
+  document.addEventListener('mouseup', () => {
+    isDragging = false;
+  });
+  
+  // Touch events
+  knob.addEventListener('touchstart', (e) => {
+    isDragging = true;
+    e.preventDefault();
+  }, {passive: false});
+  
+  document.addEventListener('touchmove', (e) => {
+    if (isDragging && e.touches[0]) {
+      handleMove(e.touches[0].clientY);
+    }
+  }, {passive: false});
+  
+  document.addEventListener('touchend', () => {
+    isDragging = false;
+  });
+  
+  // Initialize position
+  updateKnobPosition(sliderValue);
+});
+
 /* Volume controls for buttons 2 and 3 */
 const button2 = sectionB.children[1]; // Second button (index 1)
 const button3 = sectionB.children[2]; // Third button (index 2)
@@ -493,8 +656,21 @@ button10.querySelector('.glassButton').addEventListener('click', () => {
   const greyBlocks = document.querySelectorAll('.sectionB .block, .sectionC .block, .block1, .block2, .block5');
   const sectionAGreyBlocks = document.querySelectorAll('.block1, .block2, .block5');
   const greenCircle = document.querySelector('.block5 .blockInnerCircle:nth-child(4)'); // 4th circle is green
+  const block5Button = document.querySelector('.block5 .glassButton');
   
   if (mode2Active) {
+    // Apply 3D glass effect to block5 button
+    block5Button.style.border = '2px solid rgba(0, 0, 0, 0.6)';
+    block5Button.style.boxShadow = `
+      0 8px 16px rgba(0,0,0,0.4),
+      0 4px 8px rgba(0,0,0,0.3),
+      inset 0 1px 0 rgba(255,255,255,0.6),
+      inset 0 -1px 0 rgba(0,0,0,0.3),
+      inset -2px -4px 8px rgba(0,0,0,0.25),
+      inset 2px 4px 8px rgba(255,255,255,0.4)
+    `;
+    block5Button.style.background = 'linear-gradient(145deg, rgba(255,255,255,0.35), rgba(255,255,255,0.08))';
+    
     // Create Mode 2 text - smaller and top left corner
     const modeText = document.createElement('div');
     modeText.id = 'mode2Text';
@@ -547,6 +723,11 @@ button10.querySelector('.glassButton').addEventListener('click', () => {
     document.body.style.backgroundColor = '#e6dacc';
     
   } else {
+    // Remove 3D glass effect from block5 button
+    block5Button.style.border = '';
+    block5Button.style.boxShadow = '';
+    block5Button.style.background = '';
+    
     // Fade Section A blocks back to original grey
     sectionAGreyBlocks.forEach(block => {
       block.style.transition = 'background-color 6s ease-in-out';
@@ -581,7 +762,7 @@ document.addEventListener('mousemove',e=>{
     const dx=e.clientX-(r.left+r.width/2);
     const dy=e.clientY-(r.top+r.height/2);
     const dist=Math.hypot(dx,dy);
-    const strength=Math.max(0,1-dist/120)*2;
+    const strength=Math.max(0,1-dist/80)*2; // Reduced from 275 to 80 - much less attraction
     btn.style.transform=
       `translate(${dx*0.25*strength}px,${dy*0.25*strength}px)
        scale(${1+strength*0.05})`;
