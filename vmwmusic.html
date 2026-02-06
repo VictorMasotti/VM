@@ -153,6 +153,19 @@ html, body {
 .block5 .glassButton {
   width: 75%;
   height: 75%;
+  border: 2px solid rgba(0, 0, 0, 0.6);
+  box-shadow:
+    0 8px 16px rgba(0,0,0,0.4),
+    0 4px 8px rgba(0,0,0,0.3),
+    inset 0 1px 0 rgba(255,255,255,0.6),
+    inset 0 -1px 0 rgba(0,0,0,0.3),
+    inset -2px -4px 8px rgba(0,0,0,0.25),
+    inset 2px 4px 8px rgba(255,255,255,0.4);
+  background: linear-gradient(
+    145deg,
+    rgba(255,255,255,0.35),
+    rgba(255,255,255,0.08)
+  );
 }
 .blockInnerCircle {
   position: absolute;
@@ -341,7 +354,27 @@ createBlocks(sectionC,10);
 const button2 = sectionB.children[1]; // Second button (index 1)
 const button3 = sectionB.children[2]; // Third button (index 2)
 
-// Button 2: Lower volume by 5% with subtle orange shade
+// Add less.png icon to button 2
+const btn2 = button2.querySelector('.glassButton');
+const lessIcon = document.createElement('img');
+lessIcon.src = 'less.png';
+lessIcon.style.width = '60%';
+lessIcon.style.height = '60%';
+lessIcon.style.objectFit = 'contain';
+lessIcon.style.pointerEvents = 'none';
+btn2.appendChild(lessIcon);
+
+// Add more.png icon to button 3
+const btn3 = button3.querySelector('.glassButton');
+const moreIcon = document.createElement('img');
+moreIcon.src = 'more.png';
+moreIcon.style.width = '60%';
+moreIcon.style.height = '60%';
+moreIcon.style.objectFit = 'contain';
+moreIcon.style.pointerEvents = 'none';
+btn3.appendChild(moreIcon);
+
+// Button 2: Lower volume by 5% with light beige shade
 button2.querySelector('.glassButton').addEventListener('click', (e) => {
   audio.volume = Math.max(0, audio.volume - 0.05);
   console.log('Volume decreased to:', Math.round(audio.volume * 100) + '%');
@@ -350,10 +383,10 @@ button2.querySelector('.glassButton').addEventListener('click', (e) => {
   
   const btn = button2.querySelector('.glassButton');
   
-  // Subtle orange tinted secondary circle
+  // Light beige tinted secondary circle
   const s = document.createElement('div');
   s.className = 'secondaryCircle';
-  s.style.background = 'radial-gradient(circle at 30% 30%, rgba(255, 128, 0, 0.2), rgba(0, 0, 0, 0.15))';
+  s.style.background = 'radial-gradient(circle at 30% 30%, rgba(215, 207, 189, 0.35), rgba(0, 0, 0, 0.15))';
   btn.appendChild(s);
   s.animate(
     [{transform:'scale(1)',opacity:1},{transform:'scale(0.82)',opacity:0}],
@@ -361,7 +394,7 @@ button2.querySelector('.glassButton').addEventListener('click', (e) => {
   );
   setTimeout(()=>s.remove(),900);
 
-  // Subtle orange nova
+  // Light beige nova
   const nova = document.createElement('div');
   nova.style.position = 'absolute';
   nova.style.top = '50%';
@@ -370,7 +403,7 @@ button2.querySelector('.glassButton').addEventListener('click', (e) => {
   nova.style.height = '100%';
   nova.style.transform = 'translate(-50%,-50%)';
   nova.style.borderRadius = '50%';
-  nova.style.background = 'rgba(255, 128, 0, 0.25)';
+  nova.style.background = 'rgba(215, 207, 189, 0.4)';
   nova.style.filter = 'blur(6px)';
   nova.style.pointerEvents = 'none';
   btn.appendChild(nova);
@@ -382,7 +415,7 @@ button2.querySelector('.glassButton').addEventListener('click', (e) => {
   setTimeout(()=>nova.remove(),1100);
 });
 
-// Button 3: Raise volume by 5% with subtle turquoise shade
+// Button 3: Raise volume by 5% with light beige shade
 button3.querySelector('.glassButton').addEventListener('click', (e) => {
   audio.volume = Math.min(1, audio.volume + 0.05);
   console.log('Volume increased to:', Math.round(audio.volume * 100) + '%');
@@ -391,10 +424,10 @@ button3.querySelector('.glassButton').addEventListener('click', (e) => {
   
   const btn = button3.querySelector('.glassButton');
   
-  // Subtle turquoise tinted secondary circle
+  // Light beige tinted secondary circle
   const s = document.createElement('div');
   s.className = 'secondaryCircle';
-  s.style.background = 'radial-gradient(circle at 30% 30%, rgba(64, 188, 244, 0.25), rgba(0, 0, 0, 0.15))';
+  s.style.background = 'radial-gradient(circle at 30% 30%, rgba(215, 207, 189, 0.35), rgba(0, 0, 0, 0.15))';
   btn.appendChild(s);
   s.animate(
     [{transform:'scale(1)',opacity:1},{transform:'scale(0.82)',opacity:0}],
@@ -402,7 +435,7 @@ button3.querySelector('.glassButton').addEventListener('click', (e) => {
   );
   setTimeout(()=>s.remove(),900);
 
-  // Subtle turquoise nova
+  // Light beige nova
   const nova = document.createElement('div');
   nova.style.position = 'absolute';
   nova.style.top = '50%';
@@ -411,7 +444,7 @@ button3.querySelector('.glassButton').addEventListener('click', (e) => {
   nova.style.height = '100%';
   nova.style.transform = 'translate(-50%,-50%)';
   nova.style.borderRadius = '50%';
-  nova.style.background = 'rgba(64, 188, 244, 0.3)';
+  nova.style.background = 'rgba(215, 207, 189, 0.4)';
   nova.style.filter = 'blur(6px)';
   nova.style.pointerEvents = 'none';
   btn.appendChild(nova);
@@ -431,7 +464,10 @@ const colors=['#ff8000','#00e054','#ffb343','#40bcf4'];
   c.style.background=colors[i];
   block.querySelector('.glassButton').appendChild(c);
 });
-colors.forEach(col=>{
+
+// Block5 gets green instead of blue
+const block5colors=['#ff8000','#00e054','#ffb343','#209569'];
+block5colors.forEach(col=>{
   const c=document.createElement('div');
   c.className='blockInnerCircle';
   c.style.background=col;
@@ -444,6 +480,95 @@ document.querySelector('.block5 .glassButton').addEventListener('click', () => {
     const randomTime = Math.random() * maxTime;
     audio.currentTime = randomTime;
     audio.play().catch(()=>{});
+});
+
+/* Button 10 - Mode 2 Color Toggle */
+let mode2Active = false;
+const button10 = sectionB.children[9]; // 10th button (index 9)
+
+button10.querySelector('.glassButton').addEventListener('click', () => {
+  mode2Active = !mode2Active;
+  
+  // Get all grey elements
+  const greyBlocks = document.querySelectorAll('.sectionB .block, .sectionC .block, .block1, .block2, .block5');
+  const sectionAGreyBlocks = document.querySelectorAll('.block1, .block2, .block5');
+  const greenCircle = document.querySelector('.block5 .blockInnerCircle:nth-child(4)'); // 4th circle is green
+  
+  if (mode2Active) {
+    // Create Mode 2 text - smaller and top left corner
+    const modeText = document.createElement('div');
+    modeText.id = 'mode2Text';
+    modeText.textContent = 'Mode 2 Activated';
+    modeText.style.position = 'fixed';
+    modeText.style.top = '3vh';
+    modeText.style.left = '3vw';
+    modeText.style.fontSize = '3vh';
+    modeText.style.fontWeight = '700';
+    modeText.style.color = '#4a7c59';
+    modeText.style.zIndex = '10000';
+    modeText.style.opacity = '0';
+    modeText.style.transition = 'opacity 1s ease-in-out';
+    modeText.style.pointerEvents = 'none';
+    modeText.style.fontFamily = 'Inter, sans-serif';
+    document.body.appendChild(modeText);
+    
+    // Fade in text immediately
+    setTimeout(() => {
+      modeText.style.opacity = '1';
+    }, 10);
+    
+    // Fade out text after 12 seconds
+    setTimeout(() => {
+      modeText.style.opacity = '0';
+      setTimeout(() => modeText.remove(), 1000);
+    }, 12000);
+    
+    // Fade Section A blocks to green over 6 seconds
+    sectionAGreyBlocks.forEach(block => {
+      block.style.transition = 'background-color 6s ease-in-out';
+      block.style.backgroundColor = '#209569';
+    });
+    
+    // Change green button circle to dark green
+    if (greenCircle) {
+      greenCircle.style.transition = 'background-color 6s ease-in-out';
+      greenCircle.style.backgroundColor = '#0b1307';
+    }
+    
+    // Fade colors over 5 seconds for Section B and C blocks (1 second faster)
+    const nonSectionABlocks = [...greyBlocks].filter(block => ![...sectionAGreyBlocks].includes(block));
+    nonSectionABlocks.forEach(block => {
+      block.style.transition = 'background-color 5s ease-in-out';
+      block.style.backgroundColor = '#e6dacc';
+    });
+    
+    // Fade body background over 5 seconds
+    document.body.style.transition = 'background-color 5s ease-in-out';
+    document.body.style.backgroundColor = '#e6dacc';
+    
+  } else {
+    // Fade Section A blocks back to original grey
+    sectionAGreyBlocks.forEach(block => {
+      block.style.transition = 'background-color 6s ease-in-out';
+      block.style.backgroundColor = '#C9CED4';
+    });
+    
+    // Change green button circle back
+    if (greenCircle) {
+      greenCircle.style.transition = 'background-color 6s ease-in-out';
+      greenCircle.style.backgroundColor = '#209569';
+    }
+    
+    const nonSectionABlocks = [...greyBlocks].filter(block => ![...sectionAGreyBlocks].includes(block));
+    nonSectionABlocks.forEach(block => {
+      block.style.transition = 'background-color 5s ease-in-out';
+      block.style.backgroundColor = '#C9CED4';
+    });
+    
+    // Fade body background back
+    document.body.style.transition = 'background-color 5s ease-in-out';
+    document.body.style.backgroundColor = '#C9CED4';
+  }
 });
 
 /* Cursor follow - independent blocks */
