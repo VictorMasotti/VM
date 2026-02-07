@@ -152,13 +152,13 @@ html, body {
   overflow: visible;
   box-shadow: 0 4px 8px rgba(0,0,0,0.25),
               inset 0 -2px 6px rgba(0,0,0,0.15);
-  padding: 5% 0;
+  padding: 9% 0;
 }
 
 .sectionC .sliderTrack {
   position: absolute;
-  top: 5%;
-  bottom: 5%;
+  top: 9%;
+  bottom: 9%;
   left: 50%;
   transform: translateX(-50%);
   width: 8px;
@@ -178,7 +178,7 @@ html, body {
   left: 50%;
   top: 50%;
   transform: translate(-50%, -50%);
-  width: 60%;
+  width: 75%;
   aspect-ratio: 1/1;
   border-radius: 50%;
   background: radial-gradient(
@@ -349,6 +349,10 @@ function draw(){
   const cx=canvas.width/2, cy=canvas.height/2;
   const r=Math.min(canvas.width,canvas.height)/2*0.85;
   const s=(2*r)/(gs-1);
+  
+  // Responsive dot radius - scale with canvas size but keep minimum spacing
+  const dotRadius = Math.max(2, Math.min(dr, s * 0.15));
+  
   for(let y=0;y<gs;y++)for(let x=0;x<gs;x++){
     const px=cx-r+x*s, py=cy-r+y*s;
     if((px-cx)**2+(py-cy)**2<=r*r){
@@ -358,7 +362,7 @@ function draw(){
       else if(rnd<2.6) col='#ffb343';
       else if(rnd<3) col='#40bcf4';
       ctx.beginPath();
-      ctx.arc(px,py,dr,0,Math.PI*2);
+      ctx.arc(px,py,dotRadius,0,Math.PI*2);
       ctx.fillStyle=col;
       ctx.fill();
     }
@@ -436,6 +440,18 @@ const sectionC=document.getElementById('sectionC');
 createBlocks(sectionB,20,true);
 createBlocks(sectionC,10);
 
+/* Add paint.png icon to button 10 */
+const button10Icon = sectionB.children[9].querySelector('.glassButton');
+if (button10Icon) {
+  const paintIcon = document.createElement('img');
+  paintIcon.src = 'paint.png';
+  paintIcon.style.width = '60%';
+  paintIcon.style.height = '60%';
+  paintIcon.style.objectFit = 'contain';
+  paintIcon.style.pointerEvents = 'none';
+  button10Icon.appendChild(paintIcon);
+}
+
 /* Create sliders for Section C */
 [...sectionC.children].forEach((block, index) => {
   // Remove glass button if exists
@@ -447,7 +463,7 @@ createBlocks(sectionC,10);
   track.className = 'sliderTrack';
   block.appendChild(track);
   
-  // Create slider knob
+
   const knob = document.createElement('div');
   knob.className = 'sliderKnob';
   block.appendChild(knob);
@@ -457,26 +473,37 @@ createBlocks(sectionC,10);
   let sliderValue = 50; // 0-100, default middle
   
   function updateKnobPosition(value) {
-    const trackHeight = track.offsetHeight;
+    const blockHeight = block.offsetHeight;
     const knobHeight = knob.offsetHeight;
-    const maxTravel = trackHeight - knobHeight;
-    const position = (1 - value / 100) * maxTravel; // Inverted: top = 100, bottom = 0
-    knob.style.top = `calc(5% + ${position}px)`;
+    const borderSpace = blockHeight * 0.09;
+    
+    // Position knob so it reaches from top border to bottom border
+    const minPos = borderSpace;
+    const maxPos = blockHeight - borderSpace - knobHeight;
+    const position = minPos + (1 - value / 100) * (maxPos - minPos);
+    
+    knob.style.top = `${position}px`;
   }
   
   function handleMove(clientY) {
     if (!isDragging) return;
     
     const rect = block.getBoundingClientRect();
-    const trackTop = rect.top + rect.height * 0.05;
-    const trackBottom = rect.bottom - rect.height * 0.05;
-    const trackHeight = trackBottom - trackTop;
+    const blockHeight = rect.height;
+    const knobHeight = knob.offsetHeight;
+    const borderSpace = blockHeight * 0.09;
     
-    const relativeY = Math.max(0, Math.min(trackHeight, clientY - trackTop));
-    sliderValue = Math.round((1 - relativeY / trackHeight) * 100);
+    const minY = rect.top + borderSpace;
+    const maxY = rect.bottom - borderSpace - knobHeight;
+    const range = maxY - minY;
+    
+    // Calculate slider value
+    const relativeY = clientY - minY;
+    const clampedY = Math.max(0, Math.min(range, relativeY));
+    sliderValue = Math.round((1 - clampedY / range) * 100);
     
     updateKnobPosition(sliderValue);
-    console.log(`Slider ${index + 1}: ${sliderValue}%`);
+    // console.log(`Slider ${index + 1}: ${sliderValue}%`); // Disabled
   }
   
   // Mouse events
@@ -485,11 +512,15 @@ createBlocks(sectionC,10);
     e.preventDefault();
   });
   
-  document.addEventListener('mousemove', (e) => {
-    if (isDragging) handleMove(e.clientY);
+  // Use window for global tracking
+  window.addEventListener('mousemove', (e) => {
+    if (isDragging) {
+      e.preventDefault();
+      handleMove(e.clientY);
+    }
   });
   
-  document.addEventListener('mouseup', () => {
+  window.addEventListener('mouseup', () => {
     isDragging = false;
   });
   
@@ -513,11 +544,11 @@ createBlocks(sectionC,10);
   updateKnobPosition(sliderValue);
 });
 
-/* Volume controls for buttons 2 and 3 */
+
 const button2 = sectionB.children[1]; // Second button (index 1)
 const button3 = sectionB.children[2]; // Third button (index 2)
 
-// Add less.png icon to button 2
+
 const btn2 = button2.querySelector('.glassButton');
 const lessIcon = document.createElement('img');
 lessIcon.src = 'less.png';
@@ -723,7 +754,7 @@ button10.querySelector('.glassButton').addEventListener('click', () => {
     document.body.style.backgroundColor = '#e6dacc';
     
   } else {
-    // Remove 3D glass effect from block5 button
+
     block5Button.style.border = '';
     block5Button.style.boxShadow = '';
     block5Button.style.background = '';
@@ -752,7 +783,6 @@ button10.querySelector('.glassButton').addEventListener('click', () => {
   }
 });
 
-/* Cursor follow - independent blocks */
 document.addEventListener('mousemove',e=>{
   [...sectionB.children,...sectionC.children,document.querySelector('.block5')]
   .forEach(block=>{
@@ -762,7 +792,7 @@ document.addEventListener('mousemove',e=>{
     const dx=e.clientX-(r.left+r.width/2);
     const dy=e.clientY-(r.top+r.height/2);
     const dist=Math.hypot(dx,dy);
-    const strength=Math.max(0,1-dist/80)*2; // Reduced from 275 to 80 - much less attraction
+    const strength=Math.max(0,1-dist/80)*2; 
     btn.style.transform=
       `translate(${dx*0.25*strength}px,${dy*0.25*strength}px)
        scale(${1+strength*0.05})`;
