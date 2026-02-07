@@ -463,7 +463,7 @@ if (button10Icon) {
   track.className = 'sliderTrack';
   block.appendChild(track);
   
-
+  // Create slider knob
   const knob = document.createElement('div');
   knob.className = 'sliderKnob';
   block.appendChild(knob);
@@ -544,11 +544,11 @@ if (button10Icon) {
   updateKnobPosition(sliderValue);
 });
 
-
+/* Volume controls for buttons 2 and 3 */
 const button2 = sectionB.children[1]; // Second button (index 1)
 const button3 = sectionB.children[2]; // Third button (index 2)
 
-
+// Add less.png icon to button 2
 const btn2 = button2.querySelector('.glassButton');
 const lessIcon = document.createElement('img');
 lessIcon.src = 'less.png';
@@ -676,42 +676,100 @@ document.querySelector('.block5 .glassButton').addEventListener('click', () => {
     audio.play().catch(()=>{});
 });
 
-/* Button 10 - Mode 2 Color Toggle */
-let mode2Active = false;
+/* Button 10 - Color Scheme Cycler */
+let currentMode = 0; // 0 = original, 1 = beige, 2 = LEGO blue, 3 = rust orange
 const button10 = sectionB.children[9]; // 10th button (index 9)
 
+const colorSchemes = [
+  // Mode 0: Original
+  {
+    name: 'Original',
+    sectionABlocks: '#C9CED4',
+    sectionBCBlocks: '#C9CED4',
+    bodyBg: '#C9CED4',
+    greenCircle: '#209569',
+    block5Glass: null, // No special effect
+    showText: false
+  },
+  // Mode 1: Beige & Green
+  {
+    name: 'Mode 2 Activated',
+    sectionABlocks: '#209569',
+    sectionBCBlocks: '#e6dacc',
+    bodyBg: '#e6dacc',
+    greenCircle: '#0b1307',
+    block5Glass: {
+      border: '2px solid rgba(0, 0, 0, 0.6)',
+      boxShadow: `
+        0 8px 16px rgba(0,0,0,0.4),
+        0 4px 8px rgba(0,0,0,0.3),
+        inset 0 1px 0 rgba(255,255,255,0.6),
+        inset 0 -1px 0 rgba(0,0,0,0.3),
+        inset -2px -4px 8px rgba(0,0,0,0.25),
+        inset 2px 4px 8px rgba(255,255,255,0.4)
+      `,
+      background: 'linear-gradient(145deg, rgba(255,255,255,0.35), rgba(255,255,255,0.08))'
+    },
+    showText: true,
+    textColor: '#4a7c59'
+  },
+  // Mode 2: LEGO Bright Blue & White
+  {
+    name: 'Mode 3 Activated',
+    sectionABlocks: '#00A3DA', // LEGO bright light blue
+    sectionBCBlocks: '#FFFFFF', // White
+    bodyBg: '#FFFFFF',
+    greenCircle: '#003D7A', // Dark blue
+    block5Glass: null,
+    showText: true,
+    textColor: '#00A3DA'
+  },
+  // Mode 3: Rust Orange & Green Ash
+  {
+    name: 'Mode 4 Activated',
+    sectionABlocks: '#B7410E', // Rust orange
+    sectionBCBlocks: '#A8B5A0', // Green ash
+    bodyBg: '#A8B5A0',
+    greenCircle: '#6B3A2E', // Dark sand red
+    block5Glass: null,
+    showText: true,
+    textColor: '#B7410E'
+  },
+  // Mode 4: Bright Light Orange & Lime
+  {
+    name: 'Mode 5 Activated',
+    sectionABlocks: '#C7EA46', // Lime
+    sectionBCBlocks: '#FFB347', // Bright light orange
+    bodyBg: '#FFB347',
+    greenCircle: '#90EE90', // Light green
+    block5Glass: null,
+    showText: true,
+    textColor: '#C7EA46'
+  }
+];
+
 button10.querySelector('.glassButton').addEventListener('click', () => {
-  mode2Active = !mode2Active;
+  // Cycle to next mode
+  currentMode = (currentMode + 1) % colorSchemes.length;
+  const scheme = colorSchemes[currentMode];
   
-  // Get all grey elements
+  // Get all elements
   const greyBlocks = document.querySelectorAll('.sectionB .block, .sectionC .block, .block1, .block2, .block5');
   const sectionAGreyBlocks = document.querySelectorAll('.block1, .block2, .block5');
-  const greenCircle = document.querySelector('.block5 .blockInnerCircle:nth-child(4)'); // 4th circle is green
+  const greenCircle = document.querySelector('.block5 .blockInnerCircle:nth-child(4)');
   const block5Button = document.querySelector('.block5 .glassButton');
   
-  if (mode2Active) {
-    // Apply 3D glass effect to block5 button
-    block5Button.style.border = '2px solid rgba(0, 0, 0, 0.6)';
-    block5Button.style.boxShadow = `
-      0 8px 16px rgba(0,0,0,0.4),
-      0 4px 8px rgba(0,0,0,0.3),
-      inset 0 1px 0 rgba(255,255,255,0.6),
-      inset 0 -1px 0 rgba(0,0,0,0.3),
-      inset -2px -4px 8px rgba(0,0,0,0.25),
-      inset 2px 4px 8px rgba(255,255,255,0.4)
-    `;
-    block5Button.style.background = 'linear-gradient(145deg, rgba(255,255,255,0.35), rgba(255,255,255,0.08))';
-    
-    // Create Mode 2 text - smaller and top left corner
+  // Show mode text if enabled
+  if (scheme.showText) {
     const modeText = document.createElement('div');
     modeText.id = 'mode2Text';
-    modeText.textContent = 'Mode 2 Activated';
+    modeText.textContent = scheme.name;
     modeText.style.position = 'fixed';
     modeText.style.top = '3vh';
     modeText.style.left = '3vw';
     modeText.style.fontSize = '3vh';
     modeText.style.fontWeight = '700';
-    modeText.style.color = '#4a7c59';
+    modeText.style.color = scheme.textColor;
     modeText.style.zIndex = '10000';
     modeText.style.opacity = '0';
     modeText.style.transition = 'opacity 1s ease-in-out';
@@ -719,70 +777,49 @@ button10.querySelector('.glassButton').addEventListener('click', () => {
     modeText.style.fontFamily = 'Inter, sans-serif';
     document.body.appendChild(modeText);
     
-    // Fade in text immediately
-    setTimeout(() => {
-      modeText.style.opacity = '1';
-    }, 10);
-    
-    // Fade out text after 12 seconds
+    setTimeout(() => { modeText.style.opacity = '1'; }, 10);
     setTimeout(() => {
       modeText.style.opacity = '0';
       setTimeout(() => modeText.remove(), 1000);
     }, 12000);
-    
-    // Fade Section A blocks to green over 6 seconds
-    sectionAGreyBlocks.forEach(block => {
-      block.style.transition = 'background-color 6s ease-in-out';
-      block.style.backgroundColor = '#209569';
-    });
-    
-    // Change green button circle to dark green
-    if (greenCircle) {
-      greenCircle.style.transition = 'background-color 6s ease-in-out';
-      greenCircle.style.backgroundColor = '#0b1307';
-    }
-    
-    // Fade colors over 5 seconds for Section B and C blocks (1 second faster)
-    const nonSectionABlocks = [...greyBlocks].filter(block => ![...sectionAGreyBlocks].includes(block));
-    nonSectionABlocks.forEach(block => {
-      block.style.transition = 'background-color 5s ease-in-out';
-      block.style.backgroundColor = '#e6dacc';
-    });
-    
-    // Fade body background over 5 seconds
-    document.body.style.transition = 'background-color 5s ease-in-out';
-    document.body.style.backgroundColor = '#e6dacc';
-    
+  }
+  
+  // Apply Section A blocks color
+  sectionAGreyBlocks.forEach(block => {
+    block.style.transition = 'background-color 6s ease-in-out';
+    block.style.backgroundColor = scheme.sectionABlocks;
+  });
+  
+  // Apply green circle color
+  if (greenCircle) {
+    greenCircle.style.transition = 'background-color 6s ease-in-out';
+    greenCircle.style.backgroundColor = scheme.greenCircle;
+  }
+  
+  // Apply block5 glass effect
+  if (scheme.block5Glass) {
+    block5Button.style.border = scheme.block5Glass.border;
+    block5Button.style.boxShadow = scheme.block5Glass.boxShadow;
+    block5Button.style.background = scheme.block5Glass.background;
   } else {
-
     block5Button.style.border = '';
     block5Button.style.boxShadow = '';
     block5Button.style.background = '';
-    
-    // Fade Section A blocks back to original grey
-    sectionAGreyBlocks.forEach(block => {
-      block.style.transition = 'background-color 6s ease-in-out';
-      block.style.backgroundColor = '#C9CED4';
-    });
-    
-    // Change green button circle back
-    if (greenCircle) {
-      greenCircle.style.transition = 'background-color 6s ease-in-out';
-      greenCircle.style.backgroundColor = '#209569';
-    }
-    
-    const nonSectionABlocks = [...greyBlocks].filter(block => ![...sectionAGreyBlocks].includes(block));
-    nonSectionABlocks.forEach(block => {
-      block.style.transition = 'background-color 5s ease-in-out';
-      block.style.backgroundColor = '#C9CED4';
-    });
-    
-    // Fade body background back
-    document.body.style.transition = 'background-color 5s ease-in-out';
-    document.body.style.backgroundColor = '#C9CED4';
   }
+  
+  // Apply Section B & C blocks color
+  const nonSectionABlocks = [...greyBlocks].filter(block => ![...sectionAGreyBlocks].includes(block));
+  nonSectionABlocks.forEach(block => {
+    block.style.transition = 'background-color 5s ease-in-out';
+    block.style.backgroundColor = scheme.sectionBCBlocks;
+  });
+  
+  // Apply body background
+  document.body.style.transition = 'background-color 5s ease-in-out';
+  document.body.style.backgroundColor = scheme.bodyBg;
 });
 
+/* Cursor follow - independent blocks */
 document.addEventListener('mousemove',e=>{
   [...sectionB.children,...sectionC.children,document.querySelector('.block5')]
   .forEach(block=>{
@@ -792,7 +829,7 @@ document.addEventListener('mousemove',e=>{
     const dx=e.clientX-(r.left+r.width/2);
     const dy=e.clientY-(r.top+r.height/2);
     const dist=Math.hypot(dx,dy);
-    const strength=Math.max(0,1-dist/80)*2; 
+    const strength=Math.max(0,1-dist/80)*2; // Reduced from 275 to 80 - much less attraction
     btn.style.transform=
       `translate(${dx*0.25*strength}px,${dy*0.25*strength}px)
        scale(${1+strength*0.05})`;
