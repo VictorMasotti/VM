@@ -933,111 +933,122 @@ document.querySelector('.block5 .glassButton').addEventListener('click', (e) => 
 });
 
 /* Button 10 - Color Scheme Cycler */
-let currentMode = 0; // 0 = original, 1 = beige, 2 = LEGO blue, 3 = rust orange
-const button10 = sectionB.children[9]; // 10th button (index 9)
+let currentMode = 0;
+let pressCount = 0; // Counter for returning to basis every 5 presses
+const button10 = sectionB.children[9];
 
 const colorSchemes = [
-  // Mode 0: Original
+  // Scheme 0: BASIS (default - returns every 5 presses)
   {
-    name: 'Original',
+    name: 'Basis Mode',
     sectionABlocks: '#C9CED4',
     sectionBCBlocks: '#C9CED4',
     bodyBg: '#C9CED4',
-    greenCircle: '#801818', // Falun red (default)
-    block5Glass: null, // No special effect
+    greenCircle: '#801818',
     showText: false
   },
-  // Mode 1: Beige & Green
+  // Scheme 1
   {
-    name: 'Mode 2 Activated',
-    sectionABlocks: '#28A878', // Turquoise-green (more turquoise than before)
-    sectionBCBlocks: '#e6dacc',
-    bodyBg: '#e6dacc',
-    greenCircle: '#28A878', // Same turquoise-green as Section A
-    block5Glass: {
-      border: '2px solid rgba(0, 0, 0, 0.6)',
-      boxShadow: `
-        0 8px 16px rgba(0,0,0,0.4),
-        0 4px 8px rgba(0,0,0,0.3),
-        inset 0 1px 0 rgba(255,255,255,0.6),
-        inset 0 -1px 0 rgba(0,0,0,0.3),
-        inset -2px -4px 8px rgba(0,0,0,0.25),
-        inset 2px 4px 8px rgba(255,255,255,0.4)
-      `,
-      background: 'linear-gradient(145deg, rgba(255,255,255,0.35), rgba(255,255,255,0.08))'
-    },
+    name: 'Scheme 1',
+    sectionABlocks: '#188f65',
+    sectionBCBlocks: '#d7cfbd',
+    bodyBg: '#d7cfbd',
+    greenCircle: '#188f65',
     showText: true,
-    textColor: '#4a7c59'
+    textColor: '#188f65'
   },
-  // Mode 2: LEGO Bright Blue & White
+  // Scheme 2
   {
-    name: 'Mode 3 Activated',
-    sectionABlocks: '#00A3DA', // LEGO bright light blue
-    sectionBCBlocks: '#FFFFFF', // White
+    name: 'Scheme 2',
+    sectionABlocks: '#eba02d',
+    sectionBCBlocks: '#A8B88F',
+    bodyBg: '#A8B88F',
+    greenCircle: '#eba02d',
+    showText: true,
+    textColor: '#eba02d'
+  },
+  // Scheme 3
+  {
+    name: 'Scheme 3',
+    sectionABlocks: '#0000FF',
+    sectionBCBlocks: '#FFFFFF',
     bodyBg: '#FFFFFF',
-    greenCircle: '#003D7A', // Dark blue
-    block5Glass: null,
+    greenCircle: '#0000FF',
     showText: true,
-    textColor: '#00A3DA'
+    textColor: '#0000FF'
   },
-  // Mode 3: Rust Orange & Green Ash
+  // Scheme 4
   {
-    name: 'Mode 4 Activated',
-    sectionABlocks: '#B7410E', // Rust orange
-    sectionBCBlocks: '#A8B5A0', // Green ash
-    bodyBg: '#A8B5A0',
-    greenCircle: '#6B3A2E', // Dark sand red
-    block5Glass: null,
+    name: 'Scheme 4',
+    sectionABlocks: '#ffb16e',
+    sectionBCBlocks: '#fff5b8',
+    bodyBg: '#fff5b8',
+    greenCircle: '#ffb16e',
     showText: true,
-    textColor: '#B7410E'
+    textColor: '#ffb16e'
   },
-  // Mode 4: Orange Red Sections A & B, Beige Background
+  // Scheme 5
   {
-    name: 'Mode 5 Activated',
-    sectionABlocks: '#ea4000', // Orange red
-    sectionBBlocks: '#ea4000', // Orange red (separate from C)
-    sectionCBlocks: '#d6cebd', // Beige
-    bodyBg: '#d6cebd',
-    greenCircle: '#8B2500', // Dark burnt orange
-    block5Glass: null,
+    name: 'Scheme 5',
+    sectionABlocks: '#FEE715',
+    sectionBCBlocks: '#101820',
+    bodyBg: '#101820',
+    greenCircle: '#FEE715',
     showText: true,
-    textColor: '#ea4000',
-    splitBC: true // Flag to handle B and C separately
+    textColor: '#FEE715'
   },
-  // Mode 5: Orange Scheme with Grille Effect
+  // Scheme 6
   {
-    name: 'Mode 6 Activated',
-    sectionABlocks: '#ff8500', // Orange
-    sectionBBlocks: '#fdb162', // Light orange
-    sectionCBlocks: '#ff8500', // Orange
-    bodyBg: '#ff8500',
-    greenCircle: '#CC6A00', // Darker orange
-    block5Glass: null,
+    name: 'Scheme 6',
+    sectionABlocks: '#F9E795',
+    sectionBCBlocks: '#F96167',
+    bodyBg: '#F96167',
+    greenCircle: '#F9E795',
     showText: true,
-    textColor: '#8B4500',
-    splitBC: true,
-    grille: true // Special grille effect for Section A
-  },
-  // Mode 6: Inverted Flip - White/Grey Swap
-  {
-    name: 'Mode 7 Activated',
-    sectionABlocks: '#FFFFFF', // White (was grey)
-    sectionBBlocks: '#FFFFFF', // White
-    sectionCBlocks: '#FFFFFF', // White
-    bodyBg: '#FFFFFF',
-    greenCircle: '#404040', // Dark grey
-    block5Glass: null,
-    showText: true,
-    textColor: '#303030',
-    splitBC: true,
-    flip: true // Special 3D flip animation
+    textColor: '#F9E795'
   }
 ];
 
+// Random schemes pool (harmonious combos)
+const randomSchemes = [
+  { sectionABlocks: '#FF6B6B', sectionBCBlocks: '#FFE66D', bodyBg: '#FFE66D', greenCircle: '#FF6B6B', textColor: '#FF6B6B' },
+  { sectionABlocks: '#4ECDC4', sectionBCBlocks: '#C7F0DB', bodyBg: '#C7F0DB', greenCircle: '#4ECDC4', textColor: '#4ECDC4' },
+  { sectionABlocks: '#A8DADC', sectionBCBlocks: '#F1FAEE', bodyBg: '#F1FAEE', greenCircle: '#A8DADC', textColor: '#A8DADC' },
+  { sectionABlocks: '#FFB4A2', sectionBCBlocks: '#FFCDB2', bodyBg: '#FFCDB2', greenCircle: '#FFB4A2', textColor: '#FFB4A2' },
+  { sectionABlocks: '#06FFA5', sectionBCBlocks: '#FFFFC7', bodyBg: '#FFFFC7', greenCircle: '#06FFA5', textColor: '#06FFA5' },
+  { sectionABlocks: '#E63946', sectionBCBlocks: '#F8B195', bodyBg: '#F8B195', greenCircle: '#E63946', textColor: '#E63946' },
+  { sectionABlocks: '#84A9C0', sectionBCBlocks: '#EAE7DC', bodyBg: '#EAE7DC', greenCircle: '#84A9C0', textColor: '#84A9C0' },
+  { sectionABlocks: '#FF99C8', sectionBCBlocks: '#FCF6BD', bodyBg: '#FCF6BD', greenCircle: '#FF99C8', textColor: '#FF99C8' }
+];
+
 button10.querySelector('.glassButton').addEventListener('click', () => {
-  // Cycle to next mode
-  currentMode = (currentMode + 1) % colorSchemes.length;
+  pressCount++;
+  
+  // Return to basis every 5 presses
+  if (pressCount % 5 === 0) {
+    currentMode = 0; // Basis
+  } else {
+    // Cycles through schemes 1-6, then picks random from pool
+    if (currentMode === 0) {
+      currentMode = 1; // Start with scheme 1
+    } else if (currentMode < 6) {
+      currentMode++; // Continue through schemes 1-6
+    } else {
+      // Pick random scheme from pool
+      const randomIndex = Math.floor(Math.random() * randomSchemes.length);
+      const randomScheme = { ...randomSchemes[randomIndex], name: 'Random Scheme', showText: true };
+      
+      // Apply random scheme directly
+      applyScheme(randomScheme);
+      return;
+    }
+  }
+  
   const scheme = colorSchemes[currentMode];
+  applyScheme(scheme);
+});
+
+function applyScheme(scheme) {
   
   // Get all elements
   const greyBlocks = document.querySelectorAll('.sectionB .block, .sectionC .block, .block1, .block2, .block5');
@@ -1045,38 +1056,6 @@ button10.querySelector('.glassButton').addEventListener('click', () => {
   const greenCircle = document.querySelector('.block5 .blockInnerCircle:nth-child(4)');
   const block5Button = document.querySelector('.block5 .glassButton');
   const allButtons = document.querySelectorAll('.glassButton');
-  
-  // 3D FLIP ANIMATION for scheme 7
-  if (scheme.flip) {
-    const allSections = document.querySelectorAll('.sectionA, .sectionB, .sectionC');
-    allSections.forEach((section, idx) => {
-      section.style.transformStyle = 'preserve-3d';
-      section.style.transition = 'transform 1.5s ease-in-out';
-      setTimeout(() => {
-        section.style.transform = 'rotateY(180deg)';
-        setTimeout(() => {
-          section.style.transform = 'rotateY(360deg)';
-          setTimeout(() => {
-            section.style.transform = '';
-            section.style.transformStyle = '';
-          }, 1500);
-        }, 1500);
-      }, idx * 200); // Stagger the flips
-    });
-    
-    document.body.style.transition = 'transform 1.5s ease-in-out';
-    document.body.style.transformStyle = 'preserve-3d';
-    setTimeout(() => {
-      document.body.style.transform = 'rotateY(180deg)';
-      setTimeout(() => {
-        document.body.style.transform = 'rotateY(360deg)';
-        setTimeout(() => {
-          document.body.style.transform = '';
-          document.body.style.transformStyle = '';
-        }, 1500);
-      }, 1500);
-    }, 0);
-  }
   
   // Show mode text if enabled
   if (scheme.showText) {
@@ -1107,115 +1086,30 @@ button10.querySelector('.glassButton').addEventListener('click', () => {
   currentBlockColor = scheme.sectionABlocks; // Update warping animation color
   
   sectionAGreyBlocks.forEach(block => {
-    block.style.transition = `background-color ${scheme.fadeTime ? scheme.fadeTime.sectionA : 6}s ease-in-out`;
+    block.style.transition = `background-color 6s ease-in-out`;
     block.style.backgroundColor = scheme.sectionABlocks;
-    
-    // Grille effect for scheme 6 ONLY
-    if (scheme.grille) {
-      // Create grille overlay
-      if (!block.querySelector('.grilleOverlay')) {
-        const grille = document.createElement('div');
-        grille.className = 'grilleOverlay';
-        grille.style.position = 'absolute';
-        grille.style.inset = '0';
-        grille.style.background = `repeating-linear-gradient(
-          0deg,
-          rgba(0,0,0,0.3) 0px,
-          rgba(0,0,0,0.3) 2px,
-          transparent 2px,
-          transparent 6px
-        ),
-        repeating-linear-gradient(
-          90deg,
-          rgba(0,0,0,0.3) 0px,
-          rgba(0,0,0,0.3) 2px,
-          transparent 2px,
-          transparent 6px
-        )`;
-        grille.style.borderRadius = '1.5vh';
-        grille.style.pointerEvents = 'none';
-        grille.style.zIndex = '1';
-        grille.style.opacity = '0';
-        grille.style.transition = 'opacity 6s ease-in-out';
-        block.appendChild(grille);
-      }
-      block.querySelector('.grilleOverlay').style.opacity = '1';
-    } else {
-      // Remove grille for other schemes
-      const grille = block.querySelector('.grilleOverlay');
-      if (grille) {
-        grille.style.opacity = '0';
-        setTimeout(() => grille.remove(), 6000);
-      }
-    }
-    
-    // Remove metallic effect if not metallic scheme
-    if (!scheme.metallic && !scheme.grille) {
-      block.style.background = '';
-      block.style.boxShadow = '0 4px 8px rgba(0,0,0,0.25), inset 0 -2px 6px rgba(0,0,0,0.15)';
-    }
   });
   
   // Apply green circle color
   if (greenCircle) {
-    greenCircle.style.transition = `background-color ${scheme.fadeTime ? scheme.fadeTime.sectionA : 6}s ease-in-out`;
+    greenCircle.style.transition = `background-color 6s ease-in-out`;
     greenCircle.style.backgroundColor = scheme.greenCircle;
   }
   
-  // Apply block5 glass effect
-  if (scheme.block5Glass) {
-    block5Button.style.transition = `all ${scheme.fadeTime ? scheme.fadeTime.sectionA : 6}s ease-in-out`;
-    block5Button.style.border = scheme.block5Glass.border;
-    block5Button.style.boxShadow = scheme.block5Glass.boxShadow;
-    block5Button.style.background = scheme.block5Glass.background;
-  } else {
-    block5Button.style.transition = `all ${scheme.fadeTime ? scheme.fadeTime.sectionA : 6}s ease-in-out`;
-    block5Button.style.border = '';
-    block5Button.style.boxShadow = '';
-    block5Button.style.background = '';
-  }
-  
   // Apply Section B & C blocks color
-  if (scheme.splitBC) {
-    // Handle B and C separately
-    const sectionBBlocks = document.querySelectorAll('.sectionB .block');
-    const sectionCBlocks = document.querySelectorAll('.sectionC .block');
-    
-    sectionBBlocks.forEach(block => {
-      block.style.transition = `background-color ${scheme.fadeTime ? scheme.fadeTime.sectionBC : 5}s ease-in-out`;
-      block.style.backgroundColor = scheme.sectionBBlocks;
-      block.style.background = '';
-    });
-    
-    sectionCBlocks.forEach(block => {
-      block.style.transition = `background-color ${scheme.fadeTime ? scheme.fadeTime.sectionBC : 5}s ease-in-out`;
-      block.style.backgroundColor = scheme.sectionCBlocks;
-      block.style.background = '';
-    });
-  } else {
-    // Original behavior - B and C same color
-    const nonSectionABlocks = [...greyBlocks].filter(block => ![...sectionAGreyBlocks].includes(block));
-    nonSectionABlocks.forEach(block => {
-      block.style.transition = `background-color ${scheme.fadeTime ? scheme.fadeTime.sectionBC : 5}s ease-in-out`;
-      block.style.backgroundColor = scheme.sectionBCBlocks;
-      
-      // Metallic effect for old metallic scheme
-      if (scheme.metallic) {
-        block.style.background = `linear-gradient(135deg, 
-          rgba(255,255,255,0.3), 
-          ${scheme.sectionBCBlocks} 40%, 
-          rgba(0,0,0,0.15) 80%, 
-          rgba(255,255,255,0.2))`;
-      } else {
-        block.style.background = '';
-      }
-    });
-  }
+  const sectionBBlocks = document.querySelectorAll('.sectionB .block');
+  const sectionCBlocks = document.querySelectorAll('.sectionC .block');
+  const allBCBlocks = [...sectionBBlocks, ...sectionCBlocks];
+  
+  allBCBlocks.forEach(block => {
+    block.style.transition = `background-color 5s ease-in-out`;
+    block.style.backgroundColor = scheme.sectionBCBlocks;
+  });
   
   // Apply body background
-  document.body.style.transition = `background-color ${scheme.fadeTime ? scheme.fadeTime.sectionBC : 5}s ease-in-out`;
+  document.body.style.transition = `background-color 5s ease-in-out`;
   document.body.style.backgroundColor = scheme.bodyBg;
-});
+}
 
 /* Cursor follow - independent blocks */
 document.addEventListener('mousemove',e=>{
