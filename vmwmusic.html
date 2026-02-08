@@ -18,22 +18,10 @@ html, body {
   cursor: url('EARTH2.png'), auto;
 }
 
-/* FORCE CUSTOM CURSOR EVERYWHERE */
 *, a, a:hover, a:active, a:visited, button, div, .glassButton {
   cursor: url('EARTH2.png'), auto !important;
 }
 
--webkit-tap-highlight-color: transparent;
-  -webkit-touch-callout: none;
-  -webkit-user-select: none;
-  user-select: none;
-}
-
-/* Remove blue highlight on touch */
-* {
-  -webkit-tap-highlight-color: transparent;
-  -webkit-touch-callout: none;
-}
 .container {
   position: absolute;
   top: 2vh;
@@ -45,22 +33,18 @@ html, body {
   gap: 0.4vh;
   border-radius: 2vh;
 }
+
 .sectionA {
-  flex: 0 0 auto;
-  max-width: 100%;
   aspect-ratio: 5 / 1;
   display: flex;
-  flex-wrap: wrap;
   gap: 0.5vh;
   padding: 0.5vh;
   border-radius: 1.5vh;
   background: #2F3035;
-  position: relative;
 }
-.sectionA .block1,
-.sectionA .block2,
-.sectionA .block5 {
-  flex: 1 0 calc(20% - 0.5vh);
+
+.sectionA .block {
+  flex: 1;
   aspect-ratio: 1 / 1;
   background: #C9CED4;
   border-radius: 1.5vh;
@@ -68,228 +52,26 @@ html, body {
   justify-content: center;
   align-items: center;
   position: relative;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.25),
-              inset 0 -2px 6px rgba(0,0,0,0.15);
-}
-.sectionA .block3_4 {
-  flex: 2 0 calc(40% - 0.5vh);
-  aspect-ratio: 2 / 1;
-  border-radius: 1.5vh;
-  background: #111;
-  overflow: hidden;
-}
-.block2 .insetImage {
-  position: absolute;
-  inset: 10%;
-  border-radius: 1.2vh;
-  overflow: hidden;
-}
-.block2 .insetImage img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-.sectionB {
-  flex: 0 0 auto;
-  max-width: 100%;
-  aspect-ratio: 5 / 1;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5vh;
-  padding: 0.5vh;
-  border-radius: 1.5vh;
-  background: #2F3035;
-  position: relative;
-}
-.sectionB .block {
-  flex: 1 0 calc(10% - 0.5vh);
-  aspect-ratio: 1/1;
-  background: #C9CED4;
-  border-radius: 1.5vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  position: relative;
-  overflow: hidden;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.25),
-              inset 0 -2px 6px rgba(0,0,0,0.15);
-}
-.sectionC {
-  flex: 1 1 auto;
-  min-height: 20%;
-}
-.sectionB, .sectionC {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5vh;
-  padding: 0.5vh;
-  border-radius: 1.5vh;
-  background: #2F3035;
-  position: relative;
-}
-.sectionB .block {
-  flex: 1 0 calc(10% - 0.5vh);
-  aspect-ratio: 1/1;
-  background: #C9CED4;
-  border-radius: 1.5vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  position: relative;
-  overflow: hidden;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.25),
-              inset 0 -2px 6px rgba(0,0,0,0.15);
-}
-.sectionC .block {
-  flex: 1 0 calc(10% - 0.5vh);
-  width: calc(10% - 0.5vh);
-  min-height: 80px; /* Ensure sliders are never too short */
-  background: #C9CED4;
-  border-radius: 1.5vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  position: relative;
-  overflow: visible;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.25),
-              inset 0 -2px 6px rgba(0,0,0,0.15);
-  padding: 9% 0;
 }
 
-.sectionC .sliderTrack {
-  position: absolute;
-  top: 9%;
-  bottom: 9%;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 8px;
-  background: linear-gradient(
-    180deg,
-    rgba(255,255,255,0.4),
-    rgba(0,0,0,0.15)
-  );
-  border-radius: 4px;
-  box-shadow: 
-    inset 0 2px 4px rgba(0,0,0,0.3),
-    inset 0 -2px 4px rgba(255,255,255,0.2);
-}
-
-.sectionC .sliderKnob {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
-  width: 75%;
-  aspect-ratio: 1/1;
-  border-radius: 50%;
-  background: radial-gradient(
-    circle at 35% 35%,
-    rgba(255,255,255,0.5),
-    rgba(255,255,255,0.15) 40%,
-    rgba(0,0,0,0.05)
-  );
-  backdrop-filter: blur(10px);
-  box-shadow:
-    6px 6px 12px rgba(0,0,0,0.3),
-    inset 0 2px 4px rgba(255,255,255,0.5),
-    inset 0 -2px 4px rgba(0,0,0,0.2);
-  border: 1px solid rgba(255,255,255,0.3);
-  cursor: grab;
-  touch-action: none;
-  z-index: 10;
-}
-
-.sectionC .sliderKnob:active {
-  cursor: grabbing;
-}
-.glassButton {
-  width: 75%;
-  height: auto;
-  aspect-ratio: 1/1;
-  max-height: 75%;
-  border-radius: 50%;
-  position: relative;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background: linear-gradient(
-    145deg,
-    rgba(255,255,255,0.35),
-    rgba(255,255,255,0.08)
-  );
-  backdrop-filter: blur(14px) saturate(130%);
-  box-shadow:
-    6px 6px 16px rgba(0,0,0,0.35),
-    10px 10px 24px rgba(0,0,0,0.25),
-    inset 0 -6px 12px rgba(0,0,0,0.35),
-    inset 0 3px 6px rgba(255,255,255,0.55),
-    inset -3px -3px 8px rgba(0,0,0,0.2),
-    inset 3px 3px 8px rgba(255,255,255,0.3);
-  will-change: transform;
-  border: 1px solid rgba(255,255,255,0.2);
-  overflow: hidden;
-}
-
-.glassButton::before {
-  content: '';
-  position: absolute;
-  top: 5%;
-  left: 5%;
-  width: 45%;
-  height: 45%;
-  background: radial-gradient(
-    circle at 35% 35%,
-    rgba(255,255,255,0.65) 0%,
-    rgba(255,255,255,0.35) 25%,
-    rgba(255,255,255,0.12) 50%,
-    transparent 75%
-  );
-  border-radius: 50%;
-  filter: blur(3px);
-  pointer-events: none;
-  clip-path: polygon(0 0, 100% 0, 0 100%);
-}
-.block5 .glassButton {
-  width: 75%;
-  height: 75%;
-  transition: all 5s ease-in-out;
-}
-.blockInnerCircle {
-  position: absolute;
-  width: 55%;
-  height: 55%;
-  top: 22.5%;
-  left: 22.5%;
-  border-radius: 50%;
-  box-shadow:
-    inset 0 2px 4px rgba(255,255,255,0.35),
-    inset 0 -3px 6px rgba(0,0,0,0.35);
-  pointer-events: none;
-}
-.secondaryCircle {
-  position: absolute;
-  inset: 0;
-  border-radius: 50%;
-  background: radial-gradient(
-    circle at 30% 30%,
-    rgba(255,255,255,0.35),
-    rgba(0,0,0,0.15)
-  );
-  box-shadow:
-    inset 0 3px 6px rgba(255,255,255,0.25),
-    inset 0 -6px 10px rgba(0,0,0,0.45);
-  pointer-events: none;
-}
 .block1 canvas {
   width: 100%;
   height: 100%;
-  image-rendering: pixelated;
 }
-.glassButton img {
-  width: 60%; /* reduced by 20% */
-  height: 60%;
-  object-fit: contain;
-  pointer-events: none;
+
+.sectionB, .sectionC {
+  display: flex;
+  gap: 0.5vh;
+  padding: 0.5vh;
+  border-radius: 1.5vh;
+  background: #2F3035;
+}
+
+.sectionB .block, .sectionC .block {
+  flex: 1;
+  aspect-ratio: 1/1;
+  background: #C9CED4;
+  border-radius: 1.5vh;
 }
 </style>
 </head>
@@ -297,836 +79,94 @@ html, body {
 <body>
 <div class="container">
 
-<section class="section sectionA">
+<section class="sectionA">
   <div class="block block1">
     <canvas id="dotMatrix"></canvas>
   </div>
-
-  <div class="block block2">
-    <div class="insetImage">
-      <img id="randomImage">
-    </div>
-  </div>
-
-  <div class="block block3_4">
-    <img src="aud.gif" style="width:100%;height:100%;object-fit:cover;border-radius:1.5vh;">
-  </div>
-
-  <div class="block block5">
-    <div class="glassButton"></div>
-  </div>
+  <div class="block block2"></div>
+  <div class="block block3"></div>
+  <div class="block block4"></div>
+  <div class="block block5"></div>
 </section>
 
-<section class="section sectionB" id="sectionB"></section>
-<section class="section sectionC" id="sectionC"></section>
+<section class="sectionB"></section>
+<section class="sectionC"></section>
 
 </div>
 
 <script>
-/* AUDIO */
-const audio = new Audio('breakTHROUGH.mp3');
-audio.preload = 'auto';
-const gif = document.querySelector('.block3_4 img');
-gif.addEventListener('load', () => { audio.play().catch(()=>{}); });
-
-let audioUnlocked = false;
-document.addEventListener('click', () => {
-    if(!audioUnlocked){ audio.play().catch(()=>{}); audioUnlocked = true; }
-});
-
-// Web Audio API setup
-const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-const source = audioContext.createMediaElementSource(audio);
-
-// Create audio nodes
-const gainNode = audioContext.createGain(); // Volume
-const lowPassFilter = audioContext.createBiquadFilter(); // Filter 1
-const highPassFilter = audioContext.createBiquadFilter(); // Filter 2
-const bassEQ = audioContext.createBiquadFilter(); // Bass
-const trebleEQ = audioContext.createBiquadFilter(); // Treble
-const panNode = audioContext.createStereoPanner(); // Pan
-const compressor = audioContext.createDynamicsCompressor(); // Compressor
-const convolverNode = audioContext.createConvolver(); // Reverb (needs impulse response)
-
-// Configure filters
-lowPassFilter.type = 'lowpass';
-lowPassFilter.frequency.value = 20000; // Default: no filtering
-highPassFilter.type = 'highpass';
-highPassFilter.frequency.value = 20; // Default: no filtering
-bassEQ.type = 'lowshelf';
-bassEQ.frequency.value = 200;
-bassEQ.gain.value = 0;
-trebleEQ.type = 'highshelf';
-trebleEQ.frequency.value = 3000;
-trebleEQ.gain.value = 0;
-panNode.pan.value = 0; // Center
-
-// Connect audio chain
-source.connect(gainNode);
-gainNode.connect(lowPassFilter);
-lowPassFilter.connect(highPassFilter);
-highPassFilter.connect(bassEQ);
-bassEQ.connect(trebleEQ);
-trebleEQ.connect(panNode);
-panNode.connect(compressor);
-compressor.connect(audioContext.destination);
-
-// Slider effect mappings
-const sliderEffects = [
-  { // Slider 1: Pitch Shift (KEEP - essential)
-    name: 'Pitch',
-    apply: (value) => {
-      // -100 to +100 -> 0.5x to 2x playback rate
-      audio.playbackRate = 1 + (value / 100);
-    }
-  },
-  { // Slider 2: Reverb (Wet/Dry Mix)
-    name: 'Reverb',
-    apply: (value) => {
-      // -100 = dry, 0 = slight reverb, +100 = wet
-      // Note: Basic reverb using convolver (needs impulse response for full effect)
-      // This is a placeholder - real reverb would need impulse response loaded
-    }
-  },
-  { // Slider 3: Delay/Echo
-    name: 'Delay',
-    apply: (value) => {
-      // -100 = no delay, 0 = moderate, +100 = heavy delay
-      // Placeholder for delay effect
-    }
-  },
-  { // Slider 4: Bass Boost/Cut (KEEP)
-    name: 'Bass',
-    apply: (value) => {
-      // -100 to +100 -> -20dB to +20dB
-      bassEQ.gain.value = (value / 100) * 20;
-    }
-  },
-  { // Slider 5: Resonant Filter (Sweep)
-    name: 'Resonance',
-    apply: (value) => {
-      // -100 to +100 controls resonant peak sweep
-      if (value >= 0) {
-        lowPassFilter.Q.value = 1 + (value / 100) * 19; // Q factor 1 to 20
-        lowPassFilter.frequency.value = 200 + (value / 100) * 3800; // 200Hz to 4000Hz
-      } else {
-        lowPassFilter.Q.value = 1;
-        lowPassFilter.frequency.value = 20000;
-      }
-    }
-  },
-  { // Slider 6: Stereo Pan (KEEP)
-    name: 'Pan',
-    apply: (value) => {
-      // -100 to +100 -> -1 (left) to +1 (right)
-      panNode.pan.value = value / 100;
-    }
-  },
-  { // Slider 7: Bitcrusher (Lo-Fi/Digital Distortion)
-    name: 'Bitcrush',
-    apply: (value) => {
-      // Simulated via playback manipulation
-      // -100 = clean, +100 = crushed 8-bit sound
-      // This is a simplified version - true bitcrushing needs sample rate reduction
-    }
-  },
-  { // Slider 8: Stereo Width
-    name: 'Width',
-    apply: (value) => {
-      // -100 = mono, 0 = normal stereo, +100 = super wide
-      // Requires stereo processing - placeholder
-    }
-  },
-  { // Slider 9: Compression (KEEP)
-    name: 'Compress',
-    apply: (value) => {
-      // -100 = no compression, +100 = heavy compression (ducking/pumping)
-      if (value >= 0) {
-        compressor.threshold.value = -50 + (value / 100) * 40; // -50 to -10
-        compressor.ratio.value = 1 + (value / 100) * 19; // 1:1 to 20:1
-        compressor.attack.value = 0.003; // Fast attack for punch
-        compressor.release.value = 0.25; // Quarter second release
-      } else {
-        compressor.threshold.value = 0;
-        compressor.ratio.value = 1;
-      }
-    }
-  },
-  { // Slider 10: Phaser/Flanger
-    name: 'Phaser',
-    apply: (value) => {
-      // -100 = off, +100 = heavy phaser sweep
-      // Placeholder for phaser effect
-    }
-  }
-];
-
-/* RANDOM IMAGE */
-const imgs = ['corala.png','scattershot.png'];
-document.getElementById('randomImage').src =
-  imgs[Math.floor(Math.random()*imgs.length)];
-
-/* MATRIX DOTS */
+/* DOT GRID ONLY — TRANSPARENT BACKGROUND */
 const canvas = document.getElementById('dotMatrix');
 const ctx = canvas.getContext('2d');
-function resize(){ canvas.width=canvas.offsetWidth; canvas.height=canvas.offsetHeight; }
-resize(); window.addEventListener('resize', resize);
 
-const gs=20, dr=4;
-let pulsePhase = 0;
-let currentBlockColor = '#C9CED4'; // Default, will be updated by color schemes
-
-function hexToRgb(hex) {
-  const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-  return result ? {
-    r: parseInt(result[1], 16),
-    g: parseInt(result[2], 16),
-    b: parseInt(result[3], 16)
-  } : {r: 201, g: 207, b: 212};
+function resize() {
+  canvas.width = canvas.offsetWidth;
+  canvas.height = canvas.offsetHeight;
 }
+resize();
+window.addEventListener('resize', resize);
 
-function draw(){
-  ctx.clearRect(0,0,canvas.width,canvas.height);
-  const cx=canvas.width/2, cy=canvas.height/2;
-  const r=Math.min(canvas.width,canvas.height)/2*0.85;
-  
-  // Speaker cone pulse - SUPER FAST
-  pulsePhase += 0.15; // Was 0.08, now almost 2x faster again
-  const pulseFactor = Math.sin(pulsePhase) * 1.2; // MUCH MORE WARP (was 0.6, now 1.2)
-  
-  // Get base color from current scheme
-  const baseColor = hexToRgb(currentBlockColor);
-  
-  // Draw warped background as triangle mesh
-  const segments = 30;
-  for(let ring=0; ring<segments; ring++) {
-    const innerRadius = (ring / segments) * r;
-    const outerRadius = ((ring + 1) / segments) * r;
-    const steps = 40;
-    
-    for(let i=0; i<steps; i++) {
-      const angle1 = (i / steps) * Math.PI * 2;
-      const angle2 = ((i + 1) / steps) * Math.PI * 2;
-      
-      // Calculate cone depth for each ring - DOUBLED warp
-      const innerNorm = 1 - ring / segments;
-      const outerNorm = 1 - (ring + 1) / segments;
-      const innerDepth = innerNorm * pulseFactor * 50; // Was 30, now 50
-      const outerDepth = outerNorm * pulseFactor * 50;
-      
-      // Inner ring points with MORE contraction
-      const ix1 = cx + Math.cos(angle1) * (innerRadius - innerDepth * 0.5);
-      const iy1 = cy + Math.sin(angle1) * (innerRadius - innerDepth * 0.5);
-      const ix2 = cx + Math.cos(angle2) * (innerRadius - innerDepth * 0.5);
-      const iy2 = cy + Math.sin(angle2) * (innerRadius - innerDepth * 0.5);
-      
-      // Outer ring points
-      const ox1 = cx + Math.cos(angle1) * (outerRadius - outerDepth * 0.5);
-      const oy1 = cy + Math.sin(angle1) * (outerRadius - outerDepth * 0.5);
-      const ox2 = cx + Math.cos(angle2) * (outerRadius - outerDepth * 0.5);
-      const oy2 = cy + Math.sin(angle2) * (outerRadius - outerDepth * 0.5);
-      
-      // DRAMATIC shading based on depth and ring position
-      const avgDepth = (innerDepth + outerDepth) / 2;
-      const depthFactor = avgDepth / 60; // How deep is this ring
-      
-      let shadeFactor;
-      if (pulseFactor > 0) {
-        // Pushed OUT - brighter center, darker edges
-        shadeFactor = 1 + (innerNorm * -0.2 + depthFactor * 0.25);
-      } else {
-        // Sucked IN - much darker center (deep cone shadow)
-        shadeFactor = 1 + (innerNorm * -0.4 - Math.abs(depthFactor) * 0.3);
+const gs = 20;
+let pulse = 0;
+
+function draw() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  const cx = canvas.width / 2;
+  const cy = canvas.height / 2;
+  const r = Math.min(canvas.width, canvas.height) * 0.42;
+
+  pulse += 0.15;
+  const warp = Math.sin(pulse) * 10;
+
+  const step = (2 * r) / (gs - 1);
+
+  for (let y = 0; y < gs; y++) {
+    for (let x = 0; x < gs; x++) {
+      const bx = cx - r + x * step;
+      const by = cy - r + y * step;
+      const d = Math.hypot(bx - cx, by - cy);
+
+      if (d <= r) {
+        const angle = Math.atan2(by - cy, bx - cx);
+        const warped = d - warp * (1 - d / r);
+
+        const px = cx + Math.cos(angle) * warped;
+        const py = cy + Math.sin(angle) * warped;
+
+        let col = '#000';
+        const rnd = Math.random() * 100;
+        if (rnd < 2) col = '#ff8000';
+        else if (rnd < 3) col = '#ffb343';
+        else if (rnd < 4) col = '#40bcf4';
+
+        ctx.beginPath();
+        ctx.arc(px, py, 3, 0, Math.PI * 2);
+        ctx.fillStyle = col;
+        ctx.fill();
       }
-      
-      shadeFactor = Math.max(0.2, Math.min(1.5, shadeFactor));
-      
-      const r = Math.round(baseColor.r * shadeFactor);
-      const g = Math.round(baseColor.g * shadeFactor);
-      const b = Math.round(baseColor.b * shadeFactor);
-      
-      ctx.fillStyle = `rgb(${Math.max(0, Math.min(255, r))}, ${Math.max(0, Math.min(255, g))}, ${Math.max(0, Math.min(255, b))})`;
-      
-      // Draw quad as two triangles
-      ctx.beginPath();
-      ctx.moveTo(ix1, iy1);
-      ctx.lineTo(ox1, oy1);
-      ctx.lineTo(ox2, oy2);
-      ctx.lineTo(ix2, iy2);
-      ctx.closePath();
-      ctx.fill();
-    }
-  }
-  
-  // Draw dots on the warped surface
-  const s=(2*r)/(gs-1);
-  // Perfect balance - original formula but with slight boost for visibility
-  const dotRadius = Math.max(2, Math.min(4.5, s * 0.18));
-  
-  for(let y=0;y<gs;y++)for(let x=0;x<gs;x++){
-    const baseX=cx-r+x*s, baseY=cy-r+y*s;
-    const distFromCenter = Math.hypot(baseX-cx, baseY-cy);
-    
-    if(distFromCenter <= r){
-      const normalizedDist = distFromCenter / r;
-      const dotDepth = (1 - normalizedDist) * pulseFactor * 50; // Matches background warp
-      
-      // Move dot with the warped surface
-      const angle = Math.atan2(baseY - cy, baseX - cx);
-      const warpedRadius = distFromCenter - dotDepth * 0.5;
-      const px = cx + Math.cos(angle) * warpedRadius;
-      const py = cy + Math.sin(angle) * warpedRadius;
-      
-      const rnd=Math.random()*99;
-      let col='#000';
-      if(rnd<2) col='#ff8000';
-      else if(rnd<2.6) col='#ffb343';
-      else if(rnd<3) col='#40bcf4';
-      
-      // Dots get smaller when deeper, with MORE dramatic scaling
-      const scale = Math.max(0.3, 1 - Math.abs(dotDepth) / 70);
-      
-      ctx.beginPath();
-      ctx.arc(px, py, dotRadius * scale, 0, Math.PI*2);
-      ctx.fillStyle = col;
-      ctx.fill();
     }
   }
 }
-setInterval(draw,35); draw();
 
-/* BUTTON CREATION */
-function createBlocks(section,num,addHomeIcon=false){
-  for(let i=0;i<num;i++){
-    const block=document.createElement('div');
-    block.className='block';
-    const btn=document.createElement('div');
-    btn.className='glassButton';
+setInterval(draw, 35);
+draw();
 
-    // Click ripple effect
-    btn.addEventListener('click',()=>{      
-      const s=document.createElement('div');
-      s.className='secondaryCircle';
-      btn.appendChild(s);
-      s.animate(
-        [{transform:'scale(1)',opacity:1},{transform:'scale(0.82)',opacity:0}],
-        {duration:900,easing:'cubic-bezier(0.25,1,0.5,1)'}
-      );
-      setTimeout(()=>s.remove(),900);
-
-      const nova=document.createElement('div');
-      nova.style.position='absolute';
-      nova.style.top='50%';
-      nova.style.left='50%';
-      nova.style.width='100%';
-      nova.style.height='100%';
-      nova.style.transform='translate(-50%,-50%)';
-      nova.style.borderRadius='50%';
-      nova.style.background='rgba(180,180,180,0.5)';
-      nova.style.filter='blur(4px)';
-      nova.style.pointerEvents='none';
-      btn.appendChild(nova);
-      nova.animate(
-        [{transform:'translate(-50%,-50%) scale(1)',opacity:1},
-         {transform:'translate(-50%,-50%) scale(1.4)',opacity:0}],
-        {duration:1100,easing:'ease-out'}
-      );
-      setTimeout(()=>nova.remove(),1100);
-    });
-
-    // Home icon for first block
-    if(addHomeIcon && i===0){
-      const link = document.createElement('a');
-      link.href = 'https://victormasotti.com/';
-      link.style.display = 'flex';
-      link.style.justifyContent = 'center';
-      link.style.alignItems = 'center';
-      link.style.width = '100%';
-      link.style.height = '100%';
-
-      const homeIcon = document.createElement('img');
-      homeIcon.src = 'home.png';
-      homeIcon.style.width = '60%'; // reduced size
-      homeIcon.style.height = '60%';
-      homeIcon.style.objectFit = 'contain';
-      homeIcon.style.pointerEvents = 'none';
-
-      link.appendChild(homeIcon);
-      btn.appendChild(link);
-    }
-
-    block.appendChild(btn);
-    section.appendChild(block);
-  }
+/* COLOR SCHEME FADE */
+function applyScheme(color) {
+  document.querySelectorAll('.sectionA .block').forEach(b => {
+    b.style.transition = 'background-color 6s ease-in-out';
+    b.style.backgroundColor = color;
+  });
 }
 
-const sectionB=document.getElementById('sectionB');
-const sectionC=document.getElementById('sectionC');
-createBlocks(sectionB,20,true);
-createBlocks(sectionC,10);
-
-/* Add paint.png icon to button 10 */
-const button10Icon = sectionB.children[9].querySelector('.glassButton');
-if (button10Icon) {
-  const paintIcon = document.createElement('img');
-  paintIcon.src = 'paint.png';
-  paintIcon.style.width = '60%';
-  paintIcon.style.height = '60%';
-  paintIcon.style.objectFit = 'contain';
-  paintIcon.style.pointerEvents = 'none';
-  button10Icon.appendChild(paintIcon);
-}
-
-/* Create sliders for Section C */
-[...sectionC.children].forEach((block, index) => {
-  // Remove glass button if exists
-  const existingBtn = block.querySelector('.glassButton');
-  if (existingBtn) existingBtn.remove();
-  
-  // Create slider track
-  const track = document.createElement('div');
-  track.className = 'sliderTrack';
-  block.appendChild(track);
-  
-  // Create slider knob
-  const knob = document.createElement('div');
-  knob.className = 'sliderKnob';
-  block.appendChild(knob);
-  
-  // Slider state
-  let isDragging = false;
-  let sliderValue = 0; // -100 to +100, default 0 (middle = no effect)
-  
-  function updateKnobPosition(value) {
-    const blockHeight = block.offsetHeight;
-    const knobHeight = knob.offsetHeight;
-    const borderSpace = blockHeight * 0.09;
-    
-    // Position knob: -100 at bottom, 0 at middle, +100 at top
-    const minPos = borderSpace;
-    const maxPos = blockHeight - borderSpace - knobHeight;
-    const middlePos = (minPos + maxPos) / 2;
-    const range = (maxPos - minPos) / 2;
-    const position = middlePos - (value / 100) * range;
-    
-    knob.style.top = `${position}px`;
-  }
-  
-  function handleMove(clientY) {
-    if (!isDragging) return;
-    
-    const rect = block.getBoundingClientRect();
-    const blockHeight = rect.height;
-    const knobHeight = knob.offsetHeight;
-    const borderSpace = blockHeight * 0.09;
-    
-    const minY = rect.top + borderSpace;
-    const maxY = rect.bottom - borderSpace - knobHeight;
-    const middleY = (minY + maxY) / 2;
-    const range = (maxY - minY) / 2;
-    
-    // Calculate slider value: top = +100, middle = 0, bottom = -100
-    const relativeY = clientY - middleY;
-    const clampedY = Math.max(-range, Math.min(range, relativeY));
-    sliderValue = Math.round(-(clampedY / range) * 100);
-    
-    updateKnobPosition(sliderValue);
-    
-    // Apply audio effect
-    if (sliderEffects[index]) {
-      sliderEffects[index].apply(sliderValue);
-    }
-  }
-  
-  // Mouse events
-  knob.addEventListener('mousedown', (e) => {
-    isDragging = true;
-    e.preventDefault();
-  });
-  
-  // Use window for global tracking
-  window.addEventListener('mousemove', (e) => {
-    if (isDragging) {
-      e.preventDefault();
-      handleMove(e.clientY);
-    }
-  });
-  
-  window.addEventListener('mouseup', () => {
-    isDragging = false;
-  });
-  
-  // Touch events
-  knob.addEventListener('touchstart', (e) => {
-    isDragging = true;
-    e.preventDefault();
-  }, {passive: false});
-  
-  document.addEventListener('touchmove', (e) => {
-    if (isDragging && e.touches[0]) {
-      handleMove(e.touches[0].clientY);
-    }
-  }, {passive: false});
-  
-  document.addEventListener('touchend', () => {
-    isDragging = false;
-  });
-  
-  // Initialize position
-  updateKnobPosition(sliderValue);
-});
-
-/* Volume controls for buttons 2 and 3 */
-const button2 = sectionB.children[1]; // Second button (index 1)
-const button3 = sectionB.children[2]; // Third button (index 2)
-
-// Add less.png icon to button 2
-const btn2 = button2.querySelector('.glassButton');
-const lessIcon = document.createElement('img');
-lessIcon.src = 'less.png';
-lessIcon.style.width = '60%';
-lessIcon.style.height = '60%';
-lessIcon.style.objectFit = 'contain';
-lessIcon.style.pointerEvents = 'none';
-btn2.appendChild(lessIcon);
-
-// Add more.png icon to button 3
-const btn3 = button3.querySelector('.glassButton');
-const moreIcon = document.createElement('img');
-moreIcon.src = 'more.png';
-moreIcon.style.width = '60%';
-moreIcon.style.height = '60%';
-moreIcon.style.objectFit = 'contain';
-moreIcon.style.pointerEvents = 'none';
-btn3.appendChild(moreIcon);
-
-// Button 2: Lower volume by 5% with light beige shade
-button2.querySelector('.glassButton').addEventListener('click', (e) => {
-  audio.volume = Math.max(0, audio.volume - 0.05);
-  console.log('Volume decreased to:', Math.round(audio.volume * 100) + '%');
-  
-  e.stopPropagation();
-  
-  const btn = button2.querySelector('.glassButton');
-  
-  // Light beige tinted secondary circle
-  const s = document.createElement('div');
-  s.className = 'secondaryCircle';
-  s.style.background = 'radial-gradient(circle at 30% 30%, rgba(215, 207, 189, 0.35), rgba(0, 0, 0, 0.15))';
-  btn.appendChild(s);
-  s.animate(
-    [{transform:'scale(1)',opacity:1},{transform:'scale(0.82)',opacity:0}],
-    {duration:900,easing:'cubic-bezier(0.25,1,0.5,1)'}
-  );
-  setTimeout(()=>s.remove(),900);
-
-  // Light beige nova
-  const nova = document.createElement('div');
-  nova.style.position = 'absolute';
-  nova.style.top = '50%';
-  nova.style.left = '50%';
-  nova.style.width = '100%';
-  nova.style.height = '100%';
-  nova.style.transform = 'translate(-50%,-50%)';
-  nova.style.borderRadius = '50%';
-  nova.style.background = 'rgba(215, 207, 189, 0.4)';
-  nova.style.filter = 'blur(6px)';
-  nova.style.pointerEvents = 'none';
-  btn.appendChild(nova);
-  nova.animate(
-    [{transform:'translate(-50%,-50%) scale(1)',opacity:1},
-     {transform:'translate(-50%,-50%) scale(1.4)',opacity:0}],
-    {duration:1100,easing:'ease-out'}
-  );
-  setTimeout(()=>nova.remove(),1100);
-});
-
-// Button 3: Raise volume by 5% with light beige shade
-button3.querySelector('.glassButton').addEventListener('click', (e) => {
-  audio.volume = Math.min(1, audio.volume + 0.05);
-  console.log('Volume increased to:', Math.round(audio.volume * 100) + '%');
-  
-  e.stopPropagation();
-  
-  const btn = button3.querySelector('.glassButton');
-  
-  // Light beige tinted secondary circle
-  const s = document.createElement('div');
-  s.className = 'secondaryCircle';
-  s.style.background = 'radial-gradient(circle at 30% 30%, rgba(215, 207, 189, 0.35), rgba(0, 0, 0, 0.15))';
-  btn.appendChild(s);
-  s.animate(
-    [{transform:'scale(1)',opacity:1},{transform:'scale(0.82)',opacity:0}],
-    {duration:900,easing:'cubic-bezier(0.25,1,0.5,1)'}
-  );
-  setTimeout(()=>s.remove(),900);
-
-  // Light beige nova
-  const nova = document.createElement('div');
-  nova.style.position = 'absolute';
-  nova.style.top = '50%';
-  nova.style.left = '50%';
-  nova.style.width = '100%';
-  nova.style.height = '100%';
-  nova.style.transform = 'translate(-50%,-50%)';
-  nova.style.borderRadius = '50%';
-  nova.style.background = 'rgba(215, 207, 189, 0.4)';
-  nova.style.filter = 'blur(6px)';
-  nova.style.pointerEvents = 'none';
-  btn.appendChild(nova);
-  nova.animate(
-    [{transform:'translate(-50%,-50%) scale(1)',opacity:1},
-     {transform:'translate(-50%,-50%) scale(1.4)',opacity:0}],
-    {duration:1100,easing:'ease-out'}
-  );
-  setTimeout(()=>nova.remove(),1100);
-});
-
-/* 4-color inner circles */
-const colors=['#ff8000','#00e054','#ffb343','#40bcf4'];
-[...sectionB.children].slice(4,8).forEach((block,i)=>{
-  const c=document.createElement('div');
-  c.className='blockInnerCircle';
-  c.style.background=colors[i];
-  block.querySelector('.glassButton').appendChild(c);
-});
-
-// Block5 gets Falun red instead of green
-const block5colors=['#ff8000','#00e054','#ffb343','#801818'];
-block5colors.forEach(col=>{
-  const c=document.createElement('div');
-  c.className='blockInnerCircle';
-  c.style.background=col;
-  document.querySelector('.block5 .glassButton').appendChild(c);
-});
-
-/* Block5 random time */
-document.querySelector('.block5 .glassButton').addEventListener('click', (e) => {
-    const maxTime = 85;
-    const randomTime = Math.random() * maxTime;
-    audio.currentTime = randomTime;
-    audio.play().catch(()=>{});
-    
-    e.stopPropagation();
-    
-    const btn = document.querySelector('.block5 .glassButton');
-    
-    // Secondary circle ripple
-    const s = document.createElement('div');
-    s.className = 'secondaryCircle';
-    s.style.background = 'radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.25), rgba(0, 0, 0, 0.15))';
-    btn.appendChild(s);
-    s.animate(
-      [{transform:'scale(1)',opacity:1},{transform:'scale(0.82)',opacity:0}],
-      {duration:900,easing:'ease-out'}
-    ).onfinish=()=>s.remove();
-    
-    // Nova burst
-    const n = document.createElement('div');
-    n.className = 'secondaryCircle';
-    n.style.background = 'radial-gradient(circle, rgba(255,255,255,0.5) 0%, transparent 70%)';
-    btn.appendChild(n);
-    n.animate(
-      [{transform:'scale(1)',opacity:0.8},{transform:'scale(1.4)',opacity:0}],
-      {duration:1100,easing:'ease-out'}
-    ).onfinish=()=>n.remove();
-});
-
-/* Button 10 - Color Scheme Cycler */
-let currentMode = 0;
-let pressCount = 0; // Counter for returning to basis every 5 presses
-const button10 = sectionB.children[9];
-
-const colorSchemes = [
-  // Scheme 0: BASIS (default - returns every 5 presses)
-  {
-    name: 'Basis Mode',
-    sectionABlocks: '#C9CED4',
-    sectionBCBlocks: '#C9CED4',
-    bodyBg: '#C9CED4',
-    greenCircle: '#801818',
-    showText: false
-  },
-  // Scheme 1
-  {
-    name: 'Scheme 1',
-    sectionABlocks: '#188f65',
-    sectionBCBlocks: '#d7cfbd',
-    bodyBg: '#d7cfbd',
-    greenCircle: '#188f65',
-    showText: true,
-    textColor: '#188f65'
-  },
-  // Scheme 2
-  {
-    name: 'Scheme 2',
-    sectionABlocks: '#eba02d',
-    sectionBCBlocks: '#A8B88F',
-    bodyBg: '#A8B88F',
-    greenCircle: '#eba02d',
-    showText: true,
-    textColor: '#eba02d'
-  },
-  // Scheme 3
-  {
-    name: 'Scheme 3',
-    sectionABlocks: '#0000FF',
-    sectionBCBlocks: '#FFFFFF',
-    bodyBg: '#FFFFFF',
-    greenCircle: '#0000FF',
-    showText: true,
-    textColor: '#0000FF'
-  },
-  // Scheme 4
-  {
-    name: 'Scheme 4',
-    sectionABlocks: '#ffb16e',
-    sectionBCBlocks: '#fff5b8',
-    bodyBg: '#fff5b8',
-    greenCircle: '#ffb16e',
-    showText: true,
-    textColor: '#ffb16e'
-  },
-  // Scheme 5
-  {
-    name: 'Scheme 5',
-    sectionABlocks: '#FEE715',
-    sectionBCBlocks: '#101820',
-    bodyBg: '#101820',
-    greenCircle: '#FEE715',
-    showText: true,
-    textColor: '#FEE715'
-  },
-  // Scheme 6
-  {
-    name: 'Scheme 6',
-    sectionABlocks: '#F9E795',
-    sectionBCBlocks: '#F96167',
-    bodyBg: '#F96167',
-    greenCircle: '#F9E795',
-    showText: true,
-    textColor: '#F9E795'
-  }
-];
-
-// Random schemes pool (harmonious combos)
-const randomSchemes = [
-  { sectionABlocks: '#FF6B6B', sectionBCBlocks: '#FFE66D', bodyBg: '#FFE66D', greenCircle: '#FF6B6B', textColor: '#FF6B6B' },
-  { sectionABlocks: '#4ECDC4', sectionBCBlocks: '#C7F0DB', bodyBg: '#C7F0DB', greenCircle: '#4ECDC4', textColor: '#4ECDC4' },
-  { sectionABlocks: '#A8DADC', sectionBCBlocks: '#F1FAEE', bodyBg: '#F1FAEE', greenCircle: '#A8DADC', textColor: '#A8DADC' },
-  { sectionABlocks: '#FFB4A2', sectionBCBlocks: '#FFCDB2', bodyBg: '#FFCDB2', greenCircle: '#FFB4A2', textColor: '#FFB4A2' },
-  { sectionABlocks: '#06FFA5', sectionBCBlocks: '#FFFFC7', bodyBg: '#FFFFC7', greenCircle: '#06FFA5', textColor: '#06FFA5' },
-  { sectionABlocks: '#E63946', sectionBCBlocks: '#F8B195', bodyBg: '#F8B195', greenCircle: '#E63946', textColor: '#E63946' },
-  { sectionABlocks: '#84A9C0', sectionBCBlocks: '#EAE7DC', bodyBg: '#EAE7DC', greenCircle: '#84A9C0', textColor: '#84A9C0' },
-  { sectionABlocks: '#FF99C8', sectionBCBlocks: '#FCF6BD', bodyBg: '#FCF6BD', greenCircle: '#FF99C8', textColor: '#FF99C8' }
-];
-
-button10.querySelector('.glassButton').addEventListener('click', () => {
-  pressCount++;
-  
-  // Return to basis every 5 presses
-  if (pressCount % 5 === 0) {
-    currentMode = 0; // Basis
-  } else {
-    // Cycles through schemes 1-6, then picks random from pool
-    if (currentMode === 0) {
-      currentMode = 1; // Start with scheme 1
-    } else if (currentMode < 6) {
-      currentMode++; // Continue through schemes 1-6
-    } else {
-      // Pick random scheme from pool
-      const randomIndex = Math.floor(Math.random() * randomSchemes.length);
-      const randomScheme = { ...randomSchemes[randomIndex], name: 'Random Scheme', showText: true };
-      
-      // Apply random scheme directly
-      applyScheme(randomScheme);
-      return;
-    }
-  }
-  
-  const scheme = colorSchemes[currentMode];
-  applyScheme(scheme);
-});
-
-function applyScheme(scheme) {
-  
-  // Get all elements
-  const greyBlocks = document.querySelectorAll('.sectionB .block, .sectionC .block, .block1, .block2, .block5');
-  const sectionAGreyBlocks = document.querySelectorAll('.block1, .block2, .block5');
-  const greenCircle = document.querySelector('.block5 .blockInnerCircle:nth-child(4)');
-  const block5Button = document.querySelector('.block5 .glassButton');
-  const allButtons = document.querySelectorAll('.glassButton');
-  
-  // Show mode text if enabled
-  if (scheme.showText) {
-    const modeText = document.createElement('div');
-    modeText.id = 'mode2Text';
-    modeText.textContent = scheme.name;
-    modeText.style.position = 'fixed';
-    modeText.style.top = '3vh';
-    modeText.style.left = '3vw';
-    modeText.style.fontSize = '3vh';
-    modeText.style.fontWeight = '700';
-    modeText.style.color = scheme.textColor;
-    modeText.style.zIndex = '10000';
-    modeText.style.opacity = '0';
-    modeText.style.transition = 'opacity 1s ease-in-out';
-    modeText.style.pointerEvents = 'none';
-    modeText.style.fontFamily = 'Inter, sans-serif';
-    document.body.appendChild(modeText);
-    
-    setTimeout(() => { modeText.style.opacity = '1'; }, 10);
-    setTimeout(() => {
-      modeText.style.opacity = '0';
-      setTimeout(() => modeText.remove(), 1000);
-    }, 12000);
-  }
-  
-  // Apply Section A blocks color
-  currentBlockColor = scheme.sectionABlocks; // Update warping animation color
-  
-  sectionAGreyBlocks.forEach(block => {
-    block.style.transition = `background-color 6s ease-in-out`;
-    block.style.backgroundColor = scheme.sectionABlocks;
-  });
-  
-  // Apply green circle color
-  if (greenCircle) {
-    greenCircle.style.transition = `background-color 6s ease-in-out`;
-    greenCircle.style.backgroundColor = scheme.greenCircle;
-  }
-  
-  // Apply Section B & C blocks color
-  const sectionBBlocks = document.querySelectorAll('.sectionB .block');
-  const sectionCBlocks = document.querySelectorAll('.sectionC .block');
-  const allBCBlocks = [...sectionBBlocks, ...sectionCBlocks];
-  
-  allBCBlocks.forEach(block => {
-    block.style.transition = `background-color 5s ease-in-out`;
-    block.style.backgroundColor = scheme.sectionBCBlocks;
-  });
-  
-  // Apply body background
-  document.body.style.transition = `background-color 5s ease-in-out`;
-  document.body.style.backgroundColor = scheme.bodyBg;
-}
-
-/* Cursor follow - independent blocks */
-document.addEventListener('mousemove',e=>{
-  [...sectionB.children,...sectionC.children,document.querySelector('.block5')]
-  .forEach(block=>{
-    const btn=block.querySelector('.glassButton');
-    if(!btn) return;
-    const r=block.getBoundingClientRect();
-    const dx=e.clientX-(r.left+r.width/2);
-    const dy=e.clientY-(r.top+r.height/2);
-    const dist=Math.hypot(dx,dy);
-    const strength=Math.max(0,1-dist/80)*2; // Reduced from 275 to 80 - much less attraction
-    btn.style.transform=
-      `translate(${dx*0.25*strength}px,${dy*0.25*strength}px)
-       scale(${1+strength*0.05})`;
-  });
-});
+/* demo cycle */
+const colors = ['#C9CED4', '#188f65', '#eba02d', '#ffb16e'];
+let i = 0;
+setInterval(() => {
+  applyScheme(colors[i % colors.length]);
+  i++;
+}, 8000);
 </script>
 </body>
 </html>
