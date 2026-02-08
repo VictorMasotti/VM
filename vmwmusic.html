@@ -143,6 +143,7 @@ html, body {
 .sectionC .block {
   flex: 1 0 calc(10% - 0.5vh);
   width: calc(10% - 0.5vh);
+  min-height: 80px; /* Ensure sliders are never too short */
   background: #C9CED4;
   border-radius: 1.5vh;
   display: flex;
@@ -372,90 +373,90 @@ compressor.connect(audioContext.destination);
 
 // Slider effect mappings
 const sliderEffects = [
-  { // Slider 1: Pitch Shift
+  { // Slider 1: Pitch Shift (KEEP - essential)
     name: 'Pitch',
     apply: (value) => {
       // -100 to +100 -> 0.5x to 2x playback rate
       audio.playbackRate = 1 + (value / 100);
     }
   },
-  { // Slider 2: Low-Pass Filter
-    name: 'Low-Pass',
+  { // Slider 2: Reverb (Wet/Dry Mix)
+    name: 'Reverb',
     apply: (value) => {
-      // -100 = 200Hz (very muffled), 0 = 20000Hz (no effect), +100 = 20000Hz
-      if (value <= 0) {
-        lowPassFilter.frequency.value = 200 + ((100 + value) / 100) * 19800;
-      } else {
-        lowPassFilter.frequency.value = 20000; // No filtering on positive
-      }
+      // -100 = dry, 0 = slight reverb, +100 = wet
+      // Note: Basic reverb using convolver (needs impulse response for full effect)
+      // This is a placeholder - real reverb would need impulse response loaded
     }
   },
-  { // Slider 3: High-Pass Filter
-    name: 'High-Pass',
+  { // Slider 3: Delay/Echo
+    name: 'Delay',
     apply: (value) => {
-      // -100 = 20Hz (no effect), 0 = 20Hz, +100 = 5000Hz (very tinny)
-      if (value >= 0) {
-        highPassFilter.frequency.value = 20 + (value / 100) * 4980;
-      } else {
-        highPassFilter.frequency.value = 20; // No filtering on negative
-      }
+      // -100 = no delay, 0 = moderate, +100 = heavy delay
+      // Placeholder for delay effect
     }
   },
-  { // Slider 4: Bass Boost/Cut
+  { // Slider 4: Bass Boost/Cut (KEEP)
     name: 'Bass',
     apply: (value) => {
       // -100 to +100 -> -20dB to +20dB
       bassEQ.gain.value = (value / 100) * 20;
     }
   },
-  { // Slider 5: Treble Boost/Cut
-    name: 'Treble',
+  { // Slider 5: Resonant Filter (Sweep)
+    name: 'Resonance',
     apply: (value) => {
-      // -100 to +100 -> -20dB to +20dB
-      trebleEQ.gain.value = (value / 100) * 20;
+      // -100 to +100 controls resonant peak sweep
+      if (value >= 0) {
+        lowPassFilter.Q.value = 1 + (value / 100) * 19; // Q factor 1 to 20
+        lowPassFilter.frequency.value = 200 + (value / 100) * 3800; // 200Hz to 4000Hz
+      } else {
+        lowPassFilter.Q.value = 1;
+        lowPassFilter.frequency.value = 20000;
+      }
     }
   },
-  { // Slider 6: Stereo Pan
+  { // Slider 6: Stereo Pan (KEEP)
     name: 'Pan',
     apply: (value) => {
       // -100 to +100 -> -1 (left) to +1 (right)
       panNode.pan.value = value / 100;
     }
   },
-  { // Slider 7: Volume
-    name: 'Volume',
+  { // Slider 7: Bitcrusher (Lo-Fi/Digital Distortion)
+    name: 'Bitcrush',
     apply: (value) => {
-      // -100 to +100 -> 0 (silent) to 2 (2x volume)
-      gainNode.gain.value = Math.max(0, 1 + (value / 100));
+      // Simulated via playback manipulation
+      // -100 = clean, +100 = crushed 8-bit sound
+      // This is a simplified version - true bitcrushing needs sample rate reduction
     }
   },
-  { // Slider 8: Playback Speed
-    name: 'Speed',
+  { // Slider 8: Stereo Width
+    name: 'Width',
     apply: (value) => {
-      // -100 to +100 -> 0.25x to 2x speed (preserves pitch if detune used)
-      audio.playbackRate = Math.max(0.25, 1 + (value / 100));
+      // -100 = mono, 0 = normal stereo, +100 = super wide
+      // Requires stereo processing - placeholder
     }
   },
-  { // Slider 9: Compression
+  { // Slider 9: Compression (KEEP)
     name: 'Compress',
     apply: (value) => {
-      // -100 = no compression, +100 = heavy compression
+      // -100 = no compression, +100 = heavy compression (ducking/pumping)
       if (value >= 0) {
         compressor.threshold.value = -50 + (value / 100) * 40; // -50 to -10
         compressor.ratio.value = 1 + (value / 100) * 19; // 1:1 to 20:1
+        compressor.attack.value = 0.003; // Fast attack for punch
+        compressor.release.value = 0.25; // Quarter second release
       } else {
-        compressor.threshold.value = 0; // Disabled
+        compressor.threshold.value = 0;
         compressor.ratio.value = 1;
       }
     }
   },
-  { // Slider 10: Distortion (using gain overdrive)
-    name: 'Distortion',
+  { // Slider 10: Phaser/Flanger
+    name: 'Phaser',
     apply: (value) => {
-      // Simple distortion using volume boost
-      if (value > 0) {
-        gainNode.gain.value = 1 + (value / 100) * 4; // Up to 5x gain
-      }
+      // -100 = off, +100 = heavy phaser sweep
+      // Placeholder for phaser effect
     }
   }
 ];
@@ -473,18 +474,30 @@ resize(); window.addEventListener('resize', resize);
 
 const gs=20, dr=4;
 let pulsePhase = 0;
+let currentBlockColor = '#C9CED4'; // Default, will be updated by color schemes
+
+function hexToRgb(hex) {
+  const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+  return result ? {
+    r: parseInt(result[1], 16),
+    g: parseInt(result[2], 16),
+    b: parseInt(result[3], 16)
+  } : {r: 201, g: 207, b: 212};
+}
 
 function draw(){
   ctx.clearRect(0,0,canvas.width,canvas.height);
   const cx=canvas.width/2, cy=canvas.height/2;
   const r=Math.min(canvas.width,canvas.height)/2*0.85;
   
-  // Speaker cone pulse - SLOWER by 25%
-  pulsePhase += 0.0375; // Was 0.05, now 75% of that
+  // Speaker cone pulse - SUPER FAST
+  pulsePhase += 0.15; // Was 0.08, now almost 2x faster again
   const pulseFactor = Math.sin(pulsePhase) * 1.2; // MUCH MORE WARP (was 0.6, now 1.2)
   
-  // Draw warped grey background as triangle mesh
-  ctx.fillStyle = '#C9CED4';
+  // Get base color from current scheme
+  const baseColor = hexToRgb(currentBlockColor);
+  
+  // Draw warped background as triangle mesh
   const segments = 30;
   for(let ring=0; ring<segments; ring++) {
     const innerRadius = (ring / segments) * r;
@@ -517,17 +530,22 @@ function draw(){
       const avgDepth = (innerDepth + outerDepth) / 2;
       const depthFactor = avgDepth / 60; // How deep is this ring
       
-      let brightness;
+      let shadeFactor;
       if (pulseFactor > 0) {
         // Pushed OUT - brighter center, darker edges
-        brightness = 201 - innerNorm * 40 + depthFactor * 50;
+        shadeFactor = 1 + (innerNorm * -0.2 + depthFactor * 0.25);
       } else {
         // Sucked IN - much darker center (deep cone shadow)
-        brightness = 201 - innerNorm * 80 - Math.abs(depthFactor) * 60;
+        shadeFactor = 1 + (innerNorm * -0.4 - Math.abs(depthFactor) * 0.3);
       }
       
-      brightness = Math.max(50, Math.min(255, brightness));
-      ctx.fillStyle = `rgb(${brightness}, ${brightness+4}, ${brightness+8})`;
+      shadeFactor = Math.max(0.2, Math.min(1.5, shadeFactor));
+      
+      const r = Math.round(baseColor.r * shadeFactor);
+      const g = Math.round(baseColor.g * shadeFactor);
+      const b = Math.round(baseColor.b * shadeFactor);
+      
+      ctx.fillStyle = `rgb(${Math.max(0, Math.min(255, r))}, ${Math.max(0, Math.min(255, g))}, ${Math.max(0, Math.min(255, b))})`;
       
       // Draw quad as two triangles
       ctx.beginPath();
@@ -542,7 +560,8 @@ function draw(){
   
   // Draw dots on the warped surface
   const s=(2*r)/(gs-1);
-  const dotRadius = Math.max(2, Math.min(dr, s * 0.15));
+  // Perfect balance - original formula but with slight boost for visibility
+  const dotRadius = Math.max(2, Math.min(4.5, s * 0.18));
   
   for(let y=0;y<gs;y++)for(let x=0;x<gs;x++){
     const baseX=cx-r+x*s, baseY=cy-r+y*s;
@@ -931,10 +950,10 @@ const colorSchemes = [
   // Mode 1: Beige & Green
   {
     name: 'Mode 2 Activated',
-    sectionABlocks: '#209569',
+    sectionABlocks: '#28A878', // Turquoise-green (more turquoise than before)
     sectionBCBlocks: '#e6dacc',
     bodyBg: '#e6dacc',
-    greenCircle: '#801818', // Falun red
+    greenCircle: '#28A878', // Same turquoise-green as Section A
     block5Glass: {
       border: '2px solid rgba(0, 0, 0, 0.6)',
       boxShadow: `
@@ -972,28 +991,46 @@ const colorSchemes = [
     showText: true,
     textColor: '#B7410E'
   },
-  // Mode 4: Bright Light Orange & Lime
+  // Mode 4: Orange Red Sections A & B, Beige Background
   {
     name: 'Mode 5 Activated',
-    sectionABlocks: '#C7EA46', // Lime
-    sectionBCBlocks: '#FFB347', // Bright light orange
-    bodyBg: '#FFB347',
-    greenCircle: '#90EE90', // Light green
+    sectionABlocks: '#ea4000', // Orange red
+    sectionBBlocks: '#ea4000', // Orange red (separate from C)
+    sectionCBlocks: '#d6cebd', // Beige
+    bodyBg: '#d6cebd',
+    greenCircle: '#8B2500', // Dark burnt orange
     block5Glass: null,
     showText: true,
-    textColor: '#C7EA46'
+    textColor: '#ea4000',
+    splitBC: true // Flag to handle B and C separately
   },
-  // Mode 5: Magenta & Silver with Metallic Finish
+  // Mode 5: Orange Scheme with Grille Effect
   {
     name: 'Mode 6 Activated',
-    sectionABlocks: '#C0C0C0', // Silver
-    sectionBCBlocks: '#FF00FF', // Magenta
-    bodyBg: '#FF00FF',
-    greenCircle: '#A8A8A8', // Light silver gray
+    sectionABlocks: '#ff8500', // Orange
+    sectionBBlocks: '#fdb162', // Light orange
+    sectionCBlocks: '#ff8500', // Orange
+    bodyBg: '#ff8500',
+    greenCircle: '#CC6A00', // Darker orange
     block5Glass: null,
     showText: true,
-    textColor: '#808080',
-    metallic: true // Special flag for metallic effects
+    textColor: '#8B4500',
+    splitBC: true,
+    grille: true // Special grille effect for Section A
+  },
+  // Mode 6: Inverted Flip - White/Grey Swap
+  {
+    name: 'Mode 7 Activated',
+    sectionABlocks: '#FFFFFF', // White (was grey)
+    sectionBBlocks: '#FFFFFF', // White
+    sectionCBlocks: '#FFFFFF', // White
+    bodyBg: '#FFFFFF',
+    greenCircle: '#404040', // Dark grey
+    block5Glass: null,
+    showText: true,
+    textColor: '#303030',
+    splitBC: true,
+    flip: true // Special 3D flip animation
   }
 ];
 
@@ -1008,6 +1045,38 @@ button10.querySelector('.glassButton').addEventListener('click', () => {
   const greenCircle = document.querySelector('.block5 .blockInnerCircle:nth-child(4)');
   const block5Button = document.querySelector('.block5 .glassButton');
   const allButtons = document.querySelectorAll('.glassButton');
+  
+  // 3D FLIP ANIMATION for scheme 7
+  if (scheme.flip) {
+    const allSections = document.querySelectorAll('.sectionA, .sectionB, .sectionC');
+    allSections.forEach((section, idx) => {
+      section.style.transformStyle = 'preserve-3d';
+      section.style.transition = 'transform 1.5s ease-in-out';
+      setTimeout(() => {
+        section.style.transform = 'rotateY(180deg)';
+        setTimeout(() => {
+          section.style.transform = 'rotateY(360deg)';
+          setTimeout(() => {
+            section.style.transform = '';
+            section.style.transformStyle = '';
+          }, 1500);
+        }, 1500);
+      }, idx * 200); // Stagger the flips
+    });
+    
+    document.body.style.transition = 'transform 1.5s ease-in-out';
+    document.body.style.transformStyle = 'preserve-3d';
+    setTimeout(() => {
+      document.body.style.transform = 'rotateY(180deg)';
+      setTimeout(() => {
+        document.body.style.transform = 'rotateY(360deg)';
+        setTimeout(() => {
+          document.body.style.transform = '';
+          document.body.style.transformStyle = '';
+        }, 1500);
+      }, 1500);
+    }, 0);
+  }
   
   // Show mode text if enabled
   if (scheme.showText) {
@@ -1035,23 +1104,53 @@ button10.querySelector('.glassButton').addEventListener('click', () => {
   }
   
   // Apply Section A blocks color
+  currentBlockColor = scheme.sectionABlocks; // Update warping animation color
+  
   sectionAGreyBlocks.forEach(block => {
     block.style.transition = `background-color ${scheme.fadeTime ? scheme.fadeTime.sectionA : 6}s ease-in-out`;
     block.style.backgroundColor = scheme.sectionABlocks;
     
-    // Add metallic gradient for scheme 6
-    if (scheme.metallic) {
-      block.style.background = `linear-gradient(145deg, 
-        rgba(255,255,255,0.4), 
-        ${scheme.sectionABlocks} 30%, 
-        rgba(0,0,0,0.2) 70%, 
-        rgba(255,255,255,0.3))`;
-      block.style.boxShadow = `
-        0 4px 8px rgba(0,0,0,0.25),
-        inset 0 2px 4px rgba(255,255,255,0.8),
-        inset 0 -2px 6px rgba(0,0,0,0.35),
-        inset 2px 2px 8px rgba(255,255,255,0.5)`;
+    // Grille effect for scheme 6 ONLY
+    if (scheme.grille) {
+      // Create grille overlay
+      if (!block.querySelector('.grilleOverlay')) {
+        const grille = document.createElement('div');
+        grille.className = 'grilleOverlay';
+        grille.style.position = 'absolute';
+        grille.style.inset = '0';
+        grille.style.background = `repeating-linear-gradient(
+          0deg,
+          rgba(0,0,0,0.3) 0px,
+          rgba(0,0,0,0.3) 2px,
+          transparent 2px,
+          transparent 6px
+        ),
+        repeating-linear-gradient(
+          90deg,
+          rgba(0,0,0,0.3) 0px,
+          rgba(0,0,0,0.3) 2px,
+          transparent 2px,
+          transparent 6px
+        )`;
+        grille.style.borderRadius = '1.5vh';
+        grille.style.pointerEvents = 'none';
+        grille.style.zIndex = '1';
+        grille.style.opacity = '0';
+        grille.style.transition = 'opacity 6s ease-in-out';
+        block.appendChild(grille);
+      }
+      block.querySelector('.grilleOverlay').style.opacity = '1';
     } else {
+      // Remove grille for other schemes
+      const grille = block.querySelector('.grilleOverlay');
+      if (grille) {
+        grille.style.opacity = '0';
+        setTimeout(() => grille.remove(), 6000);
+      }
+    }
+    
+    // Remove metallic effect if not metallic scheme
+    if (!scheme.metallic && !scheme.grille) {
       block.style.background = '';
       block.style.boxShadow = '0 4px 8px rgba(0,0,0,0.25), inset 0 -2px 6px rgba(0,0,0,0.15)';
     }
@@ -1077,48 +1176,45 @@ button10.querySelector('.glassButton').addEventListener('click', () => {
   }
   
   // Apply Section B & C blocks color
-  const nonSectionABlocks = [...greyBlocks].filter(block => ![...sectionAGreyBlocks].includes(block));
-  nonSectionABlocks.forEach(block => {
-    block.style.transition = `background-color ${scheme.fadeTime ? scheme.fadeTime.sectionBC : 5}s ease-in-out`;
-    block.style.backgroundColor = scheme.sectionBCBlocks;
+  if (scheme.splitBC) {
+    // Handle B and C separately
+    const sectionBBlocks = document.querySelectorAll('.sectionB .block');
+    const sectionCBlocks = document.querySelectorAll('.sectionC .block');
     
-    // Metallic effect for scheme 6
-    if (scheme.metallic) {
-      block.style.background = `linear-gradient(135deg, 
-        rgba(255,255,255,0.3), 
-        ${scheme.sectionBCBlocks} 40%, 
-        rgba(0,0,0,0.15) 80%, 
-        rgba(255,255,255,0.2))`;
-    } else {
+    sectionBBlocks.forEach(block => {
+      block.style.transition = `background-color ${scheme.fadeTime ? scheme.fadeTime.sectionBC : 5}s ease-in-out`;
+      block.style.backgroundColor = scheme.sectionBBlocks;
       block.style.background = '';
-    }
-  });
+    });
+    
+    sectionCBlocks.forEach(block => {
+      block.style.transition = `background-color ${scheme.fadeTime ? scheme.fadeTime.sectionBC : 5}s ease-in-out`;
+      block.style.backgroundColor = scheme.sectionCBlocks;
+      block.style.background = '';
+    });
+  } else {
+    // Original behavior - B and C same color
+    const nonSectionABlocks = [...greyBlocks].filter(block => ![...sectionAGreyBlocks].includes(block));
+    nonSectionABlocks.forEach(block => {
+      block.style.transition = `background-color ${scheme.fadeTime ? scheme.fadeTime.sectionBC : 5}s ease-in-out`;
+      block.style.backgroundColor = scheme.sectionBCBlocks;
+      
+      // Metallic effect for old metallic scheme
+      if (scheme.metallic) {
+        block.style.background = `linear-gradient(135deg, 
+          rgba(255,255,255,0.3), 
+          ${scheme.sectionBCBlocks} 40%, 
+          rgba(0,0,0,0.15) 80%, 
+          rgba(255,255,255,0.2))`;
+      } else {
+        block.style.background = '';
+      }
+    });
+  }
   
   // Apply body background
   document.body.style.transition = `background-color ${scheme.fadeTime ? scheme.fadeTime.sectionBC : 5}s ease-in-out`;
   document.body.style.backgroundColor = scheme.bodyBg;
-  
-  // Add metallic shine to buttons for scheme 6 only
-  if (scheme.metallic) {
-    allButtons.forEach(btn => {
-      btn.style.background = `radial-gradient(circle at 35% 35%, 
-        rgba(255,255,255,0.65), 
-        rgba(255,255,255,0.25) 40%, 
-        rgba(0,0,0,0.1))`;
-      btn.style.boxShadow = `
-        6px 6px 12px rgba(0,0,0,0.3),
-        inset 0 3px 6px rgba(255,255,255,0.7),
-        inset 0 -3px 6px rgba(0,0,0,0.3),
-        inset -2px -2px 8px rgba(0,0,0,0.2),
-        inset 2px 2px 8px rgba(255,255,255,0.5)`;
-    });
-  } else {
-    // Reset buttons to normal glass style
-    allButtons.forEach(btn => {
-      btn.style.background = '';
-      btn.style.boxShadow = '';
-    });
-  }
 });
 
 /* Cursor follow - independent blocks */
