@@ -263,6 +263,7 @@ html, body {
   box-shadow:
     inset 0 2px 4px rgba(255,255,255,0.35),
     inset 0 -3px 6px rgba(0,0,0,0.35);
+  pointer-events: none;
 }
 .secondaryCircle {
   position: absolute;
@@ -332,6 +333,133 @@ document.addEventListener('click', () => {
     if(!audioUnlocked){ audio.play().catch(()=>{}); audioUnlocked = true; }
 });
 
+// Web Audio API setup
+const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+const source = audioContext.createMediaElementSource(audio);
+
+// Create audio nodes
+const gainNode = audioContext.createGain(); // Volume
+const lowPassFilter = audioContext.createBiquadFilter(); // Filter 1
+const highPassFilter = audioContext.createBiquadFilter(); // Filter 2
+const bassEQ = audioContext.createBiquadFilter(); // Bass
+const trebleEQ = audioContext.createBiquadFilter(); // Treble
+const panNode = audioContext.createStereoPanner(); // Pan
+const compressor = audioContext.createDynamicsCompressor(); // Compressor
+const convolverNode = audioContext.createConvolver(); // Reverb (needs impulse response)
+
+// Configure filters
+lowPassFilter.type = 'lowpass';
+lowPassFilter.frequency.value = 20000; // Default: no filtering
+highPassFilter.type = 'highpass';
+highPassFilter.frequency.value = 20; // Default: no filtering
+bassEQ.type = 'lowshelf';
+bassEQ.frequency.value = 200;
+bassEQ.gain.value = 0;
+trebleEQ.type = 'highshelf';
+trebleEQ.frequency.value = 3000;
+trebleEQ.gain.value = 0;
+panNode.pan.value = 0; // Center
+
+// Connect audio chain
+source.connect(gainNode);
+gainNode.connect(lowPassFilter);
+lowPassFilter.connect(highPassFilter);
+highPassFilter.connect(bassEQ);
+bassEQ.connect(trebleEQ);
+trebleEQ.connect(panNode);
+panNode.connect(compressor);
+compressor.connect(audioContext.destination);
+
+// Slider effect mappings
+const sliderEffects = [
+  { // Slider 1: Pitch Shift
+    name: 'Pitch',
+    apply: (value) => {
+      // -100 to +100 -> 0.5x to 2x playback rate
+      audio.playbackRate = 1 + (value / 100);
+    }
+  },
+  { // Slider 2: Low-Pass Filter
+    name: 'Low-Pass',
+    apply: (value) => {
+      // -100 = 200Hz (very muffled), 0 = 20000Hz (no effect), +100 = 20000Hz
+      if (value <= 0) {
+        lowPassFilter.frequency.value = 200 + ((100 + value) / 100) * 19800;
+      } else {
+        lowPassFilter.frequency.value = 20000; // No filtering on positive
+      }
+    }
+  },
+  { // Slider 3: High-Pass Filter
+    name: 'High-Pass',
+    apply: (value) => {
+      // -100 = 20Hz (no effect), 0 = 20Hz, +100 = 5000Hz (very tinny)
+      if (value >= 0) {
+        highPassFilter.frequency.value = 20 + (value / 100) * 4980;
+      } else {
+        highPassFilter.frequency.value = 20; // No filtering on negative
+      }
+    }
+  },
+  { // Slider 4: Bass Boost/Cut
+    name: 'Bass',
+    apply: (value) => {
+      // -100 to +100 -> -20dB to +20dB
+      bassEQ.gain.value = (value / 100) * 20;
+    }
+  },
+  { // Slider 5: Treble Boost/Cut
+    name: 'Treble',
+    apply: (value) => {
+      // -100 to +100 -> -20dB to +20dB
+      trebleEQ.gain.value = (value / 100) * 20;
+    }
+  },
+  { // Slider 6: Stereo Pan
+    name: 'Pan',
+    apply: (value) => {
+      // -100 to +100 -> -1 (left) to +1 (right)
+      panNode.pan.value = value / 100;
+    }
+  },
+  { // Slider 7: Volume
+    name: 'Volume',
+    apply: (value) => {
+      // -100 to +100 -> 0 (silent) to 2 (2x volume)
+      gainNode.gain.value = Math.max(0, 1 + (value / 100));
+    }
+  },
+  { // Slider 8: Playback Speed
+    name: 'Speed',
+    apply: (value) => {
+      // -100 to +100 -> 0.25x to 2x speed (preserves pitch if detune used)
+      audio.playbackRate = Math.max(0.25, 1 + (value / 100));
+    }
+  },
+  { // Slider 9: Compression
+    name: 'Compress',
+    apply: (value) => {
+      // -100 = no compression, +100 = heavy compression
+      if (value >= 0) {
+        compressor.threshold.value = -50 + (value / 100) * 40; // -50 to -10
+        compressor.ratio.value = 1 + (value / 100) * 19; // 1:1 to 20:1
+      } else {
+        compressor.threshold.value = 0; // Disabled
+        compressor.ratio.value = 1;
+      }
+    }
+  },
+  { // Slider 10: Distortion (using gain overdrive)
+    name: 'Distortion',
+    apply: (value) => {
+      // Simple distortion using volume boost
+      if (value > 0) {
+        gainNode.gain.value = 1 + (value / 100) * 4; // Up to 5x gain
+      }
+    }
+  }
+];
+
 /* RANDOM IMAGE */
 const imgs = ['corala.png','scattershot.png'];
 document.getElementById('randomImage').src =
@@ -344,31 +472,109 @@ function resize(){ canvas.width=canvas.offsetWidth; canvas.height=canvas.offsetH
 resize(); window.addEventListener('resize', resize);
 
 const gs=20, dr=4;
+let pulsePhase = 0;
+
 function draw(){
   ctx.clearRect(0,0,canvas.width,canvas.height);
   const cx=canvas.width/2, cy=canvas.height/2;
   const r=Math.min(canvas.width,canvas.height)/2*0.85;
-  const s=(2*r)/(gs-1);
   
-  // Responsive dot radius - scale with canvas size but keep minimum spacing
+  // Speaker cone pulse - SLOWER by 25%
+  pulsePhase += 0.0375; // Was 0.05, now 75% of that
+  const pulseFactor = Math.sin(pulsePhase) * 1.2; // MUCH MORE WARP (was 0.6, now 1.2)
+  
+  // Draw warped grey background as triangle mesh
+  ctx.fillStyle = '#C9CED4';
+  const segments = 30;
+  for(let ring=0; ring<segments; ring++) {
+    const innerRadius = (ring / segments) * r;
+    const outerRadius = ((ring + 1) / segments) * r;
+    const steps = 40;
+    
+    for(let i=0; i<steps; i++) {
+      const angle1 = (i / steps) * Math.PI * 2;
+      const angle2 = ((i + 1) / steps) * Math.PI * 2;
+      
+      // Calculate cone depth for each ring - DOUBLED warp
+      const innerNorm = 1 - ring / segments;
+      const outerNorm = 1 - (ring + 1) / segments;
+      const innerDepth = innerNorm * pulseFactor * 50; // Was 30, now 50
+      const outerDepth = outerNorm * pulseFactor * 50;
+      
+      // Inner ring points with MORE contraction
+      const ix1 = cx + Math.cos(angle1) * (innerRadius - innerDepth * 0.5);
+      const iy1 = cy + Math.sin(angle1) * (innerRadius - innerDepth * 0.5);
+      const ix2 = cx + Math.cos(angle2) * (innerRadius - innerDepth * 0.5);
+      const iy2 = cy + Math.sin(angle2) * (innerRadius - innerDepth * 0.5);
+      
+      // Outer ring points
+      const ox1 = cx + Math.cos(angle1) * (outerRadius - outerDepth * 0.5);
+      const oy1 = cy + Math.sin(angle1) * (outerRadius - outerDepth * 0.5);
+      const ox2 = cx + Math.cos(angle2) * (outerRadius - outerDepth * 0.5);
+      const oy2 = cy + Math.sin(angle2) * (outerRadius - outerDepth * 0.5);
+      
+      // DRAMATIC shading based on depth and ring position
+      const avgDepth = (innerDepth + outerDepth) / 2;
+      const depthFactor = avgDepth / 60; // How deep is this ring
+      
+      let brightness;
+      if (pulseFactor > 0) {
+        // Pushed OUT - brighter center, darker edges
+        brightness = 201 - innerNorm * 40 + depthFactor * 50;
+      } else {
+        // Sucked IN - much darker center (deep cone shadow)
+        brightness = 201 - innerNorm * 80 - Math.abs(depthFactor) * 60;
+      }
+      
+      brightness = Math.max(50, Math.min(255, brightness));
+      ctx.fillStyle = `rgb(${brightness}, ${brightness+4}, ${brightness+8})`;
+      
+      // Draw quad as two triangles
+      ctx.beginPath();
+      ctx.moveTo(ix1, iy1);
+      ctx.lineTo(ox1, oy1);
+      ctx.lineTo(ox2, oy2);
+      ctx.lineTo(ix2, iy2);
+      ctx.closePath();
+      ctx.fill();
+    }
+  }
+  
+  // Draw dots on the warped surface
+  const s=(2*r)/(gs-1);
   const dotRadius = Math.max(2, Math.min(dr, s * 0.15));
   
   for(let y=0;y<gs;y++)for(let x=0;x<gs;x++){
-    const px=cx-r+x*s, py=cy-r+y*s;
-    if((px-cx)**2+(py-cy)**2<=r*r){
+    const baseX=cx-r+x*s, baseY=cy-r+y*s;
+    const distFromCenter = Math.hypot(baseX-cx, baseY-cy);
+    
+    if(distFromCenter <= r){
+      const normalizedDist = distFromCenter / r;
+      const dotDepth = (1 - normalizedDist) * pulseFactor * 50; // Matches background warp
+      
+      // Move dot with the warped surface
+      const angle = Math.atan2(baseY - cy, baseX - cx);
+      const warpedRadius = distFromCenter - dotDepth * 0.5;
+      const px = cx + Math.cos(angle) * warpedRadius;
+      const py = cy + Math.sin(angle) * warpedRadius;
+      
       const rnd=Math.random()*99;
       let col='#000';
       if(rnd<2) col='#ff8000';
       else if(rnd<2.6) col='#ffb343';
       else if(rnd<3) col='#40bcf4';
+      
+      // Dots get smaller when deeper, with MORE dramatic scaling
+      const scale = Math.max(0.3, 1 - Math.abs(dotDepth) / 70);
+      
       ctx.beginPath();
-      ctx.arc(px,py,dotRadius,0,Math.PI*2);
-      ctx.fillStyle=col;
+      ctx.arc(px, py, dotRadius * scale, 0, Math.PI*2);
+      ctx.fillStyle = col;
       ctx.fill();
     }
   }
 }
-setInterval(draw,265); draw();
+setInterval(draw,35); draw();
 
 /* BUTTON CREATION */
 function createBlocks(section,num,addHomeIcon=false){
@@ -470,17 +676,19 @@ if (button10Icon) {
   
   // Slider state
   let isDragging = false;
-  let sliderValue = 50; // 0-100, default middle
+  let sliderValue = 0; // -100 to +100, default 0 (middle = no effect)
   
   function updateKnobPosition(value) {
     const blockHeight = block.offsetHeight;
     const knobHeight = knob.offsetHeight;
     const borderSpace = blockHeight * 0.09;
     
-    // Position knob so it reaches from top border to bottom border
+    // Position knob: -100 at bottom, 0 at middle, +100 at top
     const minPos = borderSpace;
     const maxPos = blockHeight - borderSpace - knobHeight;
-    const position = minPos + (1 - value / 100) * (maxPos - minPos);
+    const middlePos = (minPos + maxPos) / 2;
+    const range = (maxPos - minPos) / 2;
+    const position = middlePos - (value / 100) * range;
     
     knob.style.top = `${position}px`;
   }
@@ -495,15 +703,20 @@ if (button10Icon) {
     
     const minY = rect.top + borderSpace;
     const maxY = rect.bottom - borderSpace - knobHeight;
-    const range = maxY - minY;
+    const middleY = (minY + maxY) / 2;
+    const range = (maxY - minY) / 2;
     
-    // Calculate slider value
-    const relativeY = clientY - minY;
-    const clampedY = Math.max(0, Math.min(range, relativeY));
-    sliderValue = Math.round((1 - clampedY / range) * 100);
+    // Calculate slider value: top = +100, middle = 0, bottom = -100
+    const relativeY = clientY - middleY;
+    const clampedY = Math.max(-range, Math.min(range, relativeY));
+    sliderValue = Math.round(-(clampedY / range) * 100);
     
     updateKnobPosition(sliderValue);
-    // console.log(`Slider ${index + 1}: ${sliderValue}%`); // Disabled
+    
+    // Apply audio effect
+    if (sliderEffects[index]) {
+      sliderEffects[index].apply(sliderValue);
+    }
   }
   
   // Mouse events
@@ -659,8 +872,8 @@ const colors=['#ff8000','#00e054','#ffb343','#40bcf4'];
   block.querySelector('.glassButton').appendChild(c);
 });
 
-// Block5 gets green instead of blue
-const block5colors=['#ff8000','#00e054','#ffb343','#209569'];
+// Block5 gets Falun red instead of green
+const block5colors=['#ff8000','#00e054','#ffb343','#801818'];
 block5colors.forEach(col=>{
   const c=document.createElement('div');
   c.className='blockInnerCircle';
@@ -669,11 +882,35 @@ block5colors.forEach(col=>{
 });
 
 /* Block5 random time */
-document.querySelector('.block5 .glassButton').addEventListener('click', () => {
+document.querySelector('.block5 .glassButton').addEventListener('click', (e) => {
     const maxTime = 85;
     const randomTime = Math.random() * maxTime;
     audio.currentTime = randomTime;
     audio.play().catch(()=>{});
+    
+    e.stopPropagation();
+    
+    const btn = document.querySelector('.block5 .glassButton');
+    
+    // Secondary circle ripple
+    const s = document.createElement('div');
+    s.className = 'secondaryCircle';
+    s.style.background = 'radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.25), rgba(0, 0, 0, 0.15))';
+    btn.appendChild(s);
+    s.animate(
+      [{transform:'scale(1)',opacity:1},{transform:'scale(0.82)',opacity:0}],
+      {duration:900,easing:'ease-out'}
+    ).onfinish=()=>s.remove();
+    
+    // Nova burst
+    const n = document.createElement('div');
+    n.className = 'secondaryCircle';
+    n.style.background = 'radial-gradient(circle, rgba(255,255,255,0.5) 0%, transparent 70%)';
+    btn.appendChild(n);
+    n.animate(
+      [{transform:'scale(1)',opacity:0.8},{transform:'scale(1.4)',opacity:0}],
+      {duration:1100,easing:'ease-out'}
+    ).onfinish=()=>n.remove();
 });
 
 /* Button 10 - Color Scheme Cycler */
@@ -687,7 +924,7 @@ const colorSchemes = [
     sectionABlocks: '#C9CED4',
     sectionBCBlocks: '#C9CED4',
     bodyBg: '#C9CED4',
-    greenCircle: '#209569',
+    greenCircle: '#801818', // Falun red (default)
     block5Glass: null, // No special effect
     showText: false
   },
@@ -697,7 +934,7 @@ const colorSchemes = [
     sectionABlocks: '#209569',
     sectionBCBlocks: '#e6dacc',
     bodyBg: '#e6dacc',
-    greenCircle: '#0b1307',
+    greenCircle: '#801818', // Falun red
     block5Glass: {
       border: '2px solid rgba(0, 0, 0, 0.6)',
       boxShadow: `
@@ -745,6 +982,18 @@ const colorSchemes = [
     block5Glass: null,
     showText: true,
     textColor: '#C7EA46'
+  },
+  // Mode 5: Magenta & Silver with Metallic Finish
+  {
+    name: 'Mode 6 Activated',
+    sectionABlocks: '#C0C0C0', // Silver
+    sectionBCBlocks: '#FF00FF', // Magenta
+    bodyBg: '#FF00FF',
+    greenCircle: '#A8A8A8', // Light silver gray
+    block5Glass: null,
+    showText: true,
+    textColor: '#808080',
+    metallic: true // Special flag for metallic effects
   }
 ];
 
@@ -758,6 +1007,7 @@ button10.querySelector('.glassButton').addEventListener('click', () => {
   const sectionAGreyBlocks = document.querySelectorAll('.block1, .block2, .block5');
   const greenCircle = document.querySelector('.block5 .blockInnerCircle:nth-child(4)');
   const block5Button = document.querySelector('.block5 .glassButton');
+  const allButtons = document.querySelectorAll('.glassButton');
   
   // Show mode text if enabled
   if (scheme.showText) {
@@ -786,22 +1036,41 @@ button10.querySelector('.glassButton').addEventListener('click', () => {
   
   // Apply Section A blocks color
   sectionAGreyBlocks.forEach(block => {
-    block.style.transition = 'background-color 6s ease-in-out';
+    block.style.transition = `background-color ${scheme.fadeTime ? scheme.fadeTime.sectionA : 6}s ease-in-out`;
     block.style.backgroundColor = scheme.sectionABlocks;
+    
+    // Add metallic gradient for scheme 6
+    if (scheme.metallic) {
+      block.style.background = `linear-gradient(145deg, 
+        rgba(255,255,255,0.4), 
+        ${scheme.sectionABlocks} 30%, 
+        rgba(0,0,0,0.2) 70%, 
+        rgba(255,255,255,0.3))`;
+      block.style.boxShadow = `
+        0 4px 8px rgba(0,0,0,0.25),
+        inset 0 2px 4px rgba(255,255,255,0.8),
+        inset 0 -2px 6px rgba(0,0,0,0.35),
+        inset 2px 2px 8px rgba(255,255,255,0.5)`;
+    } else {
+      block.style.background = '';
+      block.style.boxShadow = '0 4px 8px rgba(0,0,0,0.25), inset 0 -2px 6px rgba(0,0,0,0.15)';
+    }
   });
   
   // Apply green circle color
   if (greenCircle) {
-    greenCircle.style.transition = 'background-color 6s ease-in-out';
+    greenCircle.style.transition = `background-color ${scheme.fadeTime ? scheme.fadeTime.sectionA : 6}s ease-in-out`;
     greenCircle.style.backgroundColor = scheme.greenCircle;
   }
   
   // Apply block5 glass effect
   if (scheme.block5Glass) {
+    block5Button.style.transition = `all ${scheme.fadeTime ? scheme.fadeTime.sectionA : 6}s ease-in-out`;
     block5Button.style.border = scheme.block5Glass.border;
     block5Button.style.boxShadow = scheme.block5Glass.boxShadow;
     block5Button.style.background = scheme.block5Glass.background;
   } else {
+    block5Button.style.transition = `all ${scheme.fadeTime ? scheme.fadeTime.sectionA : 6}s ease-in-out`;
     block5Button.style.border = '';
     block5Button.style.boxShadow = '';
     block5Button.style.background = '';
@@ -810,13 +1079,46 @@ button10.querySelector('.glassButton').addEventListener('click', () => {
   // Apply Section B & C blocks color
   const nonSectionABlocks = [...greyBlocks].filter(block => ![...sectionAGreyBlocks].includes(block));
   nonSectionABlocks.forEach(block => {
-    block.style.transition = 'background-color 5s ease-in-out';
+    block.style.transition = `background-color ${scheme.fadeTime ? scheme.fadeTime.sectionBC : 5}s ease-in-out`;
     block.style.backgroundColor = scheme.sectionBCBlocks;
+    
+    // Metallic effect for scheme 6
+    if (scheme.metallic) {
+      block.style.background = `linear-gradient(135deg, 
+        rgba(255,255,255,0.3), 
+        ${scheme.sectionBCBlocks} 40%, 
+        rgba(0,0,0,0.15) 80%, 
+        rgba(255,255,255,0.2))`;
+    } else {
+      block.style.background = '';
+    }
   });
   
   // Apply body background
-  document.body.style.transition = 'background-color 5s ease-in-out';
+  document.body.style.transition = `background-color ${scheme.fadeTime ? scheme.fadeTime.sectionBC : 5}s ease-in-out`;
   document.body.style.backgroundColor = scheme.bodyBg;
+  
+  // Add metallic shine to buttons for scheme 6 only
+  if (scheme.metallic) {
+    allButtons.forEach(btn => {
+      btn.style.background = `radial-gradient(circle at 35% 35%, 
+        rgba(255,255,255,0.65), 
+        rgba(255,255,255,0.25) 40%, 
+        rgba(0,0,0,0.1))`;
+      btn.style.boxShadow = `
+        6px 6px 12px rgba(0,0,0,0.3),
+        inset 0 3px 6px rgba(255,255,255,0.7),
+        inset 0 -3px 6px rgba(0,0,0,0.3),
+        inset -2px -2px 8px rgba(0,0,0,0.2),
+        inset 2px 2px 8px rgba(255,255,255,0.5)`;
+    });
+  } else {
+    // Reset buttons to normal glass style
+    allButtons.forEach(btn => {
+      btn.style.background = '';
+      btn.style.boxShadow = '';
+    });
+  }
 });
 
 /* Cursor follow - independent blocks */
