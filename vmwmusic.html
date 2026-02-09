@@ -373,90 +373,124 @@ compressor.connect(audioContext.destination);
 
 // Slider effect mappings
 const sliderEffects = [
-  { // Slider 1: Pitch Shift (KEEP - essential)
-    name: 'Pitch',
+  { // Slider 1: Pitch Drift / Instability
+    name: 'Pitch Drift',
     apply: (value) => {
-      // -100 to +100 -> 0.5x to 2x playback rate
-      audio.playbackRate = 1 + (value / 100);
+      // -100 = clean digital, 0 = normal, +100 = unstable tape-like drift
+      const drift = (value / 100) * 0.15;
+      const wobble = Math.sin(Date.now() / 1000 * (1 + drift * 5)) * drift * 0.5;
+      audio.playbackRate = 1 + wobble;
     }
   },
-  { // Slider 2: Reverb (Wet/Dry Mix)
-    name: 'Reverb',
+  { // Slider 2: Bass Weight / Sub Density
+    name: 'Bass Weight',
     apply: (value) => {
-      // -100 = dry, 0 = slight reverb, +100 = wet
-      // Note: Basic reverb using convolver (needs impulse response for full effect)
-      // This is a placeholder - real reverb would need impulse response loaded
-    }
-  },
-  { // Slider 3: Delay/Echo
-    name: 'Delay',
-    apply: (value) => {
-      // -100 = no delay, 0 = moderate, +100 = heavy delay
-      // Placeholder for delay effect
-    }
-  },
-  { // Slider 4: Bass Boost/Cut (KEEP)
-    name: 'Bass',
-    apply: (value) => {
-      // -100 to +100 -> -20dB to +20dB
-      bassEQ.gain.value = (value / 100) * 20;
-    }
-  },
-  { // Slider 5: Resonant Filter (Sweep)
-    name: 'Resonance',
-    apply: (value) => {
-      // -100 to +100 controls resonant peak sweep
+      // -100 = clean digital sine, 0 = normal, +100 = saturated/folded subs
       if (value >= 0) {
-        lowPassFilter.Q.value = 1 + (value / 100) * 19; // Q factor 1 to 20
-        lowPassFilter.frequency.value = 200 + (value / 100) * 3800; // 200Hz to 4000Hz
+        bassEQ.gain.value = (value / 100) * 25;
+        bassEQ.type = 'lowshelf';
+        bassEQ.frequency.value = 60 + (value / 100) * 40;
       } else {
-        lowPassFilter.Q.value = 1;
+        bassEQ.gain.value = (value / 100) * 15;
+      }
+    }
+  },
+  { // Slider 3: Harmonic Spread
+    name: 'Harmonic Spread',
+    apply: (value) => {
+      // -100 = pure fundamental, 0 = balanced, +100 = rich overtones
+      if (value >= 0) {
+        trebleEQ.gain.value = (value / 100) * 20;
+        trebleEQ.frequency.value = 1000 + (value / 100) * 4000;
+      } else {
+        trebleEQ.gain.value = (value / 100) * 15;
+      }
+    }
+  },
+  { // Slider 4: Time Smear / Micro-delay
+    name: 'Time Smear',
+    apply: (value) => {
+      // -100 = tight transients, 0 = normal, +100 = stretched blur
+      // Simulated via playback rate micro-variations
+      const smear = (value / 100) * 0.08;
+      if (Math.abs(smear) > 0.01) {
+        audio.playbackRate = 1 + Math.sin(Date.now() / 500) * smear;
+      }
+    }
+  },
+  { // Slider 5: Transient Softener / Punch Shape
+    name: 'Transient Softener',
+    apply: (value) => {
+      // -100 = clicky attacks, 0 = normal, +100 = rounded/rubbery
+      if (value >= 0) {
+        compressor.attack.value = 0.001 + (value / 100) * 0.02;
+        compressor.release.value = 0.1 + (value / 100) * 0.3;
+      } else {
+        compressor.attack.value = Math.max(0.0001, 0.003 + (value / 100) * 0.001);
+      }
+    }
+  },
+  { // Slider 6: Stereo Gravity
+    name: 'Stereo Gravity',
+    apply: (value) => {
+      // -100 = mono center-locked, 0 = normal stereo, +100 = floating wide
+      if (value >= 0) {
+        panNode.pan.value = (value / 100) * 0.8;
+      } else {
+        panNode.pan.value = (value / 100) * 0.6;
+      }
+    }
+  },
+  { // Slider 7: Texture / Grain Size
+    name: 'Texture',
+    apply: (value) => {
+      // -100 = smooth, 0 = normal, +100 = gritty digital sand
+      // Simulated via subtle bitcrushing effect on playback
+      if (value > 0) {
+        const grainFactor = 1 + (value / 100) * 0.3;
+        audio.playbackRate = 1 * grainFactor;
+      } else {
+        audio.playbackRate = 1;
+      }
+    }
+  },
+  { // Slider 8: Filter Motion Depth
+    name: 'Filter Motion',
+    apply: (value) => {
+      // -100 = static filter, 0 = normal, +100 = heavy envelope movement
+      if (value >= 0) {
+        lowPassFilter.frequency.value = 1000 + (value / 100) * Math.sin(Date.now() / 200) * 3000;
+        lowPassFilter.Q.value = 1 + (value / 100) * 5;
+      } else {
         lowPassFilter.frequency.value = 20000;
+        lowPassFilter.Q.value = 1;
       }
     }
   },
-  { // Slider 6: Stereo Pan (KEEP)
-    name: 'Pan',
+  { // Slider 9: Spectral Tilt
+    name: 'Spectral Tilt',
     apply: (value) => {
-      // -100 to +100 -> -1 (left) to +1 (right)
-      panNode.pan.value = value / 100;
-    }
-  },
-  { // Slider 7: Bitcrusher (Lo-Fi/Digital Distortion)
-    name: 'Bitcrush',
-    apply: (value) => {
-      // Simulated via playback manipulation
-      // -100 = clean, +100 = crushed 8-bit sound
-      // This is a simplified version - true bitcrushing needs sample rate reduction
-    }
-  },
-  { // Slider 8: Stereo Width
-    name: 'Width',
-    apply: (value) => {
-      // -100 = mono, 0 = normal stereo, +100 = super wide
-      // Requires stereo processing - placeholder
-    }
-  },
-  { // Slider 9: Compression (KEEP)
-    name: 'Compress',
-    apply: (value) => {
-      // -100 = no compression, +100 = heavy compression (ducking/pumping)
+      // -100 = dark spectrum, 0 = balanced, +100 = bright spectrum
+      // Rotate spectrum by adjusting highpass and lowpass together
       if (value >= 0) {
-        compressor.threshold.value = -50 + (value / 100) * 40; // -50 to -10
-        compressor.ratio.value = 1 + (value / 100) * 19; // 1:1 to 20:1
-        compressor.attack.value = 0.003; // Fast attack for punch
-        compressor.release.value = 0.25; // Quarter second release
+        highPassFilter.frequency.value = 20;
+        trebleEQ.gain.value = (value / 100) * 18;
       } else {
-        compressor.threshold.value = 0;
-        compressor.ratio.value = 1;
+        highPassFilter.frequency.value = 200 + Math.abs(value / 100) * 500;
+        trebleEQ.gain.value = -Math.abs(value / 100) * 12;
       }
     }
   },
-  { // Slider 10: Phaser/Flanger
-    name: 'Phaser',
+  { // Slider 10: Energy / Excitation Drive
+    name: 'Energy',
     apply: (value) => {
-      // -100 = off, +100 = heavy phaser sweep
-      // Placeholder for phaser effect
+      // -100 = quiet/compressed, 0 = normal, +100 = pumping/driven
+      if (value >= 0) {
+        gainNode.gain.value = 1 + (value / 100) * 0.5;
+        compressor.ratio.value = 1 + (value / 100) * 8;
+      } else {
+        gainNode.gain.value = Math.max(0.3, 1 + (value / 100) * 0.3);
+      }
     }
   }
 ];
@@ -473,121 +507,34 @@ function resize(){ canvas.width=canvas.offsetWidth; canvas.height=canvas.offsetH
 resize(); window.addEventListener('resize', resize);
 
 const gs=20, dr=4;
-let pulsePhase = 0;
 let currentBlockColor = '#C9CED4'; // Default, will be updated by color schemes
-
-function hexToRgb(hex) {
-  const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-  return result ? {
-    r: parseInt(result[1], 16),
-    g: parseInt(result[2], 16),
-    b: parseInt(result[3], 16)
-  } : {r: 201, g: 207, b: 212};
-}
 
 function draw(){
   ctx.clearRect(0,0,canvas.width,canvas.height);
   const cx=canvas.width/2, cy=canvas.height/2;
   const r=Math.min(canvas.width,canvas.height)/2*0.85;
   
-  // Speaker cone pulse - SUPER FAST
-  pulsePhase += 0.15; // Was 0.08, now almost 2x faster again
-  const pulseFactor = Math.sin(pulsePhase) * 1.2; // MUCH MORE WARP (was 0.6, now 1.2)
+  // NO BACKGROUND - transparent, just dots in circle
   
-  // Get base color from current scheme
-  const baseColor = hexToRgb(currentBlockColor);
-  
-  // Draw warped background as triangle mesh
-  const segments = 30;
-  for(let ring=0; ring<segments; ring++) {
-    const innerRadius = (ring / segments) * r;
-    const outerRadius = ((ring + 1) / segments) * r;
-    const steps = 40;
-    
-    for(let i=0; i<steps; i++) {
-      const angle1 = (i / steps) * Math.PI * 2;
-      const angle2 = ((i + 1) / steps) * Math.PI * 2;
-      
-      // Calculate cone depth for each ring - DOUBLED warp
-      const innerNorm = 1 - ring / segments;
-      const outerNorm = 1 - (ring + 1) / segments;
-      const innerDepth = innerNorm * pulseFactor * 50; // Was 30, now 50
-      const outerDepth = outerNorm * pulseFactor * 50;
-      
-      // Inner ring points with MORE contraction
-      const ix1 = cx + Math.cos(angle1) * (innerRadius - innerDepth * 0.5);
-      const iy1 = cy + Math.sin(angle1) * (innerRadius - innerDepth * 0.5);
-      const ix2 = cx + Math.cos(angle2) * (innerRadius - innerDepth * 0.5);
-      const iy2 = cy + Math.sin(angle2) * (innerRadius - innerDepth * 0.5);
-      
-      // Outer ring points
-      const ox1 = cx + Math.cos(angle1) * (outerRadius - outerDepth * 0.5);
-      const oy1 = cy + Math.sin(angle1) * (outerRadius - outerDepth * 0.5);
-      const ox2 = cx + Math.cos(angle2) * (outerRadius - outerDepth * 0.5);
-      const oy2 = cy + Math.sin(angle2) * (outerRadius - outerDepth * 0.5);
-      
-      // DRAMATIC shading based on depth and ring position
-      const avgDepth = (innerDepth + outerDepth) / 2;
-      const depthFactor = avgDepth / 60; // How deep is this ring
-      
-      let shadeFactor;
-      if (pulseFactor > 0) {
-        // Pushed OUT - brighter center, darker edges
-        shadeFactor = 1 + (innerNorm * -0.2 + depthFactor * 0.25);
-      } else {
-        // Sucked IN - much darker center (deep cone shadow)
-        shadeFactor = 1 + (innerNorm * -0.4 - Math.abs(depthFactor) * 0.3);
-      }
-      
-      shadeFactor = Math.max(0.2, Math.min(1.5, shadeFactor));
-      
-      const r = Math.round(baseColor.r * shadeFactor);
-      const g = Math.round(baseColor.g * shadeFactor);
-      const b = Math.round(baseColor.b * shadeFactor);
-      
-      ctx.fillStyle = `rgb(${Math.max(0, Math.min(255, r))}, ${Math.max(0, Math.min(255, g))}, ${Math.max(0, Math.min(255, b))})`;
-      
-      // Draw quad as two triangles
-      ctx.beginPath();
-      ctx.moveTo(ix1, iy1);
-      ctx.lineTo(ox1, oy1);
-      ctx.lineTo(ox2, oy2);
-      ctx.lineTo(ix2, iy2);
-      ctx.closePath();
-      ctx.fill();
-    }
-  }
-  
-  // Draw dots on the warped surface
+  // Draw dots on static grid
   const s=(2*r)/(gs-1);
-  // Perfect balance - original formula but with slight boost for visibility
-  const dotRadius = Math.max(2, Math.min(4.5, s * 0.18));
+  // Better scaling - thicker on large screens, thinner on small
+  const dotRadius = Math.max(1.8, Math.min(5.5, s * 0.16));
   
   for(let y=0;y<gs;y++)for(let x=0;x<gs;x++){
     const baseX=cx-r+x*s, baseY=cy-r+y*s;
     const distFromCenter = Math.hypot(baseX-cx, baseY-cy);
     
     if(distFromCenter <= r){
-      const normalizedDist = distFromCenter / r;
-      const dotDepth = (1 - normalizedDist) * pulseFactor * 50; // Matches background warp
-      
-      // Move dot with the warped surface
-      const angle = Math.atan2(baseY - cy, baseX - cx);
-      const warpedRadius = distFromCenter - dotDepth * 0.5;
-      const px = cx + Math.cos(angle) * warpedRadius;
-      const py = cy + Math.sin(angle) * warpedRadius;
-      
       const rnd=Math.random()*99;
       let col='#000';
       if(rnd<2) col='#ff8000';
       else if(rnd<2.6) col='#ffb343';
       else if(rnd<3) col='#40bcf4';
       
-      // Dots get smaller when deeper, with MORE dramatic scaling
-      const scale = Math.max(0.3, 1 - Math.abs(dotDepth) / 70);
-      
+      // Scaled dot size - proportional
       ctx.beginPath();
-      ctx.arc(px, py, dotRadius * scale, 0, Math.PI*2);
+      ctx.arc(baseX, baseY, dotRadius, 0, Math.PI*2);
       ctx.fillStyle = col;
       ctx.fill();
     }
@@ -692,6 +639,15 @@ if (button10Icon) {
   const knob = document.createElement('div');
   knob.className = 'sliderKnob';
   block.appendChild(knob);
+  
+  // Add slider image icon TO THE KNOB (so it follows it)
+  const sliderImg = document.createElement('img');
+  sliderImg.src = `slider${index + 1}.png`;
+  sliderImg.style.width = '60%';
+  sliderImg.style.height = '60%';
+  sliderImg.style.objectFit = 'contain';
+  sliderImg.style.pointerEvents = 'none';
+  knob.appendChild(sliderImg);
   
   // Slider state
   let isDragging = false;
@@ -937,17 +893,18 @@ let currentMode = 0;
 let pressCount = 0; // Counter for returning to basis every 5 presses
 const button10 = sectionB.children[9];
 
-const colorSchemes = [
-  // Scheme 0: BASIS (default - returns every 5 presses)
-  {
-    name: 'Basis Mode',
-    sectionABlocks: '#C9CED4',
-    sectionBCBlocks: '#C9CED4',
-    bodyBg: '#C9CED4',
-    greenCircle: '#801818',
-    showText: false
-  },
-  // Scheme 1
+// Basis scheme always stays at position 0
+const basisScheme = {
+  name: 'Basis Mode',
+  sectionABlocks: '#C9CED4',
+  sectionBCBlocks: '#C9CED4',
+  bodyBg: '#C9CED4',
+  greenCircle: '#801818',
+  showText: false
+};
+
+// All other schemes shuffled randomly
+let colorSchemes = [
   {
     name: 'Scheme 1',
     sectionABlocks: '#188f65',
@@ -957,7 +914,6 @@ const colorSchemes = [
     showText: true,
     textColor: '#188f65'
   },
-  // Scheme 2
   {
     name: 'Scheme 2',
     sectionABlocks: '#eba02d',
@@ -967,7 +923,6 @@ const colorSchemes = [
     showText: true,
     textColor: '#eba02d'
   },
-  // Scheme 3
   {
     name: 'Scheme 3',
     sectionABlocks: '#0000FF',
@@ -977,7 +932,6 @@ const colorSchemes = [
     showText: true,
     textColor: '#0000FF'
   },
-  // Scheme 4
   {
     name: 'Scheme 4',
     sectionABlocks: '#ffb16e',
@@ -987,7 +941,6 @@ const colorSchemes = [
     showText: true,
     textColor: '#ffb16e'
   },
-  // Scheme 5
   {
     name: 'Scheme 5',
     sectionABlocks: '#FEE715',
@@ -997,7 +950,6 @@ const colorSchemes = [
     showText: true,
     textColor: '#FEE715'
   },
-  // Scheme 6
   {
     name: 'Scheme 6',
     sectionABlocks: '#F9E795',
@@ -1007,9 +959,11 @@ const colorSchemes = [
     showText: true,
     textColor: '#F9E795'
   }
-];
+].sort(() => Math.random() - 0.5);
 
-// Random schemes pool (harmonious combos)
+colorSchemes = [basisScheme, ...colorSchemes];
+
+// Random schemes pool (harmonious combos) - NOW SHUFFLED & INFINITE
 const randomSchemes = [
   { sectionABlocks: '#FF6B6B', sectionBCBlocks: '#FFE66D', bodyBg: '#FFE66D', greenCircle: '#FF6B6B', textColor: '#FF6B6B' },
   { sectionABlocks: '#4ECDC4', sectionBCBlocks: '#C7F0DB', bodyBg: '#C7F0DB', greenCircle: '#4ECDC4', textColor: '#4ECDC4' },
@@ -1018,34 +972,71 @@ const randomSchemes = [
   { sectionABlocks: '#06FFA5', sectionBCBlocks: '#FFFFC7', bodyBg: '#FFFFC7', greenCircle: '#06FFA5', textColor: '#06FFA5' },
   { sectionABlocks: '#E63946', sectionBCBlocks: '#F8B195', bodyBg: '#F8B195', greenCircle: '#E63946', textColor: '#E63946' },
   { sectionABlocks: '#84A9C0', sectionBCBlocks: '#EAE7DC', bodyBg: '#EAE7DC', greenCircle: '#84A9C0', textColor: '#84A9C0' },
-  { sectionABlocks: '#FF99C8', sectionBCBlocks: '#FCF6BD', bodyBg: '#FCF6BD', greenCircle: '#FF99C8', textColor: '#FF99C8' }
-];
+  { sectionABlocks: '#FF99C8', sectionBCBlocks: '#FCF6BD', bodyBg: '#FCF6BD', greenCircle: '#FF99C8', textColor: '#FF99C8' },
+  { sectionABlocks: '#188f65', sectionBCBlocks: '#d7cfbd', bodyBg: '#d7cfbd', greenCircle: '#188f65', textColor: '#188f65' },
+  { sectionABlocks: '#eba02d', sectionBCBlocks: '#A8B88F', bodyBg: '#A8B88F', greenCircle: '#eba02d', textColor: '#eba02d' },
+  { sectionABlocks: '#0000FF', sectionBCBlocks: '#FFFFFF', bodyBg: '#FFFFFF', greenCircle: '#0000FF', textColor: '#0000FF' },
+  { sectionABlocks: '#ffb16e', sectionBCBlocks: '#fff5b8', bodyBg: '#fff5b8', greenCircle: '#ffb16e', textColor: '#ffb16e' },
+  { sectionABlocks: '#FEE715', sectionBCBlocks: '#101820', bodyBg: '#101820', greenCircle: '#FEE715', textColor: '#FEE715' },
+  { sectionABlocks: '#F9E795', sectionBCBlocks: '#F96167', bodyBg: '#F96167', greenCircle: '#F9E795', textColor: '#F9E795' },
+  { sectionABlocks: '#FF6B9D', sectionBCBlocks: '#FEC8D8', bodyBg: '#FEC8D8', greenCircle: '#FF6B9D', textColor: '#FF6B9D' },
+  { sectionABlocks: '#645995', sectionBCBlocks: '#D5BEE7', bodyBg: '#D5BEE7', greenCircle: '#645995', textColor: '#645995' },
+  { sectionABlocks: '#F38181', sectionBCBlocks: '#FFEAA7', bodyBg: '#FFEAA7', greenCircle: '#F38181', textColor: '#F38181' },
+  { sectionABlocks: '#AA96DA', sectionBCBlocks: '#FCBAD3', bodyBg: '#FCBAD3', greenCircle: '#AA96DA', textColor: '#AA96DA' },
+  { sectionABlocks: '#95E1D3', sectionBCBlocks: '#F38181', bodyBg: '#F38181', greenCircle: '#95E1D3', textColor: '#95E1D3' },
+  { sectionABlocks: '#A8E6CF', sectionBCBlocks: '#FFD3B6', bodyBg: '#FFD3B6', greenCircle: '#A8E6CF', textColor: '#A8E6CF' },
+  { sectionABlocks: '#FF8B94', sectionBCBlocks: '#FFB4A2', bodyBg: '#FFB4A2', greenCircle: '#FF8B94', textColor: '#FF8B94' },
+  { sectionABlocks: '#E8DFF5', sectionBCBlocks: '#DEEAE6', bodyBg: '#DEEAE6', greenCircle: '#E8DFF5', textColor: '#E8DFF5' },
+  { sectionABlocks: '#6BCB77', sectionBCBlocks: '#4D96FF', bodyBg: '#4D96FF', greenCircle: '#6BCB77', textColor: '#6BCB77' },
+  { sectionABlocks: '#FF6348', sectionBCBlocks: '#FFD700', bodyBg: '#FFD700', greenCircle: '#FF6348', textColor: '#FF6348' },
+  { sectionABlocks: '#2E86AB', sectionBCBlocks: '#A23B72', bodyBg: '#A23B72', greenCircle: '#2E86AB', textColor: '#2E86AB' },
+  { sectionABlocks: '#F18F01', sectionBCBlocks: '#C73E1D', bodyBg: '#C73E1D', greenCircle: '#F18F01', textColor: '#F18F01' },
+  { sectionABlocks: '#6A994E', sectionBCBlocks: '#BC4749', bodyBg: '#BC4749', greenCircle: '#6A994E', textColor: '#6A994E' },
+  { sectionABlocks: '#386641', sectionBCBlocks: '#6A994E', bodyBg: '#6A994E', greenCircle: '#386641', textColor: '#386641' },
+  { sectionABlocks: '#2D6A4F', sectionBCBlocks: '#52B788', bodyBg: '#52B788', greenCircle: '#2D6A4F', textColor: '#2D6A4F' },
+  { sectionABlocks: '#FF0000', sectionBCBlocks: '#FFFF00', bodyBg: '#FFFF00', greenCircle: '#FF0000', textColor: '#FF0000' },
+  { sectionABlocks: '#00FF00', sectionBCBlocks: '#FF00FF', bodyBg: '#FF00FF', greenCircle: '#00FF00', textColor: '#00FF00' },
+  { sectionABlocks: '#0080FF', sectionBCBlocks: '#FFB700', bodyBg: '#FFB700', greenCircle: '#0080FF', textColor: '#0080FF' },
+  { sectionABlocks: '#FF1493', sectionBCBlocks: '#00CED1', bodyBg: '#00CED1', greenCircle: '#FF1493', textColor: '#FF1493' },
+  { sectionABlocks: '#FF69B4', sectionBCBlocks: '#FFD700', bodyBg: '#FFD700', greenCircle: '#FF69B4', textColor: '#FF69B4' },
+  { sectionABlocks: '#20B2AA', sectionBCBlocks: '#FFB6C1', bodyBg: '#FFB6C1', greenCircle: '#20B2AA', textColor: '#20B2AA' },
+  { sectionABlocks: '#DC143C', sectionBCBlocks: '#FFD700', bodyBg: '#FFD700', greenCircle: '#DC143C', textColor: '#DC143C' },
+  { sectionABlocks: '#7FFFD4', sectionBCBlocks: '#FF4500', bodyBg: '#FF4500', greenCircle: '#7FFFD4', textColor: '#7FFFD4' },
+  { sectionABlocks: '#8B008B', sectionBCBlocks: '#00FA9A', bodyBg: '#00FA9A', greenCircle: '#8B008B', textColor: '#8B008B' },
+  { sectionABlocks: '#FF00FF', sectionBCBlocks: '#00FFFF', bodyBg: '#00FFFF', greenCircle: '#FF00FF', textColor: '#FF00FF' },
+  { sectionABlocks: '#FF8C00', sectionBCBlocks: '#32CD32', bodyBg: '#32CD32', greenCircle: '#FF8C00', textColor: '#FF8C00' },
+  { sectionABlocks: '#1E90FF', sectionBCBlocks: '#FFD700', bodyBg: '#FFD700', greenCircle: '#1E90FF', textColor: '#1E90FF' }
+].sort(() => Math.random() - 0.5);
+
+let isFlipped = false;
 
 button10.querySelector('.glassButton').addEventListener('click', () => {
+  // Reset flip if it was flipped
+  if (isFlipped) {
+    document.body.style.transform = 'rotate(0deg)';
+    isFlipped = false;
+  }
+  
   pressCount++;
   
   // Return to basis every 5 presses
   if (pressCount % 5 === 0) {
-    currentMode = 0; // Basis
+    const basisScheme = {
+      name: 'Basis',
+      sectionABlocks: '#C9CED4',
+      sectionBCBlocks: '#C9CED4',
+      bodyBg: '#C9CED4',
+      greenCircle: '#801818',
+      showText: false,
+      textColor: '#C9CED4'
+    };
+    applyScheme(basisScheme);
   } else {
-    // Cycles through schemes 1-6, then picks random from pool
-    if (currentMode === 0) {
-      currentMode = 1; // Start with scheme 1
-    } else if (currentMode < 6) {
-      currentMode++; // Continue through schemes 1-6
-    } else {
-      // Pick random scheme from pool
-      const randomIndex = Math.floor(Math.random() * randomSchemes.length);
-      const randomScheme = { ...randomSchemes[randomIndex], name: 'Random Scheme', showText: true };
-      
-      // Apply random scheme directly
-      applyScheme(randomScheme);
-      return;
-    }
+    // Always pick random from infinite pool
+    const randomIndex = Math.floor(Math.random() * randomSchemes.length);
+    const randomScheme = { ...randomSchemes[randomIndex], showText: false };
+    applyScheme(randomScheme);
   }
-  
-  const scheme = colorSchemes[currentMode];
-  applyScheme(scheme);
 });
 
 function applyScheme(scheme) {
@@ -1057,37 +1048,115 @@ function applyScheme(scheme) {
   const block5Button = document.querySelector('.block5 .glassButton');
   const allButtons = document.querySelectorAll('.glassButton');
   
-  // Show mode text if enabled
-  if (scheme.showText) {
-    const modeText = document.createElement('div');
-    modeText.id = 'mode2Text';
-    modeText.textContent = scheme.name;
-    modeText.style.position = 'fixed';
-    modeText.style.top = '3vh';
-    modeText.style.left = '3vw';
-    modeText.style.fontSize = '3vh';
-    modeText.style.fontWeight = '700';
-    modeText.style.color = scheme.textColor;
-    modeText.style.zIndex = '10000';
-    modeText.style.opacity = '0';
-    modeText.style.transition = 'opacity 1s ease-in-out';
-    modeText.style.pointerEvents = 'none';
-    modeText.style.fontFamily = 'Inter, sans-serif';
-    document.body.appendChild(modeText);
+  // Show mode text if enabled - DISABLED, no text
+  // 5% chance to flip screen 180 degrees with random animation
+  if (Math.random() < 0.05) {
+    const flipAnimations = [
+      // 1. Classic 180 rotate
+      { keyframes: [
+        { transform: 'rotateY(0deg)', opacity: 1 },
+        { transform: 'rotateY(90deg)', opacity: 0.5 },
+        { transform: 'rotateY(180deg)', opacity: 1 }
+      ], duration: 1000, easing: 'ease-in-out' },
+      
+      // 2. Flip with scale
+      { keyframes: [
+        { transform: 'rotateZ(0deg) scale(1)', opacity: 1 },
+        { transform: 'rotateZ(90deg) scale(0.8)', opacity: 0.3 },
+        { transform: 'rotateZ(180deg) scale(1)', opacity: 1 }
+      ], duration: 1200, easing: 'cubic-bezier(0.68, -0.55, 0.265, 1.55)' },
+      
+      // 3. Spin flip
+      { keyframes: [
+        { transform: 'rotate(0deg) rotateZ(0deg)', opacity: 1 },
+        { transform: 'rotate(180deg) rotateZ(45deg)', opacity: 0.4 },
+        { transform: 'rotate(360deg) rotateZ(0deg)', opacity: 1 }
+      ], duration: 1400, easing: 'ease-in-out' },
+      
+      // 4. 3D flip with perspective
+      { keyframes: [
+        { transform: 'perspective(1000px) rotateX(0deg) rotateY(0deg)', opacity: 1 },
+        { transform: 'perspective(1000px) rotateX(45deg) rotateY(180deg)', opacity: 0.5 },
+        { transform: 'perspective(1000px) rotateX(0deg) rotateY(180deg)', opacity: 1 }
+      ], duration: 1100, easing: 'ease-in-out' },
+      
+      // 5. Flip with bounce
+      { keyframes: [
+        { transform: 'rotate(0deg)', opacity: 1 },
+        { transform: 'rotate(100deg)', opacity: 0.6 },
+        { transform: 'rotate(180deg)', opacity: 1 },
+        { transform: 'rotate(175deg)', opacity: 0.9 },
+        { transform: 'rotate(180deg)', opacity: 1 }
+      ], duration: 1300, easing: 'cubic-bezier(0.68, -0.55, 0.265, 1.55)' },
+      
+      // 6. Spiral flip
+      { keyframes: [
+        { transform: 'rotate(0deg) skew(0deg)', opacity: 1 },
+        { transform: 'rotate(90deg) skew(10deg)', opacity: 0.4 },
+        { transform: 'rotate(180deg) skew(0deg)', opacity: 1 }
+      ], duration: 1000, easing: 'ease-in-out' },
+      
+      // 7. Double flip
+      { keyframes: [
+        { transform: 'rotateY(0deg)', opacity: 1 },
+        { transform: 'rotateY(180deg)', opacity: 0.3 },
+        { transform: 'rotateY(360deg)', opacity: 1 },
+        { transform: 'rotateY(540deg)', opacity: 0.3 },
+        { transform: 'rotateY(720deg)', opacity: 1 }
+      ], duration: 1600, easing: 'ease-in-out' },
+      
+      // 8. Matrix flip
+      { keyframes: [
+        { transform: 'matrix(1, 0, 0, 1, 0, 0)', opacity: 1 },
+        { transform: 'matrix(-0.5, 0.5, -0.5, -0.5, 0, 0)', opacity: 0.5 },
+        { transform: 'matrix(-1, 0, 0, -1, 0, 0)', opacity: 1 }
+      ], duration: 900, easing: 'ease-in-out' }
+    ];
     
-    setTimeout(() => { modeText.style.opacity = '1'; }, 10);
-    setTimeout(() => {
-      modeText.style.opacity = '0';
-      setTimeout(() => modeText.remove(), 1000);
-    }, 12000);
+    const randomFlip = flipAnimations[Math.floor(Math.random() * flipAnimations.length)];
+    document.body.style.transformOrigin = 'center center';
+    
+    const animation = document.body.animate(randomFlip.keyframes, {
+      duration: randomFlip.duration,
+      easing: randomFlip.easing,
+      fill: 'forwards'
+    });
+    
+    // Reset after animation completes
+    animation.onfinish = () => {
+      document.body.style.transform = 'rotate(180deg)';
+      isFlipped = true;
+    };
   }
   
   // Apply Section A blocks color
-  currentBlockColor = scheme.sectionABlocks; // Update warping animation color
+  currentBlockColor = scheme.sectionABlocks; // Update canvas color
   
   sectionAGreyBlocks.forEach(block => {
     block.style.transition = `background-color 6s ease-in-out`;
     block.style.backgroundColor = scheme.sectionABlocks;
+  });
+  
+  // Make block5 button background stay glass, only color the inner circles
+  if (block5Button) {
+    block5Button.style.transition = `background 6s ease-in-out`;
+    // Keep the glass effect, don't change the background
+    block5Button.style.background = `linear-gradient(
+      145deg,
+      rgba(255,255,255,0.35),
+      rgba(255,255,255,0.08)
+    )`;
+  }
+  
+  // Color the inner circles instead
+  const block5InnerCircles = document.querySelectorAll('.block5 .glassButton .blockInnerCircle');
+  block5InnerCircles.forEach((circle, index) => {
+    if (index === 3) {
+      // Last circle gets the scheme color with smooth transition
+      circle.style.transition = `background-color 6s ease-in-out, opacity 6s ease-in-out`;
+      circle.style.backgroundColor = scheme.sectionABlocks;
+      circle.style.opacity = '0.7';
+    }
   });
   
   // Apply green circle color
