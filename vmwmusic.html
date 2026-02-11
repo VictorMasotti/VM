@@ -14,8 +14,76 @@ html, body {
   height: 100%;
   overflow: hidden;
   font-family: 'Inter', sans-serif;
-  background-color: #C9CED4;
+  background: 
+    /* Base aluminum gradient - front */
+    linear-gradient(135deg, #E0E0E0 0%, #B8B8B8 35%, #888888 70%, #505050 100%),
+    /* Metallic texture */
+    repeating-linear-gradient(90deg, transparent, transparent 2px, rgba(255,255,255,0.03) 2px, rgba(255,255,255,0.03) 4px);
+  background-attachment: fixed;
   cursor: url('EARTH2.png'), auto;
+  position: relative;
+}
+
+/* Rounded cube warping effect - lighter front, darker edges */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: 
+    /* Top edge - curves up and darkens */
+    radial-gradient(ellipse 250% 120% at 50% -10%, 
+      rgba(180,180,180,0.5) 0%,
+      rgba(100,100,100,0.3) 40%,
+      transparent 80%),
+    /* Bottom edge - curves down and darkens heavily */
+    radial-gradient(ellipse 250% 120% at 50% 110%, 
+      rgba(30,30,30,0.6) 0%,
+      rgba(60,60,60,0.4) 40%,
+      transparent 80%),
+    /* Left edge - curves left and darkens */
+    radial-gradient(ellipse 120% 250% at -10% 50%, 
+      rgba(70,70,70,0.5) 0%,
+      rgba(40,40,40,0.3) 40%,
+      transparent 80%),
+    /* Right edge - curves right and darkens */
+    radial-gradient(ellipse 120% 250% at 110% 50%, 
+      rgba(70,70,70,0.5) 0%,
+      rgba(40,40,40,0.3) 40%,
+      transparent 80%),
+    /* Top-left corner - 10% width LEGO curved slope with bent metal */
+    radial-gradient(ellipse 300% 300% at 5% 5%, 
+      rgba(200,200,200,0.8) 0%,
+      rgba(150,150,150,0.6) 15%,
+      rgba(100,100,100,0.5) 30%,
+      rgba(60,60,60,0.6) 50%,
+      rgba(30,30,30,0.4) 70%,
+      transparent 100%),
+    /* Top-right corner - 10% width LEGO curved slope with bent metal */
+    radial-gradient(ellipse 300% 300% at 95% 5%, 
+      rgba(200,200,200,0.8) 0%,
+      rgba(150,150,150,0.6) 15%,
+      rgba(100,100,100,0.5) 30%,
+      rgba(60,60,60,0.6) 50%,
+      rgba(30,30,30,0.4) 70%,
+      transparent 100%),
+    /* Bottom-left corner - 10% width LEGO curved slope darker bent metal */
+    radial-gradient(ellipse 300% 300% at 5% 95%, 
+      rgba(40,40,40,0.9) 0%,
+      rgba(60,60,60,0.8) 15%,
+      rgba(80,80,80,0.6) 30%,
+      rgba(100,100,100,0.5) 50%,
+      rgba(120,120,120,0.3) 70%,
+      transparent 100%),
+    /* Bottom-right corner - 10% width LEGO curved slope darker bent metal */
+    radial-gradient(ellipse 300% 300% at 95% 95%, 
+      rgba(40,40,40,0.9) 0%,
+      rgba(60,60,60,0.8) 15%,
+      rgba(80,80,80,0.6) 30%,
+      rgba(100,100,100,0.5) 50%,
+      rgba(120,120,120,0.3) 70%,
+      transparent 100%);
+  pointer-events: none;
+  z-index: 0;
 }
 
 /* FORCE CUSTOM CURSOR EVERYWHERE */
@@ -44,6 +112,16 @@ html, body {
   flex-direction: column;
   gap: 0.4vh;
   border-radius: 2vh;
+  /* Curved border shading - makes edges look like they curve away */
+  box-shadow: 
+    /* Top edge curve */
+    inset 0 30px 30px -10px rgba(255,255,255,0.15),
+    /* Bottom edge curve */
+    inset 0 -30px 30px -10px rgba(0,0,0,0.4),
+    /* Left edge curve */
+    inset 30px 0 30px -10px rgba(0,0,0,0.2),
+    /* Right edge curve */
+    inset -30px 0 30px -10px rgba(0,0,0,0.2);
 }
 .sectionA {
   flex: 0 0 auto;
@@ -54,8 +132,13 @@ html, body {
   gap: 0.5vh;
   padding: 0.5vh;
   border-radius: 1.5vh;
-  background: #2F3035;
+  background: linear-gradient(145deg, #3a3f44 0%, #2a2d31 100%);
   position: relative;
+  box-shadow: 
+    inset 0 1px 0 rgba(255,255,255,0.1),
+    inset 0 -1px 0 rgba(0,0,0,0.5),
+    0 4px 8px rgba(0,0,0,0.3),
+    0 12px 24px rgba(0,0,0,0.5);
 }
 .sectionA .block1,
 .sectionA .block2,
@@ -124,8 +207,13 @@ html, body {
   gap: 0.5vh;
   padding: 0.5vh;
   border-radius: 1.5vh;
-  background: #2F3035;
+  background: linear-gradient(145deg, #3a3f44 0%, #2a2d31 100%);
   position: relative;
+  box-shadow: 
+    inset 0 1px 0 rgba(255,255,255,0.1),
+    inset 0 -1px 0 rgba(0,0,0,0.5),
+    0 4px 8px rgba(0,0,0,0.3),
+    0 12px 24px rgba(0,0,0,0.5);
 }
 .sectionB .block {
   flex: 1 0 calc(10% - 0.5vh);
@@ -508,17 +596,42 @@ resize(); window.addEventListener('resize', resize);
 
 const gs=20, dr=4;
 let currentBlockColor = '#C9CED4'; // Default, will be updated by color schemes
+let audioLevel = 0; // Track audio level for speaker response
+let pulsePhase = 0;
+
+// Monitor audio level in real-time
+const analyser = audioContext.createAnalyser();
+source.connect(analyser);
+analyser.connect(audioContext.destination);
+
+function getAudioLevel() {
+  const dataArray = new Uint8Array(analyser.frequencyBinCount);
+  analyser.getByteFrequencyData(dataArray);
+  return dataArray.reduce((a, b) => a + b) / dataArray.length / 255;
+}
+
+function hexToRgb(hex) {
+  const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+  return result ? {
+    r: parseInt(result[1], 16),
+    g: parseInt(result[2], 16),
+    b: parseInt(result[3], 16)
+  } : {r: 201, g: 207, b: 212};
+}
 
 function draw(){
   ctx.clearRect(0,0,canvas.width,canvas.height);
   const cx=canvas.width/2, cy=canvas.height/2;
   const r=Math.min(canvas.width,canvas.height)/2*0.85;
   
-  // NO BACKGROUND - transparent, just dots in circle
+  // Get current audio level for dynamic response
+  audioLevel = getAudioLevel();
+  pulsePhase += 0.12;
   
-  // Draw dots on static grid
+  // NO BACKGROUND - only draw dots on transparent canvas
+  
+  // Draw dots on transparent surface
   const s=(2*r)/(gs-1);
-  // Better scaling - thicker on large screens, thinner on small
   const dotRadius = Math.max(1.8, Math.min(5.5, s * 0.16));
   
   for(let y=0;y<gs;y++)for(let x=0;x<gs;x++){
@@ -532,7 +645,7 @@ function draw(){
       else if(rnd<2.6) col='#ffb343';
       else if(rnd<3) col='#40bcf4';
       
-      // Scaled dot size - proportional
+      // Static dots, no warping
       ctx.beginPath();
       ctx.arc(baseX, baseY, dotRadius, 0, Math.PI*2);
       ctx.fillStyle = col;
@@ -666,6 +779,40 @@ if (button10Icon) {
     const position = middlePos - (value / 100) * range;
     
     knob.style.top = `${position}px`;
+    knob.style.left = '50%';
+    knob.style.transform = 'translateX(-50%)';
+  }
+  
+  function triggerKnobEffect() {
+    // Secondary circle ripple - EXACT copy from section B
+    const s=document.createElement('div');
+    s.className='secondaryCircle';
+    knob.appendChild(s);
+    s.animate(
+      [{transform:'scale(1)',opacity:1},{transform:'scale(0.82)',opacity:0}],
+      {duration:900,easing:'cubic-bezier(0.25,1,0.5,1)'}
+    );
+    setTimeout(()=>s.remove(),900);
+
+    // Nova burst - EXACT copy from section B
+    const nova=document.createElement('div');
+    nova.style.position='absolute';
+    nova.style.top='50%';
+    nova.style.left='50%';
+    nova.style.width='100%';
+    nova.style.height='100%';
+    nova.style.transform='translate(-50%,-50%)';
+    nova.style.borderRadius='50%';
+    nova.style.background='rgba(180,180,180,0.5)';
+    nova.style.filter='blur(4px)';
+    nova.style.pointerEvents='none';
+    knob.appendChild(nova);
+    nova.animate(
+      [{transform:'translate(-50%,-50%) scale(1)',opacity:1},
+       {transform:'translate(-50%,-50%) scale(1.4)',opacity:0}],
+      {duration:1100,easing:'ease-out'}
+    );
+    setTimeout(()=>nova.remove(),1100);
   }
   
   function handleMove(clientY) {
@@ -697,6 +844,7 @@ if (button10Icon) {
   // Mouse events
   knob.addEventListener('mousedown', (e) => {
     isDragging = true;
+    triggerKnobEffect();
     e.preventDefault();
   });
   
@@ -715,6 +863,7 @@ if (button10Icon) {
   // Touch events
   knob.addEventListener('touchstart', (e) => {
     isDragging = true;
+    triggerKnobEffect();
     e.preventDefault();
   }, {passive: false});
   
@@ -730,9 +879,241 @@ if (button10Icon) {
   
   // Initialize position
   updateKnobPosition(sliderValue);
+  
+  // Update position on window resize
+  window.addEventListener('resize', () => {
+    updateKnobPosition(sliderValue);
+  });
 });
 
-/* Volume controls for buttons 2 and 3 */
+/* Add info button to Section B at position 3 (4th button) */
+const button4 = sectionB.children[3];
+if (button4) {
+  const btn4 = button4.querySelector('.glassButton');
+  
+  // Add info icon
+  const infoIcon = document.createElement('img');
+  infoIcon.src = 'leaflet.png';
+  infoIcon.style.width = '60%';
+  infoIcon.style.height = '60%';
+  infoIcon.style.objectFit = 'contain';
+  infoIcon.style.pointerEvents = 'none';
+  btn4.appendChild(infoIcon);
+  
+  // Info button click handler
+  btn4.addEventListener('click', (e) => {
+    e.stopPropagation();
+    
+    // Create alert container (creamy yellow style - no sidebar)
+    const alertBox = document.createElement('div');
+    alertBox.style.position = 'fixed';
+    alertBox.style.top = '5vh';
+    alertBox.style.left = '50%';
+    alertBox.style.transform = 'translateX(-50%)';
+    alertBox.style.right = 'auto';
+    alertBox.style.bottom = '5vh';
+    
+    // Always 60% of screen width, but cap at 60vw max
+    alertBox.style.width = '60vw';
+    alertBox.style.maxWidth = '60vw';
+    
+    alertBox.style.background = 'linear-gradient(135deg, #FFFEF5 0%, #FFFFF0 100%)';
+    alertBox.style.borderRadius = '4vh';
+    alertBox.style.padding = '4vh';
+    alertBox.style.boxShadow = '0 20px 60px rgba(0,0,0,0.2)';
+    alertBox.style.zIndex = '10000';
+    alertBox.style.overflow = 'hidden';
+    alertBox.style.display = 'flex';
+    alertBox.style.flexDirection = 'column';
+    alertBox.style.fontFamily = 'Inter, sans-serif';
+    alertBox.style.animation = 'fadeInScale 0.3125s cubic-bezier(0.34, 1.56, 0.64, 1)';
+    alertBox.style.border = '1px solid rgba(255, 255, 200, 0.6)';
+    
+    const scrollbarStyle = document.createElement('style');
+    scrollbarStyle.textContent = `
+      @keyframes fadeInScale {
+        from {
+          opacity: 0;
+          transform: translateX(-50%) scale(0.85);
+        }
+        to {
+          opacity: 1;
+          transform: translateX(-50%) scale(1);
+        }
+      }
+      @keyframes fadeOutZoom {
+        from {
+          opacity: 1;
+          transform: translateX(-50%) scale(1);
+        }
+        to {
+          opacity: 0;
+          transform: translateX(-50%) scale(1.05);
+        }
+      }
+    `;
+    document.head.appendChild(scrollbarStyle);
+    
+    // Content wrapper for scrolling - NO VISIBLE SCROLLBAR AT ALL
+    const contentWrapper = document.createElement('div');
+    contentWrapper.className = 'alert-content';
+    contentWrapper.style.display = 'flex';
+    contentWrapper.style.flexDirection = 'column';
+    contentWrapper.style.height = '100%';
+    contentWrapper.style.overflowY = 'auto';
+    contentWrapper.style.overflowX = 'hidden';
+    contentWrapper.style.scrollBehavior = 'smooth';
+    contentWrapper.style.msOverflowStyle = 'none'; /* IE and Edge */
+    contentWrapper.style.scrollbarWidth = 'none'; /* Firefox */
+    
+    // Absolutely hide scrollbar for all browsers
+    const hideScrollbar = document.createElement('style');
+    hideScrollbar.textContent = `
+      .alert-content::-webkit-scrollbar {
+        width: 0;
+        height: 0;
+      }
+      .alert-content::-webkit-scrollbar-track {
+        background: none;
+      }
+      .alert-content::-webkit-scrollbar-thumb {
+        background: none;
+      }
+    `;
+    document.head.appendChild(hideScrollbar);
+    
+    // Title - two lines
+    const title = document.createElement('h2');
+    title.innerHTML = 'Victor WLE<br>(Web Listening Experience)';
+    title.style.margin = '0 0 0.5vh 0';
+    title.style.fontSize = '2.8vh';
+    title.style.fontWeight = '800';
+    title.style.color = '#8B7D5F';
+    title.style.textShadow = '0 2px 4px rgba(0,0,0,0.1)';
+    title.style.fontFamily = "'Inter', sans-serif";
+    title.style.textAlign = 'center';
+    title.style.lineHeight = '1.3';
+    contentWrapper.appendChild(title);
+    
+    // Separator line
+    const sep1 = document.createElement('div');
+    sep1.style.width = '100%';
+    sep1.style.height = '1px';
+    sep1.style.background = 'repeating-linear-gradient(90deg, #8B7D5F 0px, #8B7D5F 4px, transparent 4px, transparent 8px)';
+    sep1.style.margin = '0.8vh 0';
+    contentWrapper.appendChild(sep1);
+    
+    // Subtitle
+    const subtitle = document.createElement('p');
+    subtitle.textContent = 'Instructions leaflet on how to experiment with Victor\'s music catalog on this experimental web listening format';
+    subtitle.style.margin = '0.8vh 0 1.2vh 0';
+    subtitle.style.fontSize = '1.5vh';
+    subtitle.style.color = '#9B8D7F';
+    subtitle.style.fontWeight = '500';
+    subtitle.style.fontFamily = "'Inter', sans-serif";
+    subtitle.style.textAlign = 'center';
+    contentWrapper.appendChild(subtitle);
+    
+    // Info content
+    const content = document.createElement('div');
+    content.style.fontSize = '1.7vh';
+    content.style.lineHeight = '2.6vh';
+    content.style.color = '#6B5F4F';
+    content.style.marginBottom = '3vh';
+    content.style.flex = '1';
+    content.style.overflowY = 'auto';
+    content.style.fontFamily = "'Inter', sans-serif";
+    content.innerHTML = `
+      <div style="margin: 1.2vh 0; border-bottom: 1px dashed #8B7D5F; padding-bottom: 1vh;">
+        <p style="margin: 0; font-family: 'Inter', sans-serif;"><strong style="color: #8B7D5F;">1. How to use:</strong></p>
+      </div>
+      <ul style="margin: 0.8vh 0 1.2vh 0; padding-left: 2.5vh; list-style-type: none; font-family: 'Inter', sans-serif;">
+        <li style="margin: 0.6vh 0;"><strong>Section A:</strong> Live audio visualization with dynamic 3D speaker cone mesh</li>
+        <li style="margin: 0.6vh 0;"><strong>Section B:</strong> Control buttons - Volume, Info, and infinite color schemes</li>
+        <li style="margin: 0.6vh 0;"><strong>Section C:</strong> 10 professional audio sliders for real-time processing</li>
+      </ul>
+      
+      <div style="margin: 1.2vh 0; border-bottom: 1px dashed #8B7D5F; padding-bottom: 1vh;">
+        <p style="margin: 0; font-family: 'Inter', sans-serif;"><strong style="color: #8B7D5F;">2. Slider Functions:</strong></p>
+      </div>
+      <ul style="margin: 0.8vh 0 1.2vh 0; padding-left: 2.5vh; list-style-type: none; font-family: 'Inter', sans-serif;">
+        <li style="margin: 0.5vh 0; font-size: 1.6vh;"><strong>1. Pitch Drift</strong> — Analog wobble control</li>
+        <li style="margin: 0.5vh 0; font-size: 1.6vh;"><strong>2. Bass Weight</strong> — Sub density shaping</li>
+        <li style="margin: 0.5vh 0; font-size: 1.6vh;"><strong>3. Harmonic Spread</strong> — Overtone richness</li>
+        <li style="margin: 0.5vh 0; font-size: 1.6vh;"><strong>4. Time Smear</strong> — Transient blurring</li>
+        <li style="margin: 0.5vh 0; font-size: 1.6vh;"><strong>5. Transient Softener</strong> — Attack envelope</li>
+        <li style="margin: 0.5vh 0; font-size: 1.6vh;"><strong>6. Stereo Gravity</strong> — Spatial positioning</li>
+        <li style="margin: 0.5vh 0; font-size: 1.6vh;"><strong>7. Texture</strong> — Grain and grit control</li>
+        <li style="margin: 0.5vh 0; font-size: 1.6vh;"><strong>8. Filter Motion</strong> — Dynamic filtering</li>
+        <li style="margin: 0.5vh 0; font-size: 1.6vh;"><strong>9. Spectral Tilt</strong> — Brightness rotation</li>
+        <li style="margin: 0.5vh 0; font-size: 1.6vh;"><strong>10. Energy</strong> — Drive and compression</li>
+      </ul>
+      
+      <div style="margin: 1.2vh 0; border-bottom: 1px dashed #8B7D5F; padding-bottom: 1vh;">
+        <p style="margin: 0; font-family: 'Inter', sans-serif;"><strong style="color: #8B7D5F;">3. WLE Default Colour Scheme:</strong></p>
+      </div>
+      <p style="font-family: 'Inter', sans-serif; margin: 0.8vh 0; font-size: 1.6vh;">Press the paint button (🎨) to cycle through infinite color variations. Every 5 presses returns to WLE Default.</p>
+    `;
+    contentWrapper.appendChild(content);
+    alertBox.appendChild(contentWrapper);
+    
+    // Close on outside click
+    const overlay = document.createElement('div');
+    overlay.style.position = 'fixed';
+    overlay.style.inset = '0';
+    overlay.style.background = 'rgba(0,0,0,0.4)';
+    overlay.style.zIndex = '9999';
+    overlay.style.backdropFilter = 'blur(4px)';
+    overlay.style.transition = 'all 0.4s ease-out';
+    
+    function closeAlert() {
+      alertBox.style.animation = 'fadeOutZoom 1.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards';
+      overlay.style.transition = 'all 1.4s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+      overlay.style.backdropFilter = 'blur(0px)';
+      overlay.style.background = 'rgba(0,0,0,0)';
+      setTimeout(() => {
+        alertBox.remove();
+        overlay.remove();
+        scrollbarStyle.remove();
+        hideScrollbar.remove();
+      }, 1400);
+    }
+    
+    overlay.addEventListener('click', closeAlert);
+    
+    document.body.appendChild(overlay);
+    document.body.appendChild(alertBox);
+    
+    // Trigger button effect
+    const s=document.createElement('div');
+    s.className='secondaryCircle';
+    btn4.appendChild(s);
+    s.animate(
+      [{transform:'scale(1)',opacity:1},{transform:'scale(0.82)',opacity:0}],
+      {duration:900,easing:'cubic-bezier(0.25,1,0.5,1)'}
+    );
+    setTimeout(()=>s.remove(),900);
+
+    const nova=document.createElement('div');
+    nova.style.position='absolute';
+    nova.style.top='50%';
+    nova.style.left='50%';
+    nova.style.width='100%';
+    nova.style.height='100%';
+    nova.style.transform='translate(-50%,-50%)';
+    nova.style.borderRadius='50%';
+    nova.style.background='rgba(180,180,180,0.5)';
+    nova.style.filter='blur(4px)';
+    nova.style.pointerEvents='none';
+    btn4.appendChild(nova);
+    nova.animate(
+      [{transform:'translate(-50%,-50%) scale(1)',opacity:1},
+       {transform:'translate(-50%,-50%) scale(1.4)',opacity:0}],
+      {duration:1100,easing:'ease-out'}
+    );
+    setTimeout(()=>nova.remove(),1100);
+  });
+}
 const button2 = sectionB.children[1]; // Second button (index 1)
 const button3 = sectionB.children[2]; // Third button (index 2)
 
@@ -847,14 +1228,7 @@ const colors=['#ff8000','#00e054','#ffb343','#40bcf4'];
   block.querySelector('.glassButton').appendChild(c);
 });
 
-// Block5 gets Falun red instead of green
-const block5colors=['#ff8000','#00e054','#ffb343','#801818'];
-block5colors.forEach(col=>{
-  const c=document.createElement('div');
-  c.className='blockInnerCircle';
-  c.style.background=col;
-  document.querySelector('.block5 .glassButton').appendChild(c);
-});
+// Block5 - NO static inner circles, color changes via scheme only
 
 /* Block5 random time */
 document.querySelector('.block5 .glassButton').addEventListener('click', (e) => {
@@ -1011,12 +1385,6 @@ const randomSchemes = [
 let isFlipped = false;
 
 button10.querySelector('.glassButton').addEventListener('click', () => {
-  // Reset flip if it was flipped
-  if (isFlipped) {
-    document.body.style.transform = 'rotate(0deg)';
-    isFlipped = false;
-  }
-  
   pressCount++;
   
   // Return to basis every 5 presses
@@ -1049,95 +1417,40 @@ function applyScheme(scheme) {
   const allButtons = document.querySelectorAll('.glassButton');
   
   // Show mode text if enabled - DISABLED, no text
-  // 5% chance to flip screen 180 degrees with random animation
-  if (Math.random() < 0.05) {
-    const flipAnimations = [
-      // 1. Classic 180 rotate
-      { keyframes: [
-        { transform: 'rotateY(0deg)', opacity: 1 },
-        { transform: 'rotateY(90deg)', opacity: 0.5 },
-        { transform: 'rotateY(180deg)', opacity: 1 }
-      ], duration: 1000, easing: 'ease-in-out' },
-      
-      // 2. Flip with scale
-      { keyframes: [
-        { transform: 'rotateZ(0deg) scale(1)', opacity: 1 },
-        { transform: 'rotateZ(90deg) scale(0.8)', opacity: 0.3 },
-        { transform: 'rotateZ(180deg) scale(1)', opacity: 1 }
-      ], duration: 1200, easing: 'cubic-bezier(0.68, -0.55, 0.265, 1.55)' },
-      
-      // 3. Spin flip
-      { keyframes: [
-        { transform: 'rotate(0deg) rotateZ(0deg)', opacity: 1 },
-        { transform: 'rotate(180deg) rotateZ(45deg)', opacity: 0.4 },
-        { transform: 'rotate(360deg) rotateZ(0deg)', opacity: 1 }
-      ], duration: 1400, easing: 'ease-in-out' },
-      
-      // 4. 3D flip with perspective
-      { keyframes: [
-        { transform: 'perspective(1000px) rotateX(0deg) rotateY(0deg)', opacity: 1 },
-        { transform: 'perspective(1000px) rotateX(45deg) rotateY(180deg)', opacity: 0.5 },
-        { transform: 'perspective(1000px) rotateX(0deg) rotateY(180deg)', opacity: 1 }
-      ], duration: 1100, easing: 'ease-in-out' },
-      
-      // 5. Flip with bounce
-      { keyframes: [
-        { transform: 'rotate(0deg)', opacity: 1 },
-        { transform: 'rotate(100deg)', opacity: 0.6 },
-        { transform: 'rotate(180deg)', opacity: 1 },
-        { transform: 'rotate(175deg)', opacity: 0.9 },
-        { transform: 'rotate(180deg)', opacity: 1 }
-      ], duration: 1300, easing: 'cubic-bezier(0.68, -0.55, 0.265, 1.55)' },
-      
-      // 6. Spiral flip
-      { keyframes: [
-        { transform: 'rotate(0deg) skew(0deg)', opacity: 1 },
-        { transform: 'rotate(90deg) skew(10deg)', opacity: 0.4 },
-        { transform: 'rotate(180deg) skew(0deg)', opacity: 1 }
-      ], duration: 1000, easing: 'ease-in-out' },
-      
-      // 7. Double flip
-      { keyframes: [
-        { transform: 'rotateY(0deg)', opacity: 1 },
-        { transform: 'rotateY(180deg)', opacity: 0.3 },
-        { transform: 'rotateY(360deg)', opacity: 1 },
-        { transform: 'rotateY(540deg)', opacity: 0.3 },
-        { transform: 'rotateY(720deg)', opacity: 1 }
-      ], duration: 1600, easing: 'ease-in-out' },
-      
-      // 8. Matrix flip
-      { keyframes: [
-        { transform: 'matrix(1, 0, 0, 1, 0, 0)', opacity: 1 },
-        { transform: 'matrix(-0.5, 0.5, -0.5, -0.5, 0, 0)', opacity: 0.5 },
-        { transform: 'matrix(-1, 0, 0, -1, 0, 0)', opacity: 1 }
-      ], duration: 900, easing: 'ease-in-out' }
-    ];
-    
-    const randomFlip = flipAnimations[Math.floor(Math.random() * flipAnimations.length)];
-    document.body.style.transformOrigin = 'center center';
-    
-    const animation = document.body.animate(randomFlip.keyframes, {
-      duration: randomFlip.duration,
-      easing: randomFlip.easing,
-      fill: 'forwards'
-    });
-    
-    // Reset after animation completes
-    animation.onfinish = () => {
-      document.body.style.transform = 'rotate(180deg)';
-      isFlipped = true;
-    };
-  }
+  // NO MORE FLIP ANIMATION - just color scheme changes
   
-  // Apply Section A blocks color
-  currentBlockColor = scheme.sectionABlocks; // Update canvas color
+  // Apply Section A blocks color - fade gradually
+  const targetColor = scheme.sectionABlocks;
+  const startColor = currentBlockColor;
+  const startTime = Date.now();
+  const fadeDuration = 6000; // 6 seconds to match block transition
+  
+  const colorFadeInterval = setInterval(() => {
+    const elapsed = Date.now() - startTime;
+    const progress = Math.min(elapsed / fadeDuration, 1);
+    
+    // Interpolate between start and target color
+    const startRgb = hexToRgb(startColor);
+    const targetRgb = hexToRgb(targetColor);
+    
+    const r = Math.round(startRgb.r + (targetRgb.r - startRgb.r) * progress);
+    const g = Math.round(startRgb.g + (targetRgb.g - startRgb.g) * progress);
+    const b = Math.round(startRgb.b + (targetRgb.b - startRgb.b) * progress);
+    
+    currentBlockColor = `#${((r << 16) | (g << 8) | b).toString(16).padStart(6, '0')}`;
+    
+    if (progress >= 1) {
+      clearInterval(colorFadeInterval);
+      currentBlockColor = targetColor;
+    }
+  }, 16); // ~60fps
   
   sectionAGreyBlocks.forEach(block => {
     block.style.transition = `background-color 6s ease-in-out`;
     block.style.backgroundColor = scheme.sectionABlocks;
   });
   
-  // Make block5 button background stay glass, only color the inner circles
+  // Make block5 button background stay glass
   if (block5Button) {
     block5Button.style.transition = `background 6s ease-in-out`;
     // Keep the glass effect, don't change the background
@@ -1146,23 +1459,6 @@ function applyScheme(scheme) {
       rgba(255,255,255,0.35),
       rgba(255,255,255,0.08)
     )`;
-  }
-  
-  // Color the inner circles instead
-  const block5InnerCircles = document.querySelectorAll('.block5 .glassButton .blockInnerCircle');
-  block5InnerCircles.forEach((circle, index) => {
-    if (index === 3) {
-      // Last circle gets the scheme color with smooth transition
-      circle.style.transition = `background-color 6s ease-in-out, opacity 6s ease-in-out`;
-      circle.style.backgroundColor = scheme.sectionABlocks;
-      circle.style.opacity = '0.7';
-    }
-  });
-  
-  // Apply green circle color
-  if (greenCircle) {
-    greenCircle.style.transition = `background-color 6s ease-in-out`;
-    greenCircle.style.backgroundColor = scheme.greenCircle;
   }
   
   // Apply Section B & C blocks color
