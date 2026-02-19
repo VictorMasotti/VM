@@ -902,6 +902,7 @@ if (button4) {
   
   // Info button click handler
   btn4.addEventListener('click', (e) => {
+    playButtonSound();
     e.stopPropagation();
     
     // Create alert container (creamy yellow style - no sidebar)
@@ -1137,8 +1138,17 @@ moreIcon.style.objectFit = 'contain';
 moreIcon.style.pointerEvents = 'none';
 btn3.appendChild(moreIcon);
 
+// Create button sound function
+function playButtonSound() {
+  const buttonSound = new Audio('batton.mp3');
+  buttonSound.volume = 0.5;
+  buttonSound.currentTime = 0;
+  buttonSound.play().catch(() => {});
+}
+
 // Button 2: Lower volume by 5% with light beige shade
 button2.querySelector('.glassButton').addEventListener('click', (e) => {
+  playButtonSound();
   audio.volume = Math.max(0, audio.volume - 0.05);
   console.log('Volume decreased to:', Math.round(audio.volume * 100) + '%');
   
@@ -1180,6 +1190,7 @@ button2.querySelector('.glassButton').addEventListener('click', (e) => {
 
 // Button 3: Raise volume by 5% with light beige shade
 button3.querySelector('.glassButton').addEventListener('click', (e) => {
+  playButtonSound();
   audio.volume = Math.min(1, audio.volume + 0.05);
   console.log('Volume increased to:', Math.round(audio.volume * 100) + '%');
   
@@ -1232,6 +1243,7 @@ const colors=['#ff8000','#00e054','#ffb343','#40bcf4'];
 
 /* Block5 random time */
 document.querySelector('.block5 .glassButton').addEventListener('click', (e) => {
+    playButtonSound();
     const maxTime = 85;
     const randomTime = Math.random() * maxTime;
     audio.currentTime = randomTime;
@@ -1385,6 +1397,7 @@ const randomSchemes = [
 let isFlipped = false;
 
 button10.querySelector('.glassButton').addEventListener('click', () => {
+  playButtonSound();
   pressCount++;
   
   // Return to basis every 5 presses
