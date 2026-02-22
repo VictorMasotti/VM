@@ -874,14 +874,7 @@ requestAnimationFrame(animateGlyphs);
 // ── FLOATING GHOST IMAGES ────────────────────────────────────────────
 (function() {
   const ghostLayer = document.getElementById('ghostLayer');
-  const ghostImgs = [
-    '1771730085138_cak.jpg','1771730085139_cal.jpg','1771730085140_cam.jpg',
-    '1771730085140_can.jpg','1771730085141_cek.jpg','1771730085141_cel.jpg',
-    '1771730085141_cem.jpg','1771730085143_cen.jpg','1771730085144_cil.jpg',
-    '1771730085144_cim.jpg','1771730085144_cin.jpg','1771730085145_col.jpg',
-    '1771730085146_com.jpg','1771730085147_cul.jpg','1771730085149_cum.jpg',
-    '1771730085151_cun.jpg',
-  ];
+  const ghostImgs = [ ];
 
   function spawnGhost() {
     const src = ghostImgs[Math.floor(Math.random() * ghostImgs.length)];
@@ -956,4 +949,5 @@ setInterval(updateClock, 1000);
 </script>
 </body>
 </html>
+
 
