@@ -3,20 +3,152 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Globe Display</title>
+  <title>GlobeVista</title>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;900&family=VT323&display=swap" rel="stylesheet">
   <style>
     *, *::before, *::after {
       margin: 0; padding: 0; box-sizing: border-box;
       cursor: url('EARTH2.png'), auto !important;
     }
+
+    /* ── IMAC RETRO DESKTOP BG ── */
     body {
-      background: #fff;
-      height: 100vh;
+      width: 100vw; height: 100vh;
+      overflow: hidden;
+      background:
+        radial-gradient(ellipse at 40% 30%, #e8f4ff 0%, #a8d4ff 25%, #5b9fd8 55%, #1a4a8a 80%, #0a1e4a 100%);
+      font-family: 'Nunito', sans-serif;
+      user-select: none;
+      position: relative;
+    }
+    /* Bondi blue iMac aurora */
+    body::before {
+      content: '';
+      position: fixed; inset: 0;
+      background:
+        radial-gradient(ellipse 120% 55% at 10% 90%, rgba(0,210,180,0.2) 0%, transparent 55%),
+        radial-gradient(ellipse 80% 40% at 90% 8%, rgba(255,220,80,0.1) 0%, transparent 50%),
+        radial-gradient(ellipse 60% 70% at 50% 50%, rgba(80,30,200,0.07) 0%, transparent 60%);
+      pointer-events: none; z-index: 0;
+      animation: auroraShift 16s ease-in-out infinite alternate;
+    }
+    @keyframes auroraShift {
+      0%   { opacity: 0.65; }
+      50%  { opacity: 1; }
+      100% { opacity: 0.75; }
+    }
+
+    /* ── IMAC WINDOW FRAME ── */
+    .window {
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      width: calc(100vw - 28px);
+      height: calc(100vh - 40px);
+      border-radius: 16px;
+      overflow: hidden;
+      /* thick translucent iMac plastic border */
+      border: 3px solid rgba(255,255,255,0.65);
+      box-shadow:
+        0 0 0 1px rgba(0,0,0,0.25),
+        0 0 0 4px rgba(255,255,255,0.15),
+        0 0 0 5px rgba(0,0,0,0.15),
+        0 16px 60px rgba(0,0,0,0.6),
+        0 48px 120px rgba(0,20,80,0.45),
+        inset 0 2px 0 rgba(255,255,255,0.9),
+        inset 0 -2px 0 rgba(0,0,0,0.1);
       display: flex;
       flex-direction: column;
-      overflow: hidden;
-      user-select: none;
+      z-index: 1;
     }
+
+    /* ── PLATINUM / AQUA TITLE BAR ── */
+    .titlebar {
+      flex-shrink: 0;
+      height: 36px;
+      background: linear-gradient(180deg,
+        #f8f8f8 0%,
+        #e8e8e8 20%,
+        #d0d0d0 48%,
+        #c8c8c8 50%,
+        #dcdcdc 52%,
+        #f0f0f0 100%);
+      border-bottom: 1px solid #999;
+      border-top: 1px solid rgba(255,255,255,1);
+      border-radius: 13px 13px 0 0;
+      display: flex;
+      align-items: center;
+      padding: 0 12px;
+      gap: 7px;
+      position: relative;
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,1),
+        inset 0 -1px 0 rgba(0,0,0,0.12),
+        0 1px 3px rgba(0,0,0,0.2);
+    }
+
+    /* Mac OS X traffic lights */
+    .dot {
+      width: 13px; height: 13px; border-radius: 50%; flex-shrink: 0;
+      cursor: url('EARTH2.png'), pointer !important;
+      transition: filter 0.08s, transform 0.08s;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.5);
+    }
+    .dot.close  { background: radial-gradient(circle at 35% 30%, #ff8a8a, #dd1e3a); }
+    .dot.min    { background: radial-gradient(circle at 35% 30%, #ffdd7a, #dda500); }
+    .dot.max    { background: radial-gradient(circle at 35% 30%, #7aff8a, #1eb830); }
+    .dot:hover  { filter: brightness(1.2); transform: scale(1.12); }
+    .dot:active { filter: brightness(0.75); transform: scale(0.9); }
+
+    /* Windows Vista minimize/maximize/close buttons — RIGHT side */
+    .win-buttons {
+      position: absolute; right: 10px; top: 50%; transform: translateY(-50%);
+      display: flex; gap: 2px;
+    }
+    .win-btn {
+      width: 22px; height: 20px;
+      border-radius: 3px;
+      border: 1px solid rgba(0,0,0,0.3);
+      cursor: url('EARTH2.png'), pointer !important;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 9px; font-weight: 900; color: #fff;
+      text-shadow: 0 1px 1px rgba(0,0,0,0.4);
+      transition: filter 0.08s, transform 0.08s;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.35), 0 1px 2px rgba(0,0,0,0.2);
+    }
+    .win-btn.wmin { background: linear-gradient(180deg, #6aabee 0%, #3a7bcc 50%, #2a60aa 51%, #4a8de0 100%); }
+    .win-btn.wmax { background: linear-gradient(180deg, #6aabee 0%, #3a7bcc 50%, #2a60aa 51%, #4a8de0 100%); }
+    .win-btn.wcls { background: linear-gradient(180deg, #ee7a6a 0%, #cc3a3a 50%, #aa2a2a 51%, #e04a4a 100%); }
+    .win-btn:hover  { filter: brightness(1.2); transform: scale(1.05); }
+    .win-btn:active { filter: brightness(0.8); transform: scale(0.95); }
+
+    .titlebar-label {
+      position: absolute; left: 50%; transform: translateX(-50%);
+      font-size: 12px; font-weight: 700; color: #2a2a2a;
+      letter-spacing: 0.06em;
+      text-shadow: 0 1px 0 rgba(255,255,255,1);
+      font-family: 'Nunito', sans-serif;
+      white-space: nowrap;
+    }
+    .titlebar-sub {
+      position: absolute; left: 108px; top: 50%; transform: translateY(-50%);
+      font-family: 'VT323', monospace;
+      font-size: 13px; color: #888;
+      letter-spacing: 0.05em;
+      text-shadow: 0 1px 0 rgba(255,255,255,0.8);
+    }
+
+    /* ── WINDOW BODY ── */
+    .window-body {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      background: #f0ede8;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* ── GLOBE AREA ── */
     .top {
       flex: 1;
       display: flex;
@@ -24,39 +156,143 @@
       justify-content: center;
       position: relative;
       overflow: hidden;
+      background:
+        linear-gradient(135deg, #fafafa 0%, #f5f5f5 40%, #eeeeee 100%);
     }
+    /* CRT scanlines */
+    .top::before {
+      content: '';
+      position: absolute; inset: 0; z-index: 10;
+      background: repeating-linear-gradient(
+        0deg, transparent, transparent 2px,
+        rgba(0,0,0,0.018) 2px, rgba(0,0,0,0.018) 4px
+      );
+      pointer-events: none;
+      animation: scanRoll 12s linear infinite;
+    }
+    @keyframes scanRoll {
+      from { background-position: 0 0; }
+      to   { background-position: 0 500px; }
+    }
+    /* Vignette */
+    .top::after {
+      content: '';
+      position: absolute; inset: 0; z-index: 11;
+      background: radial-gradient(ellipse at center, transparent 50%, rgba(0,0,0,0.18) 100%);
+      pointer-events: none;
+    }
+
     canvas { display: block; }
+
+    /* ── BOTTOM STATUS BAR ── */
     .content {
-      height: 10vh;
+      height: 36px;
       flex-shrink: 0;
       transition: background-color 0.4s ease;
       position: relative;
+      border-top: 1px solid rgba(0,0,0,0.2);
+      box-shadow:
+        inset 0 2px 0 rgba(255,255,255,0.5),
+        inset 0 -1px 0 rgba(0,0,0,0.06);
+    }
+    .content::before {
+      content: '';
+      position: absolute; top: 2px; left: 5%; right: 5%; height: 40%;
+      background: linear-gradient(180deg, rgba(255,255,255,0.38) 0%, transparent 100%);
+      border-radius: 0 0 50% 50%;
+      pointer-events: none;
     }
     .forest-text {
       position: absolute;
-      bottom: 7px;
-      left: 10px;
-      font-size: 7px;
-      color: rgba(255,255,255,0.45);
-      font-family: 'Courier New', monospace;
-      letter-spacing: 0.04em;
-      line-height: 1.5;
+      bottom: 6px; left: 10px;
+      font-family: 'VT323', monospace;
+      font-size: 12px;
+      color: rgba(255,255,255,0.75);
+      letter-spacing: 0.05em;
       pointer-events: none;
       opacity: 1;
       transition: opacity 0.4s ease;
-      max-width: 60vw;
+      max-width: 70vw;
+      text-shadow: 0 0 10px rgba(120,210,255,0.7), 0 1px 2px rgba(0,0,0,0.5);
     }
     .forest-text.fade { opacity: 0; }
+
+    /* ── FULL GLOSS SHEEN ── */
+    .gloss {
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 40%;
+      background: linear-gradient(180deg,
+        rgba(255,255,255,0.28) 0%,
+        rgba(255,255,255,0.10) 55%,
+        transparent 100%);
+      pointer-events: none; z-index: 20;
+      border-radius: 13px 13px 0 0;
+    }
+
+    /* ── PIXEL CLOCK ── */
+    .pixel-clock {
+      position: absolute; top: 0; bottom: 0; right: 82px;
+      display: flex; align-items: center;
+      font-family: 'VT323', monospace;
+      font-size: 15px; color: #555;
+      letter-spacing: 0.1em; z-index: 25;
+      text-shadow: 0 1px 0 rgba(255,255,255,0.8);
+      pointer-events: none;
+    }
+
+    /* ── CORNER DECO ── */
+    .corner-tl, .corner-br {
+      position: absolute; width: 70px; height: 70px;
+      z-index: 6; pointer-events: none;
+    }
+    .corner-tl { top: 0; left: 0; }
+    .corner-br { bottom: 36px; right: 0; }
+    .corner-tl svg, .corner-br svg { width: 100%; height: 100%; }
   </style>
 </head>
 <body>
 
-<div class="top">
-  <canvas id="bgGrid" style="position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:0;"></canvas>
-  <canvas id="globe" style="position:relative;z-index:1;"></canvas>
+<!-- Vista desktop wallpaper noise grain -->
+<div style="position:fixed;inset:0;z-index:0;pointer-events:none;
+  background-image:url('data:image/svg+xml,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'200\' height=\'200\'><filter id=\'n\'><feTurbulence type=\'fractalNoise\' baseFrequency=\'0.9\' numOctaves=\'4\'/><feColorMatrix type=\'saturate\' values=\'0\'/></filter><rect width=\'200\' height=\'200\' filter=\'url(%23n)\' opacity=\'0.04\'/></svg>');
+  opacity:0.4;mix-blend-mode:overlay;"></div>
+
+<div class="window">
+  <div class="titlebar">
+    <div class="dot close" onclick="void(0)"></div>
+    <div class="dot min" onclick="void(0)"></div>
+    <div class="dot max" onclick="void(0)"></div>
+    <span class="titlebar-sub">SYS.v2.04</span>
+    <span class="titlebar-label">GlobeVista — Interactive Earth</span>
+    <span class="pixel-clock" id="pixelClock">00:00:00</span>
+    <div class="win-buttons">
+      <div class="win-btn wmin" onclick="void(0)">&#8212;</div>
+      <div class="win-btn wmax" onclick="void(0)">&#9633;</div>
+      <div class="win-btn wcls" onclick="void(0)">&#10005;</div>
+    </div>
+  </div>
+
+  <div class="window-body">
+    <!-- Gloss sheen -->
+    <div class="gloss"></div>
+    <!-- Corner accents -->
+    <div class="corner-tl"><svg viewBox="0 0 70 70"><path d="M0 0 L70 0 L0 70 Z" fill="rgba(100,180,255,0.09)"/></svg></div>
+    <div class="corner-br"><svg viewBox="0 0 70 70"><path d="M70 70 L0 70 L70 0 Z" fill="rgba(255,120,60,0.07)"/></svg></div>
+
+    <div class="top">
+      <canvas id="bgGrid" style="position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:0;"></canvas>
+      <canvas id="globe" style="position:relative;z-index:1;"></canvas>
+    </div>
+
+    <div class="content" id="colorBox">
+      <span class="forest-text" id="forestText"></span>
+    </div>
+  </div>
 </div>
-<div class="content" id="colorBox"><span class="forest-text" id="forestText"></span></div>
-<canvas id="extrudeCanvas" style="position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:50;"></canvas>
+
+<canvas id="extrudeCanvas" style="position:fixed;top:0;left:0;pointer-events:none;z-index:999;"></canvas>
+<canvas id="glyphCanvas" style="position:absolute;bottom:36px;right:0;width:38%;height:38%;pointer-events:none;z-index:3;"></canvas>
 
 <script>
 // ── DATA ──────────────────────────────────────────────────────────────
@@ -128,9 +364,9 @@ function project(p, cx, cy, R) {
 function shadeRgb(col, light, pressed, latM) {
   const factor = pressed ? Math.max(0.2, light*0.6) : 0.35+light*0.72;
   let r=Math.round(col.r*factor), g=Math.round(col.g*factor), b=Math.round(col.b*factor);
-  const poleBase = Math.pow(Math.abs(latM)/(Math.PI/2), 1.8)*0.88;
+  const poleBase = Math.pow(Math.abs(latM)/(Math.PI/2), 1.3)*0.97;
   const noise = 0.5+0.5*Math.sin(col.r*7.3+col.b*3.1);
-  const poleFactor = poleBase*(0.6+0.4*noise);
+  const poleFactor = poleBase*(0.72+0.28*noise);
   r=Math.round(r+(255-r)*poleFactor); g=Math.round(g+(255-g)*poleFactor); b=Math.round(b+(255-b)*poleFactor);
   return `rgb(${r},${g},${b})`;
 }
@@ -302,7 +538,7 @@ const extrudeCanvas = document.getElementById('extrudeCanvas');
 const extCtx = extrudeCanvas.getContext('2d');
 let extState = null;
 
-function resizeExtrude(){extrudeCanvas.width=window.innerWidth;extrudeCanvas.height=window.innerHeight;}
+function resizeExtrude(){extrudeCanvas.width=window.innerWidth;extrudeCanvas.height=window.innerHeight;extrudeCanvas.style.width=window.innerWidth+"px";extrudeCanvas.style.height=window.innerHeight+"px";}
 resizeExtrude();
 window.addEventListener('resize',resizeExtrude);
 
@@ -315,12 +551,11 @@ function showImage(row, col) {
   if (!faceData) return;
 
   const pts = faceData.pts;
-  // get the canvas offset so coords are in screen space
   const canvasRect = canvas.getBoundingClientRect();
   const offX = canvasRect.left;
   const offY = canvasRect.top;
 
-  // origin = the actual 4 screen corners of the pressed cell
+  // 4 screen-space corners of the clicked cell
   const origin = pts.map(p => ({ x: p.sx + offX, y: p.sy + offY }));
 
   const img = new Image();
@@ -329,7 +564,7 @@ function showImage(row, col) {
     const targetH = targetW * (img.naturalHeight / img.naturalWidth);
     extState = {
       active: true, img,
-      origin,   // 4 corners of cell in screen coords
+      origin,
       targetX: 0, targetY: 0, targetW, targetH,
       startTime: performance.now(),
       duration: 1100,
@@ -337,7 +572,9 @@ function showImage(row, col) {
     extrudeCanvas.style.pointerEvents = 'all';
     box.style.backgroundColor = randomBlue();
   };
+  img.onerror = () => console.error('Image failed to load:', cellImages[row][col]);
   img.src = cellImages[row][col];
+  console.log('showImage called', row, col, cellImages[row][col]);
 }
 
 function revertExtrude() {
@@ -459,7 +696,7 @@ const bgCanvas=document.getElementById('bgGrid');
 const bgCtx=bgCanvas.getContext('2d');
 const CELL=50;
 let bgAnim={t:0,phase:'in',restTimer:0};
-const IN_DUR=1200,OUT_DUR=900,REST_MIN=1000,REST_MAX=4000;
+const IN_DUR=3500,OUT_DUR=2500,REST_MIN=2000,REST_MAX=7000;
 
 function initBgGrid(){bgCanvas.width=bgCanvas.offsetWidth;bgCanvas.height=bgCanvas.offsetHeight;}
 let lastBgT=performance.now();
@@ -488,17 +725,229 @@ initBgGrid();
 window.addEventListener('resize',initBgGrid);
 requestAnimationFrame(drawBgGrid);
 
-// ── YELLOW FLASH ─────────────────────────────────────────────────────
-let yellowBase=null;
-function scheduleYellow(){
-  setTimeout(()=>{
-    yellowBase=box.style.backgroundColor;
-    box.style.transition='background-color 0.08s ease';
-    box.style.backgroundColor='#FFE600';
-    setTimeout(()=>{box.style.transition='background-color 0.5s ease';box.style.backgroundColor=yellowBase||randomBlue();scheduleYellow();},180);
-  },12000+Math.random()*6000);
+
+// ── B&W GLYPH GRAPHICS ───────────────────────────────────────────────
+const glyphCanvas = document.getElementById('glyphCanvas');
+const gCtx = glyphCanvas.getContext('2d');
+
+// Each glyph: a shape drawn with canvas 2d, b&w, that fades in/out independently
+const GLYPHS = [
+  // ROG hexagon + inner ring + nodes
+  (cx, cy, s, ctx) => {
+    // outer hex
+    ctx.beginPath();
+    for(let i=0;i<6;i++){const a=i*Math.PI/3-Math.PI/6;ctx.lineTo(cx+Math.cos(a)*s*0.85,cy+Math.sin(a)*s*0.85);}
+    ctx.closePath(); ctx.stroke();
+    // inner hex
+    ctx.beginPath();
+    for(let i=0;i<6;i++){const a=i*Math.PI/3-Math.PI/6;ctx.lineTo(cx+Math.cos(a)*s*0.48,cy+Math.sin(a)*s*0.48);}
+    ctx.closePath(); ctx.stroke();
+    // corner nodes
+    for(let i=0;i<6;i++){const a=i*Math.PI/3-Math.PI/6;ctx.beginPath();ctx.arc(cx+Math.cos(a)*s*0.85,cy+Math.sin(a)*s*0.85,s*0.07,0,Math.PI*2);ctx.fill();}
+    // center dot
+    ctx.beginPath();ctx.arc(cx,cy,s*0.1,0,Math.PI*2);ctx.fill();
+  },
+  // Circuit board trace — L-shaped lines with nodes
+  (cx, cy, s, ctx) => {
+    ctx.lineWidth=1.8;
+    // main frame
+    ctx.strokeRect(cx-s*0.78,cy-s*0.78,s*1.56,s*1.56);
+    // horizontal trace
+    ctx.beginPath();ctx.moveTo(cx-s*0.78,cy);ctx.lineTo(cx-s*0.2,cy);ctx.lineTo(cx-s*0.2,cy-s*0.4);ctx.lineTo(cx+s*0.4,cy-s*0.4);ctx.stroke();
+    // vertical trace
+    ctx.beginPath();ctx.moveTo(cx+s*0.78,cy+s*0.2);ctx.lineTo(cx+s*0.2,cy+s*0.2);ctx.lineTo(cx+s*0.2,cy+s*0.78);ctx.stroke();
+    // solder points
+    [[cx-s*0.2,cy-s*0.4],[cx+s*0.4,cy-s*0.4],[cx+s*0.2,cy+s*0.2]].forEach(([x,y])=>{ctx.beginPath();ctx.arc(x,y,s*0.08,0,Math.PI*2);ctx.fill();});
+    ctx.lineWidth=1.2;
+  },
+  // Targeting reticle — ROG style
+  (cx, cy, s, ctx) => {
+    // outer ring broken
+    for(let i=0;i<4;i++){const a=i*Math.PI/2;ctx.beginPath();ctx.arc(cx,cy,s*0.82,a+0.2,a+Math.PI/2-0.2);ctx.stroke();}
+    // mid ring
+    ctx.beginPath();ctx.arc(cx,cy,s*0.5,0,Math.PI*2);ctx.stroke();
+    // cross ticks
+    [[1,0],[-1,0],[0,1],[0,-1]].forEach(([dx,dy])=>{
+      ctx.beginPath();ctx.moveTo(cx+dx*s*0.55,cy+dy*s*0.55);ctx.lineTo(cx+dx*s*0.9,cy+dy*s*0.9);ctx.stroke();
+    });
+    // center filled
+    ctx.beginPath();ctx.arc(cx,cy,s*0.13,0,Math.PI*2);ctx.fill();
+    // diagonal cuts on outer
+    [[1,1],[-1,-1]].forEach(([dx,dy])=>{ctx.beginPath();ctx.moveTo(cx+dx*s*0.58,cy+dy*s*0.58);ctx.lineTo(cx+dx*s*0.78,cy+dy*s*0.78);ctx.stroke();});
+  },
+  // Angular ROG lightning bolt / arrow shard
+  (cx, cy, s, ctx) => {
+    ctx.beginPath();
+    ctx.moveTo(cx-s*0.1, cy-s*0.9);
+    ctx.lineTo(cx+s*0.5, cy-s*0.9);
+    ctx.lineTo(cx+s*0.1, cy-s*0.05);
+    ctx.lineTo(cx+s*0.55, cy-s*0.05);
+    ctx.lineTo(cx-s*0.15, cy+s*0.9);
+    ctx.lineTo(cx-s*0.55, cy+s*0.1);
+    ctx.lineTo(cx-s*0.1,  cy+s*0.1);
+    ctx.closePath(); ctx.stroke();
+  },
+  // Diamond chip — PCB chip outline
+  (cx, cy, s, ctx) => {
+    // rotated square (chip body)
+    ctx.save(); ctx.translate(cx,cy); ctx.rotate(Math.PI/4);
+    ctx.strokeRect(-s*0.5,-s*0.5,s,s);
+    ctx.restore();
+    // pins on all 4 sides
+    for(let i=-1;i<=1;i+=2){
+      ctx.beginPath();ctx.moveTo(cx+i*s*0.72,cy-s*0.25);ctx.lineTo(cx+i*s*0.95,cy-s*0.25);ctx.stroke();
+      ctx.beginPath();ctx.moveTo(cx+i*s*0.72,cy+s*0.25);ctx.lineTo(cx+i*s*0.95,cy+s*0.25);ctx.stroke();
+      ctx.beginPath();ctx.moveTo(cx-s*0.25,cy+i*s*0.72);ctx.lineTo(cx-s*0.25,cy+i*s*0.95);ctx.stroke();
+      ctx.beginPath();ctx.moveTo(cx+s*0.25,cy+i*s*0.72);ctx.lineTo(cx+s*0.25,cy+i*s*0.95);ctx.stroke();
+    }
+    ctx.beginPath();ctx.arc(cx,cy,s*0.15,0,Math.PI*2);ctx.fill();
+  },
+  // Stacked angular brackets — ROG corner marks
+  (cx, cy, s, ctx) => {
+    const corners = [[1,1],[-1,1],[-1,-1],[1,-1]];
+    corners.forEach(([dx,dy])=>{
+      const x=cx+dx*s*0.3, y=cy+dy*s*0.3;
+      ctx.beginPath();
+      ctx.moveTo(x+dx*s*0.55,y);
+      ctx.lineTo(x+dx*s*0.55,y+dy*s*0.55);
+      ctx.lineTo(x,y+dy*s*0.55);
+      ctx.stroke();
+      // extra inner bracket
+      ctx.beginPath();
+      ctx.moveTo(x+dx*s*0.28,y+dy*s*0.12);
+      ctx.lineTo(x+dx*s*0.28,y+dy*s*0.28);
+      ctx.lineTo(x+dx*s*0.12,y+dy*s*0.28);
+      ctx.stroke();
+    });
+    ctx.beginPath();ctx.arc(cx,cy,s*0.1,0,Math.PI*2);ctx.fill();
+  },
+  // Signal / wifi bars angular
+  (cx, cy, s, ctx) => {
+    // 4 angled bars building up
+    for(let i=0;i<5;i++){
+      const h=s*(0.2+i*0.18), x=cx-s*0.6+i*s*0.3;
+      ctx.beginPath();
+      ctx.moveTo(x,cy+s*0.6);
+      ctx.lineTo(x+s*0.18,cy+s*0.6);
+      ctx.lineTo(x+s*0.18,cy+s*0.6-h);
+      ctx.lineTo(x,cy+s*0.6-h);
+      ctx.closePath();
+      i<3?ctx.stroke():ctx.fill();
+    }
+    // top diagonal cut
+    ctx.beginPath();ctx.moveTo(cx-s*0.65,cy-s*0.5);ctx.lineTo(cx+s*0.65,cy-s*0.7);ctx.stroke();
+  },
+  // ROG eye / power symbol hybrid
+  (cx, cy, s, ctx) => {
+    // outer broken circle
+    ctx.beginPath();ctx.arc(cx,cy,s*0.78,Math.PI*0.2,Math.PI*0.8);ctx.stroke();
+    ctx.beginPath();ctx.arc(cx,cy,s*0.78,Math.PI*1.2,Math.PI*1.8);ctx.stroke();
+    // power line
+    ctx.beginPath();ctx.moveTo(cx,cy-s*0.78);ctx.lineTo(cx,cy-s*0.3);ctx.stroke();
+    // inner ring
+    ctx.beginPath();ctx.arc(cx,cy,s*0.42,0,Math.PI*2);ctx.stroke();
+    // 4 outer spikes
+    for(let i=0;i<4;i++){
+      const a=i*Math.PI/2+Math.PI/4;
+      ctx.beginPath();ctx.moveTo(cx+Math.cos(a)*s*0.78,cy+Math.sin(a)*s*0.78);
+      ctx.lineTo(cx+Math.cos(a)*s,cy+Math.sin(a)*s);ctx.stroke();
+    }
+    ctx.beginPath();ctx.arc(cx,cy,s*0.14,0,Math.PI*2);ctx.fill();
+  },
+];
+
+// Grid positions: bottom-right quadrant of the window
+// We'll place them in a 3x3ish grid
+const glyphCells = [];
+function initGlyphs() {
+  glyphCanvas.width = glyphCanvas.offsetWidth;
+  glyphCanvas.height = glyphCanvas.offsetHeight;
+  glyphCells.length = 0;
+  const W = glyphCanvas.width, H = glyphCanvas.height;
+  const cols = 3, rows = 3;
+  const cw = W / cols, ch = H / rows;
+  let gi = 0;
+  for (let r = 0; r < rows; r++) {
+    for (let c = 0; c < cols; c++) {
+      glyphCells.push({
+        cx: cw * c + cw/2,
+        cy: ch * r + ch/2,
+        s: Math.min(cw, ch) * 0.33,
+        glyphIdx: gi % GLYPHS.length,
+        alpha: 0,
+        phase: 'wait',
+        delay: Math.random() * 5000,
+        inDur: 1200 + Math.random() * 800,
+        holdDur: 1500 + Math.random() * 3000,
+        outDur: 900 + Math.random() * 600,
+        restDur: 2000 + Math.random() * 6000,
+        timer: 0,
+      });
+      gi++;
+    }
+  }
 }
-scheduleYellow();
+
+let lastGT = performance.now();
+function animateGlyphs(now) {
+  const dt = Math.min(now - lastGT, 50);
+  lastGT = now;
+  const W = glyphCanvas.width, H = glyphCanvas.height;
+  gCtx.clearRect(0, 0, W, H);
+
+  for (const cell of glyphCells) {
+    if (cell.phase === 'wait') {
+      cell.delay -= dt;
+      if (cell.delay <= 0) { cell.phase = 'in'; cell.timer = 0; }
+      continue;
+    }
+    cell.timer += dt;
+    if (cell.phase === 'in') {
+      cell.alpha = Math.min(1, cell.timer / cell.inDur);
+      if (cell.timer >= cell.inDur) { cell.phase = 'hold'; cell.timer = 0; }
+    } else if (cell.phase === 'hold') {
+      cell.alpha = 1;
+      if (cell.timer >= cell.holdDur) { cell.phase = 'out'; cell.timer = 0; }
+    } else if (cell.phase === 'out') {
+      cell.alpha = Math.max(0, 1 - cell.timer / cell.outDur);
+      if (cell.timer >= cell.outDur) {
+        cell.alpha = 0;
+        cell.phase = 'wait';
+        cell.delay = cell.restDur + Math.random() * 3000;
+        cell.glyphIdx = Math.floor(Math.random() * GLYPHS.length);
+        cell.inDur = 1200 + Math.random() * 800;
+        cell.holdDur = 1500 + Math.random() * 3000;
+        cell.outDur = 900 + Math.random() * 600;
+      }
+    }
+    if (cell.alpha < 0.005) continue;
+    gCtx.save();
+    gCtx.globalAlpha = cell.alpha * 0.82;
+    gCtx.strokeStyle = '#000';
+    gCtx.fillStyle = '#000';
+    gCtx.lineWidth = 1.2;
+    gCtx.lineCap = 'round';
+    gCtx.lineJoin = 'round';
+    GLYPHS[cell.glyphIdx](cell.cx, cell.cy, cell.s, gCtx);
+    gCtx.restore();
+  }
+  requestAnimationFrame(animateGlyphs);
+}
+initGlyphs();
+window.addEventListener('resize', initGlyphs);
+requestAnimationFrame(animateGlyphs);
+
+// ── PIXEL CLOCK ──────────────────────────────────────────────────────
+function updateClock() {
+  const now = new Date();
+  const h = String(now.getHours()).padStart(2,'0');
+  const m = String(now.getMinutes()).padStart(2,'0');
+  const s = String(now.getSeconds()).padStart(2,'0');
+  const el = document.getElementById('pixelClock');
+  if (el) el.textContent = h + ':' + m + ':' + s;
+}
+updateClock();
+setInterval(updateClock, 1000);
 </script>
 </body>
 </html>
