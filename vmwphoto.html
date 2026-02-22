@@ -59,7 +59,7 @@
 <canvas id="extrudeCanvas" style="position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:50;"></canvas>
 
 <script>
-// -- DATA --------------------------------------------------------------
+// ── DATA ──────────────────────────────────────────────────────────────
 const images = [
   '1771697824220_cak.jpg','1771697824221_cal.jpg','1771697824221_cam.jpg',
   '1771697824221_can.jpg','1771697824221_cek.jpg','1771697824222_cel.jpg',
@@ -77,7 +77,7 @@ function randomBlue() {
 const box = document.getElementById('colorBox');
 box.style.backgroundColor = randomBlue();
 
-// -- GLOBE SETUP -------------------------------------------------------
+// ── GLOBE SETUP ───────────────────────────────────────────────────────
 const canvas = document.getElementById('globe');
 const ctx = canvas.getContext('2d');
 const ROWS = 18, COLS = 36;
@@ -96,7 +96,7 @@ function randomCellColor() {
 const cellColors = [];
 for (let r = 0; r < ROWS; r++) { cellColors[r]=[]; for(let c=0;c<COLS;c++) cellColors[r][c]=randomCellColor(); }
 
-// Face cache for extrude animation � declared before drawGlobe uses it
+// Face cache for extrude animation — declared before drawGlobe uses it
 const lastFaceMap = {};
 
 let pressedCell = null;
@@ -212,7 +212,7 @@ function drawGlobe() {
   ctx.strokeStyle='rgba(80,160,255,0.35)'; ctx.lineWidth=1.5; ctx.stroke();
 }
 
-// -- HIT TEST ---------------------------------------------------------
+// ── HIT TEST ─────────────────────────────────────────────────────────
 function hitTest(mx,my) {
   const W=canvas.width,H=canvas.height,cx=W/2,cy=H/2,R=W*R_FACTOR;
   const dx=mx-cx,dy=cy-my;
@@ -230,34 +230,37 @@ function hitTest(mx,my) {
   return {row:Math.max(0,Math.min(ROWS-1,ri)),col:Math.max(0,Math.min(COLS-1,ci))};
 }
 
-// -- DRAG CONTROLS ----------------------------------------------------
+// ── DRAG CONTROLS ────────────────────────────────────────────────────
 canvas.addEventListener('wheel',e=>{e.preventDefault();rotY-=e.deltaX*0.008;rotX-=e.deltaY*0.008;},{passive:false});
 
-canvas.addEventListener('mousedown',e=>{
-  isDragging=true;dragMoved=false;lastX=e.clientX;lastY=e.clientY;velX=0;velY=0;
-  const rect=canvas.getBoundingClientRect();
-  const cell=hitTest(e.clientX-rect.left,e.clientY-rect.top);
-  if(cell) pressedCell=cell;
+let mouseDownX = 0, mouseDownY = 0;
+
+canvas.addEventListener('mousedown', e => {
+  isDragging = true; dragMoved = false;
+  lastX = e.clientX; lastY = e.clientY;
+  mouseDownX = e.clientX; mouseDownY = e.clientY;
+  velX = 0; velY = 0;
+  const rect = canvas.getBoundingClientRect();
+  pressedCell = hitTest(e.clientX - rect.left, e.clientY - rect.top);
 });
-window.addEventListener('mousemove',e=>{
-  if(!isDragging) return;
-  const dx=e.clientX-lastX,dy=e.clientY-lastY;
-  if(Math.abs(dx)>2||Math.abs(dy)>2) dragMoved=true;
-  velX=dx*0.012;velY=dy*0.012;
-  rotY-=velX;rotX-=velY;
-  lastX=e.clientX;lastY=e.clientY;
-  if(dragMoved) pressedCell=null;
+
+window.addEventListener('mousemove', e => {
+  if (!isDragging) return;
+  const dx = e.clientX - lastX, dy = e.clientY - lastY;
+  if (Math.abs(e.clientX - mouseDownX) > 4 || Math.abs(e.clientY - mouseDownY) > 4) dragMoved = true;
+  velX = dx * 0.012; velY = dy * 0.012;
+  rotY -= velX; rotX -= velY;
+  lastX = e.clientX; lastY = e.clientY;
 });
-window.addEventListener('mouseup',e=>{
-  if(!isDragging) return;
-  isDragging=false;
-  if(!dragMoved&&pressedCell){
-    const rect=canvas.getBoundingClientRect();
-    const cell=hitTest(e.clientX-rect.left,e.clientY-rect.top);
-    if(cell) showImage(cell.row,cell.col);
+
+window.addEventListener('mouseup', e => {
+  if (!isDragging) return;
+  isDragging = false;
+  if (!dragMoved && pressedCell) {
+    showImage(pressedCell.row, pressedCell.col);
   }
-  setTimeout(()=>{pressedCell=null;},200);
-  velX*=0.3;velY*=0.3;
+  pressedCell = null;
+  velX *= 0.3; velY *= 0.3;
 });
 
 canvas.addEventListener('touchstart',e=>{
@@ -286,7 +289,7 @@ canvas.addEventListener('touchend',e=>{
   velX*=0.3;velY*=0.3;
 });
 
-// -- MAIN LOOP --------------------------------------------------------
+// ── MAIN LOOP ────────────────────────────────────────────────────────
 function animate() {
   if(!isDragging){rotY+=velX;rotX+=velY;velX*=0.88;velY*=0.88;if(Math.abs(velX)<0.0001)velX=0;if(Math.abs(velY)<0.0001)velY=0;}
   drawGlobe();
@@ -294,7 +297,7 @@ function animate() {
 }
 animate();
 
-// -- EXTRUDE + ZOOM ANIMATION -----------------------------------------
+// ── EXTRUDE + ZOOM ANIMATION ─────────────────────────────────────────
 const extrudeCanvas = document.getElementById('extrudeCanvas');
 const extCtx = extrudeCanvas.getContext('2d');
 let extState = null;
@@ -307,37 +310,29 @@ function lerp(a,b,t){return a+(b-a)*t;}
 function easeOut(t){return 1-Math.pow(1-t,3);}
 
 function showImage(row, col) {
-  // If already open, close it
   if (extState && extState.active) { revertExtrude(); return; }
-
   const faceData = lastFaceMap[`${row}_${col}`];
   if (!faceData) return;
 
-  // Get bounding box of the cell on screen (origin position + size)
   const pts = faceData.pts;
-  const originX = Math.min(...pts.map(p => p.sx));
-  const originY = Math.min(...pts.map(p => p.sy));
-  const originW = Math.max(...pts.map(p => p.sx)) - originX;
-  const originH = Math.max(...pts.map(p => p.sy)) - originY;
+  // get the canvas offset so coords are in screen space
+  const canvasRect = canvas.getBoundingClientRect();
+  const offX = canvasRect.left;
+  const offY = canvasRect.top;
 
-  // Target: 67vw at top-left of screen
-  const targetW = window.innerWidth * 0.67;
-  const targetH = targetW; // will crop to fit via drawImage
-  const targetX = 0;
-  const targetY = 0;
+  // origin = the actual 4 screen corners of the pressed cell
+  const origin = pts.map(p => ({ x: p.sx + offX, y: p.sy + offY }));
 
   const img = new Image();
   img.onload = () => {
-    // actual target height preserving image ratio
-    const ratio = img.naturalHeight / img.naturalWidth;
+    const targetW = window.innerWidth * 0.67;
+    const targetH = targetW * (img.naturalHeight / img.naturalWidth);
     extState = {
       active: true, img,
-      originX, originY, originW, originH,
-      targetX, targetY,
-      targetW,
-      targetH: targetW * ratio,
+      origin,   // 4 corners of cell in screen coords
+      targetX: 0, targetY: 0, targetW, targetH,
       startTime: performance.now(),
-      duration: 900,
+      duration: 1100,
     };
     extrudeCanvas.style.pointerEvents = 'all';
     box.style.backgroundColor = randomBlue();
@@ -346,8 +341,11 @@ function showImage(row, col) {
 }
 
 function revertExtrude() {
-  extState = null;
-  extCtx.clearRect(0, 0, extrudeCanvas.width, extrudeCanvas.height);
+  if (!extState) return;
+  // animate back
+  extState.reverting = true;
+  extState.revertStart = performance.now();
+  extState.revertDuration = 600;
   extrudeCanvas.style.pointerEvents = 'none';
 }
 extrudeCanvas.addEventListener('click', revertExtrude);
@@ -355,66 +353,92 @@ extrudeCanvas.addEventListener('click', revertExtrude);
 function drawExtrude() {
   extCtx.clearRect(0, 0, extrudeCanvas.width, extrudeCanvas.height);
   if (!extState || !extState.active) { requestAnimationFrame(drawExtrude); return; }
+
   const s = extState;
-  const t = Math.min((performance.now() - s.startTime) / s.duration, 1);
-  const e = easeOut(t);
-
-  // Current rect: grows from cell bbox ? target
-  const curX = lerp(s.originX, s.targetX, e);
-  const curY = lerp(s.originY, s.targetY, e);
-  const curW = lerp(s.originW, s.targetW, e);
-  const curH = lerp(s.originH, s.targetH, e);
-
-  // 4 corners of growing image rect
-  const iC = [
-    {x: curX,       y: curY},
-    {x: curX+curW,  y: curY},
-    {x: curX+curW,  y: curY+curH},
-    {x: curX,       y: curY+curH},
-  ];
-  // 4 corners of original cell
-  const oC = [
-    {x: s.originX,           y: s.originY},
-    {x: s.originX+s.originW, y: s.originY},
-    {x: s.originX+s.originW, y: s.originY+s.originH},
-    {x: s.originX,           y: s.originY+s.originH},
-  ];
-
-  // Lines connecting each corner of image to matching cell corner
-  // fade out as image reaches final size
-  const lineAlpha = (1 - e) * 0.6;
-  if (lineAlpha > 0.01) {
-    extCtx.save();
-    extCtx.globalAlpha = lineAlpha;
-    extCtx.strokeStyle = '#000';
-    extCtx.lineWidth = 0.8;
-    for (let i = 0; i < 4; i++) {
-      extCtx.beginPath();
-      extCtx.moveTo(oC[i].x, oC[i].y);
-      extCtx.lineTo(iC[i].x, iC[i].y);
-      extCtx.stroke();
-    }
-    extCtx.restore();
+  let t;
+  if (s.reverting) {
+    const rt = Math.min((performance.now() - s.revertStart) / s.revertDuration, 1);
+    t = 1 - easeOut(rt);
+    if (rt >= 1) { extState = null; requestAnimationFrame(drawExtrude); return; }
+  } else {
+    t = Math.min((performance.now() - s.startTime) / s.duration, 1);
+    t = easeOut(t);
   }
 
-  // Draw image fading in as it grows
+  // Target rect corners (top-left aligned rectangle)
+  const tX = s.targetX, tY = s.targetY, tW = s.targetW, tH = s.targetH;
+  const target = [
+    { x: tX,     y: tY },
+    { x: tX+tW,  y: tY },
+    { x: tX+tW,  y: tY+tH },
+    { x: tX,     y: tY+tH },
+  ];
+
+  // Interpolate each of the 4 corners: origin cell → target rect
+  const cur = s.origin.map((o, i) => ({
+    x: lerp(o.x, target[i].x, t),
+    y: lerp(o.y, target[i].y, t),
+  }));
+
+  // Draw as a perspective quad (trapezoid → rect morph)
+  // use clip to the quad shape, then draw image inside it
   extCtx.save();
-  extCtx.globalAlpha = e;
-  extCtx.drawImage(s.img, curX, curY, curW, curH);
+  extCtx.beginPath();
+  extCtx.moveTo(cur[0].x, cur[0].y);
+  extCtx.lineTo(cur[1].x, cur[1].y);
+  extCtx.lineTo(cur[2].x, cur[2].y);
+  extCtx.lineTo(cur[3].x, cur[3].y);
+  extCtx.closePath();
+  extCtx.clip();
+
+  // Draw image stretched into the quad using transform
+  // Map image rect into the quad via a rough bounding box
+  const minX = Math.min(...cur.map(p => p.x));
+  const minY = Math.min(...cur.map(p => p.y));
+  const maxX = Math.max(...cur.map(p => p.x));
+  const maxY = Math.max(...cur.map(p => p.y));
+  extCtx.globalAlpha = 0.15 + t * 0.85;
+  extCtx.drawImage(s.img, minX, minY, maxX - minX, maxY - minY);
+  extCtx.restore();
+
+  // Draw the quad outline — the "extruded shape" border
+  extCtx.save();
+  extCtx.globalAlpha = Math.min(1, (1 - t) * 3 + 0.1);
+  extCtx.strokeStyle = '#000';
+  extCtx.lineWidth = 1.5;
+  extCtx.beginPath();
+  extCtx.moveTo(cur[0].x, cur[0].y);
+  extCtx.lineTo(cur[1].x, cur[1].y);
+  extCtx.lineTo(cur[2].x, cur[2].y);
+  extCtx.lineTo(cur[3].x, cur[3].y);
+  extCtx.closePath();
+  extCtx.stroke();
+
+  // Corner lines from origin cell to current corners (visible during morph)
+  if (t < 0.7) {
+    extCtx.globalAlpha = (1 - t / 0.7) * 0.45;
+    extCtx.lineWidth = 0.7;
+    for (let i = 0; i < 4; i++) {
+      extCtx.beginPath();
+      extCtx.moveTo(s.origin[i].x, s.origin[i].y);
+      extCtx.lineTo(cur[i].x, cur[i].y);
+      extCtx.stroke();
+    }
+  }
   extCtx.restore();
 
   requestAnimationFrame(drawExtrude);
 }
 requestAnimationFrame(drawExtrude);
 
-// -- FOREST TEXT -------------------------------------------------------
+// ── FOREST TEXT ───────────────────────────────────────────────────────
 const forestLines=[
   "the oldest trees in the boreal forest have been standing since before the printing press.",
   "a single hectare of old-growth forest stores more carbon than most cities emit in a year.",
-  "mycorrhizal networks beneath the soil connect trees across hundreds of metres � the wood wide web.",
+  "mycorrhizal networks beneath the soil connect trees across hundreds of metres — the wood wide web.",
   "in the amazon, trees release water vapour that forms rivers of cloud drifting inland for thousands of kilometres.",
-  "beech forests shed their leaves each autumn to protect roots from frost � a ritual 10 million years old.",
-  "the silence inside a dense pine forest is not absence of sound � it is the forest absorbing it.",
+  "beech forests shed their leaves each autumn to protect roots from frost — a ritual 10 million years old.",
+  "the silence inside a dense pine forest is not absence of sound — it is the forest absorbing it.",
   "a fallen tree in a temperate rainforest can take 500 years to fully return to soil.",
   "some japanese cedar forests have been tended by the same families for thirty generations.",
   "trees communicate drought stress to neighbours through root-sharing fungal threads below the surface.",
@@ -430,7 +454,7 @@ setInterval(()=>{
   setTimeout(()=>{forestIdx=(forestIdx+1)%forestLines.length;forestEl.textContent=forestLines[forestIdx];forestEl.classList.remove('fade');},400);
 },2000);
 
-// -- BG GRID -----------------------------------------------------------
+// ── BG GRID ───────────────────────────────────────────────────────────
 const bgCanvas=document.getElementById('bgGrid');
 const bgCtx=bgCanvas.getContext('2d');
 const CELL=50;
@@ -464,7 +488,7 @@ initBgGrid();
 window.addEventListener('resize',initBgGrid);
 requestAnimationFrame(drawBgGrid);
 
-// -- YELLOW FLASH -----------------------------------------------------
+// ── YELLOW FLASH ─────────────────────────────────────────────────────
 let yellowBase=null;
 function scheduleYellow(){
   setTimeout(()=>{
