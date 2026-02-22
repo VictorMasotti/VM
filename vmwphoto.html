@@ -11,117 +11,76 @@
       cursor: url('EARTH2.png'), auto !important;
     }
 
-    /* ── IMAC RETRO DESKTOP BG ── */
-    body {
-      width: 100vw; height: 100vh;
+    html, body {
+      width: 100%; height: 100%;
       overflow: hidden;
-      background:
-        radial-gradient(ellipse at 40% 30%, #e8f4ff 0%, #a8d4ff 25%, #5b9fd8 55%, #1a4a8a 80%, #0a1e4a 100%);
-      font-family: 'Nunito', sans-serif;
-      user-select: none;
-      position: relative;
-    }
-    /* Bondi blue iMac aurora */
-    body::before {
-      content: '';
-      position: fixed; inset: 0;
-      background:
-        radial-gradient(ellipse 120% 55% at 10% 90%, rgba(0,210,180,0.2) 0%, transparent 55%),
-        radial-gradient(ellipse 80% 40% at 90% 8%, rgba(255,220,80,0.1) 0%, transparent 50%),
-        radial-gradient(ellipse 60% 70% at 50% 50%, rgba(80,30,200,0.07) 0%, transparent 60%);
-      pointer-events: none; z-index: 0;
-      animation: auroraShift 16s ease-in-out infinite alternate;
-    }
-    @keyframes auroraShift {
-      0%   { opacity: 0.65; }
-      50%  { opacity: 1; }
-      100% { opacity: 0.75; }
     }
 
-    /* ── IMAC WINDOW FRAME ── */
+    body {
+      background: radial-gradient(ellipse at 25% 15%, #c2e0ff 0%, #5aabff 20%, #1a68d8 50%, #0a2060 80%, #050c2e 100%);
+      font-family: 'Nunito', sans-serif;
+      user-select: none;
+    }
+
+    /* ── WINDOW ── */
     .window {
-      position: absolute;
+      position: fixed;
       top: 50%; left: 50%;
       transform: translate(-50%, -50%);
       width: calc(100vw - 28px);
       height: calc(100vh - 40px);
-      border-radius: 16px;
+      border-radius: 14px;
       overflow: hidden;
-      /* thick translucent iMac plastic border */
-      border: 3px solid rgba(255,255,255,0.65);
+      border: 1.5px solid rgba(255,255,255,0.55);
       box-shadow:
-        0 0 0 1px rgba(0,0,0,0.25),
-        0 0 0 4px rgba(255,255,255,0.15),
-        0 0 0 5px rgba(0,0,0,0.15),
-        0 16px 60px rgba(0,0,0,0.6),
-        0 48px 120px rgba(0,20,80,0.45),
-        inset 0 2px 0 rgba(255,255,255,0.9),
-        inset 0 -2px 0 rgba(0,0,0,0.1);
+        0 0 0 1px rgba(0,0,0,0.35),
+        0 8px 32px rgba(0,0,0,0.55),
+        0 32px 80px rgba(0,0,0,0.35),
+        inset 0 1px 0 rgba(255,255,255,0.7);
       display: flex;
       flex-direction: column;
       z-index: 1;
     }
 
-    /* ── PLATINUM / AQUA TITLE BAR ── */
+    /* ── TITLE BAR ── */
     .titlebar {
       flex-shrink: 0;
-      height: 36px;
-      background: linear-gradient(180deg,
-        #f8f8f8 0%,
-        #e8e8e8 20%,
-        #d0d0d0 48%,
-        #c8c8c8 50%,
-        #dcdcdc 52%,
-        #f0f0f0 100%);
-      border-bottom: 1px solid #999;
-      border-top: 1px solid rgba(255,255,255,1);
-      border-radius: 13px 13px 0 0;
+      height: 34px;
+      background: linear-gradient(180deg, #ececec 0%, #d6d6d6 30%, #bebebe 51%, #cecece 52%, #e8e8e8 100%);
+      border-bottom: 1px solid #888;
+      border-top: 1px solid rgba(255,255,255,0.9);
+      border-radius: 14px 14px 0 0;
       display: flex;
       align-items: center;
-      padding: 0 12px;
-      gap: 7px;
+      padding: 0 10px;
+      gap: 6px;
       position: relative;
-      box-shadow:
-        inset 0 1px 0 rgba(255,255,255,1),
-        inset 0 -1px 0 rgba(0,0,0,0.12),
-        0 1px 3px rgba(0,0,0,0.2);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.95), inset 0 -1px 0 rgba(0,0,0,0.1);
     }
-
-    /* Mac OS X traffic lights */
-    .dot {
-      width: 13px; height: 13px; border-radius: 50%; flex-shrink: 0;
+    .dot { width: 13px; height: 13px; border-radius: 50%; flex-shrink: 0;
       cursor: url('EARTH2.png'), pointer !important;
-      transition: filter 0.08s, transform 0.08s;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.5);
-    }
+      box-shadow: 0 1px 3px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.5); }
     .dot.close  { background: radial-gradient(circle at 35% 30%, #ff8a8a, #dd1e3a); }
     .dot.min    { background: radial-gradient(circle at 35% 30%, #ffdd7a, #dda500); }
     .dot.max    { background: radial-gradient(circle at 35% 30%, #7aff8a, #1eb830); }
     .dot:hover  { filter: brightness(1.2); transform: scale(1.12); }
     .dot:active { filter: brightness(0.75); transform: scale(0.9); }
-
-    /* Windows Vista minimize/maximize/close buttons — RIGHT side */
     .win-buttons {
       position: absolute; right: 10px; top: 50%; transform: translateY(-50%);
       display: flex; gap: 2px;
     }
     .win-btn {
-      width: 22px; height: 20px;
-      border-radius: 3px;
+      width: 22px; height: 20px; border-radius: 3px;
       border: 1px solid rgba(0,0,0,0.3);
       cursor: url('EARTH2.png'), pointer !important;
       display: flex; align-items: center; justify-content: center;
       font-size: 9px; font-weight: 900; color: #fff;
       text-shadow: 0 1px 1px rgba(0,0,0,0.4);
-      transition: filter 0.08s, transform 0.08s;
       box-shadow: inset 0 1px 0 rgba(255,255,255,0.35), 0 1px 2px rgba(0,0,0,0.2);
     }
     .win-btn.wmin { background: linear-gradient(180deg, #6aabee 0%, #3a7bcc 50%, #2a60aa 51%, #4a8de0 100%); }
     .win-btn.wmax { background: linear-gradient(180deg, #6aabee 0%, #3a7bcc 50%, #2a60aa 51%, #4a8de0 100%); }
     .win-btn.wcls { background: linear-gradient(180deg, #ee7a6a 0%, #cc3a3a 50%, #aa2a2a 51%, #e04a4a 100%); }
-    .win-btn:hover  { filter: brightness(1.2); transform: scale(1.05); }
-    .win-btn:active { filter: brightness(0.8); transform: scale(0.95); }
-
     .titlebar-label {
       position: absolute; left: 50%; transform: translateX(-50%);
       font-size: 12px; font-weight: 700; color: #2a2a2a;
@@ -134,8 +93,14 @@
       position: absolute; left: 108px; top: 50%; transform: translateY(-50%);
       font-family: 'VT323', monospace;
       font-size: 13px; color: #888;
-      letter-spacing: 0.05em;
-      text-shadow: 0 1px 0 rgba(255,255,255,0.8);
+    }
+    .pixel-clock {
+      position: absolute; top: 0; bottom: 0; right: 82px;
+      display: flex; align-items: center;
+      font-family: 'VT323', monospace;
+      font-size: 15px; color: #555;
+      letter-spacing: 0.1em; z-index: 25;
+      pointer-events: none;
     }
 
     /* ── WINDOW BODY ── */
@@ -143,23 +108,18 @@
       flex: 1;
       display: flex;
       flex-direction: column;
-      background: #f0ede8;
+      background: #f8f8ff;
       position: relative;
       overflow: hidden;
     }
 
-    /* ── GLOBE AREA ── */
+    /* ── GLOBE AREA fills everything ── */
     .top {
       flex: 1;
-      display: flex;
-      align-items: center;
-      justify-content: center;
       position: relative;
       overflow: hidden;
-      background:
-        linear-gradient(135deg, #fafafa 0%, #f5f5f5 40%, #eeeeee 100%);
+      background: #f0f4ff;
     }
-    /* CRT scanlines */
     .top::before {
       content: '';
       position: absolute; inset: 0; z-index: 10;
@@ -174,7 +134,6 @@
       from { background-position: 0 0; }
       to   { background-position: 0 500px; }
     }
-    /* Vignette */
     .top::after {
       content: '';
       position: absolute; inset: 0; z-index: 11;
@@ -191,16 +150,7 @@
       transition: background-color 0.4s ease;
       position: relative;
       border-top: 1px solid rgba(0,0,0,0.2);
-      box-shadow:
-        inset 0 2px 0 rgba(255,255,255,0.5),
-        inset 0 -1px 0 rgba(0,0,0,0.06);
-    }
-    .content::before {
-      content: '';
-      position: absolute; top: 2px; left: 5%; right: 5%; height: 40%;
-      background: linear-gradient(180deg, rgba(255,255,255,0.38) 0%, transparent 100%);
-      border-radius: 0 0 50% 50%;
-      pointer-events: none;
+      box-shadow: inset 0 2px 0 rgba(255,255,255,0.5), inset 0 -1px 0 rgba(0,0,0,0.06);
     }
     .forest-text {
       position: absolute;
@@ -216,32 +166,12 @@
       text-shadow: 0 0 10px rgba(120,210,255,0.7), 0 1px 2px rgba(0,0,0,0.5);
     }
     .forest-text.fade { opacity: 0; }
-
-    /* ── FULL GLOSS SHEEN ── */
     .gloss {
-      position: absolute;
-      top: 0; left: 0; right: 0;
-      height: 40%;
-      background: linear-gradient(180deg,
-        rgba(255,255,255,0.28) 0%,
-        rgba(255,255,255,0.10) 55%,
-        transparent 100%);
+      position: absolute; top: 0; left: 0; right: 0; height: 40%;
+      background: linear-gradient(180deg, rgba(255,255,255,0.28) 0%, rgba(255,255,255,0.10) 55%, transparent 100%);
       pointer-events: none; z-index: 20;
       border-radius: 13px 13px 0 0;
     }
-
-    /* ── PIXEL CLOCK ── */
-    .pixel-clock {
-      position: absolute; top: 0; bottom: 0; right: 82px;
-      display: flex; align-items: center;
-      font-family: 'VT323', monospace;
-      font-size: 15px; color: #555;
-      letter-spacing: 0.1em; z-index: 25;
-      text-shadow: 0 1px 0 rgba(255,255,255,0.8);
-      pointer-events: none;
-    }
-
-    /* ── CORNER DECO ── */
     .corner-tl, .corner-br {
       position: absolute; width: 70px; height: 70px;
       z-index: 6; pointer-events: none;
@@ -249,6 +179,11 @@
     .corner-tl { top: 0; left: 0; }
     .corner-br { bottom: 36px; right: 0; }
     .corner-tl svg, .corner-br svg { width: 100%; height: 100%; }
+    .sidebar {
+      position: absolute; top: 0; right: 0; width: 5px; bottom: 0;
+      background: linear-gradient(180deg, #ff3cac 0%, #ff6d00 20%, #fbff00 40%, #00ff87 60%, #00d4ff 80%, #7b2fff 100%);
+      opacity: 0.75; z-index: 5;
+    }
   </style>
 </head>
 <body>
@@ -260,9 +195,9 @@
 
 <div class="window">
   <div class="titlebar">
-    <div class="dot close" onclick="void(0)"></div>
-    <div class="dot min" onclick="void(0)"></div>
-    <div class="dot max" onclick="void(0)"></div>
+    <div class="dot close" onclick="triggerGlobeFlash('red')"></div>
+    <div class="dot min" onclick="triggerGlobeFlash('yellow')"></div>
+    <div class="dot max" onclick="triggerGlobeFlash('silver')"></div>
     <span class="titlebar-sub">SYS.v2.04</span>
     <span class="titlebar-label">scroll photo round press and play ()()() </span>
     <span class="pixel-clock" id="pixelClock">00:00:00</span>
@@ -274,6 +209,8 @@
   </div>
 
   <div class="window-body">
+    <!-- HELLO text -->
+    <div id="helloText" style="position:absolute;top:8px;left:0;right:0;text-align:center;z-index:30;pointer-events:none;opacity:0.15;font-size:clamp(2rem,6vw,5rem);font-weight:900;letter-spacing:0.08em;color:#000;mix-blend-mode:multiply;"></div>
     <!-- Gloss sheen -->
     <div class="gloss"></div>
     <!-- Corner accents -->
@@ -282,11 +219,12 @@
 
     <div class="top">
       <canvas id="bgGrid" style="position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:0;"></canvas>
-      <canvas id="globe" style="position:relative;z-index:1;"></canvas>
+      <canvas id="globe" style="position:absolute;inset:0;width:100%;height:100%;z-index:1;pointer-events:none;"></canvas>
     </div>
 
     <div class="content" id="colorBox">
       <span class="forest-text" id="forestText"></span>
+      <canvas id="chessBoard" width="64" height="64" style="position:absolute;right:10px;bottom:4px;cursor:pointer;image-rendering:pixelated;z-index:10;" title="click to grow globe"></canvas>
     </div>
   </div>
 </div>
@@ -314,7 +252,7 @@ box.style.backgroundColor = randomBlue();
 const canvas = document.getElementById('globe');
 const ctx = canvas.getContext('2d');
 const ROWS = 18, COLS = 36;
-const R_FACTOR = 0.44;
+const R_FACTOR = 0.44;  // base — multiplied by globeSizeMultiplier at draw time
 
 const cellImages = [];
 for (let r = 0; r < ROWS; r++) {
@@ -333,12 +271,16 @@ for (let r = 0; r < ROWS; r++) { cellColors[r]=[]; for(let c=0;c<COLS;c++) cellC
 const lastFaceMap = {};
 
 let pressedCell = null;
+let globeColorFlash = null; // {hue, startTime, phase: 'in'|'hold'|'out'}
 let rotY = 0, rotX = 0;
 let isDragging = false, lastX = 0, lastY = 0, velX = 0, velY = 0, dragMoved = false;
+let globeSizeMultiplier = 1.0;
 
 function resize() {
-  const size = Math.min(window.innerWidth*0.8, window.innerHeight*0.84);
-  canvas.width = size; canvas.height = size;
+  const top = document.querySelector('.top');
+  const w = top.clientWidth || window.innerWidth;
+  const h = top.clientHeight || (window.innerHeight - 70);
+  canvas.width = w; canvas.height = h;
 }
 resize();
 window.addEventListener('resize', resize);
@@ -361,15 +303,41 @@ function project(p, cx, cy, R) {
 function shadeRgb(col, light, pressed, latM) {
   const factor = pressed ? Math.max(0.2, light*0.6) : 0.35+light*0.72;
   let r=Math.round(col.r*factor), g=Math.round(col.g*factor), b=Math.round(col.b*factor);
-  const poleBase = Math.pow(Math.abs(latM)/(Math.PI/2), 1.3)*0.97;
+  // apply button flash
+  if (globeColorFlash) {
+    const f=globeColorFlash, elapsed=performance.now()-f.t0;
+    const totalDur=f.fadeIn+f.hold+f.fadeOut;
+    if(elapsed>totalDur){ globeColorFlash=null; }
+    else {
+      let a;
+      if(elapsed<f.fadeIn) a=elapsed/f.fadeIn;
+      else if(elapsed<f.fadeIn+f.hold) a=1.0;
+      else a=1.0-(elapsed-f.fadeIn-f.hold)/f.fadeOut;
+      a=Math.max(0,Math.min(1,a))*0.88;
+      let tr,tg,tb;
+      const bright=(r+g+b)/765;
+      const shade=0.5+bright*0.5;
+      if(f.color==='red')    {tr=230;tg=30; tb=30;}
+      else if(f.color==='yellow'){tr=245;tg=215;tb=20;}
+      else                   {tr=30; tg=220;tb=40;}
+      r=Math.round(r*(1-a)+tr*shade*a);
+      g=Math.round(g*(1-a)+tg*shade*a);
+      b=Math.round(b*(1-a)+tb*shade*a);
+    }
+  }
+  const poleBase = Math.pow(Math.abs(latM)/(Math.PI/2), 1.0)*0.99;
   const noise = 0.5+0.5*Math.sin(col.r*7.3+col.b*3.1);
-  const poleFactor = poleBase*(0.72+0.28*noise);
+  const poleFactor = poleBase*(0.88+0.12*noise);
   r=Math.round(r+(255-r)*poleFactor); g=Math.round(g+(255-g)*poleFactor); b=Math.round(b+(255-b)*poleFactor);
   return `rgb(${r},${g},${b})`;
 }
 
+function triggerGlobeFlash(color) {
+  globeColorFlash = { color, t0: performance.now(), fadeIn:1000, hold:5000, fadeOut:2000 };
+}
+
 function drawGlobe() {
-  const W=canvas.width, H=canvas.height, cx=W/2, cy=H/2, R=W*R_FACTOR;
+  const W=canvas.width, H=canvas.height, cx=W/2, cy=H/2, R=Math.min(W,H)*0.44*globeSizeMultiplier;
   ctx.clearRect(0,0,W,H);
 
   // Shadow
@@ -413,27 +381,32 @@ function drawGlobe() {
     if(isPressed){ctx.fillStyle='rgba(255,255,255,0.18)'; ctx.fill();}
   }
 
-  // Sand spots
-  const sandSpots=[
-    {lat:0.18,lon:0.9},{lat:-0.3,lon:2.1},{lat:0.5,lon:-1.4},{lat:-0.1,lon:-0.3},
-    {lat:0.35,lon:3.8},{lat:-0.45,lon:1.1},{lat:0.05,lon:-2.9},{lat:0.6,lon:5.1},
-    {lat:-0.2,lon:-4.2},{lat:0.25,lon:4.5},{lat:-0.55,lon:-1.9},{lat:0.42,lon:2.7},
-    {lat:-0.08,lon:0.3},{lat:0.15,lon:-3.6},{lat:-0.38,lon:3.0},
+  // ── OCEAN PATCHES ─────────────────────────────────────────────────
+  const oceanPatches=[
+    {lat:0.0, lon:0.0,  rx:0.55,ry:0.40},  // Atlantic
+    {lat:0.1, lon:1.6,  rx:0.65,ry:0.50},  // Indian Ocean
+    {lat:0.0, lon:3.2,  rx:0.72,ry:0.55},  // Pacific
+    {lat:0.3, lon:2.4,  rx:0.38,ry:0.30},  // North Atlantic
+    {lat:-0.3,lon:1.0,  rx:0.42,ry:0.32},  // South Atlantic
+    {lat:0.15,lon:5.2,  rx:0.45,ry:0.36},  // Pacific east
+    {lat:-0.2,lon:3.8,  rx:0.50,ry:0.38},  // Southern Ocean
   ];
-  for (const sp of sandSpots) {
-    const r0=latLonTo3D(sp.lat,sp.lon), r3=rotate3D(r0.x,r0.y,r0.z);
-    if(r3.z<0.05) continue;
-    const proj=project(r3,cx,cy,R);
-    const spotR=R*(0.05+Math.abs(Math.sin(sp.lon*3.1))*0.06);
-    const lf=Math.max(0,r3.z);
-    const grad=ctx.createRadialGradient(proj.sx,proj.sy,0,proj.sx,proj.sy,spotR);
-    grad.addColorStop(0,`rgba(194,154,100,${0.55*lf})`);
-    grad.addColorStop(0.45,`rgba(194,154,100,${0.28*lf})`);
-    grad.addColorStop(1,`rgba(194,154,100,0)`);
-    ctx.beginPath();
-    ctx.ellipse(proj.sx,proj.sy,spotR,spotR*(0.6+Math.abs(Math.cos(sp.lon))*0.4),sp.lon*0.4,0,Math.PI*2);
-    ctx.fillStyle=grad; ctx.fill();
+  for(const o of oceanPatches){
+    const ox=Math.cos(o.lat)*Math.cos(o.lon-rotY)*Math.cos(rotX)-Math.sin(o.lat)*Math.sin(rotX);
+    const oy=Math.sin(o.lat)*Math.cos(rotX)+Math.cos(o.lat)*Math.cos(o.lon-rotY)*Math.sin(rotX);
+    const oz=Math.cos(o.lat)*Math.sin(o.lon-rotY);
+    if(oz<-0.05) continue;
+    const sx=cx+ox*R, sy=cy-oy*R;
+    const fade=0.3+oz*0.7;
+    const g=ctx.createRadialGradient(sx,sy,0,sx,sy,o.rx*R);
+    g.addColorStop(0,`rgba(20,80,210,${0.30*fade})`);
+    g.addColorStop(0.5,`rgba(15,60,175,${0.18*fade})`);
+    g.addColorStop(1,'rgba(10,40,140,0)');
+    ctx.save(); ctx.fillStyle=g;
+    ctx.beginPath(); ctx.ellipse(sx,sy,o.rx*R,o.ry*R,o.lon*0.2,0,Math.PI*2);
+    ctx.fill(); ctx.restore();
   }
+
 
   // Shine
   const shine=ctx.createRadialGradient(cx-R*0.28,cy-R*0.3,R*0.04,cx-R*0.08,cy-R*0.1,R);
@@ -530,7 +503,7 @@ function animate() {
 }
 animate();
 
-// ── IMAGE DISPLAY — TRUE SKETCHUP PUSH/PULL ──────────────────────
+// ── IMAGE DISPLAY — SKETCHUP PUSH/PULL ───────────────────────────
 const extrudeCanvas = document.getElementById('extrudeCanvas');
 const extCtx = extrudeCanvas.getContext('2d');
 let extState = null;
@@ -551,23 +524,12 @@ function showImage(row, col) {
   if (!faceData) return;
   const pts   = faceData.pts;
   const cRect = canvas.getBoundingClientRect();
-
-  // The 4 cell corners — this is the FACE that gets pushed
-  const face = pts.map(p => ({ x: p.sx + cRect.left, y: p.sy + cRect.top }));
-
-  const img = new Image();
-  img.onload = () => {
+  const face  = pts.map(p => ({ x: p.sx + cRect.left, y: p.sy + cRect.top }));
+  const img   = new Image();
+  img.onload  = () => {
     const tW = window.innerWidth * 0.67;
     const tH = tW * (img.naturalHeight / img.naturalWidth);
-    extState = {
-      img, face,
-      // target: top-left final position
-      tX:12, tY:44, tW, tH,
-      t0: performance.now(),
-      // phase 1: extrude (0→0.45) — side walls grow, face stays
-      // phase 2: fly (0.45→1)    — face zooms to final size
-      dur: 1400,
-    };
+    extState = { img, face, tX:12, tY:44, tW, tH, t0: performance.now(), dur: 1100 };
     extrudeCanvas.style.pointerEvents = 'all';
     box.style.backgroundColor = randomBlue();
   };
@@ -579,139 +541,90 @@ extrudeCanvas.addEventListener('click', () => {
   extrudeCanvas.style.pointerEvents = 'none';
 });
 
-function drawQuad(pts, fillStyle, alpha) {
-  extCtx.save();
-  extCtx.globalAlpha = alpha;
-  extCtx.fillStyle = fillStyle;
-  extCtx.beginPath();
-  extCtx.moveTo(pts[0].x, pts[0].y);
-  pts.slice(1).forEach(p => extCtx.lineTo(p.x, p.y));
-  extCtx.closePath();
-  extCtx.fill();
-  extCtx.restore();
-}
-
 function drawExtrude() {
   extCtx.clearRect(0, 0, extrudeCanvas.width, extrudeCanvas.height);
-
   if (extState) {
     const s   = extState;
     const raw = Math.min((performance.now()-s.t0)/s.dur, 1);
+    const e   = easeOut(raw);
 
-    const SPLIT = 0.45; // phase boundary
+    // Target: final big rect
+    const tPts = [
+      {x:s.tX,      y:s.tY},
+      {x:s.tX+s.tW, y:s.tY},
+      {x:s.tX+s.tW, y:s.tY+s.tH},
+      {x:s.tX,      y:s.tY+s.tH},
+    ];
 
-    // ── PHASE 1: PUSH OUT (face stays, walls extrude toward viewer) ──
-    if (raw <= SPLIT) {
-      const t1 = easeOut(raw / SPLIT); // 0→1 during phase 1
+    // Front face: lerps directly from cell → final big rect (NO intermediate size)
+    const front = s.face.map((p,i) => ({
+      x: lerp(p.x, tPts[i].x, e),
+      y: lerp(p.y, tPts[i].y, e),
+    }));
 
-      // extrude direction: toward viewer = shift up-left (perspective)
-      const extX = lerp(0, -40, t1);
-      const extY = lerp(0, -60, t1);
+    // Side walls: depth starts at 0, peaks mid-animation, back to 0
+    // This gives the 3D extrude illusion while the face is travelling
+    const depthMax = 50;
+    const depthT   = Math.sin(e * Math.PI); // bell curve 0→1→0
+    const depth    = depthMax * depthT;
 
-      // back face = original cell corners (stays fixed)
-      const back = s.face;
+    // Back face = front face pushed back (up-left = perspective recession)
+    const back = front.map(p => ({ x: p.x + depth, y: p.y + depth * 0.5 }));
 
-      // front face = cell corners shifted by extrude vector
-      const front = back.map(p => ({ x: p.x + extX, y: p.y + extY }));
+    // dim bg
+    extCtx.fillStyle = `rgba(0,0,0,${e*0.55})`;
+    extCtx.fillRect(0,0,extrudeCanvas.width,extrudeCanvas.height);
 
-      // dim bg slightly
-      extCtx.fillStyle = `rgba(0,0,0,${t1*0.3})`;
-      extCtx.fillRect(0,0,extrudeCanvas.width,extrudeCanvas.height);
-
-      // LEFT side wall (back[0]→back[3] to front[0]→front[3])
-      drawQuad([back[0], back[3], front[3], front[0]],
-        'rgba(30,30,30,0.92)', t1);
-
-      // TOP side wall (back[0]→back[1] to front[0]→front[1])
-      drawQuad([back[0], back[1], front[1], front[0]],
-        'rgba(55,55,55,0.88)', t1);
-
-      // RIGHT side wall (back[1]→back[2] to front[1]→front[2])
-      drawQuad([back[1], back[2], front[2], front[1]],
-        'rgba(20,20,20,0.92)', t1);
-
-      // BOTTOM side wall (back[2]→back[3] to front[2]→front[3])
-      drawQuad([back[2], back[3], front[3], front[2]],
-        'rgba(15,15,15,0.88)', t1);
-
-      // FRONT face — image clipped into it
+    if (depth > 0.5) {
+      // RIGHT wall: front[1]→front[2] + back[1]→back[2]
       extCtx.save();
+      extCtx.globalAlpha = depthT * 0.9;
+      extCtx.fillStyle = 'rgba(25,25,25,0.95)';
       extCtx.beginPath();
-      extCtx.moveTo(front[0].x, front[0].y);
-      front.slice(1).forEach(p => extCtx.lineTo(p.x, p.y));
-      extCtx.closePath();
-      extCtx.clip();
-      extCtx.globalAlpha = 0.95;
-      const minX = Math.min(...front.map(p=>p.x));
-      const minY = Math.min(...front.map(p=>p.y));
-      const maxX = Math.max(...front.map(p=>p.x));
-      const maxY = Math.max(...front.map(p=>p.y));
-      extCtx.drawImage(s.img, minX, minY, maxX-minX, maxY-minY);
+      extCtx.moveTo(front[1].x, front[1].y);
+      extCtx.lineTo(back[1].x,  back[1].y);
+      extCtx.lineTo(back[2].x,  back[2].y);
+      extCtx.lineTo(front[2].x, front[2].y);
+      extCtx.closePath(); extCtx.fill();
       extCtx.restore();
 
-      // white outline on front face
+      // BOTTOM wall: front[2]→front[3] + back[2]→back[3]
       extCtx.save();
-      extCtx.globalAlpha = 0.5 + t1*0.4;
-      extCtx.strokeStyle = 'rgba(255,255,255,0.7)';
-      extCtx.lineWidth = 1.2;
+      extCtx.globalAlpha = depthT * 0.75;
+      extCtx.fillStyle = 'rgba(15,15,15,0.95)';
       extCtx.beginPath();
-      extCtx.moveTo(front[0].x, front[0].y);
-      front.slice(1).forEach(p=>extCtx.lineTo(p.x,p.y));
-      extCtx.closePath(); extCtx.stroke();
+      extCtx.moveTo(front[2].x, front[2].y);
+      extCtx.lineTo(back[2].x,  back[2].y);
+      extCtx.lineTo(back[3].x,  back[3].y);
+      extCtx.lineTo(front[3].x, front[3].y);
+      extCtx.closePath(); extCtx.fill();
       extCtx.restore();
     }
 
-    // ── PHASE 2: FACE FLIES TO FINAL SIZE ──
-    else {
-      const t2 = easeOut((raw - SPLIT) / (1 - SPLIT)); // 0→1 during phase 2
+    // FRONT FACE — image clipped into it
+    extCtx.save();
+    extCtx.beginPath();
+    extCtx.moveTo(front[0].x, front[0].y);
+    front.slice(1).forEach(p => extCtx.lineTo(p.x, p.y));
+    extCtx.closePath();
+    extCtx.clip();
+    const minX = Math.min(...front.map(p=>p.x));
+    const minY = Math.min(...front.map(p=>p.y));
+    const maxX = Math.max(...front.map(p=>p.x));
+    const maxY = Math.max(...front.map(p=>p.y));
+    extCtx.globalAlpha = Math.min(1, raw * 3);
+    extCtx.drawImage(s.img, minX, minY, maxX-minX, maxY-minY);
+    extCtx.restore();
 
-      // start position = fully extruded front face
-      const extX = -40, extY = -60;
-      const extFront = s.face.map(p => ({ x: p.x + extX, y: p.y + extY }));
-
-      // target rect corners
-      const tPts = [
-        {x:s.tX,      y:s.tY},
-        {x:s.tX+s.tW, y:s.tY},
-        {x:s.tX+s.tW, y:s.tY+s.tH},
-        {x:s.tX,      y:s.tY+s.tH},
-      ];
-
-      // interpolate corners
-      const cur = extFront.map((p,i) => ({
-        x: lerp(p.x, tPts[i].x, t2),
-        y: lerp(p.y, tPts[i].y, t2),
-      }));
-
-      // dim bg
-      extCtx.fillStyle = `rgba(0,0,0,${0.3 + t2*0.35})`;
-      extCtx.fillRect(0,0,extrudeCanvas.width,extrudeCanvas.height);
-
-      // image clipped in morphing quad
-      extCtx.save();
-      extCtx.beginPath();
-      extCtx.moveTo(cur[0].x, cur[0].y);
-      cur.slice(1).forEach(p=>extCtx.lineTo(p.x,p.y));
-      extCtx.closePath();
-      extCtx.clip();
-      extCtx.globalAlpha = 1;
-      const minX = Math.min(...cur.map(p=>p.x));
-      const minY = Math.min(...cur.map(p=>p.y));
-      const maxX = Math.max(...cur.map(p=>p.x));
-      const maxY = Math.max(...cur.map(p=>p.y));
-      extCtx.drawImage(s.img, minX, minY, maxX-minX, maxY-minY);
-      extCtx.restore();
-
-      // border
-      extCtx.save();
-      extCtx.strokeStyle = `rgba(255,255,255,${0.5+t2*0.4})`;
-      extCtx.lineWidth = 2;
-      extCtx.beginPath();
-      extCtx.moveTo(cur[0].x, cur[0].y);
-      cur.slice(1).forEach(p=>extCtx.lineTo(p.x,p.y));
-      extCtx.closePath(); extCtx.stroke();
-      extCtx.restore();
-    }
+    // outline
+    extCtx.save();
+    extCtx.strokeStyle = `rgba(255,255,255,${0.4 + e*0.5})`;
+    extCtx.lineWidth = 1.5;
+    extCtx.beginPath();
+    extCtx.moveTo(front[0].x, front[0].y);
+    front.slice(1).forEach(p=>extCtx.lineTo(p.x,p.y));
+    extCtx.closePath(); extCtx.stroke();
+    extCtx.restore();
   }
   requestAnimationFrame(drawExtrude);
 }
@@ -985,6 +898,117 @@ function animateGlyphs(now) {
 initGlyphs();
 window.addEventListener('resize', initGlyphs);
 requestAnimationFrame(animateGlyphs);
+
+// ── BOUNCING DUCK ────────────────────────────────────────────────────
+(function(){
+  const dc = document.createElement('canvas');
+  dc.style.cssText = 'position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:8000;';
+  document.querySelector('.window-body').appendChild(dc);
+  const dctx = dc.getContext('2d');
+  function resize(){ dc.width=dc.offsetWidth||window.innerWidth; dc.height=dc.offsetHeight||window.innerHeight; }
+  resize(); window.addEventListener('resize', resize);
+
+  // Proper side-view duck. 20w x 12h pixels. Facing right.
+  // 0=transparent 1=body yellow-green 2=belly lime 3=wing dark green
+  // 4=head green 5=eye black 6=eye white 7=beak orange 8=feet brown
+  const D = [
+    [0,0,0,0,0,0,4,4,4,4,4,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,4,4,4,5,6,4,4,4,0,0,0,0,0,0,0],
+    [0,0,0,0,4,4,4,4,4,4,4,4,4,4,0,0,0,0,0,0],
+    [7,7,7,4,4,4,4,4,4,4,4,4,4,4,4,0,0,0,0,0],
+    [7,7,7,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,0],
+    [0,1,1,1,2,2,2,2,2,1,1,1,1,1,1,1,1,0,0,0],
+    [0,1,1,2,2,2,2,2,2,2,1,1,3,3,1,1,1,1,0,0],
+    [0,1,2,2,2,2,2,2,2,2,2,3,3,3,3,1,1,1,0,0],
+    [0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,8,8,0,0,0,8,8,0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,8,0,0,0,0,8,0,0,0,0,0,0,0,0,0,0,0],
+  ];
+
+  const PX = 5;
+  const DW = D[0].length*PX, DH = D.length*PX;
+  const C = {
+    1:'#8ac83a', 2:'#c8f060', 3:'#3a7a10',
+    4:'#2a8a2a', 5:'#111', 6:'#fff',
+    7:'#ff9900', 8:'#7a5020',
+  };
+
+  let gx=80, gy=60;
+  let vx=(2.4+Math.random())*(Math.random()<.5?1:-1);
+  let vy=(1.6+Math.random())*(Math.random()<.5?1:-1);
+  const GLOWS=['#8ac83a','#c8f060','#4aaa20','#aade40','#60cc20'];
+  let gi=0, glowCol=GLOWS[0];
+
+  function drawDuck(px, py, flip){
+    dctx.save();
+    dctx.shadowColor=glowCol; dctx.shadowBlur=12;
+    for(let r=0;r<D.length;r++){
+      for(let c=0;c<D[r].length;c++){
+        const col=flip?D[r][D[r].length-1-c]:D[r][c];
+        if(!col) continue;
+        dctx.fillStyle=C[col];
+        dctx.fillRect(px+c*PX, py+r*PX, PX, PX);
+      }
+    }
+    dctx.restore();
+  }
+
+  let last=performance.now();
+  function tick(now){
+    const dt=Math.min(now-last,33); last=now;
+    dctx.clearRect(0,0,dc.width,dc.height);
+    gx+=vx*(dt/16); gy+=vy*(dt/16);
+    let b=false;
+    if(gx<=0){gx=0;vx=Math.abs(vx);b=true;}
+    if(gx+DW>=dc.width){gx=dc.width-DW;vx=-Math.abs(vx);b=true;}
+    if(gy<=0){gy=0;vy=Math.abs(vy);b=true;}
+    if(gy+DH>=dc.height){gy=dc.height-DH;vy=-Math.abs(vy);b=true;}
+    if(b){gi=(gi+1)%GLOWS.length;glowCol=GLOWS[gi];}
+    drawDuck(gx|0, gy|0, vx<0);
+    requestAnimationFrame(tick);
+  }
+  requestAnimationFrame(tick);
+})();
+
+
+// ── CHESSBOARD GLOBE GROWER ─────────────────────────────────────────
+(function(){
+  const cb = document.getElementById('chessBoard');
+  const cx = cb.getContext('2d');
+  const SQUARES = 8, SZ = 8; // 8x8 board, 8px each = 64px
+  for(let r=0;r<SQUARES;r++){
+    for(let c=0;c<SQUARES;c++){
+      cx.fillStyle = (r+c)%2===0 ? '#c8a87a' : '#5c3a1e';
+      cx.fillRect(c*SZ, r*SZ, SZ, SZ);
+    }
+  }
+  // border
+  cx.strokeStyle='#3a1a00'; cx.lineWidth=1.5;
+  cx.strokeRect(0,0,64,64);
+
+  cb.addEventListener('click', ()=>{
+    globeSizeMultiplier = Math.min(globeSizeMultiplier + 0.02, 3.0);
+  });
+})();
+
+// ── HELLO TEXT RANDOM FONT ───────────────────────────────────────────
+(function(){
+  const el = document.getElementById('helloText');
+  const fonts = [
+    'Impact','Georgia','Courier New','Arial Black','Trebuchet MS',
+    'Palatino','Comic Sans MS','Verdana','Times New Roman','Garamond',
+    '"VT323",monospace','"Nunito",sans-serif',
+    'fantasy','cursive','monospace',
+  ];
+  el.textContent = 'hello';
+  el.style.display = 'block';
+  function pickFont(){
+    el.style.fontFamily = fonts[Math.floor(Math.random()*fonts.length)];
+  }
+  pickFont();
+  setInterval(pickFont, 2800);
+})();
 
 // ── PIXEL CLOCK ──────────────────────────────────────────────────────
 function updateClock() {
