@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>GlobeVista</title>
+  <title>photoPHOTOvm www</title>
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;900&family=VT323&display=swap" rel="stylesheet">
   <style>
     *, *::before, *::after {
@@ -264,12 +264,12 @@
     <div class="dot min" onclick="void(0)"></div>
     <div class="dot max" onclick="void(0)"></div>
     <span class="titlebar-sub">SYS.v2.04</span>
-    <span class="titlebar-label">GlobeVista — Interactive Earth</span>
+    <span class="titlebar-label">scroll photo round press and play ()()() </span>
     <span class="pixel-clock" id="pixelClock">00:00:00</span>
     <div class="win-buttons">
       <div class="win-btn wmin" onclick="void(0)">&#8212;</div>
       <div class="win-btn wmax" onclick="void(0)">&#9633;</div>
-      <div class="win-btn wcls" onclick="void(0)">&#10005;</div>
+      <div class="win-btn wcls" onclick="window.open('https://victormasotti.com/','_blank')">&#10005;</div>
     </div>
   </div>
 
@@ -533,137 +533,70 @@ function animate() {
 }
 animate();
 
-// ── EXTRUDE + ZOOM ANIMATION ─────────────────────────────────────────
+// ── IMAGE DISPLAY ─────────────────────────────────────────────────
 const extrudeCanvas = document.getElementById('extrudeCanvas');
 const extCtx = extrudeCanvas.getContext('2d');
 let extState = null;
 
-function resizeExtrude(){extrudeCanvas.width=window.innerWidth;extrudeCanvas.height=window.innerHeight;extrudeCanvas.style.width=window.innerWidth+"px";extrudeCanvas.style.height=window.innerHeight+"px";}
+function resizeExtrude() {
+  extrudeCanvas.width  = window.innerWidth;
+  extrudeCanvas.height = window.innerHeight;
+}
 resizeExtrude();
-window.addEventListener('resize',resizeExtrude);
+window.addEventListener('resize', resizeExtrude);
 
 function lerp(a,b,t){return a+(b-a)*t;}
 function easeOut(t){return 1-Math.pow(1-t,3);}
 
 function showImage(row, col) {
-  if (extState && extState.active) { revertExtrude(); return; }
+  if (extState) { extState = null; extrudeCanvas.style.pointerEvents='none'; return; }
   const faceData = lastFaceMap[`${row}_${col}`];
   if (!faceData) return;
-
-  const pts = faceData.pts;
-  const canvasRect = canvas.getBoundingClientRect();
-  const offX = canvasRect.left;
-  const offY = canvasRect.top;
-
-  // 4 screen-space corners of the clicked cell
-  const origin = pts.map(p => ({ x: p.sx + offX, y: p.sy + offY }));
-
-  const img = new Image();
-  img.onload = () => {
-    const targetW = window.innerWidth * 0.67;
-    const targetH = targetW * (img.naturalHeight / img.naturalWidth);
-    extState = {
-      active: true, img,
-      origin,
-      targetX: 0, targetY: 0, targetW, targetH,
-      startTime: performance.now(),
-      duration: 1100,
-    };
+  const pts   = faceData.pts;
+  const cRect = canvas.getBoundingClientRect();
+  const xs    = pts.map(p=>p.sx), ys = pts.map(p=>p.sy);
+  const oX    = Math.min(...xs) + cRect.left;
+  const oY    = Math.min(...ys) + cRect.top;
+  const oW    = Math.max(...xs) - Math.min(...xs);
+  const oH    = Math.max(...ys) - Math.min(...ys);
+  const img   = new Image();
+  img.onload  = () => {
+    const tW = window.innerWidth * 0.67;
+    const tH = tW * (img.naturalHeight / img.naturalWidth);
+    extState = { img, oX, oY, oW, oH, tX:12, tY:52, tW, tH, t0: performance.now(), dur: 950 };
     extrudeCanvas.style.pointerEvents = 'all';
     box.style.backgroundColor = randomBlue();
   };
-  img.onerror = () => console.error('Image failed to load:', cellImages[row][col]);
   img.src = cellImages[row][col];
-  console.log('showImage called', row, col, cellImages[row][col]);
 }
 
-function revertExtrude() {
-  if (!extState) return;
-  // animate back
-  extState.reverting = true;
-  extState.revertStart = performance.now();
-  extState.revertDuration = 600;
-  extrudeCanvas.style.pointerEvents = 'none';
-}
-extrudeCanvas.addEventListener('click', revertExtrude);
+extrudeCanvas.addEventListener('click', () => { extState = null; extrudeCanvas.style.pointerEvents='none'; });
 
 function drawExtrude() {
   extCtx.clearRect(0, 0, extrudeCanvas.width, extrudeCanvas.height);
-  if (!extState || !extState.active) { requestAnimationFrame(drawExtrude); return; }
-
-  const s = extState;
-  let t;
-  if (s.reverting) {
-    const rt = Math.min((performance.now() - s.revertStart) / s.revertDuration, 1);
-    t = 1 - easeOut(rt);
-    if (rt >= 1) { extState = null; requestAnimationFrame(drawExtrude); return; }
-  } else {
-    t = Math.min((performance.now() - s.startTime) / s.duration, 1);
-    t = easeOut(t);
-  }
-
-  // Target rect corners (top-left aligned rectangle)
-  const tX = s.targetX, tY = s.targetY, tW = s.targetW, tH = s.targetH;
-  const target = [
-    { x: tX,     y: tY },
-    { x: tX+tW,  y: tY },
-    { x: tX+tW,  y: tY+tH },
-    { x: tX,     y: tY+tH },
-  ];
-
-  // Interpolate each of the 4 corners: origin cell → target rect
-  const cur = s.origin.map((o, i) => ({
-    x: lerp(o.x, target[i].x, t),
-    y: lerp(o.y, target[i].y, t),
-  }));
-
-  // Draw as a perspective quad (trapezoid → rect morph)
-  // use clip to the quad shape, then draw image inside it
-  extCtx.save();
-  extCtx.beginPath();
-  extCtx.moveTo(cur[0].x, cur[0].y);
-  extCtx.lineTo(cur[1].x, cur[1].y);
-  extCtx.lineTo(cur[2].x, cur[2].y);
-  extCtx.lineTo(cur[3].x, cur[3].y);
-  extCtx.closePath();
-  extCtx.clip();
-
-  // Draw image stretched into the quad using transform
-  // Map image rect into the quad via a rough bounding box
-  const minX = Math.min(...cur.map(p => p.x));
-  const minY = Math.min(...cur.map(p => p.y));
-  const maxX = Math.max(...cur.map(p => p.x));
-  const maxY = Math.max(...cur.map(p => p.y));
-  extCtx.globalAlpha = 0.15 + t * 0.85;
-  extCtx.drawImage(s.img, minX, minY, maxX - minX, maxY - minY);
-  extCtx.restore();
-
-  // Draw the quad outline — the "extruded shape" border
-  extCtx.save();
-  extCtx.globalAlpha = Math.min(1, (1 - t) * 3 + 0.1);
-  extCtx.strokeStyle = '#000';
-  extCtx.lineWidth = 1.5;
-  extCtx.beginPath();
-  extCtx.moveTo(cur[0].x, cur[0].y);
-  extCtx.lineTo(cur[1].x, cur[1].y);
-  extCtx.lineTo(cur[2].x, cur[2].y);
-  extCtx.lineTo(cur[3].x, cur[3].y);
-  extCtx.closePath();
-  extCtx.stroke();
-
-  // Corner lines from origin cell to current corners (visible during morph)
-  if (t < 0.7) {
-    extCtx.globalAlpha = (1 - t / 0.7) * 0.45;
-    extCtx.lineWidth = 0.7;
-    for (let i = 0; i < 4; i++) {
-      extCtx.beginPath();
-      extCtx.moveTo(s.origin[i].x, s.origin[i].y);
-      extCtx.lineTo(cur[i].x, cur[i].y);
-      extCtx.stroke();
+  if (extState) {
+    const s = extState;
+    const raw = Math.min((performance.now()-s.t0)/s.dur, 1);
+    const e   = easeOut(raw);
+    const x=lerp(s.oX,s.tX,e), y=lerp(s.oY,s.tY,e);
+    const w=lerp(s.oW,s.tW,e), h=lerp(s.oH,s.tH,e);
+    // dim bg
+    extCtx.fillStyle=`rgba(0,0,0,${e*0.6})`; extCtx.fillRect(0,0,extrudeCanvas.width,extrudeCanvas.height);
+    // image
+    extCtx.save(); extCtx.globalAlpha=Math.min(1,raw*3);
+    extCtx.shadowColor='rgba(0,0,0,0.7)'; extCtx.shadowBlur=30*e;
+    extCtx.drawImage(s.img,x,y,w,h); extCtx.restore();
+    // white border
+    extCtx.save(); extCtx.globalAlpha=e; extCtx.strokeStyle='rgba(255,255,255,0.8)';
+    extCtx.lineWidth=2; extCtx.strokeRect(x,y,w,h); extCtx.restore();
+    // corner lines fading out
+    if (raw<0.55) {
+      const cx2=s.oX+s.oW/2, cy2=s.oY+s.oH/2, a=(1-raw/0.55)*0.45;
+      extCtx.save(); extCtx.globalAlpha=a; extCtx.strokeStyle='#fff'; extCtx.lineWidth=0.8;
+      [[x,y],[x+w,y],[x+w,y+h],[x,y+h]].forEach(([px,py])=>{ extCtx.beginPath(); extCtx.moveTo(cx2,cy2); extCtx.lineTo(px,py); extCtx.stroke(); });
+      extCtx.restore();
     }
   }
-  extCtx.restore();
-
   requestAnimationFrame(drawExtrude);
 }
 requestAnimationFrame(drawExtrude);
