@@ -292,17 +292,18 @@
 </div>
 
 <canvas id="extrudeCanvas" style="position:fixed;top:0;left:0;pointer-events:none;z-index:999;"></canvas>
+<div id="ghostLayer" style="position:fixed;inset:0;pointer-events:none;z-index:9000;overflow:hidden;"></div>
 <canvas id="glyphCanvas" style="position:absolute;bottom:36px;right:0;width:38%;height:38%;pointer-events:none;z-index:3;"></canvas>
 
 <script>
 // ── DATA ──────────────────────────────────────────────────────────────
 const images = [
-  '1771697824220_cak.jpg','1771697824221_cal.jpg','1771697824221_cam.jpg',
-  '1771697824221_can.jpg','1771697824221_cek.jpg','1771697824222_cel.jpg',
-  '1771697824222_cem.jpg','1771697824222_cen.jpg','1771697824222_cil.jpg',
-  '1771697824223_cim.jpg','1771697824223_cin.jpg','1771697824223_col.jpg',
-  '1771697824223_com.jpg','1771697824223_cul.jpg','1771697824224_cum.jpg',
-  '1771697824224_cun.jpg',
+  '1771730085138_cak.jpg','1771730085139_cal.jpg','1771730085140_cam.jpg',
+  '1771730085140_can.jpg','1771730085141_cek.jpg','1771730085141_cel.jpg',
+  '1771730085141_cem.jpg','1771730085143_cen.jpg','1771730085144_cil.jpg',
+  '1771730085144_cim.jpg','1771730085144_cin.jpg','1771730085145_col.jpg',
+  '1771730085146_com.jpg','1771730085147_cul.jpg','1771730085149_cum.jpg',
+  '1771730085151_cun.jpg',
 ];
 const shuffled = [...images].sort(() => Math.random() - 0.5);
 
@@ -869,6 +870,77 @@ function animateGlyphs(now) {
 initGlyphs();
 window.addEventListener('resize', initGlyphs);
 requestAnimationFrame(animateGlyphs);
+
+// ── FLOATING GHOST IMAGES ────────────────────────────────────────────
+(function() {
+  const ghostLayer = document.getElementById('ghostLayer');
+  const ghostImgs = [
+    '1771730085138_cak.jpg','1771730085139_cal.jpg','1771730085140_cam.jpg',
+    '1771730085140_can.jpg','1771730085141_cek.jpg','1771730085141_cel.jpg',
+    '1771730085141_cem.jpg','1771730085143_cen.jpg','1771730085144_cil.jpg',
+    '1771730085144_cim.jpg','1771730085144_cin.jpg','1771730085145_col.jpg',
+    '1771730085146_com.jpg','1771730085147_cul.jpg','1771730085149_cum.jpg',
+    '1771730085151_cun.jpg',
+  ];
+
+  function spawnGhost() {
+    const src = ghostImgs[Math.floor(Math.random() * ghostImgs.length)];
+    const el = document.createElement('img');
+    el.src = src;
+
+    // random size: 80–260px wide
+    const w = 80 + Math.random() * 180;
+    // random position anywhere on screen
+    const x = Math.random() * (window.innerWidth  - w);
+    const y = Math.random() * (window.innerHeight - w * 1.3);
+
+    // random slight rotation -25 to +25 deg
+    const rot = (Math.random() - 0.5) * 50;
+    // random duration 1.8–4.5s
+    const dur = 1800 + Math.random() * 2700;
+    // random opacity peak 0.25–0.75
+    const maxOpacity = 0.25 + Math.random() * 0.5;
+
+    Object.assign(el.style, {
+      position: 'absolute',
+      left: x + 'px',
+      top:  y + 'px',
+      width: w + 'px',
+      height: 'auto',
+      objectFit: 'cover',
+      transform: `rotate(${rot}deg)`,
+      opacity: '0',
+      pointerEvents: 'none',
+      boxShadow: '0 4px 24px rgba(0,0,0,0.5)',
+      outline: '1.5px solid rgba(255,255,255,0.3)',
+      transition: `opacity ${dur * 0.35 | 0}ms ease`,
+      willChange: 'opacity',
+    });
+
+    ghostLayer.appendChild(el);
+
+    // fade in
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        el.style.opacity = maxOpacity;
+      });
+    });
+
+    // fade out after hold
+    const holdTime = dur * 0.5;
+    setTimeout(() => {
+      el.style.transition = `opacity ${dur * 0.4 | 0}ms ease`;
+      el.style.opacity = '0';
+      setTimeout(() => el.remove(), dur * 0.45);
+    }, holdTime);
+
+    // schedule next ghost: 400–1800ms
+    setTimeout(spawnGhost, 400 + Math.random() * 1400);
+  }
+
+  // start after a short delay
+  setTimeout(spawnGhost, 800);
+})();
 
 // ── PIXEL CLOCK ──────────────────────────────────────────────────────
 function updateClock() {
