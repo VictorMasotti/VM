@@ -269,7 +269,7 @@
     <div class="win-buttons">
       <div class="win-btn wmin" onclick="void(0)">&#8212;</div>
       <div class="win-btn wmax" onclick="void(0)">&#9633;</div>
-      <div class="win-btn wcls" onclick="window.open('https://victormasotti.com/','_blank')">&#10005;</div>
+      <div class="win-btn wcls" onclick="window.location.href='https://victormasotti.com/'">&#10005;</div>
     </div>
   </div>
 
@@ -292,18 +292,14 @@
 </div>
 
 <canvas id="extrudeCanvas" style="position:fixed;top:0;left:0;pointer-events:none;z-index:999;"></canvas>
-<div id="ghostLayer" style="position:fixed;inset:0;pointer-events:none;z-index:9000;overflow:hidden;"></div>
 <canvas id="glyphCanvas" style="position:absolute;bottom:36px;right:0;width:38%;height:38%;pointer-events:none;z-index:3;"></canvas>
 
 <script>
 // ── DATA ──────────────────────────────────────────────────────────────
 const images = [
-    'cak.jpg','cal.jpg','cam.jpg',
-    'can.jpg','cek.jpg','cel.jpg',
-    'cem.jpg','cen.jpg','cil.jpg',
-    'cim.jpg','cin.jpg','col.jpg',
-    'com.jpg','cul.jpg','cum.jpg',
-    'cun.jpg',
+  'cak.jpg','cal.jpg','cam.jpg','can.jpg','cek.jpg','cel.jpg',
+  'cem.jpg','cen.jpg','cil.jpg','cim.jpg','cin.jpg','col.jpg',
+  'com.jpg','cul.jpg','cum.jpg','cun.jpg',
 ];
 const shuffled = [...images].sort(() => Math.random() - 0.5);
 
@@ -534,7 +530,7 @@ function animate() {
 }
 animate();
 
-// ── IMAGE DISPLAY ─────────────────────────────────────────────────
+// ── IMAGE DISPLAY — TRUE SKETCHUP PUSH/PULL ──────────────────────
 const extrudeCanvas = document.getElementById('extrudeCanvas');
 const extCtx = extrudeCanvas.getContext('2d');
 let extState = null;
@@ -555,46 +551,165 @@ function showImage(row, col) {
   if (!faceData) return;
   const pts   = faceData.pts;
   const cRect = canvas.getBoundingClientRect();
-  const xs    = pts.map(p=>p.sx), ys = pts.map(p=>p.sy);
-  const oX    = Math.min(...xs) + cRect.left;
-  const oY    = Math.min(...ys) + cRect.top;
-  const oW    = Math.max(...xs) - Math.min(...xs);
-  const oH    = Math.max(...ys) - Math.min(...ys);
-  const img   = new Image();
-  img.onload  = () => {
+
+  // The 4 cell corners — this is the FACE that gets pushed
+  const face = pts.map(p => ({ x: p.sx + cRect.left, y: p.sy + cRect.top }));
+
+  const img = new Image();
+  img.onload = () => {
     const tW = window.innerWidth * 0.67;
     const tH = tW * (img.naturalHeight / img.naturalWidth);
-    extState = { img, oX, oY, oW, oH, tX:12, tY:52, tW, tH, t0: performance.now(), dur: 950 };
+    extState = {
+      img, face,
+      // target: top-left final position
+      tX:12, tY:44, tW, tH,
+      t0: performance.now(),
+      // phase 1: extrude (0→0.45) — side walls grow, face stays
+      // phase 2: fly (0.45→1)    — face zooms to final size
+      dur: 1400,
+    };
     extrudeCanvas.style.pointerEvents = 'all';
     box.style.backgroundColor = randomBlue();
   };
   img.src = cellImages[row][col];
 }
 
-extrudeCanvas.addEventListener('click', () => { extState = null; extrudeCanvas.style.pointerEvents='none'; });
+extrudeCanvas.addEventListener('click', () => {
+  extState = null;
+  extrudeCanvas.style.pointerEvents = 'none';
+});
+
+function drawQuad(pts, fillStyle, alpha) {
+  extCtx.save();
+  extCtx.globalAlpha = alpha;
+  extCtx.fillStyle = fillStyle;
+  extCtx.beginPath();
+  extCtx.moveTo(pts[0].x, pts[0].y);
+  pts.slice(1).forEach(p => extCtx.lineTo(p.x, p.y));
+  extCtx.closePath();
+  extCtx.fill();
+  extCtx.restore();
+}
 
 function drawExtrude() {
   extCtx.clearRect(0, 0, extrudeCanvas.width, extrudeCanvas.height);
+
   if (extState) {
-    const s = extState;
+    const s   = extState;
     const raw = Math.min((performance.now()-s.t0)/s.dur, 1);
-    const e   = easeOut(raw);
-    const x=lerp(s.oX,s.tX,e), y=lerp(s.oY,s.tY,e);
-    const w=lerp(s.oW,s.tW,e), h=lerp(s.oH,s.tH,e);
-    // dim bg
-    extCtx.fillStyle=`rgba(0,0,0,${e*0.6})`; extCtx.fillRect(0,0,extrudeCanvas.width,extrudeCanvas.height);
-    // image
-    extCtx.save(); extCtx.globalAlpha=Math.min(1,raw*3);
-    extCtx.shadowColor='rgba(0,0,0,0.7)'; extCtx.shadowBlur=30*e;
-    extCtx.drawImage(s.img,x,y,w,h); extCtx.restore();
-    // white border
-    extCtx.save(); extCtx.globalAlpha=e; extCtx.strokeStyle='rgba(255,255,255,0.8)';
-    extCtx.lineWidth=2; extCtx.strokeRect(x,y,w,h); extCtx.restore();
-    // corner lines fading out
-    if (raw<0.55) {
-      const cx2=s.oX+s.oW/2, cy2=s.oY+s.oH/2, a=(1-raw/0.55)*0.45;
-      extCtx.save(); extCtx.globalAlpha=a; extCtx.strokeStyle='#fff'; extCtx.lineWidth=0.8;
-      [[x,y],[x+w,y],[x+w,y+h],[x,y+h]].forEach(([px,py])=>{ extCtx.beginPath(); extCtx.moveTo(cx2,cy2); extCtx.lineTo(px,py); extCtx.stroke(); });
+
+    const SPLIT = 0.45; // phase boundary
+
+    // ── PHASE 1: PUSH OUT (face stays, walls extrude toward viewer) ──
+    if (raw <= SPLIT) {
+      const t1 = easeOut(raw / SPLIT); // 0→1 during phase 1
+
+      // extrude direction: toward viewer = shift up-left (perspective)
+      const extX = lerp(0, -40, t1);
+      const extY = lerp(0, -60, t1);
+
+      // back face = original cell corners (stays fixed)
+      const back = s.face;
+
+      // front face = cell corners shifted by extrude vector
+      const front = back.map(p => ({ x: p.x + extX, y: p.y + extY }));
+
+      // dim bg slightly
+      extCtx.fillStyle = `rgba(0,0,0,${t1*0.3})`;
+      extCtx.fillRect(0,0,extrudeCanvas.width,extrudeCanvas.height);
+
+      // LEFT side wall (back[0]→back[3] to front[0]→front[3])
+      drawQuad([back[0], back[3], front[3], front[0]],
+        'rgba(30,30,30,0.92)', t1);
+
+      // TOP side wall (back[0]→back[1] to front[0]→front[1])
+      drawQuad([back[0], back[1], front[1], front[0]],
+        'rgba(55,55,55,0.88)', t1);
+
+      // RIGHT side wall (back[1]→back[2] to front[1]→front[2])
+      drawQuad([back[1], back[2], front[2], front[1]],
+        'rgba(20,20,20,0.92)', t1);
+
+      // BOTTOM side wall (back[2]→back[3] to front[2]→front[3])
+      drawQuad([back[2], back[3], front[3], front[2]],
+        'rgba(15,15,15,0.88)', t1);
+
+      // FRONT face — image clipped into it
+      extCtx.save();
+      extCtx.beginPath();
+      extCtx.moveTo(front[0].x, front[0].y);
+      front.slice(1).forEach(p => extCtx.lineTo(p.x, p.y));
+      extCtx.closePath();
+      extCtx.clip();
+      extCtx.globalAlpha = 0.95;
+      const minX = Math.min(...front.map(p=>p.x));
+      const minY = Math.min(...front.map(p=>p.y));
+      const maxX = Math.max(...front.map(p=>p.x));
+      const maxY = Math.max(...front.map(p=>p.y));
+      extCtx.drawImage(s.img, minX, minY, maxX-minX, maxY-minY);
+      extCtx.restore();
+
+      // white outline on front face
+      extCtx.save();
+      extCtx.globalAlpha = 0.5 + t1*0.4;
+      extCtx.strokeStyle = 'rgba(255,255,255,0.7)';
+      extCtx.lineWidth = 1.2;
+      extCtx.beginPath();
+      extCtx.moveTo(front[0].x, front[0].y);
+      front.slice(1).forEach(p=>extCtx.lineTo(p.x,p.y));
+      extCtx.closePath(); extCtx.stroke();
+      extCtx.restore();
+    }
+
+    // ── PHASE 2: FACE FLIES TO FINAL SIZE ──
+    else {
+      const t2 = easeOut((raw - SPLIT) / (1 - SPLIT)); // 0→1 during phase 2
+
+      // start position = fully extruded front face
+      const extX = -40, extY = -60;
+      const extFront = s.face.map(p => ({ x: p.x + extX, y: p.y + extY }));
+
+      // target rect corners
+      const tPts = [
+        {x:s.tX,      y:s.tY},
+        {x:s.tX+s.tW, y:s.tY},
+        {x:s.tX+s.tW, y:s.tY+s.tH},
+        {x:s.tX,      y:s.tY+s.tH},
+      ];
+
+      // interpolate corners
+      const cur = extFront.map((p,i) => ({
+        x: lerp(p.x, tPts[i].x, t2),
+        y: lerp(p.y, tPts[i].y, t2),
+      }));
+
+      // dim bg
+      extCtx.fillStyle = `rgba(0,0,0,${0.3 + t2*0.35})`;
+      extCtx.fillRect(0,0,extrudeCanvas.width,extrudeCanvas.height);
+
+      // image clipped in morphing quad
+      extCtx.save();
+      extCtx.beginPath();
+      extCtx.moveTo(cur[0].x, cur[0].y);
+      cur.slice(1).forEach(p=>extCtx.lineTo(p.x,p.y));
+      extCtx.closePath();
+      extCtx.clip();
+      extCtx.globalAlpha = 1;
+      const minX = Math.min(...cur.map(p=>p.x));
+      const minY = Math.min(...cur.map(p=>p.y));
+      const maxX = Math.max(...cur.map(p=>p.x));
+      const maxY = Math.max(...cur.map(p=>p.y));
+      extCtx.drawImage(s.img, minX, minY, maxX-minX, maxY-minY);
+      extCtx.restore();
+
+      // border
+      extCtx.save();
+      extCtx.strokeStyle = `rgba(255,255,255,${0.5+t2*0.4})`;
+      extCtx.lineWidth = 2;
+      extCtx.beginPath();
+      extCtx.moveTo(cur[0].x, cur[0].y);
+      cur.slice(1).forEach(p=>extCtx.lineTo(p.x,p.y));
+      extCtx.closePath(); extCtx.stroke();
       extCtx.restore();
     }
   }
@@ -871,77 +986,6 @@ initGlyphs();
 window.addEventListener('resize', initGlyphs);
 requestAnimationFrame(animateGlyphs);
 
-// ── FLOATING GHOST IMAGES ────────────────────────────────────────────
-(function() {
-  const ghostLayer = document.getElementById('ghostLayer');
-  const ghostImgs = [
-    'cak.jpg','cal.jpg','cam.jpg',
-    'can.jpg','cek.jpg','cel.jpg',
-    'cem.jpg','cen.jpg','cil.jpg',
-    'cim.jpg','cin.jpg','col.jpg',
-    'com.jpg','cul.jpg','cum.jpg',
-    'cun.jpg',
-  ];
-
-  function spawnGhost() {
-    const src = ghostImgs[Math.floor(Math.random() * ghostImgs.length)];
-    const el = document.createElement('img');
-    el.src = src;
-
-    // random size: 80–260px wide
-    const w = 80 + Math.random() * 180;
-    // random position anywhere on screen
-    const x = Math.random() * (window.innerWidth  - w);
-    const y = Math.random() * (window.innerHeight - w * 1.3);
-
-    // random slight rotation -25 to +25 deg
-    const rot = (Math.random() - 0.5) * 50;
-    // random duration 1.8–4.5s
-    const dur = 1800 + Math.random() * 2700;
-    // random opacity peak 0.25–0.75
-    const maxOpacity = 0.25 + Math.random() * 0.5;
-
-    Object.assign(el.style, {
-      position: 'absolute',
-      left: x + 'px',
-      top:  y + 'px',
-      width: w + 'px',
-      height: 'auto',
-      objectFit: 'cover',
-      transform: `rotate(${rot}deg)`,
-      opacity: '0',
-      pointerEvents: 'none',
-      boxShadow: '0 4px 24px rgba(0,0,0,0.5)',
-      outline: '1.5px solid rgba(255,255,255,0.3)',
-      transition: `opacity ${dur * 0.35 | 0}ms ease`,
-      willChange: 'opacity',
-    });
-
-    ghostLayer.appendChild(el);
-
-    // fade in
-    requestAnimationFrame(() => {
-      requestAnimationFrame(() => {
-        el.style.opacity = maxOpacity;
-      });
-    });
-
-    // fade out after hold
-    const holdTime = dur * 0.5;
-    setTimeout(() => {
-      el.style.transition = `opacity ${dur * 0.4 | 0}ms ease`;
-      el.style.opacity = '0';
-      setTimeout(() => el.remove(), dur * 0.45);
-    }, holdTime);
-
-    // schedule next ghost: 400–1800ms
-    setTimeout(spawnGhost, 400 + Math.random() * 1400);
-  }
-
-  // start after a short delay
-  setTimeout(spawnGhost, 800);
-})();
-
 // ── PIXEL CLOCK ──────────────────────────────────────────────────────
 function updateClock() {
   const now = new Date();
@@ -956,4 +1000,3 @@ setInterval(updateClock, 1000);
 </script>
 </body>
 </html>
-
