@@ -46,7 +46,6 @@
       display: flex;
       flex-direction: column;
       z-index: 1;
-      /* smooth Mac-like transitions for maximise / minimise */
       transition:
         width 0.32s cubic-bezier(0.4,0,0.2,1),
         height 0.32s cubic-bezier(0.4,0,0.2,1),
@@ -58,7 +57,6 @@
         transform 0.32s cubic-bezier(0.4,0,0.2,1);
     }
 
-    /* Maximised — full viewport, no gap, no rounded corners */
     .window.maximised {
       width: 100vw !important;
       height: 100vh !important;
@@ -69,7 +67,6 @@
       box-shadow: none !important;
     }
 
-    /* Minimised — only the titlebar strip remains, collapses to top of viewport */
     .window.minimised {
       height: 36px !important;
       overflow: hidden !important;
@@ -77,7 +74,6 @@
       left: 50% !important;
       transform: translateX(-50%) !important;
     }
-    /* body fades out when minimised */
     .window.minimised .window-body {
       opacity: 0;
       pointer-events: none;
@@ -179,6 +175,16 @@
       pointer-events: none;
     }
 
+    /* ── Globe canvas fills the entire .top area ── */
+    #globe {
+      position: absolute;
+      inset: 0;
+      width: 100% !important;
+      height: 100% !important;
+      display: block;
+      z-index: 1;
+    }
+
     canvas { display: block; }
 
     .content {
@@ -228,7 +234,6 @@
       pointer-events: none;
     }
 
-    /* tiny info strip below the 3 dot buttons */
     .dot-labels {
       position: absolute;
       left: 4px; top: 36px;
@@ -278,7 +283,6 @@
     </div>
   </div>
 
-  <!-- tiny labels below the 3 dot buttons — purely decorative -->
   <div class="dot-labels" id="dotLabels"></div>
 
   <div class="window-body">
@@ -286,9 +290,10 @@
     <div class="corner-tl"><svg viewBox="0 0 70 70"><path d="M0 0 L70 0 L0 70 Z" fill="rgba(100,180,255,0.09)"/></svg></div>
     <div class="corner-br"><svg viewBox="0 0 70 70"><path d="M70 70 L0 70 L70 0 Z" fill="rgba(255,120,60,0.07)"/></svg></div>
 
-    <div class="top">
+    <div class="top" id="topArea">
       <canvas id="bgGrid" style="position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:0;"></canvas>
-      <canvas id="globe" style="position:relative;z-index:1;"></canvas>
+      <!-- Globe canvas now fills the full .top area — no square constraint -->
+      <canvas id="globe"></canvas>
     </div>
 
     <canvas id="chessBoard" width="64" height="64"
@@ -323,7 +328,7 @@ box.style.backgroundColor = randomBlue();
 const canvas = document.getElementById('globe');
 const ctx    = canvas.getContext('2d');
 const ROWS = 18, COLS = 36;
-const R_FACTOR = 0.44;
+const R_FACTOR = 0.44; // fraction of the *shorter* side at multiplier=1
 
 const cellImages = [];
 for (let r=0;r<ROWS;r++){cellImages[r]=[];for(let c=0;c<COLS;c++)cellImages[r][c]=shuffled[(r*COLS+c)%shuffled.length];}
@@ -351,68 +356,42 @@ function fn(x, y, s) {
 function getCellBiome(row, col) {
   const latD = 90  - (row/ROWS)*180;
   const lonD = -180 + (col/COLS)*360;
-
   const nx = col/5.0, ny = row/3.2;
-
-  // Multiple warp layers for more organic coastlines
   const wa = fn(nx,      ny,      3)  - 0.5;
   const wb = fn(nx+11,   ny+7,   17)  - 0.5;
-  const wc = fn(nx*1.7,  ny*1.3, 55)  - 0.5;  // extra warp layer
-
+  const wc = fn(nx*1.7,  ny*1.3, 55)  - 0.5;
   const wLat = latD + wa * 16 + wc * 6;
   const wLon = lonD + wb * 24 + wc * 8;
-
-  const poleAbs    = Math.abs(latD);
-  const warpedPole = Math.abs(wLat);
-
-  // ── NORTH POLE — irregular, not circular ──
-  // Base threshold varies by longitude — elongated lobes like real Arctic sea ice
   const northLonRad = lonD * Math.PI / 180;
-  // Create 3-lobe irregular shape for the north cap
   const northWarp = Math.sin(northLonRad * 1.5) * 9
                   + Math.sin(northLonRad * 2.7 + 1.1) * 5
                   + Math.cos(northLonRad * 0.8 + 2.3) * 4;
   const northThresh = 68 + northWarp;
-
   if (latD > northThresh) return 'ice';
-  // Gradual fringe zone: noisy transition 8° wide
   if (latD > northThresh - 10) {
-    const fringeT = (latD - (northThresh - 10)) / 10; // 0..1, 1=definitely ice
+    const fringeT = (latD - (northThresh - 10)) / 10;
     const fringeNoise = fn(nx * 2.5, ny * 2.5, 77);
     if (fringeNoise < fringeT * 0.9 + 0.05) return 'ice';
   }
-
-  // ── SOUTH POLE (Antarctica) — highly irregular outline ──
-  // Real Antarctica is wider in the hemisphere 0-180° lon, narrower in -180 to 0
   const southLonRad = lonD * Math.PI / 180;
-  // Asymmetric base: Antarctic peninsula reaches ~-63, Ross ice shelf to -78
   const southWarp = Math.sin(southLonRad * 1.2 + 0.5) * 8
                   + Math.sin(southLonRad * 2.1 - 1.0) * 6
                   + Math.cos(southLonRad * 3.4 + 2.0) * 3
                   + Math.cos(southLonRad * 0.6 + 0.8) * 5;
-  const southThresh = -68 + southWarp; // varies ~-80 to -58
-
+  const southThresh = -68 + southWarp;
   if (latD < southThresh) return 'ice';
-  // Gradual southern fringe
   if (latD < southThresh + 10) {
     const fringeT = ((southThresh + 10) - latD) / 10;
     const fringeNoise = fn(nx * 2.5, ny * 2.5, 91);
     if (fringeNoise < fringeT * 0.85 + 0.05) return 'ice';
   }
-
-  // ── GREENLAND — more jagged, noise-warped ──
-  // Extra noise per-cell so Greenland edge is rough
   const glNoise = fn(nx * 3, ny * 3, 133) - 0.5;
   const isGreenland = wLon > (-57 + glNoise * 14) && wLon < (-17 + glNoise * 10)
                    && wLat > (58  + glNoise * 8)  && wLat < (85);
   if (isGreenland) return 'ice';
-
-  // ── OCEAN vs LAND ──
-  // Extra ocean noise — more variation in open sea, blotchy cloud-like patches
   const oceanNoise1 = fn(nx * 0.8, ny * 0.8, 200);
   const oceanNoise2 = fn(nx * 1.6, ny * 1.4, 211);
   const oceanBlobby = (oceanNoise1 * 0.6 + oceanNoise2 * 0.4);
-
   const isNAmerica  = wLon>-168&&wLon<-55  && wLat>15  && wLat<75;
   const isSAmerica  = wLon>-82 &&wLon<-33  && wLat>-58 && wLat<15;
   const isEurope    = wLon>-12 &&wLon<42   && wLat>34  && wLat<72;
@@ -421,35 +400,25 @@ function getCellBiome(row, col) {
   const isArabia    = wLon>34  &&wLon<65   && wLat>10  && wLat<32;
   const isAsia      = wLon>25  &&wLon<150  && wLat>8   && wLat<75;
   const isAustralia = wLon>112 &&wLon<155  && wLat>-42 && wLat<-9;
-
   const isLand = isNAmerica||isSAmerica||isEurope||isScandi||
                  isAfrica||isArabia||isAsia||isAustralia;
-
   if (!isLand) {
-    // Blobby variation in ocean — scattered islands/atolls via noise
-    // Most ocean cells stay ocean, but a small fraction near land flips to land
     if (oceanBlobby > 0.74) {
-      // Check proximity to land zones (loose) — random island scatter
       const nearLand = (wLon>-175&&wLon<-45&&wLat>5&&wLat<60) ||
                        (wLon>28 &&wLon<160 &&wLat>-15&&wLat<40);
       if (nearLand && oceanBlobby > 0.82) return 'temperate';
     }
     return 'ocean';
   }
-
-  // ── LAND BIOMES ──
   const isSahara = wLon>-18&&wLon<55  &&wLat>10&&wLat<32;
   const isAusArid= wLon>120&&wLon<140 &&wLat>-35&&wLat<-20;
   const isSWusa  = wLon>-122&&wLon<-95&&wLat>22&&wLat<38;
   if (isSahara||isAusArid||isSWusa) return 'arid';
-
   const isAmazon = wLon>-78&&wLon<-45&&wLat>-18&&wLat<8;
   const isCongo  = wLon>10 &&wLon<35 &&wLat>-8 &&wLat<6;
   const isSEAsia = wLon>93 &&wLon<145&&wLat>-8 &&wLat<22;
   if (isAmazon||isCongo||isSEAsia) return 'tropical';
-
   if (Math.abs(wLat) > 52) return 'taiga';
-
   return 'temperate';
 }
 
@@ -457,30 +426,16 @@ function biomeColor(biome, row, col) {
   const h1 = gh(col,   row,   5);
   const h2 = gh(col*3, row*2, 41);
   const h3 = gh(col+7, row+3, 83);
-  // Ocean gets extra noise channels for more variation
   const h4 = gh(col*5, row*4, 107);
   const h5 = gh(col+13,row*7, 151);
-
   const jit = (base, range) =>
     Math.max(0, Math.min(255, Math.round(base + (h1-0.5)*range + (h2-0.5)*range*0.6 + (h3-0.5)*range*0.3)));
-
   switch(biome) {
-    case 'ice':
-      // Ice: mostly white but with slight blue/grey tints — NOT pure white circles
-      return {r:jit(238,28), g:jit(244,22), b:jit(255,18)};
-    case 'ocean':
-      // Ocean: much more varied — deep navy, mid blue, teal patches, dark troughs
-      {
-        const depth = h4 * 0.5 + h5 * 0.5; // 0..1 depth variation
-        const baseR = Math.round(8  + depth * 28);
-        const baseG = Math.round(52 + depth * 48);
-        const baseB = Math.round(160 + depth * 42);
-        return {
-          r: jit(baseR, 22),
-          g: jit(baseG, 40),
-          b: jit(baseB, 38)
-        };
-      }
+    case 'ice':      return {r:jit(238,28), g:jit(244,22), b:jit(255,18)};
+    case 'ocean':    {
+      const depth = h4 * 0.5 + h5 * 0.5;
+      return {r:jit(8+depth*28,22), g:jit(52+depth*48,40), b:jit(160+depth*42,38)};
+    }
     case 'tropical':  return {r:jit(22,28),  g:jit(145,42), b:jit(40,32)};
     case 'temperate': return {r:jit(50,32),  g:jit(152,40), b:jit(52,32)};
     case 'arid':      return {r:jit(198,38), g:jit(158,32), b:jit(75,36)};
@@ -496,25 +451,22 @@ for(let r=0;r<ROWS;r++){
 }
 
 const lastFaceMap = {};
-
 let pressedCell = null;
 let globeColorFlash = null;
 let globeSizeMultiplier = 1.0;
 let rotY=0, rotX=0;
 let isDragging=false, lastX=0, lastY=0, velX=0, velY=0, dragMoved=false;
 
+// ── RESIZE: canvas fills the full .top rectangle ─────────────────────────────
 function resize() {
-  const W = window.innerWidth;
-  const H = window.innerHeight;
-  const size = Math.min(W * 0.9, H * 0.88);
-  canvas.width = size;
-  canvas.height = size;
+  const top = document.getElementById('topArea');
+  canvas.width  = top.clientWidth  || window.innerWidth;
+  canvas.height = top.clientHeight || window.innerHeight * 0.85;
 }
 resize();
 window.addEventListener('resize', resize);
-// Also track when the .top container resizes (e.g. maximise/minimise)
 if (typeof ResizeObserver !== 'undefined') {
-  new ResizeObserver(resize).observe(canvas.parentElement);
+  new ResizeObserver(resize).observe(document.getElementById('topArea'));
 }
 
 function rotate3D(x,y,z){
@@ -535,7 +487,6 @@ function triggerGlobeFlash(color) {
 function shadeRgb(col, light, pressed, latM) {
   const factor = pressed ? Math.max(0.2,light*0.6) : 0.28+light*0.76;
   let r=Math.round(col.r*factor), g=Math.round(col.g*factor), b=Math.round(col.b*factor);
-
   if (globeColorFlash) {
     const f=globeColorFlash, elapsed=performance.now()-f.t0;
     const totalDur=f.fadeIn+f.hold+f.fadeOut;
@@ -557,26 +508,16 @@ function shadeRgb(col, light, pressed, latM) {
       b=Math.round(b*(1-a)+tb*shade*a);
     }
   }
-
-  // ── GRADUAL POLE WHITENING — no hard circle, fades via per-cell noise ──
-  // Use the cell's stored color bias (r+g+b brightness) to modulate the fade.
-  // The poleFactor itself is computed from warpedPole (per-cell lat noise),
-  // so the boundary is irregular — not a circle.
   const latDeg = latM * 180 / Math.PI;
-  // Each cell has its own noisy pole threshold, creating the irregular fringe
   const poleNoise = (col.r * 0.003 + col.b * 0.007 + col.g * 0.002) % 1.0;
-  // Northern and southern thresholds vary per cell
-  const nThresh = 55 + poleNoise * 18;  // 55..73°  (was hard 60°)
-  const sThresh = -55 - poleNoise * 18; // -55..-73°
-
+  const nThresh = 55 + poleNoise * 18;
+  const sThresh = -55 - poleNoise * 18;
   let poleFactor = 0;
   if (latDeg > nThresh) {
-    // Gradual: goes 0→1 over a ~12° band
     poleFactor = Math.pow(Math.min(1, (latDeg - nThresh) / 14), 1.4);
   } else if (latDeg < sThresh) {
     poleFactor = Math.pow(Math.min(1, (sThresh - latDeg) / 14), 1.4);
   }
-
   r=Math.round(r+(255-r)*poleFactor);
   g=Math.round(g+(255-g)*poleFactor);
   b=Math.round(b+(255-b)*poleFactor);
@@ -585,6 +526,8 @@ function shadeRgb(col, light, pressed, latM) {
 
 function drawGlobe() {
   const W=canvas.width, H=canvas.height, cx=W/2, cy=H/2;
+  // Base R off the shorter dimension so the globe starts fitting the area.
+  // globeSizeMultiplier can grow it freely beyond either dimension.
   const R = Math.min(W,H) * R_FACTOR * globeSizeMultiplier;
   ctx.clearRect(0,0,W,H);
 
@@ -592,9 +535,7 @@ function drawGlobe() {
   sg.addColorStop(0,'rgba(0,0,0,0.2)'); sg.addColorStop(1,'rgba(0,0,0,0)');
   ctx.beginPath(); ctx.arc(cx+R*0.1,cy+R*0.1,R,0,Math.PI*2); ctx.fillStyle=sg; ctx.fill();
 
-  ctx.save();
-  ctx.beginPath(); ctx.arc(cx,cy,R,0,Math.PI*2); ctx.clip();
-
+  // No clip — globe can spill across the full canvas area
   const faces=[];
   for(let ri=0;ri<ROWS;ri++){
     for(let ci=0;ci<COLS;ci++){
@@ -615,6 +556,10 @@ function drawGlobe() {
     }
   }
   faces.sort((a,b)=>a.z-b.z);
+
+  // Clip to globe circle so faces don't bleed outside the sphere edge
+  ctx.save();
+  ctx.beginPath(); ctx.arc(cx,cy,R,0,Math.PI*2); ctx.clip();
 
   for(const face of faces){
     const {pts,light,isPressed,col,latM}=face;
@@ -688,6 +633,8 @@ canvas.addEventListener('mousedown',e=>{
   velX=0; velY=0;
   const rect=canvas.getBoundingClientRect();
   pressedCell=hitTest(e.clientX-rect.left,e.clientY-rect.top);
+  // Unlock audio on first real user gesture
+  audioUnlock();
 });
 window.addEventListener('mousemove',e=>{
   if(!isDragging) return;
@@ -709,6 +656,7 @@ canvas.addEventListener('touchstart',e=>{
   lastX=e.touches[0].clientX;lastY=e.touches[0].clientY;velX=0;velY=0;
   const rect=canvas.getBoundingClientRect();
   pressedCell=hitTest(lastX-rect.left,lastY-rect.top);
+  audioUnlock();
 },{passive:false});
 canvas.addEventListener('touchmove',e=>{
   e.preventDefault();if(!isDragging)return;
@@ -766,41 +714,20 @@ function showImage(row, col) {
   img.onload = () => {
     const SW = window.innerWidth;
     const SH = window.innerHeight;
-
-    // ── CONSTRAIN: max 67% of screen width AND max 67% of screen height ──
     const MAX_W = SW * 0.67;
     const MAX_H = SH * 0.67;
-
     const aspect = img.naturalWidth / img.naturalHeight;
-
-    // Fit within both constraints
     let tW = MAX_W;
     let tH = tW / aspect;
-    if (tH > MAX_H) {
-      tH = MAX_H;
-      tW = tH * aspect;
-    }
-
-    // Position: top-left, but clamp so image stays inside screen
+    if (tH > MAX_H) { tH = MAX_H; tW = tH * aspect; }
     const MARGIN = 12;
-    // Place near top-left by default
     let tX = MARGIN;
     let tY = 50;
-
-    // Clamp right edge
     if (tX + tW > SW - MARGIN) tX = SW - MARGIN - tW;
-    // Clamp bottom edge (account for status bar ~36px)
     if (tY + tH > SH - 40 - MARGIN) tY = SH - 40 - MARGIN - tH;
-    // Clamp left/top
     if (tX < MARGIN) tX = MARGIN;
     if (tY < MARGIN) tY = MARGIN;
-
-    extState = {
-      img, face,
-      tX, tY, tW, tH,
-      t0: performance.now(),
-      dur: 1300,
-    };
+    extState = { img, face, tX, tY, tW, tH, t0: performance.now(), dur: 1300 };
     extrudeCanvas.style.pointerEvents = 'all';
     box.style.backgroundColor = randomBlue();
   };
@@ -814,89 +741,51 @@ extrudeCanvas.addEventListener('click', () => {
 
 function drawExtrude() {
   extCtx.clearRect(0, 0, extrudeCanvas.width, extrudeCanvas.height);
-
   if (extState) {
     const s   = extState;
     const raw = Math.min((performance.now() - s.t0) / s.dur, 1);
     const e   = easeOut(raw);
-
     const tPts = [
-      {x:s.tX,        y:s.tY},
-      {x:s.tX+s.tW,   y:s.tY},
-      {x:s.tX+s.tW,   y:s.tY+s.tH},
-      {x:s.tX,        y:s.tY+s.tH},
+      {x:s.tX,       y:s.tY},
+      {x:s.tX+s.tW,  y:s.tY},
+      {x:s.tX+s.tW,  y:s.tY+s.tH},
+      {x:s.tX,       y:s.tY+s.tH},
     ];
-
-    const front = s.face.map((p,i) => ({
-      x: lerp(p.x, tPts[i].x, e),
-      y: lerp(p.y, tPts[i].y, e),
-    }));
-
-    const depthMax = 60;
-    const depthT   = Math.sin(raw * Math.PI);
-    const depth    = depthMax * depthT;
-
-    const back = front.map(p => ({x: p.x + depth*0.85, y: p.y + depth*0.42}));
-
-    extCtx.fillStyle = `rgba(0,0,0,${e*0.5})`;
-    extCtx.fillRect(0, 0, extrudeCanvas.width, extrudeCanvas.height);
-
-    if (depth > 1) {
-      extCtx.save();
-      extCtx.globalAlpha = depthT * 0.92;
-      extCtx.fillStyle = 'rgba(18,18,18,0.96)';
-      extCtx.beginPath();
-      extCtx.moveTo(front[1].x,front[1].y); extCtx.lineTo(back[1].x,back[1].y);
-      extCtx.lineTo(back[2].x,back[2].y);   extCtx.lineTo(front[2].x,front[2].y);
-      extCtx.closePath(); extCtx.fill(); extCtx.restore();
-
-      extCtx.save();
-      extCtx.globalAlpha = depthT * 0.78;
-      extCtx.fillStyle = 'rgba(8,8,8,0.96)';
-      extCtx.beginPath();
-      extCtx.moveTo(front[2].x,front[2].y); extCtx.lineTo(back[2].x,back[2].y);
-      extCtx.lineTo(back[3].x,back[3].y);   extCtx.lineTo(front[3].x,front[3].y);
-      extCtx.closePath(); extCtx.fill(); extCtx.restore();
-
-      extCtx.save();
-      extCtx.globalAlpha = depthT * 0.52;
-      extCtx.fillStyle = 'rgba(45,45,45,0.9)';
-      extCtx.beginPath();
-      extCtx.moveTo(front[0].x,front[0].y); extCtx.lineTo(back[0].x,back[0].y);
-      extCtx.lineTo(back[3].x,back[3].y);   extCtx.lineTo(front[3].x,front[3].y);
-      extCtx.closePath(); extCtx.fill(); extCtx.restore();
-
-      extCtx.save();
-      extCtx.globalAlpha = depthT * 0.62;
-      extCtx.fillStyle = 'rgba(60,60,60,0.88)';
-      extCtx.beginPath();
-      extCtx.moveTo(front[0].x,front[0].y); extCtx.lineTo(back[0].x,back[0].y);
-      extCtx.lineTo(back[1].x,back[1].y);   extCtx.lineTo(front[1].x,front[1].y);
-      extCtx.closePath(); extCtx.fill(); extCtx.restore();
+    const front = s.face.map((p,i) => ({x:lerp(p.x,tPts[i].x,e),y:lerp(p.y,tPts[i].y,e)}));
+    const depthMax=60, depthT=Math.sin(raw*Math.PI), depth=depthMax*depthT;
+    const back = front.map(p=>({x:p.x+depth*0.85,y:p.y+depth*0.42}));
+    extCtx.fillStyle=`rgba(0,0,0,${e*0.5})`;
+    extCtx.fillRect(0,0,extrudeCanvas.width,extrudeCanvas.height);
+    if(depth>1){
+      [[1,2],[2,3],[0,3],[0,1]].forEach(([a,b],side)=>{
+        extCtx.save();
+        extCtx.globalAlpha=depthT*[0.92,0.78,0.52,0.62][side];
+        extCtx.fillStyle=`rgba(${[18,8,45,60][side]},${[18,8,45,60][side]},${[18,8,45,60][side]},0.96)`;
+        extCtx.beginPath();
+        extCtx.moveTo(front[a].x,front[a].y); extCtx.lineTo(back[a].x,back[a].y);
+        extCtx.lineTo(back[b].x,back[b].y);   extCtx.lineTo(front[b].x,front[b].y);
+        extCtx.closePath(); extCtx.fill(); extCtx.restore();
+      });
     }
-
     extCtx.save();
     extCtx.beginPath();
     extCtx.moveTo(front[0].x,front[0].y);
     front.slice(1).forEach(p=>extCtx.lineTo(p.x,p.y));
     extCtx.closePath(); extCtx.clip();
-
-    const minX=Math.min(...front.map(p=>p.x)), minY=Math.min(...front.map(p=>p.y));
-    const maxX=Math.max(...front.map(p=>p.x)), maxY=Math.max(...front.map(p=>p.y));
-    extCtx.globalAlpha = Math.min(1, raw * 3.5);
-    extCtx.drawImage(s.img, minX, minY, maxX-minX, maxY-minY);
+    const minX=Math.min(...front.map(p=>p.x)),minY=Math.min(...front.map(p=>p.y));
+    const maxX=Math.max(...front.map(p=>p.x)),maxY=Math.max(...front.map(p=>p.y));
+    extCtx.globalAlpha=Math.min(1,raw*3.5);
+    extCtx.drawImage(s.img,minX,minY,maxX-minX,maxY-minY);
     extCtx.restore();
-
     extCtx.save();
-    extCtx.strokeStyle = `rgba(255,255,255,${0.3+e*0.6})`;
-    extCtx.lineWidth = 2;
+    extCtx.strokeStyle=`rgba(255,255,255,${0.3+e*0.6})`;
+    extCtx.lineWidth=2;
     extCtx.beginPath();
     extCtx.moveTo(front[0].x,front[0].y);
     front.slice(1).forEach(p=>extCtx.lineTo(p.x,p.y));
     extCtx.closePath(); extCtx.stroke();
     extCtx.restore();
   }
-
   requestAnimationFrame(drawExtrude);
 }
 requestAnimationFrame(drawExtrude);
@@ -961,27 +850,18 @@ requestAnimationFrame(drawBgGrid);
   const cb  = document.getElementById('chessBoard');
   const cbc = cb.getContext('2d');
   const N=8, SQ=8;
-
   function drawBoard(flash) {
     for(let r=0;r<N;r++) for(let c=0;c<N;c++){
       cbc.fillStyle=(r+c)%2===0 ? '#c8a87a' : '#5c3a1e';
       cbc.fillRect(c*SQ, r*SQ, SQ, SQ);
     }
-    if(flash){
-      cbc.fillStyle='rgba(255,255,160,0.6)';
-      cbc.fillRect(0,0,64,64);
-    }
+    if(flash){cbc.fillStyle='rgba(255,255,160,0.6)';cbc.fillRect(0,0,64,64);}
   }
   drawBoard(false);
-
   cb.addEventListener('click', e => {
-    if (e.shiftKey) {
-      // Shift+click: decrease (revert) globe size
-      globeSizeMultiplier = Math.max(0.3, globeSizeMultiplier - 0.08);
-    } else {
-      // Normal click: grow globe, no hard upper cap — can fill the whole window
-      globeSizeMultiplier = globeSizeMultiplier + 0.04;
-    }
+    globeSizeMultiplier = e.shiftKey
+      ? Math.max(0.3, globeSizeMultiplier - 0.08)
+      : globeSizeMultiplier + 0.04;
     drawBoard(true);
     setTimeout(()=>drawBoard(false), 110);
   });
@@ -990,7 +870,6 @@ requestAnimationFrame(drawBgGrid);
 // ── B&W GLYPH GRAPHICS ───────────────────────────────────────────────────────
 const glyphCanvas=document.getElementById('glyphCanvas');
 const gCtx=glyphCanvas.getContext('2d');
-
 const GLYPHS=[
   (cx,cy,s,ctx)=>{
     ctx.beginPath();for(let i=0;i<6;i++){const a=i*Math.PI/3-Math.PI/6;ctx.lineTo(cx+Math.cos(a)*s*0.85,cy+Math.sin(a)*s*0.85);}ctx.closePath();ctx.stroke();
@@ -1041,7 +920,6 @@ const GLYPHS=[
     ctx.beginPath();ctx.arc(cx,cy,s*0.14,0,Math.PI*2);ctx.fill();
   },
 ];
-
 const glyphCells=[];
 function initGlyphs(){
   glyphCanvas.width=glyphCanvas.offsetWidth; glyphCanvas.height=glyphCanvas.offsetHeight;
@@ -1086,102 +964,93 @@ initGlyphs();
 window.addEventListener('resize',initGlyphs);
 requestAnimationFrame(animateGlyphs);
 
-// ── TINY DOT-LABELS (purely decorative, below the 3 traffic-light buttons) ───
+// ── TINY DOT-LABELS ───────────────────────────────────────────────────────────
 (function(){
   const icons  = ['◈','⊕','◎','⬡','⟡','◇','⊗','◉','▣','⌘','⊞','◬','⬢','⌖','◫'];
-  const words  = [
-    'ROT.x','ROT.y','vel','drag','spin','mesh','z-buf','proj',
-    'globe','face','cell','lat','lon','norm','idle','loop',
-    'BIO','ICE','SEA','img','px','rgb','lerp','ease',
-  ];
+  const words  = ['ROT.x','ROT.y','vel','drag','spin','mesh','z-buf','proj','globe','face','cell','lat','lon','norm','idle','loop','BIO','ICE','SEA','img','px','rgb','lerp','ease'];
   const container = document.getElementById('dotLabels');
-
-  // generate 5 rows of randomised label+icon pairs
-  const rows = 5;
-  for (let i = 0; i < rows; i++) {
-    const row = document.createElement('div');
-    row.className = 'dot-label-row';
-    // pick random icon + word each row
-    const icon = icons[Math.floor(Math.random() * icons.length)];
-    const word = words[Math.floor(Math.random() * words.length)];
-    // random tiny numeric value suffix for that "system readout" feel
-    const val  = (Math.random() * 9.99).toFixed(2);
-    row.innerHTML = `<span class="dot-label-icon">${icon}</span><span>${word}:${val}</span>`;
+  for(let i=0;i<5;i++){
+    const row=document.createElement('div'); row.className='dot-label-row';
+    const icon=icons[Math.floor(Math.random()*icons.length)];
+    const word=words[Math.floor(Math.random()*words.length)];
+    const val=(Math.random()*9.99).toFixed(2);
+    row.innerHTML=`<span class="dot-label-icon">${icon}</span><span>${word}:${val}</span>`;
     container.appendChild(row);
   }
-
-  // Quietly refresh values every ~4s so they subtly tick over
-  setInterval(() => {
-    container.querySelectorAll('.dot-label-row').forEach(row => {
-      if (Math.random() < 0.5) { // only update ~half at a time
-        const icon = icons[Math.floor(Math.random() * icons.length)];
-        const word = words[Math.floor(Math.random() * words.length)];
-        const val  = (Math.random() * 9.99).toFixed(2);
-        row.innerHTML = `<span class="dot-label-icon">${icon}</span><span>${word}:${val}</span>`;
+  setInterval(()=>{
+    container.querySelectorAll('.dot-label-row').forEach(row=>{
+      if(Math.random()<0.5){
+        const icon=icons[Math.floor(Math.random()*icons.length)];
+        const word=words[Math.floor(Math.random()*words.length)];
+        const val=(Math.random()*9.99).toFixed(2);
+        row.innerHTML=`<span class="dot-label-icon">${icon}</span><span>${word}:${val}</span>`;
       }
     });
-  }, 4000);
+  },4000);
 })();
 
-// ── DREAM.MP3 — plays only while globe is spinning/dragging, silent otherwise ─
+// ── AUDIO — motion-linked, unlocked on first user gesture ────────────────────
 (function(){
   const audio = new Audio('dream.mp3');
   audio.loop  = true;
   audio.volume = 0.0;
 
-  // Fade helpers
-  let fadeRAF = null;
-  let targetVol = 0;
-  const FADE_SPEED = 0.012; // per frame
+  let audioReady = false;   // has audio.play() been successfully called?
+  let fadeRAF    = null;
+  let targetVol  = 0;
+  const FADE_IN_SPEED  = 0.018; // per frame (~16ms) — reaches 0.55 in ~0.5s
+  const FADE_OUT_SPEED = 0.008; // per frame — fades out in ~1.1s
+
+  // Called from user-gesture event handlers (mousedown / touchstart / wheel)
+  window.audioUnlock = function() {
+    if (audioReady) return;
+    audio.play().then(() => {
+      audioReady = true;
+      // Start at zero; checkMotion will fade in if spinning
+    }).catch(() => {
+      // Autoplay blocked — will retry on next gesture
+    });
+  };
 
   function fadeTo(target) {
     targetVol = target;
-    if (fadeRAF) return; // already running
+    if (fadeRAF) return;
     function step() {
       const diff = targetVol - audio.volume;
-      if (Math.abs(diff) < 0.005) {
+      const speed = diff > 0 ? FADE_IN_SPEED : FADE_OUT_SPEED;
+      if (Math.abs(diff) < 0.004) {
         audio.volume = targetVol;
-        if (targetVol === 0) audio.pause();
         fadeRAF = null;
         return;
       }
-      audio.volume = Math.max(0, Math.min(1, audio.volume + Math.sign(diff) * FADE_SPEED));
+      audio.volume = Math.max(0, Math.min(1, audio.volume + Math.sign(diff) * speed));
       fadeRAF = requestAnimationFrame(step);
     }
     fadeRAF = requestAnimationFrame(step);
   }
 
-  function startSound() {
-    if (audio.paused) {
-      audio.play().catch(()=>{}); // may need user gesture — first drag will unlock
-    }
-    fadeTo(0.55);
-  }
-  function stopSound() {
-    fadeTo(0);
-  }
-
-  // "globe is moving" = dragging OR coasting (velocity above threshold)
-  // We check this every animation frame via a tiny polling loop.
-  // We do NOT fire on image-open click (dragMoved stays false there).
   let wasMoving = false;
   function checkMotion() {
-    // globe is considered "moving" if dragging with actual drag movement,
-    // OR if it's coasting with meaningful velocity
     const moving = (isDragging && dragMoved) ||
                    (!isDragging && (Math.abs(velX) > 0.003 || Math.abs(velY) > 0.003));
-    if (moving && !wasMoving) startSound();
-    if (!moving && wasMoving) stopSound();
+
+    if (audioReady) {
+      if (moving && !wasMoving) {
+        fadeTo(0.55);
+      }
+      if (!moving && wasMoving) {
+        fadeTo(0);
+      }
+    }
     wasMoving = moving;
     requestAnimationFrame(checkMotion);
   }
   requestAnimationFrame(checkMotion);
 
-  // Wheel scroll on globe also counts as motion — handled via velX/velY above,
-  // but we patch the wheel listener to also unlock audio context on first use
+  // Wheel also counts as motion — unlock audio here too
   canvas.addEventListener('wheel', () => {
-    if (audio.paused) audio.play().catch(()=>{});
-  }, {passive: true});
+    window.audioUnlock();
+  }, { passive: true });
 })();
 
 // ── PIXEL CLOCK ───────────────────────────────────────────────────────────────
@@ -1192,56 +1061,32 @@ function updateClock(){
 }
 updateClock(); setInterval(updateClock,1000);
 
-// ── MAXIMISE / MINIMISE WINDOW CONTROLS ──────────────────────────────────────
+
 (function(){
   const win    = document.querySelector('.window');
   const btnMax = document.getElementById('btnMax');
   const btnMin = document.getElementById('btnMin');
-
-  let isMaximised = false;
-  let isMinimised = false;
+  let isMaximised=false, isMinimised=false;
 
   window.toggleMaximise = function() {
-    // If minimised, restore first
-    if (isMinimised) {
-      win.classList.remove('minimised');
-      isMinimised = false;
-    }
-
-    isMaximised = !isMaximised;
-    win.classList.toggle('maximised', isMaximised);
-
-    // Swap icon: ❐ when windowed (click to maximise) / ❑ when max (click to restore)
-    btnMax.innerHTML = isMaximised ? '&#10064;' : '&#9633;';
+    if(isMinimised){win.classList.remove('minimised');isMinimised=false;}
+    isMaximised=!isMaximised;
+    win.classList.toggle('maximised',isMaximised);
+    btnMax.innerHTML=isMaximised?'&#10064;':'&#9633;';
   };
-
   window.toggleMinimise = function() {
-    // Maximise takes priority — restore from max first
-    if (isMaximised) {
-      isMaximised = false;
-      win.classList.remove('maximised');
-      btnMax.innerHTML = '&#9633;';
-    }
-
-    isMinimised = !isMinimised;
-    win.classList.toggle('minimised', isMinimised);
-
-    // Swap icon: ▄ when normal / ▲ when minimised (restore hint)
-    btnMin.innerHTML = isMinimised ? '&#9650;' : '&#8212;';
+    if(isMaximised){isMaximised=false;win.classList.remove('maximised');btnMax.innerHTML='&#9633;';}
+    isMinimised=!isMinimised;
+    win.classList.toggle('minimised',isMinimised);
+    btnMin.innerHTML=isMinimised?'&#9650;':'&#8212;';
   };
 })();
 
-// ── LIME SHERBET BACKGROUND CYCLING ──────────────────────────────────────────
 (function(){
-  const shades = [
-    '#edfce8','#f2fded','#e8fde2','#f5fef0','#eafce5','#f0fcea'
-  ];
-  let idx = 0;
-  document.body.style.backgroundColor = shades[0];
-  setInterval(() => {
-    idx = (idx + 1) % shades.length;
-    document.body.style.backgroundColor = shades[idx];
-  }, 10000);
+  const shades=['#edfce8','#f2fded','#e8fde2','#f5fef0','#eafce5','#f0fcea'];
+  let idx=0;
+  document.body.style.backgroundColor=shades[0];
+  setInterval(()=>{idx=(idx+1)%shades.length;document.body.style.backgroundColor=shades[idx];},10000);
 })();
 </script>
 </body>
