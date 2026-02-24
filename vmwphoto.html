@@ -46,6 +46,44 @@
       display: flex;
       flex-direction: column;
       z-index: 1;
+      /* smooth Mac-like transitions for maximise / minimise */
+      transition:
+        width 0.32s cubic-bezier(0.4,0,0.2,1),
+        height 0.32s cubic-bezier(0.4,0,0.2,1),
+        top 0.32s cubic-bezier(0.4,0,0.2,1),
+        left 0.32s cubic-bezier(0.4,0,0.2,1),
+        border-radius 0.32s cubic-bezier(0.4,0,0.2,1),
+        border 0.32s cubic-bezier(0.4,0,0.2,1),
+        box-shadow 0.32s cubic-bezier(0.4,0,0.2,1),
+        transform 0.32s cubic-bezier(0.4,0,0.2,1);
+    }
+
+    /* Maximised — full viewport, no gap, no rounded corners */
+    .window.maximised {
+      width: 100vw !important;
+      height: 100vh !important;
+      top: 0 !important; left: 0 !important;
+      transform: none !important;
+      border-radius: 0 !important;
+      border: none !important;
+      box-shadow: none !important;
+    }
+
+    /* Minimised — only the titlebar strip remains, collapses to top of viewport */
+    .window.minimised {
+      height: 36px !important;
+      overflow: hidden !important;
+      top: 20px !important;
+      left: 50% !important;
+      transform: translateX(-50%) !important;
+    }
+    /* body fades out when minimised */
+    .window.minimised .window-body {
+      opacity: 0;
+      pointer-events: none;
+    }
+    .window-body {
+      transition: opacity 0.22s cubic-bezier(0.4,0,0.2,1);
     }
 
     .titlebar {
@@ -234,8 +272,8 @@
     <span class="titlebar-label">scroll photo round press and play ()()() </span>
     <span class="pixel-clock" id="pixelClock">00:00:00</span>
     <div class="win-buttons">
-      <div class="win-btn wmin" onclick="void(0)">&#8212;</div>
-      <div class="win-btn wmax" onclick="void(0)">&#9633;</div>
+      <div class="win-btn wmin" id="btnMin" onclick="toggleMinimise()">&#8212;</div>
+      <div class="win-btn wmax" id="btnMax" onclick="toggleMaximise()">&#9633;</div>
       <div class="win-btn wcls" onclick="window.location.href='https://victormasotti.com/'">&#10005;</div>
     </div>
   </div>
@@ -254,7 +292,7 @@
     </div>
 
     <canvas id="chessBoard" width="64" height="64"
-      style="position:absolute;right:12px;bottom:40px;cursor:pointer;image-rendering:pixelated;z-index:100;"
+      style="position:absolute;right:12px;bottom:46px;cursor:pointer;image-rendering:pixelated;z-index:100;"
       title="click to grow globe"></canvas>
 
     <div class="content" id="colorBox">
@@ -466,11 +504,18 @@ let rotY=0, rotX=0;
 let isDragging=false, lastX=0, lastY=0, velX=0, velY=0, dragMoved=false;
 
 function resize() {
-  const size = Math.min(window.innerWidth*0.8, window.innerHeight*0.84);
-  canvas.width = size; canvas.height = size;
+  const W = window.innerWidth;
+  const H = window.innerHeight;
+  const size = Math.min(W * 0.9, H * 0.88);
+  canvas.width = size;
+  canvas.height = size;
 }
 resize();
 window.addEventListener('resize', resize);
+// Also track when the .top container resizes (e.g. maximise/minimise)
+if (typeof ResizeObserver !== 'undefined') {
+  new ResizeObserver(resize).observe(canvas.parentElement);
+}
 
 function rotate3D(x,y,z){
   const cosX=Math.cos(rotX),sinX=Math.sin(rotX);
@@ -929,8 +974,14 @@ requestAnimationFrame(drawBgGrid);
   }
   drawBoard(false);
 
-  cb.addEventListener('click',()=>{
-    globeSizeMultiplier = globeSizeMultiplier >= 3.0 ? 1.0 : globeSizeMultiplier + 0.02;
+  cb.addEventListener('click', e => {
+    if (e.shiftKey) {
+      // Shift+click: decrease (revert) globe size
+      globeSizeMultiplier = Math.max(0.3, globeSizeMultiplier - 0.08);
+    } else {
+      // Normal click: grow globe, no hard upper cap — can fill the whole window
+      globeSizeMultiplier = globeSizeMultiplier + 0.04;
+    }
     drawBoard(true);
     setTimeout(()=>drawBoard(false), 110);
   });
@@ -1140,6 +1191,45 @@ function updateClock(){
   if(el) el.textContent=String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0')+':'+String(now.getSeconds()).padStart(2,'0');
 }
 updateClock(); setInterval(updateClock,1000);
+
+// ── MAXIMISE / MINIMISE WINDOW CONTROLS ──────────────────────────────────────
+(function(){
+  const win    = document.querySelector('.window');
+  const btnMax = document.getElementById('btnMax');
+  const btnMin = document.getElementById('btnMin');
+
+  let isMaximised = false;
+  let isMinimised = false;
+
+  window.toggleMaximise = function() {
+    // If minimised, restore first
+    if (isMinimised) {
+      win.classList.remove('minimised');
+      isMinimised = false;
+    }
+
+    isMaximised = !isMaximised;
+    win.classList.toggle('maximised', isMaximised);
+
+    // Swap icon: ❐ when windowed (click to maximise) / ❑ when max (click to restore)
+    btnMax.innerHTML = isMaximised ? '&#10064;' : '&#9633;';
+  };
+
+  window.toggleMinimise = function() {
+    // Maximise takes priority — restore from max first
+    if (isMaximised) {
+      isMaximised = false;
+      win.classList.remove('maximised');
+      btnMax.innerHTML = '&#9633;';
+    }
+
+    isMinimised = !isMinimised;
+    win.classList.toggle('minimised', isMinimised);
+
+    // Swap icon: ▄ when normal / ▲ when minimised (restore hint)
+    btnMin.innerHTML = isMinimised ? '&#9650;' : '&#8212;';
+  };
+})();
 
 // ── LIME SHERBET BACKGROUND CYCLING ──────────────────────────────────────────
 (function(){
