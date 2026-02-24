@@ -190,6 +190,26 @@
       pointer-events: none;
     }
 
+    /* tiny info strip below the 3 dot buttons */
+    .dot-labels {
+      position: absolute;
+      left: 4px; top: 36px;
+      display: flex; flex-direction: column; gap: 1px;
+      pointer-events: none; z-index: 30;
+      padding: 3px 5px;
+    }
+    .dot-label-row {
+      display: flex; align-items: center; gap: 4px;
+      font-family: 'VT323', monospace;
+      font-size: 10px; color: rgba(60,60,60,0.62);
+      letter-spacing: 0.04em;
+      line-height: 1.1;
+      white-space: nowrap;
+    }
+    .dot-label-icon {
+      font-size: 9px; opacity: 0.55;
+    }
+
     .corner-tl, .corner-br {
       position: absolute; width: 70px; height: 70px;
       z-index: 6; pointer-events: none;
@@ -207,7 +227,6 @@
 
 <div class="window">
   <div class="titlebar">
-    <!-- Traffic lights = globe color flash buttons -->
     <div class="dot close" onclick="triggerGlobeFlash('red')"    title="red flash"></div>
     <div class="dot min"   onclick="triggerGlobeFlash('yellow')" title="yellow flash"></div>
     <div class="dot max"   onclick="triggerGlobeFlash('green')"  title="green flash"></div>
@@ -221,6 +240,9 @@
     </div>
   </div>
 
+  <!-- tiny labels below the 3 dot buttons — purely decorative -->
+  <div class="dot-labels" id="dotLabels"></div>
+
   <div class="window-body">
     <div class="gloss"></div>
     <div class="corner-tl"><svg viewBox="0 0 70 70"><path d="M0 0 L70 0 L0 70 Z" fill="rgba(100,180,255,0.09)"/></svg></div>
@@ -231,7 +253,6 @@
       <canvas id="globe" style="position:relative;z-index:1;"></canvas>
     </div>
 
-    <!-- Chessboard sits AFTER .top in DOM so it paints on top of it -->
     <canvas id="chessBoard" width="64" height="64"
       style="position:absolute;right:12px;bottom:40px;cursor:pointer;image-rendering:pixelated;z-index:100;"
       title="click to grow globe"></canvas>
@@ -240,7 +261,6 @@
       <span class="forest-text" id="forestText"></span>
     </div>
   </div>
-  <!-- Chessboard sits in window-body above the status bar -->
 </div>
 
 <canvas id="extrudeCanvas" style="position:fixed;top:0;left:0;pointer-events:none;z-index:999;"></canvas>
@@ -270,8 +290,7 @@ const R_FACTOR = 0.44;
 const cellImages = [];
 for (let r=0;r<ROWS;r++){cellImages[r]=[];for(let c=0;c<COLS;c++)cellImages[r][c]=shuffled[(r*COLS+c)%shuffled.length];}
 
-// ── BIOME SYSTEM: organic globe terrain ──────────────────────────────────────
-// Fast integer hash → [0,1)
+// ── NOISE FUNCTIONS ───────────────────────────────────────────────────────────
 function gh(x, y, s) {
   let h = (x*127773 + y*421 + s*1234567)|0;
   h ^= h>>>13; h = Math.imul(h,1540483477)|0;
@@ -279,49 +298,83 @@ function gh(x, y, s) {
   h ^= h>>>16;
   return (h&0x7fffffff)/0x7fffffff;
 }
-// Bilinear-smooth noise
 function gn(x, y, s) {
   const ix=Math.floor(x),iy=Math.floor(y),fx=x-ix,fy=y-iy;
   const ux=fx*fx*(3-2*fx), uy=fy*fy*(3-2*fy);
   return gh(ix,iy,s)*(1-ux)*(1-uy)+gh(ix+1,iy,s)*ux*(1-uy)+
          gh(ix,iy+1,s)*(1-ux)*uy  +gh(ix+1,iy+1,s)*ux*uy;
 }
-// 4-octave fractal noise
 function fn(x, y, s) {
   return gn(x,y,s)*0.5 + gn(x*2,y*2,s+99)*0.25 +
          gn(x*4,y*4,s+198)*0.125 + gn(x*8,y*8,s+297)*0.0625;
 }
 
+// ── BIOME SYSTEM ──────────────────────────────────────────────────────────────
 function getCellBiome(row, col) {
-  const latD = 90  - (row/ROWS)*180;   // +90 top → -90 bottom
-  const lonD = -180 + (col/COLS)*360;  // -180 → +180
+  const latD = 90  - (row/ROWS)*180;
+  const lonD = -180 + (col/COLS)*360;
 
-  // Noise coordinates — scaled so features are globe-sized
   const nx = col/5.0, ny = row/3.2;
 
-  // Two independent warp fields for coastline jaggedness
-  const wa = fn(nx,    ny,    3) - 0.5;   // -0.5 .. +0.5
-  const wb = fn(nx+11, ny+7, 17) - 0.5;
+  // Multiple warp layers for more organic coastlines
+  const wa = fn(nx,      ny,      3)  - 0.5;
+  const wb = fn(nx+11,   ny+7,   17)  - 0.5;
+  const wc = fn(nx*1.7,  ny*1.3, 55)  - 0.5;  // extra warp layer
 
-  // Warped coordinates (degrees)
-  const wLat = latD + wa * 14;
-  const wLon = lonD + wb * 20;
+  const wLat = latD + wa * 16 + wc * 6;
+  const wLon = lonD + wb * 24 + wc * 8;
 
-  // ── POLAR CAPS — hard white ──
-  // Main cap + noisy fringe between 55-70°
-  const poleAbs = Math.abs(latD);
+  const poleAbs    = Math.abs(latD);
   const warpedPole = Math.abs(wLat);
-  if (poleAbs > 70) return 'ice';
-  if (poleAbs > 55 && warpedPole > 58) return 'ice';
+
+  // ── NORTH POLE — irregular, not circular ──
+  // Base threshold varies by longitude — elongated lobes like real Arctic sea ice
+  const northLonRad = lonD * Math.PI / 180;
+  // Create 3-lobe irregular shape for the north cap
+  const northWarp = Math.sin(northLonRad * 1.5) * 9
+                  + Math.sin(northLonRad * 2.7 + 1.1) * 5
+                  + Math.cos(northLonRad * 0.8 + 2.3) * 4;
+  const northThresh = 68 + northWarp;
+
+  if (latD > northThresh) return 'ice';
+  // Gradual fringe zone: noisy transition 8° wide
+  if (latD > northThresh - 10) {
+    const fringeT = (latD - (northThresh - 10)) / 10; // 0..1, 1=definitely ice
+    const fringeNoise = fn(nx * 2.5, ny * 2.5, 77);
+    if (fringeNoise < fringeT * 0.9 + 0.05) return 'ice';
+  }
+
+  // ── SOUTH POLE (Antarctica) — highly irregular outline ──
+  // Real Antarctica is wider in the hemisphere 0-180° lon, narrower in -180 to 0
+  const southLonRad = lonD * Math.PI / 180;
+  // Asymmetric base: Antarctic peninsula reaches ~-63, Ross ice shelf to -78
+  const southWarp = Math.sin(southLonRad * 1.2 + 0.5) * 8
+                  + Math.sin(southLonRad * 2.1 - 1.0) * 6
+                  + Math.cos(southLonRad * 3.4 + 2.0) * 3
+                  + Math.cos(southLonRad * 0.6 + 0.8) * 5;
+  const southThresh = -68 + southWarp; // varies ~-80 to -58
+
+  if (latD < southThresh) return 'ice';
+  // Gradual southern fringe
+  if (latD < southThresh + 10) {
+    const fringeT = ((southThresh + 10) - latD) / 10;
+    const fringeNoise = fn(nx * 2.5, ny * 2.5, 91);
+    if (fringeNoise < fringeT * 0.85 + 0.05) return 'ice';
+  }
+
+  // ── GREENLAND — more jagged, noise-warped ──
+  // Extra noise per-cell so Greenland edge is rough
+  const glNoise = fn(nx * 3, ny * 3, 133) - 0.5;
+  const isGreenland = wLon > (-57 + glNoise * 14) && wLon < (-17 + glNoise * 10)
+                   && wLat > (58  + glNoise * 8)  && wLat < (85);
+  if (isGreenland) return 'ice';
 
   // ── OCEAN vs LAND ──
-  // Core ocean basins — defined by geography, warped border only
-  // Pacific: lon > 155 or lon < -75  (but carve out land)
-  // Atlantic: lon -75 to +18
-  // Indian: lon 20 to 120, lat < 28
+  // Extra ocean noise — more variation in open sea, blotchy cloud-like patches
+  const oceanNoise1 = fn(nx * 0.8, ny * 0.8, 200);
+  const oceanNoise2 = fn(nx * 1.6, ny * 1.4, 211);
+  const oceanBlobby = (oceanNoise1 * 0.6 + oceanNoise2 * 0.4);
 
-  // Land mask: is this cell primarily continental?
-  // We define land as TRUE inside these boxes, ocean elsewhere
   const isNAmerica  = wLon>-168&&wLon<-55  && wLat>15  && wLat<75;
   const isSAmerica  = wLon>-82 &&wLon<-33  && wLat>-58 && wLat<15;
   const isEurope    = wLon>-12 &&wLon<42   && wLat>34  && wLat<72;
@@ -330,58 +383,69 @@ function getCellBiome(row, col) {
   const isArabia    = wLon>34  &&wLon<65   && wLat>10  && wLat<32;
   const isAsia      = wLon>25  &&wLon<150  && wLat>8   && wLat<75;
   const isAustralia = wLon>112 &&wLon<155  && wLat>-42 && wLat<-9;
-  const isGreenland = wLon>-57 &&wLon<-17  && wLat>58  && wLat<85;
-  const isAntarctica= wLat < -63;
-
-  if (isAntarctica) return 'ice';
-  if (isGreenland)  return 'ice';
 
   const isLand = isNAmerica||isSAmerica||isEurope||isScandi||
                  isAfrica||isArabia||isAsia||isAustralia;
 
-  if (!isLand) return 'ocean';
+  if (!isLand) {
+    // Blobby variation in ocean — scattered islands/atolls via noise
+    // Most ocean cells stay ocean, but a small fraction near land flips to land
+    if (oceanBlobby > 0.74) {
+      // Check proximity to land zones (loose) — random island scatter
+      const nearLand = (wLon>-175&&wLon<-45&&wLat>5&&wLat<60) ||
+                       (wLon>28 &&wLon<160 &&wLat>-15&&wLat<40);
+      if (nearLand && oceanBlobby > 0.82) return 'temperate';
+    }
+    return 'ocean';
+  }
 
   // ── LAND BIOMES ──
-  // Arid: Sahara+Arabia, Australian interior, SW USA/Mexico
   const isSahara = wLon>-18&&wLon<55  &&wLat>10&&wLat<32;
   const isAusArid= wLon>120&&wLon<140 &&wLat>-35&&wLat<-20;
   const isSWusa  = wLon>-122&&wLon<-95&&wLat>22&&wLat<38;
   if (isSahara||isAusArid||isSWusa) return 'arid';
 
-  // Tropical: Amazon, Congo basin, SE Asia humid
   const isAmazon = wLon>-78&&wLon<-45&&wLat>-18&&wLat<8;
   const isCongo  = wLon>10 &&wLon<35 &&wLat>-8 &&wLat<6;
   const isSEAsia = wLon>93 &&wLon<145&&wLat>-8 &&wLat<22;
   if (isAmazon||isCongo||isSEAsia) return 'tropical';
 
-  // Boreal/taiga: high-lat land
   if (Math.abs(wLat) > 52) return 'taiga';
 
   return 'temperate';
 }
 
 function biomeColor(biome, row, col) {
-  // Per-cell hash jitter — each cell gets its own unique offset
-  // This creates the "gradual pixelation / organic dithering" look
-  const h1 = gh(col,   row,   5);   // 0..1
-  const h2 = gh(col*3, row*2, 41);  // 0..1
-  const h3 = gh(col+7, row+3, 83);  // 0..1
-  // Combined jitter: strong enough to blur biome edges visually
+  const h1 = gh(col,   row,   5);
+  const h2 = gh(col*3, row*2, 41);
+  const h3 = gh(col+7, row+3, 83);
+  // Ocean gets extra noise channels for more variation
+  const h4 = gh(col*5, row*4, 107);
+  const h5 = gh(col+13,row*7, 151);
+
   const jit = (base, range) =>
     Math.max(0, Math.min(255, Math.round(base + (h1-0.5)*range + (h2-0.5)*range*0.6 + (h3-0.5)*range*0.3)));
 
   switch(biome) {
-    // Bright near-white ice — poles look properly snowy
-    case 'ice':       return {r:jit(242,22), g:jit(248,18), b:jit(255,14)};
-    // Deep blue ocean — varied so open sea looks alive
-    case 'ocean':     return {r:jit(16,16),  g:jit(72,36),  b:jit(188,32)};
-    // Rich dark green tropics
+    case 'ice':
+      // Ice: mostly white but with slight blue/grey tints — NOT pure white circles
+      return {r:jit(238,28), g:jit(244,22), b:jit(255,18)};
+    case 'ocean':
+      // Ocean: much more varied — deep navy, mid blue, teal patches, dark troughs
+      {
+        const depth = h4 * 0.5 + h5 * 0.5; // 0..1 depth variation
+        const baseR = Math.round(8  + depth * 28);
+        const baseG = Math.round(52 + depth * 48);
+        const baseB = Math.round(160 + depth * 42);
+        return {
+          r: jit(baseR, 22),
+          g: jit(baseG, 40),
+          b: jit(baseB, 38)
+        };
+      }
     case 'tropical':  return {r:jit(22,28),  g:jit(145,42), b:jit(40,32)};
-    // Mid green temperate
     case 'temperate': return {r:jit(50,32),  g:jit(152,40), b:jit(52,32)};
-    // Sandy tan arid
     case 'arid':      return {r:jit(198,38), g:jit(158,32), b:jit(75,36)};
-    // Dark green boreal
     case 'taiga':     return {r:jit(32,24),  g:jit(105,32), b:jit(55,26)};
     default:          return {r:jit(55,32),  g:jit(138,40), b:jit(55,32)};
   }
@@ -396,12 +460,11 @@ for(let r=0;r<ROWS;r++){
 const lastFaceMap = {};
 
 let pressedCell = null;
-let globeColorFlash = null;  // { color, t0, fadeIn, hold, fadeOut }
+let globeColorFlash = null;
 let globeSizeMultiplier = 1.0;
 let rotY=0, rotX=0;
 let isDragging=false, lastX=0, lastY=0, velX=0, velY=0, dragMoved=false;
 
-// Globe uses the square approach: min(w, h) * R_FACTOR so it always fits
 function resize() {
   const size = Math.min(window.innerWidth*0.8, window.innerHeight*0.84);
   canvas.width = size; canvas.height = size;
@@ -428,7 +491,6 @@ function shadeRgb(col, light, pressed, latM) {
   const factor = pressed ? Math.max(0.2,light*0.6) : 0.28+light*0.76;
   let r=Math.round(col.r*factor), g=Math.round(col.g*factor), b=Math.round(col.b*factor);
 
-  // Color flash blending
   if (globeColorFlash) {
     const f=globeColorFlash, elapsed=performance.now()-f.t0;
     const totalDur=f.fadeIn+f.hold+f.fadeOut;
@@ -440,22 +502,36 @@ function shadeRgb(col, light, pressed, latM) {
       else if(elapsed<f.fadeIn+f.hold) a=1.0;
       else                             a=1.0-(elapsed-f.fadeIn-f.hold)/f.fadeOut;
       a=Math.max(0,Math.min(1,a))*0.85;
-      // per-cell brightness variation gives depth during flash
       const bright=(r+g+b)/765, shade=0.42+bright*0.58;
       let tr,tg,tb;
       if     (f.color==='red')    {tr=240; tg=20;  tb=20;}
       else if(f.color==='yellow') {tr=252; tg=210; tb=10;}
-      else                        {tr=10;  tg=255; tb=20;} // vivid lime-green
+      else                        {tr=10;  tg=255; tb=20;}
       r=Math.round(r*(1-a)+tr*shade*a);
       g=Math.round(g*(1-a)+tg*shade*a);
       b=Math.round(b*(1-a)+tb*shade*a);
     }
   }
 
-  // Polar caps whiten — strong push to white above ~60°
-  const poleBase = Math.pow(Math.abs(latM)/(Math.PI/2), 2.2) * 1.0;
-  const noise    = 0.5+0.5*Math.sin(col.r*7.3+col.b*3.1);
-  const poleFactor = Math.min(1, poleBase*(0.85+0.15*noise));
+  // ── GRADUAL POLE WHITENING — no hard circle, fades via per-cell noise ──
+  // Use the cell's stored color bias (r+g+b brightness) to modulate the fade.
+  // The poleFactor itself is computed from warpedPole (per-cell lat noise),
+  // so the boundary is irregular — not a circle.
+  const latDeg = latM * 180 / Math.PI;
+  // Each cell has its own noisy pole threshold, creating the irregular fringe
+  const poleNoise = (col.r * 0.003 + col.b * 0.007 + col.g * 0.002) % 1.0;
+  // Northern and southern thresholds vary per cell
+  const nThresh = 55 + poleNoise * 18;  // 55..73°  (was hard 60°)
+  const sThresh = -55 - poleNoise * 18; // -55..-73°
+
+  let poleFactor = 0;
+  if (latDeg > nThresh) {
+    // Gradual: goes 0→1 over a ~12° band
+    poleFactor = Math.pow(Math.min(1, (latDeg - nThresh) / 14), 1.4);
+  } else if (latDeg < sThresh) {
+    poleFactor = Math.pow(Math.min(1, (sThresh - latDeg) / 14), 1.4);
+  }
+
   r=Math.round(r+(255-r)*poleFactor);
   g=Math.round(g+(255-g)*poleFactor);
   b=Math.round(b+(255-b)*poleFactor);
@@ -464,7 +540,6 @@ function shadeRgb(col, light, pressed, latM) {
 
 function drawGlobe() {
   const W=canvas.width, H=canvas.height, cx=W/2, cy=H/2;
-  // globeSizeMultiplier scales the radius
   const R = Math.min(W,H) * R_FACTOR * globeSizeMultiplier;
   ctx.clearRect(0,0,W,H);
 
@@ -631,7 +706,6 @@ function lerp(a,b,t){return a+(b-a)*t;}
 function easeOut(t){return 1-Math.pow(1-t,3);}
 
 function showImage(row, col) {
-  // Already showing one — dismiss it
   if (extState) {
     extState = null;
     extrudeCanvas.style.pointerEvents = 'none';
@@ -641,17 +715,44 @@ function showImage(row, col) {
   if (!faceData) return;
 
   const cRect = canvas.getBoundingClientRect();
-  // Map cell corners to screen space
   const face = faceData.pts.map(p => ({x: p.sx + cRect.left, y: p.sy + cRect.top}));
 
   const img = new Image();
   img.onload = () => {
-    const tW = window.innerWidth * 0.67;
-    const tH = tW * (img.naturalHeight / img.naturalWidth);
+    const SW = window.innerWidth;
+    const SH = window.innerHeight;
+
+    // ── CONSTRAIN: max 67% of screen width AND max 67% of screen height ──
+    const MAX_W = SW * 0.67;
+    const MAX_H = SH * 0.67;
+
+    const aspect = img.naturalWidth / img.naturalHeight;
+
+    // Fit within both constraints
+    let tW = MAX_W;
+    let tH = tW / aspect;
+    if (tH > MAX_H) {
+      tH = MAX_H;
+      tW = tH * aspect;
+    }
+
+    // Position: top-left, but clamp so image stays inside screen
+    const MARGIN = 12;
+    // Place near top-left by default
+    let tX = MARGIN;
+    let tY = 50;
+
+    // Clamp right edge
+    if (tX + tW > SW - MARGIN) tX = SW - MARGIN - tW;
+    // Clamp bottom edge (account for status bar ~36px)
+    if (tY + tH > SH - 40 - MARGIN) tY = SH - 40 - MARGIN - tH;
+    // Clamp left/top
+    if (tX < MARGIN) tX = MARGIN;
+    if (tY < MARGIN) tY = MARGIN;
+
     extState = {
       img, face,
-      tX: 16, tY: 50,
-      tW, tH,
+      tX, tY, tW, tH,
       t0: performance.now(),
       dur: 1300,
     };
@@ -674,7 +775,6 @@ function drawExtrude() {
     const raw = Math.min((performance.now() - s.t0) / s.dur, 1);
     const e   = easeOut(raw);
 
-    // Final rect corners
     const tPts = [
       {x:s.tX,        y:s.tY},
       {x:s.tX+s.tW,   y:s.tY},
@@ -682,26 +782,21 @@ function drawExtrude() {
       {x:s.tX,        y:s.tY+s.tH},
     ];
 
-    // Front face morphs: tiny globe cell → large final rect
     const front = s.face.map((p,i) => ({
       x: lerp(p.x, tPts[i].x, e),
       y: lerp(p.y, tPts[i].y, e),
     }));
 
-    // 3D depth: bell curve peaks at mid-animation → "pushed out" effect
     const depthMax = 60;
     const depthT   = Math.sin(raw * Math.PI);
     const depth    = depthMax * depthT;
 
-    // Back face (recession into screen = shift right+down)
     const back = front.map(p => ({x: p.x + depth*0.85, y: p.y + depth*0.42}));
 
-    // Darken bg
     extCtx.fillStyle = `rgba(0,0,0,${e*0.5})`;
     extCtx.fillRect(0, 0, extrudeCanvas.width, extrudeCanvas.height);
 
     if (depth > 1) {
-      // RIGHT wall (darkest — facing away from light)
       extCtx.save();
       extCtx.globalAlpha = depthT * 0.92;
       extCtx.fillStyle = 'rgba(18,18,18,0.96)';
@@ -710,7 +805,6 @@ function drawExtrude() {
       extCtx.lineTo(back[2].x,back[2].y);   extCtx.lineTo(front[2].x,front[2].y);
       extCtx.closePath(); extCtx.fill(); extCtx.restore();
 
-      // BOTTOM wall
       extCtx.save();
       extCtx.globalAlpha = depthT * 0.78;
       extCtx.fillStyle = 'rgba(8,8,8,0.96)';
@@ -719,7 +813,6 @@ function drawExtrude() {
       extCtx.lineTo(back[3].x,back[3].y);   extCtx.lineTo(front[3].x,front[3].y);
       extCtx.closePath(); extCtx.fill(); extCtx.restore();
 
-      // LEFT wall (slightly lighter)
       extCtx.save();
       extCtx.globalAlpha = depthT * 0.52;
       extCtx.fillStyle = 'rgba(45,45,45,0.9)';
@@ -728,7 +821,6 @@ function drawExtrude() {
       extCtx.lineTo(back[3].x,back[3].y);   extCtx.lineTo(front[3].x,front[3].y);
       extCtx.closePath(); extCtx.fill(); extCtx.restore();
 
-      // TOP wall
       extCtx.save();
       extCtx.globalAlpha = depthT * 0.62;
       extCtx.fillStyle = 'rgba(60,60,60,0.88)';
@@ -738,7 +830,6 @@ function drawExtrude() {
       extCtx.closePath(); extCtx.fill(); extCtx.restore();
     }
 
-    // FRONT FACE — image clipped into the morphing quad
     extCtx.save();
     extCtx.beginPath();
     extCtx.moveTo(front[0].x,front[0].y);
@@ -751,7 +842,6 @@ function drawExtrude() {
     extCtx.drawImage(s.img, minX, minY, maxX-minX, maxY-minY);
     extCtx.restore();
 
-    // White outline
     extCtx.save();
     extCtx.strokeStyle = `rgba(255,255,255,${0.3+e*0.6})`;
     extCtx.lineWidth = 2;
@@ -821,7 +911,7 @@ initBgGrid();
 window.addEventListener('resize',initBgGrid);
 requestAnimationFrame(drawBgGrid);
 
-// ── CHESSBOARD — bottom right of status bar, click to grow globe ──────────────
+// ── CHESSBOARD ────────────────────────────────────────────────────────────────
 (function(){
   const cb  = document.getElementById('chessBoard');
   const cbc = cb.getContext('2d');
@@ -944,6 +1034,104 @@ function animateGlyphs(now){
 initGlyphs();
 window.addEventListener('resize',initGlyphs);
 requestAnimationFrame(animateGlyphs);
+
+// ── TINY DOT-LABELS (purely decorative, below the 3 traffic-light buttons) ───
+(function(){
+  const icons  = ['◈','⊕','◎','⬡','⟡','◇','⊗','◉','▣','⌘','⊞','◬','⬢','⌖','◫'];
+  const words  = [
+    'ROT.x','ROT.y','vel','drag','spin','mesh','z-buf','proj',
+    'globe','face','cell','lat','lon','norm','idle','loop',
+    'BIO','ICE','SEA','img','px','rgb','lerp','ease',
+  ];
+  const container = document.getElementById('dotLabels');
+
+  // generate 5 rows of randomised label+icon pairs
+  const rows = 5;
+  for (let i = 0; i < rows; i++) {
+    const row = document.createElement('div');
+    row.className = 'dot-label-row';
+    // pick random icon + word each row
+    const icon = icons[Math.floor(Math.random() * icons.length)];
+    const word = words[Math.floor(Math.random() * words.length)];
+    // random tiny numeric value suffix for that "system readout" feel
+    const val  = (Math.random() * 9.99).toFixed(2);
+    row.innerHTML = `<span class="dot-label-icon">${icon}</span><span>${word}:${val}</span>`;
+    container.appendChild(row);
+  }
+
+  // Quietly refresh values every ~4s so they subtly tick over
+  setInterval(() => {
+    container.querySelectorAll('.dot-label-row').forEach(row => {
+      if (Math.random() < 0.5) { // only update ~half at a time
+        const icon = icons[Math.floor(Math.random() * icons.length)];
+        const word = words[Math.floor(Math.random() * words.length)];
+        const val  = (Math.random() * 9.99).toFixed(2);
+        row.innerHTML = `<span class="dot-label-icon">${icon}</span><span>${word}:${val}</span>`;
+      }
+    });
+  }, 4000);
+})();
+
+// ── DREAM.MP3 — plays only while globe is spinning/dragging, silent otherwise ─
+(function(){
+  const audio = new Audio('dream.mp3');
+  audio.loop  = true;
+  audio.volume = 0.0;
+
+  // Fade helpers
+  let fadeRAF = null;
+  let targetVol = 0;
+  const FADE_SPEED = 0.012; // per frame
+
+  function fadeTo(target) {
+    targetVol = target;
+    if (fadeRAF) return; // already running
+    function step() {
+      const diff = targetVol - audio.volume;
+      if (Math.abs(diff) < 0.005) {
+        audio.volume = targetVol;
+        if (targetVol === 0) audio.pause();
+        fadeRAF = null;
+        return;
+      }
+      audio.volume = Math.max(0, Math.min(1, audio.volume + Math.sign(diff) * FADE_SPEED));
+      fadeRAF = requestAnimationFrame(step);
+    }
+    fadeRAF = requestAnimationFrame(step);
+  }
+
+  function startSound() {
+    if (audio.paused) {
+      audio.play().catch(()=>{}); // may need user gesture — first drag will unlock
+    }
+    fadeTo(0.55);
+  }
+  function stopSound() {
+    fadeTo(0);
+  }
+
+  // "globe is moving" = dragging OR coasting (velocity above threshold)
+  // We check this every animation frame via a tiny polling loop.
+  // We do NOT fire on image-open click (dragMoved stays false there).
+  let wasMoving = false;
+  function checkMotion() {
+    // globe is considered "moving" if dragging with actual drag movement,
+    // OR if it's coasting with meaningful velocity
+    const moving = (isDragging && dragMoved) ||
+                   (!isDragging && (Math.abs(velX) > 0.003 || Math.abs(velY) > 0.003));
+    if (moving && !wasMoving) startSound();
+    if (!moving && wasMoving) stopSound();
+    wasMoving = moving;
+    requestAnimationFrame(checkMotion);
+  }
+  requestAnimationFrame(checkMotion);
+
+  // Wheel scroll on globe also counts as motion — handled via velX/velY above,
+  // but we patch the wheel listener to also unlock audio context on first use
+  canvas.addEventListener('wheel', () => {
+    if (audio.paused) audio.play().catch(()=>{});
+  }, {passive: true});
+})();
 
 // ── PIXEL CLOCK ───────────────────────────────────────────────────────────────
 function updateClock(){
