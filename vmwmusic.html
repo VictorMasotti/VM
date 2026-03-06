@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>MusicVIC---TOR</title>
+<title>MusicVIC--TOR</title>
 <link rel="icon" type="image/x-icon" href="pinkfav.png">
 
 <style>
@@ -15,42 +15,34 @@ html, body {
   overflow: hidden;
   font-family: 'Inter', sans-serif;
   background: 
-    /* Base aluminum gradient - front */
     linear-gradient(135deg, #E0E0E0 0%, #B8B8B8 35%, #888888 70%, #505050 100%),
-    /* Metallic texture */
     repeating-linear-gradient(90deg, transparent, transparent 2px, rgba(255,255,255,0.03) 2px, rgba(255,255,255,0.03) 4px);
   background-attachment: fixed;
   cursor: url('EARTH2.png'), auto;
   position: relative;
 }
 
-/* Rounded cube warping effect - lighter front, darker edges */
 body::before {
   content: '';
   position: fixed;
   inset: 0;
   background: 
-    /* Top edge - curves up and darkens */
     radial-gradient(ellipse 250% 120% at 50% -10%, 
       rgba(180,180,180,0.5) 0%,
       rgba(100,100,100,0.3) 40%,
       transparent 80%),
-    /* Bottom edge - curves down and darkens heavily */
     radial-gradient(ellipse 250% 120% at 50% 110%, 
       rgba(30,30,30,0.6) 0%,
       rgba(60,60,60,0.4) 40%,
       transparent 80%),
-    /* Left edge - curves left and darkens */
     radial-gradient(ellipse 120% 250% at -10% 50%, 
       rgba(70,70,70,0.5) 0%,
       rgba(40,40,40,0.3) 40%,
       transparent 80%),
-    /* Right edge - curves right and darkens */
     radial-gradient(ellipse 120% 250% at 110% 50%, 
       rgba(70,70,70,0.5) 0%,
       rgba(40,40,40,0.3) 40%,
       transparent 80%),
-    /* Top-left corner - 10% width LEGO curved slope with bent metal */
     radial-gradient(ellipse 300% 300% at 5% 5%, 
       rgba(200,200,200,0.8) 0%,
       rgba(150,150,150,0.6) 15%,
@@ -58,7 +50,6 @@ body::before {
       rgba(60,60,60,0.6) 50%,
       rgba(30,30,30,0.4) 70%,
       transparent 100%),
-    /* Top-right corner - 10% width LEGO curved slope with bent metal */
     radial-gradient(ellipse 300% 300% at 95% 5%, 
       rgba(200,200,200,0.8) 0%,
       rgba(150,150,150,0.6) 15%,
@@ -66,7 +57,6 @@ body::before {
       rgba(60,60,60,0.6) 50%,
       rgba(30,30,30,0.4) 70%,
       transparent 100%),
-    /* Bottom-left corner - 10% width LEGO curved slope darker bent metal */
     radial-gradient(ellipse 300% 300% at 5% 95%, 
       rgba(40,40,40,0.9) 0%,
       rgba(60,60,60,0.8) 15%,
@@ -74,7 +64,6 @@ body::before {
       rgba(100,100,100,0.5) 50%,
       rgba(120,120,120,0.3) 70%,
       transparent 100%),
-    /* Bottom-right corner - 10% width LEGO curved slope darker bent metal */
     radial-gradient(ellipse 300% 300% at 95% 95%, 
       rgba(40,40,40,0.9) 0%,
       rgba(60,60,60,0.8) 15%,
@@ -86,7 +75,6 @@ body::before {
   z-index: 0;
 }
 
-/* FORCE CUSTOM CURSOR EVERYWHERE */
 *, a, a:hover, a:active, a:visited, button, div, .glassButton {
   cursor: url('EARTH2.png'), auto !important;
 }
@@ -97,7 +85,6 @@ body::before {
   user-select: none;
 }
 
-/* Remove blue highlight on touch */
 * {
   -webkit-tap-highlight-color: transparent;
   -webkit-touch-callout: none;
@@ -112,15 +99,10 @@ body::before {
   flex-direction: column;
   gap: 0.4vh;
   border-radius: 2vh;
-  /* Curved border shading - makes edges look like they curve away */
   box-shadow: 
-    /* Top edge curve */
     inset 0 30px 30px -10px rgba(255,255,255,0.15),
-    /* Bottom edge curve */
     inset 0 -30px 30px -10px rgba(0,0,0,0.4),
-    /* Left edge curve */
     inset 30px 0 30px -10px rgba(0,0,0,0.2),
-    /* Right edge curve */
     inset -30px 0 30px -10px rgba(0,0,0,0.2);
 }
 .sectionA {
@@ -231,7 +213,7 @@ body::before {
 .sectionC .block {
   flex: 1 0 calc(10% - 0.5vh);
   width: calc(10% - 0.5vh);
-  min-height: 80px; /* Ensure sliders are never too short */
+  min-height: 80px;
   background: #C9CED4;
   border-radius: 1.5vh;
   display: flex;
@@ -374,7 +356,7 @@ body::before {
   image-rendering: pixelated;
 }
 .glassButton img {
-  width: 60%; /* reduced by 20% */
+  width: 60%;
   height: 60%;
   object-fit: contain;
   pointer-events: none;
@@ -392,7 +374,7 @@ body::before {
 
   <div class="block block2">
     <div class="insetImage">
-      <img id="randomImage">
+      <img id="albumArt">
     </div>
   </div>
 
@@ -411,8 +393,18 @@ body::before {
 </div>
 
 <script>
+/* ── RANDOM PAIR SELECTION ── */
+const pairs = [
+  { image: 'breakTHROUGH.png', audio: 'breakTHROUGH.mp3' },
+  { image: 'mizu.png',         audio: 'quesa.wav'         }
+];
+const activePair = pairs[Math.floor(Math.random() * pairs.length)];
+
+// Set album art immediately
+document.getElementById('albumArt').src = activePair.image;
+
 /* AUDIO */
-const audio = new Audio('breakTHROUGH.mp3');
+const audio = new Audio(activePair.audio);
 audio.preload = 'auto';
 const gif = document.querySelector('.block3_4 img');
 gif.addEventListener('load', () => { audio.play().catch(()=>{}); });
@@ -427,27 +419,27 @@ const audioContext = new (window.AudioContext || window.webkitAudioContext)();
 const source = audioContext.createMediaElementSource(audio);
 
 // Create audio nodes
-const gainNode = audioContext.createGain(); // Volume
-const lowPassFilter = audioContext.createBiquadFilter(); // Filter 1
-const highPassFilter = audioContext.createBiquadFilter(); // Filter 2
-const bassEQ = audioContext.createBiquadFilter(); // Bass
-const trebleEQ = audioContext.createBiquadFilter(); // Treble
-const panNode = audioContext.createStereoPanner(); // Pan
-const compressor = audioContext.createDynamicsCompressor(); // Compressor
-const convolverNode = audioContext.createConvolver(); // Reverb (needs impulse response)
+const gainNode = audioContext.createGain();
+const lowPassFilter = audioContext.createBiquadFilter();
+const highPassFilter = audioContext.createBiquadFilter();
+const bassEQ = audioContext.createBiquadFilter();
+const trebleEQ = audioContext.createBiquadFilter();
+const panNode = audioContext.createStereoPanner();
+const compressor = audioContext.createDynamicsCompressor();
+const convolverNode = audioContext.createConvolver();
 
 // Configure filters
 lowPassFilter.type = 'lowpass';
-lowPassFilter.frequency.value = 20000; // Default: no filtering
+lowPassFilter.frequency.value = 20000;
 highPassFilter.type = 'highpass';
-highPassFilter.frequency.value = 20; // Default: no filtering
+highPassFilter.frequency.value = 20;
 bassEQ.type = 'lowshelf';
 bassEQ.frequency.value = 200;
 bassEQ.gain.value = 0;
 trebleEQ.type = 'highshelf';
 trebleEQ.frequency.value = 3000;
 trebleEQ.gain.value = 0;
-panNode.pan.value = 0; // Center
+panNode.pan.value = 0;
 
 // Connect audio chain
 source.connect(gainNode);
@@ -461,19 +453,15 @@ compressor.connect(audioContext.destination);
 
 // Slider effect mappings
 const sliderEffects = [
-  { // Slider 1: Pitch Drift / Instability
-    name: 'Pitch Drift',
+  { name: 'Pitch Drift',
     apply: (value) => {
-      // -100 = clean digital, 0 = normal, +100 = unstable tape-like drift
       const drift = (value / 100) * 0.15;
       const wobble = Math.sin(Date.now() / 1000 * (1 + drift * 5)) * drift * 0.5;
       audio.playbackRate = 1 + wobble;
     }
   },
-  { // Slider 2: Bass Weight / Sub Density
-    name: 'Bass Weight',
+  { name: 'Bass Weight',
     apply: (value) => {
-      // -100 = clean digital sine, 0 = normal, +100 = saturated/folded subs
       if (value >= 0) {
         bassEQ.gain.value = (value / 100) * 25;
         bassEQ.type = 'lowshelf';
@@ -483,10 +471,8 @@ const sliderEffects = [
       }
     }
   },
-  { // Slider 3: Harmonic Spread
-    name: 'Harmonic Spread',
+  { name: 'Harmonic Spread',
     apply: (value) => {
-      // -100 = pure fundamental, 0 = balanced, +100 = rich overtones
       if (value >= 0) {
         trebleEQ.gain.value = (value / 100) * 20;
         trebleEQ.frequency.value = 1000 + (value / 100) * 4000;
@@ -495,21 +481,16 @@ const sliderEffects = [
       }
     }
   },
-  { // Slider 4: Time Smear / Micro-delay
-    name: 'Time Smear',
+  { name: 'Time Smear',
     apply: (value) => {
-      // -100 = tight transients, 0 = normal, +100 = stretched blur
-      // Simulated via playback rate micro-variations
       const smear = (value / 100) * 0.08;
       if (Math.abs(smear) > 0.01) {
         audio.playbackRate = 1 + Math.sin(Date.now() / 500) * smear;
       }
     }
   },
-  { // Slider 5: Transient Softener / Punch Shape
-    name: 'Transient Softener',
+  { name: 'Transient Softener',
     apply: (value) => {
-      // -100 = clicky attacks, 0 = normal, +100 = rounded/rubbery
       if (value >= 0) {
         compressor.attack.value = 0.001 + (value / 100) * 0.02;
         compressor.release.value = 0.1 + (value / 100) * 0.3;
@@ -518,10 +499,8 @@ const sliderEffects = [
       }
     }
   },
-  { // Slider 6: Stereo Gravity
-    name: 'Stereo Gravity',
+  { name: 'Stereo Gravity',
     apply: (value) => {
-      // -100 = mono center-locked, 0 = normal stereo, +100 = floating wide
       if (value >= 0) {
         panNode.pan.value = (value / 100) * 0.8;
       } else {
@@ -529,11 +508,8 @@ const sliderEffects = [
       }
     }
   },
-  { // Slider 7: Texture / Grain Size
-    name: 'Texture',
+  { name: 'Texture',
     apply: (value) => {
-      // -100 = smooth, 0 = normal, +100 = gritty digital sand
-      // Simulated via subtle bitcrushing effect on playback
       if (value > 0) {
         const grainFactor = 1 + (value / 100) * 0.3;
         audio.playbackRate = 1 * grainFactor;
@@ -542,10 +518,8 @@ const sliderEffects = [
       }
     }
   },
-  { // Slider 8: Filter Motion Depth
-    name: 'Filter Motion',
+  { name: 'Filter Motion',
     apply: (value) => {
-      // -100 = static filter, 0 = normal, +100 = heavy envelope movement
       if (value >= 0) {
         lowPassFilter.frequency.value = 1000 + (value / 100) * Math.sin(Date.now() / 200) * 3000;
         lowPassFilter.Q.value = 1 + (value / 100) * 5;
@@ -555,11 +529,8 @@ const sliderEffects = [
       }
     }
   },
-  { // Slider 9: Spectral Tilt
-    name: 'Spectral Tilt',
+  { name: 'Spectral Tilt',
     apply: (value) => {
-      // -100 = dark spectrum, 0 = balanced, +100 = bright spectrum
-      // Rotate spectrum by adjusting highpass and lowpass together
       if (value >= 0) {
         highPassFilter.frequency.value = 20;
         trebleEQ.gain.value = (value / 100) * 18;
@@ -569,10 +540,8 @@ const sliderEffects = [
       }
     }
   },
-  { // Slider 10: Energy / Excitation Drive
-    name: 'Energy',
+  { name: 'Energy',
     apply: (value) => {
-      // -100 = quiet/compressed, 0 = normal, +100 = pumping/driven
       if (value >= 0) {
         gainNode.gain.value = 1 + (value / 100) * 0.5;
         compressor.ratio.value = 1 + (value / 100) * 8;
@@ -583,11 +552,6 @@ const sliderEffects = [
   }
 ];
 
-/* RANDOM IMAGE */
-const imgs = ['breakTHROUGH.png'];
-document.getElementById('randomImage').src =
-  imgs[Math.floor(Math.random()*imgs.length)];
-
 /* MATRIX DOTS */
 const canvas = document.getElementById('dotMatrix');
 const ctx = canvas.getContext('2d');
@@ -595,11 +559,10 @@ function resize(){ canvas.width=canvas.offsetWidth; canvas.height=canvas.offsetH
 resize(); window.addEventListener('resize', resize);
 
 const gs=20, dr=4;
-let currentBlockColor = '#C9CED4'; // Default, will be updated by color schemes
-let audioLevel = 0; // Track audio level for speaker response
+let currentBlockColor = '#C9CED4';
+let audioLevel = 0;
 let pulsePhase = 0;
 
-// Monitor audio level in real-time
 const analyser = audioContext.createAnalyser();
 source.connect(analyser);
 analyser.connect(audioContext.destination);
@@ -624,13 +587,9 @@ function draw(){
   const cx=canvas.width/2, cy=canvas.height/2;
   const r=Math.min(canvas.width,canvas.height)/2*0.85;
   
-  // Get current audio level for dynamic response
   audioLevel = getAudioLevel();
   pulsePhase += 0.12;
   
-  // NO BACKGROUND - only draw dots on transparent canvas
-  
-  // Draw dots on transparent surface
   const s=(2*r)/(gs-1);
   const dotRadius = Math.max(1.8, Math.min(5.5, s * 0.16));
   
@@ -645,7 +604,6 @@ function draw(){
       else if(rnd<2.6) col='#ffb343';
       else if(rnd<3) col='#40bcf4';
       
-      // Static dots, no warping
       ctx.beginPath();
       ctx.arc(baseX, baseY, dotRadius, 0, Math.PI*2);
       ctx.fillStyle = col;
@@ -663,7 +621,6 @@ function createBlocks(section,num,addHomeIcon=false){
     const btn=document.createElement('div');
     btn.className='glassButton';
 
-    // Click ripple effect
     btn.addEventListener('click',()=>{      
       const s=document.createElement('div');
       s.className='secondaryCircle';
@@ -694,7 +651,6 @@ function createBlocks(section,num,addHomeIcon=false){
       setTimeout(()=>nova.remove(),1100);
     });
 
-    // Home icon for first block
     if(addHomeIcon && i===0){
       const link = document.createElement('a');
       link.href = 'https://victormasotti.com/';
@@ -706,7 +662,7 @@ function createBlocks(section,num,addHomeIcon=false){
 
       const homeIcon = document.createElement('img');
       homeIcon.src = 'home.png';
-      homeIcon.style.width = '60%'; // reduced size
+      homeIcon.style.width = '60%';
       homeIcon.style.height = '60%';
       homeIcon.style.objectFit = 'contain';
       homeIcon.style.pointerEvents = 'none';
@@ -739,21 +695,17 @@ if (button10Icon) {
 
 /* Create sliders for Section C */
 [...sectionC.children].forEach((block, index) => {
-  // Remove glass button if exists
   const existingBtn = block.querySelector('.glassButton');
   if (existingBtn) existingBtn.remove();
   
-  // Create slider track
   const track = document.createElement('div');
   track.className = 'sliderTrack';
   block.appendChild(track);
   
-  // Create slider knob
   const knob = document.createElement('div');
   knob.className = 'sliderKnob';
   block.appendChild(knob);
   
-  // Add slider image icon TO THE KNOB (so it follows it)
   const sliderImg = document.createElement('img');
   sliderImg.src = `slider${index + 1}.png`;
   sliderImg.style.width = '60%';
@@ -762,16 +714,14 @@ if (button10Icon) {
   sliderImg.style.pointerEvents = 'none';
   knob.appendChild(sliderImg);
   
-  // Slider state
   let isDragging = false;
-  let sliderValue = 0; // -100 to +100, default 0 (middle = no effect)
+  let sliderValue = 0;
   
   function updateKnobPosition(value) {
     const blockHeight = block.offsetHeight;
     const knobHeight = knob.offsetHeight;
     const borderSpace = blockHeight * 0.09;
     
-    // Position knob: -100 at bottom, 0 at middle, +100 at top
     const minPos = borderSpace;
     const maxPos = blockHeight - borderSpace - knobHeight;
     const middlePos = (minPos + maxPos) / 2;
@@ -784,7 +734,6 @@ if (button10Icon) {
   }
   
   function triggerKnobEffect() {
-    // Secondary circle ripple - EXACT copy from section B
     const s=document.createElement('div');
     s.className='secondaryCircle';
     knob.appendChild(s);
@@ -794,7 +743,6 @@ if (button10Icon) {
     );
     setTimeout(()=>s.remove(),900);
 
-    // Nova burst - EXACT copy from section B
     const nova=document.createElement('div');
     nova.style.position='absolute';
     nova.style.top='50%';
@@ -828,27 +776,23 @@ if (button10Icon) {
     const middleY = (minY + maxY) / 2;
     const range = (maxY - minY) / 2;
     
-    // Calculate slider value: top = +100, middle = 0, bottom = -100
     const relativeY = clientY - middleY;
     const clampedY = Math.max(-range, Math.min(range, relativeY));
     sliderValue = Math.round(-(clampedY / range) * 100);
     
     updateKnobPosition(sliderValue);
     
-    // Apply audio effect
     if (sliderEffects[index]) {
       sliderEffects[index].apply(sliderValue);
     }
   }
   
-  // Mouse events
   knob.addEventListener('mousedown', (e) => {
     isDragging = true;
     triggerKnobEffect();
     e.preventDefault();
   });
   
-  // Use window for global tracking
   window.addEventListener('mousemove', (e) => {
     if (isDragging) {
       e.preventDefault();
@@ -860,7 +804,6 @@ if (button10Icon) {
     isDragging = false;
   });
   
-  // Touch events
   knob.addEventListener('touchstart', (e) => {
     isDragging = true;
     triggerKnobEffect();
@@ -877,10 +820,8 @@ if (button10Icon) {
     isDragging = false;
   });
   
-  // Initialize position
   updateKnobPosition(sliderValue);
   
-  // Update position on window resize
   window.addEventListener('resize', () => {
     updateKnobPosition(sliderValue);
   });
@@ -891,7 +832,6 @@ const button4 = sectionB.children[3];
 if (button4) {
   const btn4 = button4.querySelector('.glassButton');
   
-  // Add info icon
   const infoIcon = document.createElement('img');
   infoIcon.src = 'leaflet.png';
   infoIcon.style.width = '60%';
@@ -900,12 +840,10 @@ if (button4) {
   infoIcon.style.pointerEvents = 'none';
   btn4.appendChild(infoIcon);
   
-  // Info button click handler
   btn4.addEventListener('click', (e) => {
     playButtonSound();
     e.stopPropagation();
     
-    // Create alert container (creamy yellow style - no sidebar)
     const alertBox = document.createElement('div');
     alertBox.style.position = 'fixed';
     alertBox.style.top = '5vh';
@@ -913,11 +851,8 @@ if (button4) {
     alertBox.style.transform = 'translateX(-50%)';
     alertBox.style.right = 'auto';
     alertBox.style.bottom = '5vh';
-    
-    // Always 60% of screen width, but cap at 60vw max
     alertBox.style.width = '60vw';
     alertBox.style.maxWidth = '60vw';
-    
     alertBox.style.background = 'linear-gradient(135deg, #FFFEF5 0%, #FFFFF0 100%)';
     alertBox.style.borderRadius = '4vh';
     alertBox.style.padding = '4vh';
@@ -933,29 +868,16 @@ if (button4) {
     const scrollbarStyle = document.createElement('style');
     scrollbarStyle.textContent = `
       @keyframes fadeInScale {
-        from {
-          opacity: 0;
-          transform: translateX(-50%) scale(0.85);
-        }
-        to {
-          opacity: 1;
-          transform: translateX(-50%) scale(1);
-        }
+        from { opacity: 0; transform: translateX(-50%) scale(0.85); }
+        to   { opacity: 1; transform: translateX(-50%) scale(1); }
       }
       @keyframes fadeOutZoom {
-        from {
-          opacity: 1;
-          transform: translateX(-50%) scale(1);
-        }
-        to {
-          opacity: 0;
-          transform: translateX(-50%) scale(1.05);
-        }
+        from { opacity: 1; transform: translateX(-50%) scale(1); }
+        to   { opacity: 0; transform: translateX(-50%) scale(1.05); }
       }
     `;
     document.head.appendChild(scrollbarStyle);
     
-    // Content wrapper for scrolling - NO VISIBLE SCROLLBAR AT ALL
     const contentWrapper = document.createElement('div');
     contentWrapper.className = 'alert-content';
     contentWrapper.style.display = 'flex';
@@ -964,26 +886,17 @@ if (button4) {
     contentWrapper.style.overflowY = 'auto';
     contentWrapper.style.overflowX = 'hidden';
     contentWrapper.style.scrollBehavior = 'smooth';
-    contentWrapper.style.msOverflowStyle = 'none'; /* IE and Edge */
-    contentWrapper.style.scrollbarWidth = 'none'; /* Firefox */
+    contentWrapper.style.msOverflowStyle = 'none';
+    contentWrapper.style.scrollbarWidth = 'none';
     
-    // Absolutely hide scrollbar for all browsers
     const hideScrollbar = document.createElement('style');
     hideScrollbar.textContent = `
-      .alert-content::-webkit-scrollbar {
-        width: 0;
-        height: 0;
-      }
-      .alert-content::-webkit-scrollbar-track {
-        background: none;
-      }
-      .alert-content::-webkit-scrollbar-thumb {
-        background: none;
-      }
+      .alert-content::-webkit-scrollbar { width: 0; height: 0; }
+      .alert-content::-webkit-scrollbar-track { background: none; }
+      .alert-content::-webkit-scrollbar-thumb { background: none; }
     `;
     document.head.appendChild(hideScrollbar);
     
-    // Title - two lines
     const title = document.createElement('h2');
     title.innerHTML = 'Victor WLE<br>(Web Listening Experience)';
     title.style.margin = '0 0 0.5vh 0';
@@ -996,7 +909,6 @@ if (button4) {
     title.style.lineHeight = '1.3';
     contentWrapper.appendChild(title);
     
-    // Separator line
     const sep1 = document.createElement('div');
     sep1.style.width = '100%';
     sep1.style.height = '1px';
@@ -1004,7 +916,6 @@ if (button4) {
     sep1.style.margin = '0.8vh 0';
     contentWrapper.appendChild(sep1);
     
-    // Subtitle
     const subtitle = document.createElement('p');
     subtitle.textContent = 'Instructions leaflet on how to experiment with Victor\'s music catalog on this experimental web listening format';
     subtitle.style.margin = '0.8vh 0 1.2vh 0';
@@ -1015,7 +926,6 @@ if (button4) {
     subtitle.style.textAlign = 'center';
     contentWrapper.appendChild(subtitle);
     
-    // Info content
     const content = document.createElement('div');
     content.style.fontSize = '1.7vh';
     content.style.lineHeight = '2.6vh';
@@ -1033,7 +943,6 @@ if (button4) {
         <li style="margin: 0.6vh 0;"><strong>Section B:</strong> Control buttons - Volume, Info, and infinite color schemes</li>
         <li style="margin: 0.6vh 0;"><strong>Section C:</strong> 10 professional audio sliders for real-time processing</li>
       </ul>
-      
       <div style="margin: 1.2vh 0; border-bottom: 1px dashed #8B7D5F; padding-bottom: 1vh;">
         <p style="margin: 0; font-family: 'Inter', sans-serif;"><strong style="color: #8B7D5F;">2. Slider Functions:</strong></p>
       </div>
@@ -1049,7 +958,6 @@ if (button4) {
         <li style="margin: 0.5vh 0; font-size: 1.6vh;"><strong>9. Spectral Tilt</strong> — Brightness rotation</li>
         <li style="margin: 0.5vh 0; font-size: 1.6vh;"><strong>10. Energy</strong> — Drive and compression</li>
       </ul>
-      
       <div style="margin: 1.2vh 0; border-bottom: 1px dashed #8B7D5F; padding-bottom: 1vh;">
         <p style="margin: 0; font-family: 'Inter', sans-serif;"><strong style="color: #8B7D5F;">3. WLE Default Colour Scheme:</strong></p>
       </div>
@@ -1058,7 +966,6 @@ if (button4) {
     contentWrapper.appendChild(content);
     alertBox.appendChild(contentWrapper);
     
-    // Close on outside click
     const overlay = document.createElement('div');
     overlay.style.position = 'fixed';
     overlay.style.inset = '0';
@@ -1081,11 +988,9 @@ if (button4) {
     }
     
     overlay.addEventListener('click', closeAlert);
-    
     document.body.appendChild(overlay);
     document.body.appendChild(alertBox);
     
-    // Trigger button effect
     const s=document.createElement('div');
     s.className='secondaryCircle';
     btn4.appendChild(s);
@@ -1115,10 +1020,10 @@ if (button4) {
     setTimeout(()=>nova.remove(),1100);
   });
 }
-const button2 = sectionB.children[1]; // Second button (index 1)
-const button3 = sectionB.children[2]; // Third button (index 2)
 
-// Add batton.mp3 sound to ALL section B buttons
+const button2 = sectionB.children[1];
+const button3 = sectionB.children[2];
+
 [...sectionB.children].forEach((block) => {
   const btn = block.querySelector('.glassButton');
   if (btn) {
@@ -1128,7 +1033,6 @@ const button3 = sectionB.children[2]; // Third button (index 2)
   }
 });
 
-// Add less.png icon to button 2
 const btn2 = button2.querySelector('.glassButton');
 const lessIcon = document.createElement('img');
 lessIcon.src = 'less.png';
@@ -1138,7 +1042,6 @@ lessIcon.style.objectFit = 'contain';
 lessIcon.style.pointerEvents = 'none';
 btn2.appendChild(lessIcon);
 
-// Add more.png icon to button 3
 const btn3 = button3.querySelector('.glassButton');
 const moreIcon = document.createElement('img');
 moreIcon.src = 'more.png';
@@ -1148,7 +1051,6 @@ moreIcon.style.objectFit = 'contain';
 moreIcon.style.pointerEvents = 'none';
 btn3.appendChild(moreIcon);
 
-// Create button sound function
 function playButtonSound() {
   const buttonSound = new Audio('batton.mp3');
   buttonSound.volume = 0.5;
@@ -1156,86 +1058,38 @@ function playButtonSound() {
   buttonSound.play().catch(() => {});
 }
 
-// Button 2: Lower volume by 5% with light beige shade
 button2.querySelector('.glassButton').addEventListener('click', (e) => {
   audio.volume = Math.max(0, audio.volume - 0.05);
-  console.log('Volume decreased to:', Math.round(audio.volume * 100) + '%');
-  
   e.stopPropagation();
-  
   const btn = button2.querySelector('.glassButton');
-  
-  // Light beige tinted secondary circle
   const s = document.createElement('div');
   s.className = 'secondaryCircle';
   s.style.background = 'radial-gradient(circle at 30% 30%, rgba(215, 207, 189, 0.35), rgba(0, 0, 0, 0.15))';
   btn.appendChild(s);
-  s.animate(
-    [{transform:'scale(1)',opacity:1},{transform:'scale(0.82)',opacity:0}],
-    {duration:900,easing:'cubic-bezier(0.25,1,0.5,1)'}
-  );
+  s.animate([{transform:'scale(1)',opacity:1},{transform:'scale(0.82)',opacity:0}],{duration:900,easing:'cubic-bezier(0.25,1,0.5,1)'});
   setTimeout(()=>s.remove(),900);
-
-  // Light beige nova
   const nova = document.createElement('div');
-  nova.style.position = 'absolute';
-  nova.style.top = '50%';
-  nova.style.left = '50%';
-  nova.style.width = '100%';
-  nova.style.height = '100%';
-  nova.style.transform = 'translate(-50%,-50%)';
-  nova.style.borderRadius = '50%';
-  nova.style.background = 'rgba(215, 207, 189, 0.4)';
-  nova.style.filter = 'blur(6px)';
-  nova.style.pointerEvents = 'none';
+  nova.style.cssText = 'position:absolute;top:50%;left:50%;width:100%;height:100%;transform:translate(-50%,-50%);border-radius:50%;background:rgba(215,207,189,0.4);filter:blur(6px);pointer-events:none;';
   btn.appendChild(nova);
-  nova.animate(
-    [{transform:'translate(-50%,-50%) scale(1)',opacity:1},
-     {transform:'translate(-50%,-50%) scale(1.4)',opacity:0}],
-    {duration:1100,easing:'ease-out'}
-  );
+  nova.animate([{transform:'translate(-50%,-50%) scale(1)',opacity:1},{transform:'translate(-50%,-50%) scale(1.4)',opacity:0}],{duration:1100,easing:'ease-out'});
   setTimeout(()=>nova.remove(),1100);
 });
 
-// Button 3: Raise volume by 5% with light beige shade
 button3.querySelector('.glassButton').addEventListener('click', (e) => {
   playButtonSound();
   audio.volume = Math.min(1, audio.volume + 0.05);
-  console.log('Volume increased to:', Math.round(audio.volume * 100) + '%');
-  
   e.stopPropagation();
-  
   const btn = button3.querySelector('.glassButton');
-  
-  // Light beige tinted secondary circle
   const s = document.createElement('div');
   s.className = 'secondaryCircle';
   s.style.background = 'radial-gradient(circle at 30% 30%, rgba(215, 207, 189, 0.35), rgba(0, 0, 0, 0.15))';
   btn.appendChild(s);
-  s.animate(
-    [{transform:'scale(1)',opacity:1},{transform:'scale(0.82)',opacity:0}],
-    {duration:900,easing:'cubic-bezier(0.25,1,0.5,1)'}
-  );
+  s.animate([{transform:'scale(1)',opacity:1},{transform:'scale(0.82)',opacity:0}],{duration:900,easing:'cubic-bezier(0.25,1,0.5,1)'});
   setTimeout(()=>s.remove(),900);
-
-  // Light beige nova
   const nova = document.createElement('div');
-  nova.style.position = 'absolute';
-  nova.style.top = '50%';
-  nova.style.left = '50%';
-  nova.style.width = '100%';
-  nova.style.height = '100%';
-  nova.style.transform = 'translate(-50%,-50%)';
-  nova.style.borderRadius = '50%';
-  nova.style.background = 'rgba(215, 207, 189, 0.4)';
-  nova.style.filter = 'blur(6px)';
-  nova.style.pointerEvents = 'none';
+  nova.style.cssText = 'position:absolute;top:50%;left:50%;width:100%;height:100%;transform:translate(-50%,-50%);border-radius:50%;background:rgba(215,207,189,0.4);filter:blur(6px);pointer-events:none;';
   btn.appendChild(nova);
-  nova.animate(
-    [{transform:'translate(-50%,-50%) scale(1)',opacity:1},
-     {transform:'translate(-50%,-50%) scale(1.4)',opacity:0}],
-    {duration:1100,easing:'ease-out'}
-  );
+  nova.animate([{transform:'translate(-50%,-50%) scale(1)',opacity:1},{transform:'translate(-50%,-50%) scale(1.4)',opacity:0}],{duration:1100,easing:'ease-out'});
   setTimeout(()=>nova.remove(),1100);
 });
 
@@ -1248,8 +1102,6 @@ const colors=['#ff8000','#00e054','#ffb343','#40bcf4'];
   block.querySelector('.glassButton').appendChild(c);
 });
 
-// Block5 - NO static inner circles, color changes via scheme only
-
 /* Block5 random time */
 document.querySelector('.block5 .glassButton').addEventListener('click', (e) => {
     playButtonSound();
@@ -1257,248 +1109,130 @@ document.querySelector('.block5 .glassButton').addEventListener('click', (e) => 
     const randomTime = Math.random() * maxTime;
     audio.currentTime = randomTime;
     audio.play().catch(()=>{});
-    
     e.stopPropagation();
-    
     const btn = document.querySelector('.block5 .glassButton');
-    
-    // Secondary circle ripple
     const s = document.createElement('div');
     s.className = 'secondaryCircle';
     s.style.background = 'radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.25), rgba(0, 0, 0, 0.15))';
     btn.appendChild(s);
-    s.animate(
-      [{transform:'scale(1)',opacity:1},{transform:'scale(0.82)',opacity:0}],
-      {duration:900,easing:'ease-out'}
-    ).onfinish=()=>s.remove();
-    
-    // Nova burst
+    s.animate([{transform:'scale(1)',opacity:1},{transform:'scale(0.82)',opacity:0}],{duration:900,easing:'ease-out'}).onfinish=()=>s.remove();
     const n = document.createElement('div');
     n.className = 'secondaryCircle';
     n.style.background = 'radial-gradient(circle, rgba(255,255,255,0.5) 0%, transparent 70%)';
     btn.appendChild(n);
-    n.animate(
-      [{transform:'scale(1)',opacity:0.8},{transform:'scale(1.4)',opacity:0}],
-      {duration:1100,easing:'ease-out'}
-    ).onfinish=()=>n.remove();
+    n.animate([{transform:'scale(1)',opacity:0.8},{transform:'scale(1.4)',opacity:0}],{duration:1100,easing:'ease-out'}).onfinish=()=>n.remove();
 });
 
 /* Button 10 - Color Scheme Cycler */
-let currentMode = 0;
-let pressCount = 0; // Counter for returning to basis every 5 presses
-const button10 = sectionB.children[9];
+let pressCount = 0;
 
-// Basis scheme always stays at position 0
 const basisScheme = {
-  name: 'Basis Mode',
   sectionABlocks: '#C9CED4',
   sectionBCBlocks: '#C9CED4',
   bodyBg: '#C9CED4',
-  greenCircle: '#801818',
-  showText: false
+  greenCircle: '#801818'
 };
 
-// All other schemes shuffled randomly
-let colorSchemes = [
-  {
-    name: 'Scheme 1',
-    sectionABlocks: '#188f65',
-    sectionBCBlocks: '#d7cfbd',
-    bodyBg: '#d7cfbd',
-    greenCircle: '#188f65',
-    showText: true,
-    textColor: '#188f65'
-  },
-  {
-    name: 'Scheme 2',
-    sectionABlocks: '#eba02d',
-    sectionBCBlocks: '#A8B88F',
-    bodyBg: '#A8B88F',
-    greenCircle: '#eba02d',
-    showText: true,
-    textColor: '#eba02d'
-  },
-  {
-    name: 'Scheme 3',
-    sectionABlocks: '#0000FF',
-    sectionBCBlocks: '#FFFFFF',
-    bodyBg: '#FFFFFF',
-    greenCircle: '#0000FF',
-    showText: true,
-    textColor: '#0000FF'
-  },
-  {
-    name: 'Scheme 4',
-    sectionABlocks: '#ffb16e',
-    sectionBCBlocks: '#fff5b8',
-    bodyBg: '#fff5b8',
-    greenCircle: '#ffb16e',
-    showText: true,
-    textColor: '#ffb16e'
-  },
-  {
-    name: 'Scheme 5',
-    sectionABlocks: '#FEE715',
-    sectionBCBlocks: '#101820',
-    bodyBg: '#101820',
-    greenCircle: '#FEE715',
-    showText: true,
-    textColor: '#FEE715'
-  },
-  {
-    name: 'Scheme 6',
-    sectionABlocks: '#F9E795',
-    sectionBCBlocks: '#F96167',
-    bodyBg: '#F96167',
-    greenCircle: '#F9E795',
-    showText: true,
-    textColor: '#F9E795'
-  }
-].sort(() => Math.random() - 0.5);
-
-colorSchemes = [basisScheme, ...colorSchemes];
-
-// Random schemes pool (harmonious combos) - NOW SHUFFLED & INFINITE
 const randomSchemes = [
-  { sectionABlocks: '#FF6B6B', sectionBCBlocks: '#FFE66D', bodyBg: '#FFE66D', greenCircle: '#FF6B6B', textColor: '#FF6B6B' },
-  { sectionABlocks: '#4ECDC4', sectionBCBlocks: '#C7F0DB', bodyBg: '#C7F0DB', greenCircle: '#4ECDC4', textColor: '#4ECDC4' },
-  { sectionABlocks: '#A8DADC', sectionBCBlocks: '#F1FAEE', bodyBg: '#F1FAEE', greenCircle: '#A8DADC', textColor: '#A8DADC' },
-  { sectionABlocks: '#FFB4A2', sectionBCBlocks: '#FFCDB2', bodyBg: '#FFCDB2', greenCircle: '#FFB4A2', textColor: '#FFB4A2' },
-  { sectionABlocks: '#06FFA5', sectionBCBlocks: '#FFFFC7', bodyBg: '#FFFFC7', greenCircle: '#06FFA5', textColor: '#06FFA5' },
-  { sectionABlocks: '#E63946', sectionBCBlocks: '#F8B195', bodyBg: '#F8B195', greenCircle: '#E63946', textColor: '#E63946' },
-  { sectionABlocks: '#84A9C0', sectionBCBlocks: '#EAE7DC', bodyBg: '#EAE7DC', greenCircle: '#84A9C0', textColor: '#84A9C0' },
-  { sectionABlocks: '#FF99C8', sectionBCBlocks: '#FCF6BD', bodyBg: '#FCF6BD', greenCircle: '#FF99C8', textColor: '#FF99C8' },
-  { sectionABlocks: '#188f65', sectionBCBlocks: '#d7cfbd', bodyBg: '#d7cfbd', greenCircle: '#188f65', textColor: '#188f65' },
-  { sectionABlocks: '#eba02d', sectionBCBlocks: '#A8B88F', bodyBg: '#A8B88F', greenCircle: '#eba02d', textColor: '#eba02d' },
-  { sectionABlocks: '#0000FF', sectionBCBlocks: '#FFFFFF', bodyBg: '#FFFFFF', greenCircle: '#0000FF', textColor: '#0000FF' },
-  { sectionABlocks: '#ffb16e', sectionBCBlocks: '#fff5b8', bodyBg: '#fff5b8', greenCircle: '#ffb16e', textColor: '#ffb16e' },
-  { sectionABlocks: '#FEE715', sectionBCBlocks: '#101820', bodyBg: '#101820', greenCircle: '#FEE715', textColor: '#FEE715' },
-  { sectionABlocks: '#F9E795', sectionBCBlocks: '#F96167', bodyBg: '#F96167', greenCircle: '#F9E795', textColor: '#F9E795' },
-  { sectionABlocks: '#FF6B9D', sectionBCBlocks: '#FEC8D8', bodyBg: '#FEC8D8', greenCircle: '#FF6B9D', textColor: '#FF6B9D' },
-  { sectionABlocks: '#645995', sectionBCBlocks: '#D5BEE7', bodyBg: '#D5BEE7', greenCircle: '#645995', textColor: '#645995' },
-  { sectionABlocks: '#F38181', sectionBCBlocks: '#FFEAA7', bodyBg: '#FFEAA7', greenCircle: '#F38181', textColor: '#F38181' },
-  { sectionABlocks: '#AA96DA', sectionBCBlocks: '#FCBAD3', bodyBg: '#FCBAD3', greenCircle: '#AA96DA', textColor: '#AA96DA' },
-  { sectionABlocks: '#95E1D3', sectionBCBlocks: '#F38181', bodyBg: '#F38181', greenCircle: '#95E1D3', textColor: '#95E1D3' },
-  { sectionABlocks: '#A8E6CF', sectionBCBlocks: '#FFD3B6', bodyBg: '#FFD3B6', greenCircle: '#A8E6CF', textColor: '#A8E6CF' },
-  { sectionABlocks: '#FF8B94', sectionBCBlocks: '#FFB4A2', bodyBg: '#FFB4A2', greenCircle: '#FF8B94', textColor: '#FF8B94' },
-  { sectionABlocks: '#E8DFF5', sectionBCBlocks: '#DEEAE6', bodyBg: '#DEEAE6', greenCircle: '#E8DFF5', textColor: '#E8DFF5' },
-  { sectionABlocks: '#6BCB77', sectionBCBlocks: '#4D96FF', bodyBg: '#4D96FF', greenCircle: '#6BCB77', textColor: '#6BCB77' },
-  { sectionABlocks: '#FF6348', sectionBCBlocks: '#FFD700', bodyBg: '#FFD700', greenCircle: '#FF6348', textColor: '#FF6348' },
-  { sectionABlocks: '#2E86AB', sectionBCBlocks: '#A23B72', bodyBg: '#A23B72', greenCircle: '#2E86AB', textColor: '#2E86AB' },
-  { sectionABlocks: '#F18F01', sectionBCBlocks: '#C73E1D', bodyBg: '#C73E1D', greenCircle: '#F18F01', textColor: '#F18F01' },
-  { sectionABlocks: '#6A994E', sectionBCBlocks: '#BC4749', bodyBg: '#BC4749', greenCircle: '#6A994E', textColor: '#6A994E' },
-  { sectionABlocks: '#386641', sectionBCBlocks: '#6A994E', bodyBg: '#6A994E', greenCircle: '#386641', textColor: '#386641' },
-  { sectionABlocks: '#2D6A4F', sectionBCBlocks: '#52B788', bodyBg: '#52B788', greenCircle: '#2D6A4F', textColor: '#2D6A4F' },
-  { sectionABlocks: '#FF0000', sectionBCBlocks: '#FFFF00', bodyBg: '#FFFF00', greenCircle: '#FF0000', textColor: '#FF0000' },
-  { sectionABlocks: '#00FF00', sectionBCBlocks: '#FF00FF', bodyBg: '#FF00FF', greenCircle: '#00FF00', textColor: '#00FF00' },
-  { sectionABlocks: '#0080FF', sectionBCBlocks: '#FFB700', bodyBg: '#FFB700', greenCircle: '#0080FF', textColor: '#0080FF' },
-  { sectionABlocks: '#FF1493', sectionBCBlocks: '#00CED1', bodyBg: '#00CED1', greenCircle: '#FF1493', textColor: '#FF1493' },
-  { sectionABlocks: '#FF69B4', sectionBCBlocks: '#FFD700', bodyBg: '#FFD700', greenCircle: '#FF69B4', textColor: '#FF69B4' },
-  { sectionABlocks: '#20B2AA', sectionBCBlocks: '#FFB6C1', bodyBg: '#FFB6C1', greenCircle: '#20B2AA', textColor: '#20B2AA' },
-  { sectionABlocks: '#DC143C', sectionBCBlocks: '#FFD700', bodyBg: '#FFD700', greenCircle: '#DC143C', textColor: '#DC143C' },
-  { sectionABlocks: '#7FFFD4', sectionBCBlocks: '#FF4500', bodyBg: '#FF4500', greenCircle: '#7FFFD4', textColor: '#7FFFD4' },
-  { sectionABlocks: '#8B008B', sectionBCBlocks: '#00FA9A', bodyBg: '#00FA9A', greenCircle: '#8B008B', textColor: '#8B008B' },
-  { sectionABlocks: '#FF00FF', sectionBCBlocks: '#00FFFF', bodyBg: '#00FFFF', greenCircle: '#FF00FF', textColor: '#FF00FF' },
-  { sectionABlocks: '#FF8C00', sectionBCBlocks: '#32CD32', bodyBg: '#32CD32', greenCircle: '#FF8C00', textColor: '#FF8C00' },
-  { sectionABlocks: '#1E90FF', sectionBCBlocks: '#FFD700', bodyBg: '#FFD700', greenCircle: '#1E90FF', textColor: '#1E90FF' }
+  { sectionABlocks: '#FF6B6B', sectionBCBlocks: '#FFE66D', bodyBg: '#FFE66D', greenCircle: '#FF6B6B' },
+  { sectionABlocks: '#4ECDC4', sectionBCBlocks: '#C7F0DB', bodyBg: '#C7F0DB', greenCircle: '#4ECDC4' },
+  { sectionABlocks: '#A8DADC', sectionBCBlocks: '#F1FAEE', bodyBg: '#F1FAEE', greenCircle: '#A8DADC' },
+  { sectionABlocks: '#FFB4A2', sectionBCBlocks: '#FFCDB2', bodyBg: '#FFCDB2', greenCircle: '#FFB4A2' },
+  { sectionABlocks: '#06FFA5', sectionBCBlocks: '#FFFFC7', bodyBg: '#FFFFC7', greenCircle: '#06FFA5' },
+  { sectionABlocks: '#E63946', sectionBCBlocks: '#F8B195', bodyBg: '#F8B195', greenCircle: '#E63946' },
+  { sectionABlocks: '#84A9C0', sectionBCBlocks: '#EAE7DC', bodyBg: '#EAE7DC', greenCircle: '#84A9C0' },
+  { sectionABlocks: '#FF99C8', sectionBCBlocks: '#FCF6BD', bodyBg: '#FCF6BD', greenCircle: '#FF99C8' },
+  { sectionABlocks: '#188f65', sectionBCBlocks: '#d7cfbd', bodyBg: '#d7cfbd', greenCircle: '#188f65' },
+  { sectionABlocks: '#eba02d', sectionBCBlocks: '#A8B88F', bodyBg: '#A8B88F', greenCircle: '#eba02d' },
+  { sectionABlocks: '#0000FF', sectionBCBlocks: '#FFFFFF', bodyBg: '#FFFFFF', greenCircle: '#0000FF' },
+  { sectionABlocks: '#ffb16e', sectionBCBlocks: '#fff5b8', bodyBg: '#fff5b8', greenCircle: '#ffb16e' },
+  { sectionABlocks: '#FEE715', sectionBCBlocks: '#101820', bodyBg: '#101820', greenCircle: '#FEE715' },
+  { sectionABlocks: '#F9E795', sectionBCBlocks: '#F96167', bodyBg: '#F96167', greenCircle: '#F9E795' },
+  { sectionABlocks: '#FF6B9D', sectionBCBlocks: '#FEC8D8', bodyBg: '#FEC8D8', greenCircle: '#FF6B9D' },
+  { sectionABlocks: '#645995', sectionBCBlocks: '#D5BEE7', bodyBg: '#D5BEE7', greenCircle: '#645995' },
+  { sectionABlocks: '#F38181', sectionBCBlocks: '#FFEAA7', bodyBg: '#FFEAA7', greenCircle: '#F38181' },
+  { sectionABlocks: '#AA96DA', sectionBCBlocks: '#FCBAD3', bodyBg: '#FCBAD3', greenCircle: '#AA96DA' },
+  { sectionABlocks: '#95E1D3', sectionBCBlocks: '#F38181', bodyBg: '#F38181', greenCircle: '#95E1D3' },
+  { sectionABlocks: '#A8E6CF', sectionBCBlocks: '#FFD3B6', bodyBg: '#FFD3B6', greenCircle: '#A8E6CF' },
+  { sectionABlocks: '#FF8B94', sectionBCBlocks: '#FFB4A2', bodyBg: '#FFB4A2', greenCircle: '#FF8B94' },
+  { sectionABlocks: '#6BCB77', sectionBCBlocks: '#4D96FF', bodyBg: '#4D96FF', greenCircle: '#6BCB77' },
+  { sectionABlocks: '#FF6348', sectionBCBlocks: '#FFD700', bodyBg: '#FFD700', greenCircle: '#FF6348' },
+  { sectionABlocks: '#2E86AB', sectionBCBlocks: '#A23B72', bodyBg: '#A23B72', greenCircle: '#2E86AB' },
+  { sectionABlocks: '#F18F01', sectionBCBlocks: '#C73E1D', bodyBg: '#C73E1D', greenCircle: '#F18F01' },
+  { sectionABlocks: '#6A994E', sectionBCBlocks: '#BC4749', bodyBg: '#BC4749', greenCircle: '#6A994E' },
+  { sectionABlocks: '#386641', sectionBCBlocks: '#6A994E', bodyBg: '#6A994E', greenCircle: '#386641' },
+  { sectionABlocks: '#2D6A4F', sectionBCBlocks: '#52B788', bodyBg: '#52B788', greenCircle: '#2D6A4F' },
+  { sectionABlocks: '#FF0000', sectionBCBlocks: '#FFFF00', bodyBg: '#FFFF00', greenCircle: '#FF0000' },
+  { sectionABlocks: '#00FF00', sectionBCBlocks: '#FF00FF', bodyBg: '#FF00FF', greenCircle: '#00FF00' },
+  { sectionABlocks: '#0080FF', sectionBCBlocks: '#FFB700', bodyBg: '#FFB700', greenCircle: '#0080FF' },
+  { sectionABlocks: '#FF1493', sectionBCBlocks: '#00CED1', bodyBg: '#00CED1', greenCircle: '#FF1493' },
+  { sectionABlocks: '#FF69B4', sectionBCBlocks: '#FFD700', bodyBg: '#FFD700', greenCircle: '#FF69B4' },
+  { sectionABlocks: '#20B2AA', sectionBCBlocks: '#FFB6C1', bodyBg: '#FFB6C1', greenCircle: '#20B2AA' },
+  { sectionABlocks: '#DC143C', sectionBCBlocks: '#FFD700', bodyBg: '#FFD700', greenCircle: '#DC143C' },
+  { sectionABlocks: '#7FFFD4', sectionBCBlocks: '#FF4500', bodyBg: '#FF4500', greenCircle: '#7FFFD4' },
+  { sectionABlocks: '#8B008B', sectionBCBlocks: '#00FA9A', bodyBg: '#00FA9A', greenCircle: '#8B008B' },
+  { sectionABlocks: '#FF00FF', sectionBCBlocks: '#00FFFF', bodyBg: '#00FFFF', greenCircle: '#FF00FF' },
+  { sectionABlocks: '#FF8C00', sectionBCBlocks: '#32CD32', bodyBg: '#32CD32', greenCircle: '#FF8C00' },
+  { sectionABlocks: '#1E90FF', sectionBCBlocks: '#FFD700', bodyBg: '#FFD700', greenCircle: '#1E90FF' }
 ].sort(() => Math.random() - 0.5);
 
-let isFlipped = false;
+const button10 = sectionB.children[9];
 
 button10.querySelector('.glassButton').addEventListener('click', () => {
   playButtonSound();
   pressCount++;
-  
-  // Return to basis every 5 presses
   if (pressCount % 5 === 0) {
-    const basisScheme = {
-      name: 'Basis',
-      sectionABlocks: '#C9CED4',
-      sectionBCBlocks: '#C9CED4',
-      bodyBg: '#C9CED4',
-      greenCircle: '#801818',
-      showText: false,
-      textColor: '#C9CED4'
-    };
     applyScheme(basisScheme);
   } else {
-    // Always pick random from infinite pool
     const randomIndex = Math.floor(Math.random() * randomSchemes.length);
-    const randomScheme = { ...randomSchemes[randomIndex], showText: false };
-    applyScheme(randomScheme);
+    applyScheme(randomSchemes[randomIndex]);
   }
 });
 
 function applyScheme(scheme) {
-  
-  // Get all elements
-  const greyBlocks = document.querySelectorAll('.sectionB .block, .sectionC .block, .block1, .block2, .block5');
   const sectionAGreyBlocks = document.querySelectorAll('.block1, .block2, .block5');
-  const greenCircle = document.querySelector('.block5 .blockInnerCircle:nth-child(4)');
   const block5Button = document.querySelector('.block5 .glassButton');
-  const allButtons = document.querySelectorAll('.glassButton');
+  const sectionBBlocks = document.querySelectorAll('.sectionB .block');
+  const sectionCBlocks = document.querySelectorAll('.sectionC .block');
+  const allBCBlocks = [...sectionBBlocks, ...sectionCBlocks];
   
-  // Show mode text if enabled - DISABLED, no text
-  // NO MORE FLIP ANIMATION - just color scheme changes
-  
-  // Apply Section A blocks color - fade gradually
   const targetColor = scheme.sectionABlocks;
   const startColor = currentBlockColor;
   const startTime = Date.now();
-  const fadeDuration = 6000; // 6 seconds to match block transition
+  const fadeDuration = 6000;
   
   const colorFadeInterval = setInterval(() => {
     const elapsed = Date.now() - startTime;
     const progress = Math.min(elapsed / fadeDuration, 1);
-    
-    // Interpolate between start and target color
     const startRgb = hexToRgb(startColor);
     const targetRgb = hexToRgb(targetColor);
-    
     const r = Math.round(startRgb.r + (targetRgb.r - startRgb.r) * progress);
     const g = Math.round(startRgb.g + (targetRgb.g - startRgb.g) * progress);
     const b = Math.round(startRgb.b + (targetRgb.b - startRgb.b) * progress);
-    
     currentBlockColor = `#${((r << 16) | (g << 8) | b).toString(16).padStart(6, '0')}`;
-    
-    if (progress >= 1) {
-      clearInterval(colorFadeInterval);
-      currentBlockColor = targetColor;
-    }
-  }, 16); // ~60fps
+    if (progress >= 1) { clearInterval(colorFadeInterval); currentBlockColor = targetColor; }
+  }, 16);
   
   sectionAGreyBlocks.forEach(block => {
     block.style.transition = `background-color 6s ease-in-out`;
     block.style.backgroundColor = scheme.sectionABlocks;
   });
   
-  // Make block5 button background stay glass
   if (block5Button) {
     block5Button.style.transition = `background 6s ease-in-out`;
-    // Keep the glass effect, don't change the background
-    block5Button.style.background = `linear-gradient(
-      145deg,
-      rgba(255,255,255,0.35),
-      rgba(255,255,255,0.08)
-    )`;
+    block5Button.style.background = `linear-gradient(145deg, rgba(255,255,255,0.35), rgba(255,255,255,0.08))`;
   }
-  
-  // Apply Section B & C blocks color
-  const sectionBBlocks = document.querySelectorAll('.sectionB .block');
-  const sectionCBlocks = document.querySelectorAll('.sectionC .block');
-  const allBCBlocks = [...sectionBBlocks, ...sectionCBlocks];
   
   allBCBlocks.forEach(block => {
     block.style.transition = `background-color 5s ease-in-out`;
     block.style.backgroundColor = scheme.sectionBCBlocks;
   });
   
-  // Apply body background
   document.body.style.transition = `background-color 5s ease-in-out`;
   document.body.style.backgroundColor = scheme.bodyBg;
 }
 
-/* Cursor follow - independent blocks */
+/* Cursor follow */
 document.addEventListener('mousemove',e=>{
   [...sectionB.children,...sectionC.children,document.querySelector('.block5')]
   .forEach(block=>{
@@ -1508,7 +1242,7 @@ document.addEventListener('mousemove',e=>{
     const dx=e.clientX-(r.left+r.width/2);
     const dy=e.clientY-(r.top+r.height/2);
     const dist=Math.hypot(dx,dy);
-    const strength=Math.max(0,1-dist/80)*2; // Reduced from 275 to 80 - much less attraction
+    const strength=Math.max(0,1-dist/80)*2;
     btn.style.transform=
       `translate(${dx*0.25*strength}px,${dy*0.25*strength}px)
        scale(${1+strength*0.05})`;
@@ -1517,4 +1251,3 @@ document.addEventListener('mousemove',e=>{
 </script>
 </body>
 </html>
-
