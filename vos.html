@@ -43,19 +43,20 @@ body {
 #cursor-dot svg {
   display:block;
   transform-origin:0 0;
-  /* snap big fast (0.15s), fade back to small slow (0.7s) */
-  transition:transform 1.4s cubic-bezier(0.22,1,0.36,1),
-             opacity   1.0s ease;
-  transform:scale(1);
+  /* return to normal: slower, 1.8s */
+  transition:transform 1.8s cubic-bezier(0.22,1,0.36,1),
+             opacity   1.4s ease;
+  transform:scale(1.2);   /* slightly bigger base */
   opacity:1;
 }
-/* BIG state — 3.5× and slightly transparent so it feels "fast/ghostly" */
+/* BIG state — 6× when moving fast */
 #cursor-dot.big svg {
-  transform:scale(5);
-  opacity:0.62;
-  filter:drop-shadow(0 6px 14px rgba(0,0,0,0.45));
-  transition:transform 0.11s cubic-bezier(0.0,0,0.2,1),
-             opacity   0.09s ease;
+  transform:scale(6);
+  opacity:0.60;
+  filter:drop-shadow(0 7px 16px rgba(0,0,0,0.42));
+  /* grow takes 0.22s so it feels like it starts slightly after motion begins */
+  transition:transform 0.22s cubic-bezier(0.0,0,0.2,1),
+             opacity   0.15s ease;
 }
 
 /* ── MENU BAR ── */
@@ -99,9 +100,13 @@ body {
   background:var(--widget-bg); backdrop-filter:var(--blur); -webkit-backdrop-filter:var(--blur);
   border:1px solid var(--widget-border); border-radius:16px; padding:14px 16px;
   color:var(--text);
-  box-shadow:0 8px 32px rgba(0,0,0,0.12),0 1px 4px rgba(0,0,0,0.05),inset 0 1px 0 rgba(255,255,255,0.92),inset 0 0 0 0.5px rgba(255,255,255,0.45);
-  position:relative; overflow:hidden;
-  transition:height 0.34s cubic-bezier(0.34,1.1,0.64,1),width 0.34s cubic-bezier(0.34,1.1,0.64,1),min-height 0.34s cubic-bezier(0.34,1.1,0.64,1);
+  box-shadow:0 8px 32px rgba(0,0,0,0.12),0 1px 4px rgba(0,0,0,0.05),
+             inset 0 1px 0 rgba(255,255,255,0.92),inset 0 0 0 0.5px rgba(255,255,255,0.45);
+  position:relative; overflow:hidden; width:250px;
+  transition:height .42s cubic-bezier(.34,1.4,.64,1),
+             width  .42s cubic-bezier(.34,1.4,.64,1),
+             min-height .42s cubic-bezier(.34,1.4,.64,1),
+             min-width .42s cubic-bezier(.34,1.4,.64,1);
 }
 /* resize handle at bottom of each widget */
 .widget-resize-handle {
@@ -145,34 +150,40 @@ body {
   background:rgba(0,0,0,0.20);
 }
 
-.widget-clock .time { font-size:42px; font-weight:200; letter-spacing:-2px; line-height:1; color:#111; }
-.widget-clock .date { font-size:12px; font-weight:400; color:var(--text-dim); margin-top:3px; }
+
 .widget-weather { display:flex; align-items:center; justify-content:space-between; }
 .widget-weather .location { font-size:12px; font-weight:500; color:var(--text-dim); margin-bottom:2px; }
 .widget-weather .temp { font-size:34px; font-weight:200; letter-spacing:-1px; line-height:1; }
 .widget-weather .condition { font-size:11px; color:var(--text-dim); margin-top:2px; }
 .weather-icon { font-size:36px; line-height:1; }
 .widget-calendar .month-header { font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:0.08em; color:var(--text-dim); margin-bottom:8px; }
-.cal-grid { display:grid; grid-template-columns:repeat(7,1fr); gap:2px; text-align:center; }
+.cal-grid { display:grid; grid-template-columns:repeat(7,1fr); gap:3px; text-align:center; }
 .cal-day-label { font-size:9.5px; color:var(--text-dim); font-weight:500; padding:2px 0; }
 .cal-day { font-size:11px; border-radius:50%; width:20px; height:20px; display:flex; align-items:center; justify-content:center; margin:0 auto; color:#222; }
 .cal-day.today { background:#ff3b30; font-weight:600; color:white; }
 .cal-day.empty { opacity:0; }
+/* larger calendar when expanded */
+.widget-calendar.big .cal-grid { gap:6px; }
+.widget-calendar.big .cal-day { font-size:16px; width:32px; height:32px; }
+.widget-calendar.big .cal-day-label { font-size:13px; }
+.widget-calendar.big .month-header { font-size:14px; margin-bottom:12px; }
 
 /* ── DOCK ── */
 .dock-container { position:absolute; bottom:6px; left:50%; transform:translateX(-50%); z-index:200; }
 .dock {
-  display:flex; align-items:flex-end; gap:5px;
+  display:flex; align-items:flex-end; gap:10px;
   background:var(--dock-bg); backdrop-filter:var(--blur); -webkit-backdrop-filter:var(--blur);
-  border:1px solid var(--dock-border); border-radius:18px; padding:5px 18px 5px;
+  border:1px solid var(--dock-border); border-radius:20px; padding:8px 14px 7px;
   box-shadow:0 4px 20px rgba(0,0,0,0.13),0 1px 3px rgba(0,0,0,0.07),inset 0 1px 0 rgba(255,255,255,0.55);
-  position:relative;
+  position:relative; align-items:flex-end;
 }
 .dock-icon {
   width:var(--dock-base); height:var(--dock-base); border-radius:10px;
   display:flex; align-items:center; justify-content:center;
   position:relative; font-size:30px; flex-shrink:0;
   will-change:transform; transform-origin:bottom center;
+  /* space reserved so magnified icons don't overlap neighbours */
+  transition:transform 0.18s cubic-bezier(0.34,1.56,0.64,1);
 }
 .dock-icon.bounce { animation:dock-bounce 0.42s cubic-bezier(0.36,0.07,0.19,0.97); }
 @keyframes dock-bounce {
@@ -320,6 +331,116 @@ body {
   pointer-events:none; transition:background 0.3s;
 }
 #photos-scrim.visible { background:rgba(0,0,0,0.18); pointer-events:all; }
+
+/* ── resize handles ── */
+.widget-resize-handle {
+  position:absolute; bottom:0; left:0; right:0; height:18px;
+  display:flex; align-items:flex-end; justify-content:center; padding-bottom:4px;
+  opacity:0.3; transition:opacity 0.15s; z-index:5; cursor:s-resize;
+}
+.widget-resize-right {
+  position:absolute; top:0; right:0; bottom:0; width:18px;
+  display:flex; align-items:center; justify-content:flex-end; padding-right:4px;
+  opacity:0.3; transition:opacity 0.15s; z-index:5; cursor:e-resize;
+}
+.widget-resize-top {
+  position:absolute; top:0; left:0; right:0; height:18px;
+  display:flex; align-items:flex-start; justify-content:center; padding-top:4px;
+  opacity:0.3; transition:opacity 0.15s; z-index:5; cursor:n-resize;
+}
+.widget-resize-left {
+  position:absolute; top:0; left:0; bottom:0; width:18px;
+  display:flex; align-items:center; justify-content:flex-start; padding-left:4px;
+  opacity:0.3; transition:opacity 0.15s; z-index:5; cursor:w-resize;
+}
+.widget:hover .widget-resize-handle,
+.widget:hover .widget-resize-right,
+.widget:hover .widget-resize-top,
+.widget:hover .widget-resize-left { opacity:1; }
+.widget-resize-handle::after,
+.widget-resize-top::after { content:''; width:36px; height:4px; border-radius:3px; background:rgba(0,0,0,0.20); }
+.widget-resize-right::after,
+.widget-resize-left::after { content:''; height:36px; width:4px; border-radius:3px; background:rgba(0,0,0,0.20); }
+
+/* ── Widget drag (move) ── */
+.widget.dragging {
+  box-shadow:0 20px 60px rgba(0,0,0,0.28),0 0 0 2px rgba(0,0,0,0.10);
+  transition:none !important;
+  z-index:50;
+  opacity:0.92;
+}
+.widget.drag-ghost {
+  position:fixed !important;
+  z-index:100;
+  pointer-events:none;
+  transform-origin:center center;
+}
+
+/* ── Desktop grid overlay (invisible, just for snap) ── */
+.desktop { overflow:hidden; }
+
+/* ── Plus button ── */
+#widget-add-btn {
+  position:absolute;
+  top:14px; left:14px;
+  width:36px; height:36px;
+  border-radius:10px;
+  background:rgba(245,243,240,0.70);
+  backdrop-filter:blur(24px); -webkit-backdrop-filter:blur(24px);
+  border:1px solid rgba(255,255,255,0.55);
+  box-shadow:0 4px 14px rgba(0,0,0,0.10),inset 0 1px 0 rgba(255,255,255,0.9);
+  display:flex; align-items:center; justify-content:center;
+  font-size:18px; color:#333; font-weight:300; line-height:1;
+  z-index:20; transition:transform 0.12s, box-shadow 0.12s;
+}
+#widget-add-btn:active {
+  transform:scale(0.88);
+  box-shadow:0 1px 4px rgba(0,0,0,0.12),inset 0 1px 0 rgba(255,255,255,0.5);
+}
+#widget-add-btn:hover { box-shadow:0 6px 20px rgba(0,0,0,0.13),inset 0 1px 0 rgba(255,255,255,0.9); }
+
+/* ── Dropdown menu ── */
+#widget-dropdown {
+  position:absolute; top:56px; left:14px;
+  width:200px;
+  background:rgba(245,243,240,0.85);
+  backdrop-filter:blur(28px); -webkit-backdrop-filter:blur(28px);
+  border:1px solid rgba(255,255,255,0.6);
+  border-radius:12px;
+  box-shadow:0 12px 40px rgba(0,0,0,0.18),inset 0 1px 0 rgba(255,255,255,0.9);
+  z-index:50; overflow:hidden;
+  opacity:0; pointer-events:none;
+  transform:scale(0.92) translateY(-8px);
+  transform-origin:top left;
+  transition:opacity 0.18s ease, transform 0.18s cubic-bezier(0.34,1.2,0.64,1);
+}
+#widget-dropdown.open {
+  opacity:1; pointer-events:all;
+  transform:scale(1) translateY(0);
+}
+.dd-item {
+  display:flex; align-items:center; gap:10px;
+  padding:10px 14px; font-size:13px; color:#1a1a1a;
+  border-bottom:1px solid rgba(0,0,0,0.05);
+  transition:background 0.1s;
+}
+.dd-item:last-child { border-bottom:none; }
+.dd-item:hover { background:rgba(0,0,0,0.05); }
+.dd-item:active { background:rgba(0,0,0,0.09); transform:scale(0.98); }
+.dd-icon { font-size:16px; width:22px; text-align:center; }
+
+/* ── Menu item press (no ripple) ── */
+.menu-item { transition:background 0.08s, transform 0.08s; }
+.menu-item:active { transform:scale(0.96); background:rgba(0,0,0,0.12) !important; }
+.menu-item .ripple { display:none !important; }
+.widget-clock .time { font-size:48px; font-weight:200; letter-spacing:-2px; line-height:1; color:#111; }
+.widget-clock .date { font-size:12px; font-weight:400; color:var(--text-dim); margin-top:4px; }
+.widget-calendar .month-header { font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:0.08em; color:var(--text-dim); margin-bottom:8px; }
+.cal-grid { display:grid; grid-template-columns:repeat(7,1fr); gap:2px; text-align:center; }
+.cal-day-label { font-size:9.5px; color:var(--text-dim); font-weight:500; padding:2px 0; }
+.cal-day { font-size:11px; border-radius:50%; width:20px; height:20px; display:flex; align-items:center; justify-content:center; margin:0 auto; color:#222; }
+.cal-day.today { background:#ff3b30; font-weight:600; color:white; }
+.cal-day.empty { opacity:0; }
 </style>
 </head>
 <body>
@@ -338,12 +459,12 @@ body {
 <div class="menubar">
   <div class="menubar-left">
     <div class="menubar-logo"><img src="south.png" alt="Logo"/></div>
-    <span class="menu-item bold" onclick="menuClick(this,event)">Victor Masotti</span>
+    <span class="menu-item bold" onclick="window.open('https://victormasotti.com/','_blank')">Victor Masotti</span>
     <span class="menu-item" onclick="menuClick(this,event)">File</span>
     <span class="menu-item" onclick="menuClick(this,event)">Edit</span>
     <span class="menu-item" onclick="menuClick(this,event)">View</span>
     <span class="menu-item" onclick="menuClick(this,event)">Go</span>
-    <span class="menu-item" onclick="menuClick(this,event)">Window</span>
+    <span class="menu-item" onclick="window.open('https://victormasotti.com/index2.html','_blank')">Previous Version</span>
     <span class="menu-item" onclick="menuClick(this,event)">Tacos Banana Plumber Solution</span>
   </div>
   <div class="menubar-right">
@@ -355,27 +476,43 @@ body {
 </div>
 
 <!-- WIDGETS -->
-<div class="desktop">
+<div class="desktop" id="desktop-area">
+  <div id="widget-add-btn" onclick="toggleDropdown(event)">＋</div>
+  <div id="widget-dropdown">
+    <div class="dd-item" onclick="ddAction('clock')"><span class="dd-icon">🕐</span> Clock</div>
+    <div class="dd-item" onclick="ddAction('weather')"><span class="dd-icon">⛅</span> Weather</div>
+    <div class="dd-item" onclick="ddAction('calendar')"><span class="dd-icon">📅</span> Calendar</div>
+    <div class="dd-item" onclick="ddAction('notes')"><span class="dd-icon">📝</span> Notes</div>
+    <div class="dd-item" onclick="ddAction('battery')"><span class="dd-icon">🔋</span> Battery</div>
+  </div>
   <div class="widgets-column" id="widgets-column">
 
     <div class="widget widget-clock" id="widget-0">
       <div class="time" id="clock-time">09:41</div>
       <div class="date" id="clock-date">Wednesday, March 19</div>
-      <div class="widget-resize-handle" data-widget="0"></div><div class="widget-resize-right" data-widget="0"></div><div class="widget-resize-top" data-widget="0"></div><div class="widget-resize-left" data-widget="0"></div>
+      <div class="widget-resize-handle" data-widget="0"></div>
+      <div class="widget-resize-right" data-widget="0"></div>
+      <div class="widget-resize-top" data-widget="0"></div>
+      <div class="widget-resize-left" data-widget="0"></div>
     </div>
 
     <div class="widget widget-weather" id="widget-1">
-      <div>
-        <div class="location">London</div>
-        <div class="temp">12°</div>
-        <div class="condition">Partly Cloudy</div>
+      <div style="display:flex;align-items:center;justify-content:space-between;width:100%">
+        <div>
+          <div class="location" style="font-size:12px;font-weight:500;color:var(--text-dim);margin-bottom:2px">London</div>
+          <div class="temp" style="font-size:36px;font-weight:200;letter-spacing:-1px;line-height:1">12°</div>
+          <div class="condition" style="font-size:11px;color:var(--text-dim);margin-top:2px">Partly Cloudy</div>
+        </div>
+        <div style="font-size:40px;line-height:1">⛅</div>
       </div>
-      <div class="weather-icon">⛅</div>
-      <div class="widget-resize-handle" data-widget="1"></div><div class="widget-resize-right" data-widget="1"></div><div class="widget-resize-top" data-widget="1"></div><div class="widget-resize-left" data-widget="1"></div>
+      <div class="widget-resize-handle" data-widget="1"></div>
+      <div class="widget-resize-right" data-widget="1"></div>
+      <div class="widget-resize-top" data-widget="1"></div>
+      <div class="widget-resize-left" data-widget="1"></div>
     </div>
 
     <div class="widget widget-calendar" id="widget-2">
-      <div class="month-header">March 2026</div>
+      <div class="month-header" style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:var(--text-dim);margin-bottom:8px">March 2026</div>
       <div class="cal-grid">
         <div class="cal-day-label">S</div><div class="cal-day-label">M</div><div class="cal-day-label">T</div><div class="cal-day-label">W</div><div class="cal-day-label">T</div><div class="cal-day-label">F</div><div class="cal-day-label">S</div>
         <div class="cal-day empty"></div>
@@ -386,6 +523,9 @@ body {
         <div class="cal-day">29</div><div class="cal-day">30</div><div class="cal-day">31</div>
       </div>
       <div class="widget-resize-handle" data-widget="2"></div>
+      <div class="widget-resize-right" data-widget="2"></div>
+      <div class="widget-resize-top" data-widget="2"></div>
+      <div class="widget-resize-left" data-widget="2"></div>
     </div>
 
   </div>
@@ -452,8 +592,8 @@ body {
 (function(){
   const dot = document.getElementById('cursor-dot');
   let px=0, py=0, lastT=0, bigTimer=null;
-  const THRESH = 9;    // px/ms — very sensitive, fires on any flick
-  const HOLD   = 600;  // ms big stays before fading back
+  const THRESH = 14;   // px/ms — only fires on genuine fast movement
+  const HOLD   = 700;  // ms big stays before shrinking back
 
   document.addEventListener('mousemove', e => {
     const now = performance.now();
@@ -465,7 +605,8 @@ body {
     dot.style.top  = py + 'px';
 
     const spd = Math.sqrt(dx*dx + dy*dy) / dt; // px/ms
-    if(spd > THRESH) {
+    // Only trigger after mouse has actually been moving (dt < 30ms = real motion)
+    if(spd > THRESH && dt < 30) {
       dot.classList.add('big');
       clearTimeout(bigTimer);
       bigTimer = setTimeout(() => dot.classList.remove('big'), HOLD);
@@ -521,17 +662,21 @@ function menuClick(el, e) {
   function scaleFn(dist){ return dist>=SPREAD?1:1+(MAX/BASE-1)*Math.pow(Math.cos((dist/SPREAD)*Math.PI*0.5),2); }
   let rafId=null, lastMx=null;
   function applyMag(mx){
+    // Use margin expansion to push neighbours apart (no overlap)
     const dRect=dock.getBoundingClientRect();
-    icons.forEach(icon=>{
-      const r=icon.getBoundingClientRect();
-      const cx=r.left+r.width/2-dRect.left;
+    icons.forEach((icon,i)=>{
+      // measure from the icon's natural centre position
+      const natX = i * (BASE + 5) + BASE/2; // approximate
+      const cx = natX; // relative to dock left
       const dist=Math.abs(mx-cx)/BASE;
       const sc=scaleFn(dist);
-      const lift=(sc-1)*BASE*0.55;
+      const extra=(sc-1)*BASE; // extra px the icon grows
+      const lift=(sc-1)*BASE*0.5;
       icon.style.transform=`translateY(${-lift}px) scale(${sc})`;
       icon.style.fontSize=Math.round(27*sc*0.85)+'px';
-      icon.style.width=Math.round(BASE*sc)+'px';
-      icon.style.height=Math.round(BASE*sc)+'px';
+      // expand margins so surrounding icons are pushed outward
+      icon.style.marginLeft=Math.round(extra*0.3)+'px';
+      icon.style.marginRight=Math.round(extra*0.3)+'px';
     });
   }
   dock.addEventListener('mousemove',e=>{
@@ -540,7 +685,7 @@ function menuClick(el, e) {
   });
   dock.addEventListener('mouseleave',()=>{
     if(rafId){cancelAnimationFrame(rafId);rafId=null;}
-    icons.forEach(icon=>{icon.style.transform='';icon.style.fontSize='';icon.style.width='';icon.style.height='';});
+    icons.forEach(icon=>{icon.style.transform='';icon.style.fontSize='';icon.style.marginLeft='';icon.style.marginRight='';});
   });
 })();
 
@@ -551,113 +696,178 @@ function dockBounce(el){
 }
 
 // ══════════════════════════════════════════════════════
-// WIDGET RESIZE — 4-side drag, geometric snap (×1.5),
-//   bounded by menubar (top) and dock (bottom),
-//   content scales proportionally
+// WIDGET RESIZE — click/tap edge handles to expand ×1 step
+//   Width ×1.5, Height ×2. Drag body to move. Spring snap.
 // ══════════════════════════════════════════════════════
 (function(){
-  const BASE_H=72,BASE_W=200,RATIO=1.5,STEPS=9;
-  const H_LV=[],W_LV=[];
-  for(let i=0;i<STEPS;i++){H_LV.push(Math.round(BASE_H*Math.pow(RATIO,i)));W_LV.push(Math.round(BASE_W*Math.pow(RATIO,i)));}
-  const snap=(v,lv)=>lv.reduce((b,l)=>Math.abs(l-v)<Math.abs(b-v)?l:b,lv[0]);
+  const MENU_H=26, DOCK_H=72, PAD=14;
+  const natH={}, natW={};
 
-  const MENU_H=26, DOCK_H=64; // px reserved at top/bottom
-  const natH={},natW={},natT={},natL={};
+  function maxH(w){ return window.innerHeight-DOCK_H-w.getBoundingClientRect().top-PAD; }
+  function maxHup(w){ return w.getBoundingClientRect().bottom-MENU_H-PAD; }
+  function maxW(w){ return w.getBoundingClientRect().right-PAD; }
 
-  function bounds(){
-    return{
-      top:MENU_H+4,
-      bottom:window.innerHeight-DOCK_H-4,
-      left:4,
-      right:window.innerWidth-4
-    };
-  }
+  const TR='height .42s cubic-bezier(.34,1.4,.64,1),width .42s cubic-bezier(.34,1.4,.64,1),min-height .42s cubic-bezier(.34,1.4,.64,1),min-width .42s cubic-bezier(.34,1.4,.64,1)';
 
   function scaleContent(w){
-    const sh=w.offsetHeight/(natH[w.id]||BASE_H),sw=w.offsetWidth/(natW[w.id]||BASE_W);
-    const sc=Math.max(0.6,Math.min(2.5,Math.min(sh,sw)));
-    const inner=w.querySelector('.wi');
-    if(inner) inner.style.transform=`scale(${sc})`;
+    const nh=natH[w.id]||80, nw2=natW[w.id]||250;
+    const sc=Math.max(0.55,Math.min(2.8,Math.min(w.offsetHeight/nh,w.offsetWidth/nw2)));
+    const inner=w.querySelector('.wi'); if(!inner) return;
+    inner.style.transition='transform .3s ease';
+    inner.style.transform=`scale(${sc})`;
+    inner.style.width=(100/sc)+'%'; inner.style.height=(100/sc)+'%';
   }
 
-  // wrap content for scaling
+  // Wrap widget content in .wi
   document.querySelectorAll('.widget').forEach(w=>{
     if(w.querySelector('.wi')) return;
     const handles=[...w.querySelectorAll('[class^=widget-resize]')];
     const wi=document.createElement('div');
     wi.className='wi';
-    wi.style.cssText='transform-origin:top left;transition:transform 0.3s ease;';
-    Array.from(w.childNodes).forEach(n=>{if(!handles.includes(n))wi.appendChild(n);});
-    w.appendChild(wi);
-    handles.forEach(h=>w.appendChild(h));
-    natH[w.id]=w.offsetHeight; natW[w.id]=w.offsetWidth;
-    const r=w.getBoundingClientRect();
-    natT[w.id]=r.top; natL[w.id]=r.left;
+    wi.style.cssText='transform-origin:top left;overflow:hidden;transition:transform .3s ease;';
+    Array.from(w.childNodes).forEach(n=>{ if(!handles.includes(n)) wi.appendChild(n); });
+    w.appendChild(wi); handles.forEach(h=>w.appendChild(h));
+    requestAnimationFrame(()=>{ natH[w.id]=w.offsetHeight; natW[w.id]=w.offsetWidth; });
   });
 
-  let drag=null,dir='',sp=0,ss=0,st=0,sl=0;
-  // dir: 's'=south(bottom), 'n'=north(top), 'e'=east(right), 'w'=west(left)
+  function doSnap(w,h,ww){
+    const fh=Math.max(natH[w.id]||60,h), fw=Math.max(natW[w.id]||100,ww);
+    w.style.transition=TR;
+    w.style.height=fh+'px'; w.style.minHeight=fh+'px';
+    w.style.width=fw+'px'; w.style.minWidth=fw+'px';
+    w.classList.toggle('big', fh/(natH[w.id]||60)>=1.8);
+    setTimeout(()=>scaleContent(w),450);
+  }
 
-  document.getElementById('widgets-column').addEventListener('mousedown',e=>{
-    const bh=e.target.closest('.widget-resize-handle');   // south
-    const rh=e.target.closest('.widget-resize-right');    // east
-    const th=e.target.closest('.widget-resize-top');      // north
-    const lh=e.target.closest('.widget-resize-left');     // west
-    const handle=bh||rh||th||lh;
-    if(!handle) return;
-    const wid=handle.dataset.widget;
-    drag=document.getElementById('widget-'+wid);
-    dir=bh?'s':rh?'e':th?'n':'w';
-    const r=drag.getBoundingClientRect();
-    ss=drag.offsetHeight; sl=drag.offsetWidth;
-    st=r.top; natT[drag.id]=r.top; natL[drag.id]=r.left;
-    sp=bh||th?e.clientY:e.clientX;
+  // ── Resize: click handle ──
+  let resZ=null, resDir='', resMoved=false, resStart=0, resH=0, resW=0;
+  function rDown(e){
+    const bh=e.target.closest('.widget-resize-handle');
+    const rh=e.target.closest('.widget-resize-right');
+    const th=e.target.closest('.widget-resize-top');
+    const lh=e.target.closest('.widget-resize-left');
+    const h=bh||rh||th||lh; if(!h) return;
+    e.preventDefault(); e.stopPropagation();
+    const wid=h.dataset.widget; resZ=document.getElementById('widget-'+wid);
+    resDir=bh?'s':rh?'e':th?'n':'w';
+    if(!natH[resZ.id]) natH[resZ.id]=resZ.offsetHeight;
+    if(!natW[resZ.id]) natW[resZ.id]=resZ.offsetWidth;
+    resH=resZ.offsetHeight; resW=resZ.offsetWidth; resMoved=false;
+    const p=e.touches?e.touches[0]:e;
+    resStart=(resDir==='s'||resDir==='n')?p.clientY:p.clientX;
     document.body.style.userSelect='none';
-    e.preventDefault();
-  });
-
-  window.addEventListener('mousemove',e=>{
-    if(!drag) return;
-    const b=bounds();
-    const r=drag.getBoundingClientRect();
-    drag.style.transition='none';
-
-    if(dir==='s'){
-      const maxH=b.bottom-r.top;
-      const newH=Math.min(maxH,Math.max(H_LV[0],ss+(e.clientY-sp)));
-      drag.style.height=newH+'px'; drag.style.minHeight=newH+'px';
-    } else if(dir==='e'){
-      const maxW=b.right-r.left;
-      const newW=Math.min(maxW,Math.max(W_LV[0],sl+(e.clientX-sp)));
-      drag.style.width=newW+'px'; drag.style.minWidth=newW+'px';
-    } else if(dir==='n'){
-      // top drag: move widget up + grow height
-      const delta=sp-e.clientY;
-      const newH=Math.min(b.bottom-b.top,Math.max(H_LV[0],ss+delta));
-      const newTop=Math.max(b.top, r.bottom-newH);
-      drag.style.height=newH+'px'; drag.style.minHeight=newH+'px';
-      drag.style.marginTop=(newTop-natT[drag.id])+'px';
-    } else if(dir==='w'){
-      // left drag: grow left
-      const delta=sp-e.clientX;
-      const newW=Math.min(b.right-b.left,Math.max(W_LV[0],sl+delta));
-      drag.style.width=newW+'px'; drag.style.minWidth=newW+'px';
+  }
+  function rMove(e){
+    if(!resZ) return; e.preventDefault();
+    const p=e.touches?e.touches[0]:e;
+    const cur=(resDir==='s'||resDir==='n')?p.clientY:p.clientX;
+    const delta=cur-resStart;
+    if(Math.abs(delta)>4) resMoved=true;
+    resZ.style.transition='none';
+    if(resDir==='s') { const h=Math.min(maxH(resZ),Math.max(natH[resZ.id],resH+delta)); resZ.style.height=h+'px'; resZ.style.minHeight=h+'px'; }
+    else if(resDir==='n') { const h=Math.min(maxHup(resZ),Math.max(natH[resZ.id],resH-delta)); resZ.style.height=h+'px'; resZ.style.minHeight=h+'px'; }
+    else if(resDir==='e') { const w=Math.min(maxW(resZ),Math.max(natW[resZ.id],resW-delta)); resZ.style.width=w+'px'; resZ.style.minWidth=w+'px'; }
+    else if(resDir==='w') { const w=Math.max(natW[resZ.id],resW+delta); resZ.style.width=w+'px'; resZ.style.minWidth=w+'px'; }
+    scaleContent(resZ);
+  }
+  function rUp(){
+    if(!resZ) return;
+    const w=resZ; resZ=null;
+    if(!resMoved){
+      const ch=w.offsetHeight, cw=w.offsetWidth;
+      const nh=natH[w.id], nw2=natW[w.id];
+      if(resDir==='s') doSnap(w, ch>nh*1.4?nh:Math.min(maxH(w),nh*2), cw);
+      else if(resDir==='n') doSnap(w, ch>nh*1.4?nh:Math.min(maxHup(w),nh*2), cw);
+      else if(resDir==='e') doSnap(w, ch, ch>nw2*1.2?nw2:Math.min(maxW(w),nw2*1.5));
+      else if(resDir==='w') doSnap(w, ch, ch>nw2*1.2?nw2:Math.min(maxW(w),nw2*1.5));
+    } else {
+      doSnap(w, w.offsetHeight, w.offsetWidth);
     }
-    scaleContent(drag);
-  });
+    document.body.style.userSelect='';
+  }
 
-  window.addEventListener('mouseup',()=>{
-    if(!drag) return;
-    const curH=drag.offsetHeight, curW=drag.offsetWidth;
-    const sh=snap(curH,H_LV), sw=snap(curW,W_LV);
-    const tr='height .34s cubic-bezier(.34,1.1,.64,1),width .34s cubic-bezier(.34,1.1,.64,1),min-height .34s cubic-bezier(.34,1.1,.64,1),min-width .34s cubic-bezier(.34,1.1,.64,1)';
-    drag.style.transition=tr;
-    drag.style.height=sh+'px'; drag.style.minHeight=sh+'px';
-    drag.style.width=sw+'px';  drag.style.minWidth=sw+'px';
-    setTimeout(()=>scaleContent(drag),360);
-    drag=null; dir=''; document.body.style.userSelect='';
-  });
+  // ── Move: drag widget body ──
+  let mvW=null, mvOX=0, mvOY=0, mvMoved=false, mvSX=0, mvSY=0;
+  function mDown(e){
+    if(e.target.closest('[class^=widget-resize]')) return;
+    const w=e.target.closest('.widget'); if(!w) return;
+    e.preventDefault();
+    mvW=w; mvMoved=false;
+    const p=e.touches?e.touches[0]:e;
+    mvSX=p.clientX; mvSY=p.clientY;
+    const r=w.getBoundingClientRect();
+    mvOX=p.clientX-r.left; mvOY=p.clientY-r.top;
+    w.style.transition='none'; w.style.zIndex='100';
+    document.body.style.userSelect='none';
+  }
+  function mMove(e){
+    if(!mvW) return; e.preventDefault();
+    const p=e.touches?e.touches[0]:e;
+    const dx=p.clientX-mvSX, dy=p.clientY-mvSY;
+    if(!mvMoved && Math.hypot(dx,dy)>6){
+      mvMoved=true;
+      // detach from column flow
+      const r=mvW.getBoundingClientRect();
+      mvW.style.position='fixed';
+      mvW.style.left=r.left+'px'; mvW.style.top=r.top+'px';
+      mvW.style.width=r.width+'px'; mvW.style.height=r.height+'px';
+      mvW.style.boxShadow='0 28px 70px rgba(0,0,0,0.30)';
+      mvW.style.transform='scale(1.03)';
+      document.body.appendChild(mvW);
+    }
+    if(mvMoved){
+      mvW.style.left=(p.clientX-mvOX)+'px';
+      mvW.style.top=(p.clientY-mvOY)+'px';
+    }
+  }
+  function mUp(){
+    if(!mvW) return;
+    const w=mvW; mvW=null;
+    w.style.zIndex='';
+    if(mvMoved){
+      // Snap to grid-like positions (80px steps)
+      const STEP=80;
+      const x=parseFloat(w.style.left)||0;
+      const y=parseFloat(w.style.top)||0;
+      const sx=Math.round(x/STEP)*STEP;
+      const sy=Math.max(MENU_H+4, Math.min(window.innerHeight-DOCK_H-w.offsetHeight-4, Math.round(y/STEP)*STEP));
+      w.style.transition='left .35s cubic-bezier(.34,1.2,.64,1),top .35s cubic-bezier(.34,1.2,.64,1),transform .2s ease,box-shadow .2s ease';
+      w.style.left=sx+'px'; w.style.top=sy+'px';
+      w.style.transform='scale(1)'; w.style.boxShadow='';
+    } else {
+      // put back
+      if(w.style.position==='fixed'){
+        w.style.position=''; w.style.left=''; w.style.top='';
+        w.style.width=''; w.style.height='';
+        w.style.transform=''; w.style.boxShadow='';
+        document.getElementById('widgets-column').appendChild(w);
+      }
+    }
+    document.body.style.userSelect='';
+  }
+
+  const col=document.getElementById('widgets-column');
+  col.addEventListener('mousedown',e=>{rDown(e);mDown(e);});
+  col.addEventListener('touchstart',e=>{rDown(e);mDown(e);},{passive:false});
+  document.addEventListener('mousedown',e=>{ if(e.target.closest('.widget')&&!e.target.closest('#widgets-column')) mDown(e); });
+  document.addEventListener('touchstart',e=>{ if(e.target.closest('.widget')&&!e.target.closest('#widgets-column')) mDown(e); },{passive:false});
+  window.addEventListener('mousemove',e=>{rMove(e);mMove(e);});
+  window.addEventListener('touchmove',e=>{rMove(e);mMove(e);},{passive:false});
+  window.addEventListener('mouseup',()=>{rUp();mUp();});
+  window.addEventListener('touchend',()=>{rUp();mUp();});
 })();
+
+// ── Plus button / dropdown ──
+function toggleDropdown(e){
+  e.stopPropagation();
+  document.getElementById('widget-dropdown').classList.toggle('open');
+}
+document.addEventListener('click',()=>{
+  document.getElementById('widget-dropdown').classList.remove('open');
+});
+function ddAction(type){
+  document.getElementById('widget-dropdown').classList.remove('open');
+}
 
 // ══════════════════════════════════════════════════════
 // PHOTOS WINDOW — liquid drop open animation
@@ -1093,7 +1303,8 @@ new p5(function(p){
 
   p.setup=function(){
     const cnv=p.createCanvas(p.windowWidth,p.windowHeight);
-    cnv.parent('p5-canvas');p.frameRate(30);
+    cnv.parent('p5-canvas');
+    p.noLoop(); // static — generate once
     for(let r=0;r<ROWS;r++){
       cellType[r]=[];cellScale[r]=[];
       for(let c=0;c<COLS;c++){
@@ -1113,13 +1324,14 @@ new p5(function(p){
         cellType[r][c]=type;cellScale[r][c]=sc;
       }
     }
+    renderScene(); // draw once
   };
 
-  p.windowResized=function(){p.resizeCanvas(p.windowWidth,p.windowHeight);};
+  p.windowResized=function(){p.resizeCanvas(p.windowWidth,p.windowHeight); renderScene();};
 
-  p.draw=function(){
+  // render into offscreen buffer once
+  function renderScene(){
     p.background(238,236,232);
-    t+=SPEED;
     const cx=p.width*(0.5+OX), cy=p.height*(0.44+OY);
     for(let row=0;row<ROWS;row++) for(let col=0;col<COLS;col++){
       if(cellType[row]?.[col]==='void') continue;
@@ -1135,7 +1347,9 @@ new p5(function(p){
       else if(tp==='thin')   drawThin  (cx,cy,col-COLS/2,row-ROWS/2,h,nx,ny);
       else                   drawCube  (cx,cy,col-COLS/2,row-ROWS/2,h,sc,nx,ny);
     }
-  };
+  }
+
+  p.draw=function(){ /* static — nothing animates */ };
 });
 </script>
 </body>
