@@ -3,374 +3,378 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>macOS Tahoe</title>
+<title>Victor (Masotti)</title>
+<link rel="icon" type="image/png" href="south.png">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
 <style>
-  * { margin: 0; padding: 0; box-sizing: border-box; }
+* { margin:0; padding:0; box-sizing:border-box; }
 
-  :root {
-    --bg: #f0eeeb;
-    --widget-bg: rgba(245,243,240,0.72);
-    --widget-border: rgba(0,0,0,0.10);
-    --dock-bg: rgba(240,238,235,0.60);
-    --dock-border: rgba(0,0,0,0.12);
-    --menubar-bg: rgba(245,243,240,0.70);
-    --blur: blur(24px);
-    --text: #1a1a1a;
-    --text-dim: rgba(0,0,0,0.45);
-  }
+:root {
+  --bg:#f0eeeb;
+  --widget-bg:rgba(245,243,240,0.60);
+  --widget-border:rgba(255,255,255,0.55);
+  --dock-bg:rgba(235,232,228,0.72);
+  --dock-border:rgba(0,0,0,0.12);
+  --menubar-bg:rgba(240,238,234,0.72);
+  --blur:blur(32px);
+  --text:#1a1a1a;
+  --text-dim:rgba(0,0,0,0.45);
+  --dock-base:44px;
+}
 
-  body {
-    width: 100vw; height: 100vh;
-    overflow: hidden;
-    font-family: -apple-system, 'Helvetica Neue', sans-serif;
-    background: var(--bg);
-    position: relative;
-    user-select: none;
-  }
+/* ── hide native cursor — JS cursor replaces it ── */
+* { cursor: none !important; }
 
-  #p5-canvas { position: absolute; inset: 0; z-index: 0; }
-  #p5-canvas canvas { display: block; }
+body {
+  width:100vw; height:100vh; overflow:hidden;
+  font-family:-apple-system,'Helvetica Neue',sans-serif;
+  background:var(--bg); position:relative; user-select:none;
+}
 
-  /* === MENU BAR === */
-  .menubar {
-    position: absolute;
-    top: 0; left: 0; right: 0;
-    height: 26px;
-    background: var(--menubar-bg);
-    backdrop-filter: var(--blur);
-    -webkit-backdrop-filter: var(--blur);
-    border-bottom: 1px solid rgba(0,0,0,0.08);
-    box-shadow: 0 2px 12px rgba(0,0,0,0.08);
-    display: flex; align-items: center;
-    padding: 0 12px;
-    z-index: 300;
-  }
-  .menubar-left { display: flex; align-items: center; gap: 14px; flex: 1; }
-  .menubar-logo { width: 15px; height: 15px; display: flex; align-items: center; justify-content: center; }
-  .menubar-logo img { width: 100%; height: 100%; object-fit: contain; filter: invert(1) brightness(0); }
-  .menu-items { display: flex; gap: 14px; align-items: center; }
-  .menu-item { color: var(--text); font-size: 13px; font-weight: 400; cursor: default; letter-spacing: -0.01em; opacity: 0.85; }
-  .menu-item.bold { font-weight: 600; opacity: 1; }
-  .menubar-right { display: flex; align-items: center; gap: 10px; }
-  .status-icon { font-size: 12px; opacity: 0.7; }
+#p5-canvas { position:absolute; inset:0; z-index:0; }
+#p5-canvas canvas { display:block; }
 
-  /* === DESKTOP WIDGETS === */
-  .desktop {
-    position: absolute;
-    inset: 28px 0 90px 0;
-    z-index: 10;
-    padding: 14px;
-    display: flex; flex-direction: column; align-items: flex-end; gap: 10px;
-    pointer-events: none;
-  }
-  .widgets-column { display: flex; flex-direction: column; gap: 10px; width: 250px; }
-  .widget {
-    background: var(--widget-bg);
-    backdrop-filter: var(--blur);
-    -webkit-backdrop-filter: var(--blur);
-    border: 1px solid var(--widget-border);
-    border-radius: 16px;
-    padding: 14px 16px;
-    color: var(--text);
-    box-shadow: 0 4px 22px rgba(0,0,0,0.13), 0 1px 4px rgba(0,0,0,0.07), inset 0 1px 0 rgba(255,255,255,0.6);
-  }
-  .widget-clock .time { font-size: 42px; font-weight: 200; letter-spacing: -2px; line-height: 1; color: #111; }
-  .widget-clock .date { font-size: 12px; font-weight: 400; color: var(--text-dim); margin-top: 3px; }
-  .widget-weather { display: flex; align-items: center; justify-content: space-between; }
-  .widget-weather .location { font-size: 12px; font-weight: 500; color: var(--text-dim); margin-bottom: 2px; }
-  .widget-weather .temp { font-size: 34px; font-weight: 200; letter-spacing: -1px; line-height: 1; }
-  .widget-weather .condition { font-size: 11px; color: var(--text-dim); margin-top: 2px; }
-  .weather-icon { font-size: 36px; line-height: 1; }
-  .widget-calendar .month-header { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-dim); margin-bottom: 8px; }
-  .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; text-align: center; }
-  .cal-day-label { font-size: 9.5px; color: var(--text-dim); font-weight: 500; padding: 2px 0; }
-  .cal-day { font-size: 11px; border-radius: 50%; width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; margin: 0 auto; color: #222; }
-  .cal-day.today { background: #ff3b30; font-weight: 600; color: white; }
-  .cal-day.empty { opacity: 0; }
+/* ── JS CURSOR ── */
+#cursor-dot {
+  position:fixed; pointer-events:none; z-index:9999;
+  left:0; top:0;
+  width:0; height:0; /* size carried by svg */
+}
+#cursor-dot svg {
+  display:block;
+  transform-origin:0 0;
+  /* snap big fast (0.15s), fade back to small slow (0.7s) */
+  transition:transform 1.4s cubic-bezier(0.22,1,0.36,1),
+             opacity   1.0s ease;
+  transform:scale(1);
+  opacity:1;
+}
+/* BIG state — 3.5× and slightly transparent so it feels "fast/ghostly" */
+#cursor-dot.big svg {
+  transform:scale(5);
+  opacity:0.62;
+  filter:drop-shadow(0 6px 14px rgba(0,0,0,0.45));
+  transition:transform 0.11s cubic-bezier(0.0,0,0.2,1),
+             opacity   0.09s ease;
+}
 
-  /* === DOCK === */
-  .dock-container {
-    position: absolute;
-    bottom: 7px; left: 50%;
-    transform: translateX(-50%);
-    z-index: 200;
-  }
-  .dock {
-    display: flex; align-items: flex-end;
-    gap: 6px;
-    background: var(--dock-bg);
-    backdrop-filter: var(--blur);
-    -webkit-backdrop-filter: var(--blur);
-    border: 1px solid var(--dock-border);
-    border-radius: 18px;
-    padding: 8px 12px 6px;
-    box-shadow: 0 6px 28px rgba(0,0,0,0.15), 0 1px 4px rgba(0,0,0,0.08), inset 0 1px 0 rgba(255,255,255,0.6);
-    position: relative;
-  }
+/* ── MENU BAR ── */
+.menubar {
+  position:absolute; top:0; left:0; right:0; height:24px;
+  background:var(--menubar-bg); backdrop-filter:var(--blur); -webkit-backdrop-filter:var(--blur);
+  border-bottom:1px solid rgba(0,0,0,0.06);
+  border-top:1px solid rgba(255,255,255,0.9);
+  box-shadow:0 2px 18px rgba(0,0,0,0.10), inset 0 1px 0 rgba(255,255,255,0.85);
+  display:flex; align-items:center; padding:0 10px; z-index:300;
+}
+.menubar-left { display:flex; align-items:center; gap:4px; flex:1; }
+.menubar-logo { width:16px; height:16px; display:flex; align-items:center; justify-content:center; margin-right:8px; flex-shrink:0; }
+.menubar-logo img { width:100%; height:100%; object-fit:contain; }
+.menu-item {
+  color:var(--text); font-size:13px; font-weight:400;
+  letter-spacing:-0.01em; opacity:0.85; padding:2px 7px;
+  border-radius:4px; position:relative; transition:background 0.12s;
+}
+.menu-item.bold { font-weight:600; opacity:1; }
+.menu-item:hover { background:rgba(0,0,0,0.06); opacity:1; }
+.menu-item .ripple {
+  position:absolute; border-radius:50%;
+  background:rgba(0,0,0,0.12); pointer-events:none;
+  transform:scale(0); animation:ripple-anim 0.4s ease-out forwards;
+}
+@keyframes ripple-anim { to { transform:scale(4); opacity:0; } }
+.menu-item.flash { background:rgba(0,0,0,0.10); }
+.menubar-right { display:flex; align-items:center; gap:8px; }
+.status-icon { font-size:11px; opacity:0.65; }
 
-  .dock-icon {
-    width: 52px; height: 52px;
-    border-radius: 12px;
-    display: flex; align-items: center; justify-content: center;
-    cursor: pointer;
-    position: relative;
-    font-size: 32px;
-    flex-shrink: 0;
-    /* transitions handled by JS for wave magnification */
-    transition: transform 0.18s cubic-bezier(0.34,1.56,0.64,1);
-    transform-origin: bottom center;
-  }
+/* ── DESKTOP / WIDGETS ── */
+.desktop {
+  position:absolute; inset:26px 0 78px 0;
+  z-index:10; padding:14px;
+  display:flex; flex-direction:column; align-items:flex-end; gap:10px;
+}
+.widgets-column { display:flex; flex-direction:column; gap:10px; width:260px; }
 
-  .dock-label {
-    position: absolute;
-    bottom: calc(100% + 8px);
-    left: 50%; transform: translateX(-50%);
-    background: rgba(30,30,30,0.82);
-    color: white;
-    font-size: 11px;
-    font-weight: 500;
-    padding: 3px 8px;
-    border-radius: 6px;
-    white-space: nowrap;
-    pointer-events: none;
-    opacity: 0;
-    transition: opacity 0.12s;
-    backdrop-filter: blur(8px);
-  }
-  .dock-icon:hover .dock-label { opacity: 1; }
+.widget {
+  background:var(--widget-bg); backdrop-filter:var(--blur); -webkit-backdrop-filter:var(--blur);
+  border:1px solid var(--widget-border); border-radius:16px; padding:14px 16px;
+  color:var(--text);
+  box-shadow:0 8px 32px rgba(0,0,0,0.12),0 1px 4px rgba(0,0,0,0.05),inset 0 1px 0 rgba(255,255,255,0.92),inset 0 0 0 0.5px rgba(255,255,255,0.45);
+  position:relative; overflow:hidden;
+  transition:height 0.34s cubic-bezier(0.34,1.1,0.64,1),width 0.34s cubic-bezier(0.34,1.1,0.64,1),min-height 0.34s cubic-bezier(0.34,1.1,0.64,1);
+}
+/* resize handle at bottom of each widget */
+.widget-resize-handle {
+  position:absolute; bottom:0; left:0; right:0; height:10px;
+  display:flex; align-items:flex-end; justify-content:center; padding-bottom:3px;
+  opacity:0; transition:opacity 0.15s; z-index:5;
+}
+.widget:hover .widget-resize-handle { opacity:1; }
+.widget-resize-handle::after {
+  content:''; width:32px; height:3px; border-radius:2px;
+  background:rgba(0,0,0,0.20);
+}
+.widget-resize-right {
+  position:absolute; top:0; right:0; bottom:0; width:10px;
+  display:flex; align-items:center; justify-content:flex-end; padding-right:3px;
+  opacity:0; transition:opacity 0.15s; z-index:5;
+}
+.widget:hover .widget-resize-right { opacity:1; }
+.widget-resize-right::after {
+  content:''; height:32px; width:3px; border-radius:2px;
+  background:rgba(0,0,0,0.20);
+}
+.widget-resize-top {
+  position:absolute; top:0; left:0; right:0; height:10px;
+  display:flex; align-items:flex-start; justify-content:center; padding-top:3px;
+  opacity:0; transition:opacity 0.15s; z-index:5;
+}
+.widget:hover .widget-resize-top { opacity:1; }
+.widget-resize-top::after {
+  content:''; width:32px; height:3px; border-radius:2px;
+  background:rgba(0,0,0,0.20);
+}
+.widget-resize-left {
+  position:absolute; top:0; left:0; bottom:0; width:10px;
+  display:flex; align-items:center; justify-content:flex-start; padding-left:3px;
+  opacity:0; transition:opacity 0.15s; z-index:5;
+}
+.widget:hover .widget-resize-left { opacity:1; }
+.widget-resize-left::after {
+  content:''; height:32px; width:3px; border-radius:2px;
+  background:rgba(0,0,0,0.20);
+}
 
-  .dock-separator {
-    width: 1px; height: 40px;
-    background: rgba(0,0,0,0.12);
-    margin: 0 2px; align-self: center;
-  }
-  .dock-dot {
-    position: absolute; bottom: -6px; left: 50%;
-    transform: translateX(-50%);
-    width: 3px; height: 3px;
-    border-radius: 50%; background: rgba(0,0,0,0.4);
-  }
+.widget-clock .time { font-size:42px; font-weight:200; letter-spacing:-2px; line-height:1; color:#111; }
+.widget-clock .date { font-size:12px; font-weight:400; color:var(--text-dim); margin-top:3px; }
+.widget-weather { display:flex; align-items:center; justify-content:space-between; }
+.widget-weather .location { font-size:12px; font-weight:500; color:var(--text-dim); margin-bottom:2px; }
+.widget-weather .temp { font-size:34px; font-weight:200; letter-spacing:-1px; line-height:1; }
+.widget-weather .condition { font-size:11px; color:var(--text-dim); margin-top:2px; }
+.weather-icon { font-size:36px; line-height:1; }
+.widget-calendar .month-header { font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:0.08em; color:var(--text-dim); margin-bottom:8px; }
+.cal-grid { display:grid; grid-template-columns:repeat(7,1fr); gap:2px; text-align:center; }
+.cal-day-label { font-size:9.5px; color:var(--text-dim); font-weight:500; padding:2px 0; }
+.cal-day { font-size:11px; border-radius:50%; width:20px; height:20px; display:flex; align-items:center; justify-content:center; margin:0 auto; color:#222; }
+.cal-day.today { background:#ff3b30; font-weight:600; color:white; }
+.cal-day.empty { opacity:0; }
 
-  /* app icon backgrounds */
-  .icon-finder    { background: linear-gradient(145deg, #5ac8fa, #007aff); }
-  .icon-safari    { background: linear-gradient(145deg, #34aadc, #007aff); }
-  .icon-messages  { background: linear-gradient(145deg, #4cd964, #30b94d); }
-  .icon-mail      { background: linear-gradient(145deg, #007aff, #0055c1); }
-  .icon-photos    { background: linear-gradient(145deg, #ff9f0a, #ff3a30); }
-  .icon-music     { background: linear-gradient(145deg, #fc3c44, #c0152b); }
-  .icon-appstore  { background: linear-gradient(145deg, #007aff, #5ac8fa); }
-  .icon-settings  { background: linear-gradient(145deg, #8e8e93, #636366); }
-  .icon-trash     { background: linear-gradient(145deg, #636366, #3a3a3c); }
+/* ── DOCK ── */
+.dock-container { position:absolute; bottom:6px; left:50%; transform:translateX(-50%); z-index:200; }
+.dock {
+  display:flex; align-items:flex-end; gap:5px;
+  background:var(--dock-bg); backdrop-filter:var(--blur); -webkit-backdrop-filter:var(--blur);
+  border:1px solid var(--dock-border); border-radius:18px; padding:5px 18px 5px;
+  box-shadow:0 4px 20px rgba(0,0,0,0.13),0 1px 3px rgba(0,0,0,0.07),inset 0 1px 0 rgba(255,255,255,0.55);
+  position:relative;
+}
+.dock-icon {
+  width:var(--dock-base); height:var(--dock-base); border-radius:10px;
+  display:flex; align-items:center; justify-content:center;
+  position:relative; font-size:30px; flex-shrink:0;
+  will-change:transform; transform-origin:bottom center;
+}
+.dock-icon.bounce { animation:dock-bounce 0.42s cubic-bezier(0.36,0.07,0.19,0.97); }
+@keyframes dock-bounce {
+  0%   { transform:translateY(0) scale(1); }
+  30%  { transform:translateY(-16px) scale(1.08); }
+  60%  { transform:translateY(-4px) scale(1.02); }
+  80%  { transform:translateY(-9px) scale(1.05); }
+  100% { transform:translateY(0) scale(1); }
+}
+.dock-label {
+  position:absolute; bottom:calc(100% + 10px);
+  left:50%; transform:translateX(-50%);
+  background:rgba(28,28,28,0.88); color:white; font-size:11px; font-weight:500;
+  padding:3px 8px; border-radius:6px; white-space:nowrap;
+  pointer-events:none; opacity:0; transition:opacity 0.1s; backdrop-filter:blur(8px); z-index:10;
+}
+.dock-icon:hover .dock-label { opacity:1; }
+.dock-separator { width:1px; height:32px; background:rgba(0,0,0,0.12); margin:0 2px; align-self:center; }
+.dock-dot { position:absolute; bottom:-5px; left:50%; transform:translateX(-50%); width:3px; height:3px; border-radius:50%; background:rgba(0,0,0,0.4); }
+.icon-finder   { background:linear-gradient(145deg,#5ac8fa,#007aff); }
+.icon-safari   { background:linear-gradient(145deg,#34aadc,#007aff); }
+.icon-messages { background:linear-gradient(145deg,#4cd964,#30b94d); }
+.icon-mail     { background:linear-gradient(145deg,#007aff,#0055c1); }
+.icon-photos   { background:linear-gradient(145deg,#ff9f0a,#ff3a30); }
+.icon-music    { background:linear-gradient(145deg,#fc3c44,#c0152b); }
+.icon-appstore { background:linear-gradient(145deg,#007aff,#5ac8fa); }
+.icon-settings { background:linear-gradient(145deg,#8e8e93,#636366); }
+.icon-trash    { background:linear-gradient(145deg,#636366,#3a3a3c); }
 
-  /* ============================================================
-     PHOTOS WINDOW (macOS-style floating window)
-  ============================================================ */
-  #photos-window {
-    position: fixed;
-    left: 50%; top: 50%;
-    transform: translate(-50%, -50%) scale(0.6);
-    width: 860px; height: 560px;
-    max-width: 96vw; max-height: 88vh;
-    background: #1c1c1e;
-    border-radius: 12px;
-    box-shadow: 0 24px 80px rgba(0,0,0,0.55), 0 0 0 1px rgba(255,255,255,0.08);
-    display: flex; flex-direction: column;
-    z-index: 500;
-    overflow: hidden;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.28s cubic-bezier(0.4,0,0.2,1),
-                transform 0.28s cubic-bezier(0.34,1.3,0.64,1);
-    /* draggable */
-    user-select: none;
-  }
-  #photos-window.open {
-    opacity: 1;
-    pointer-events: all;
-    transform: translate(-50%, -50%) scale(1);
-  }
-  #photos-window.maximised {
-    left: 0 !important; top: 26px !important;
-    width: 100vw !important; height: calc(100vh - 26px) !important;
-    transform: none !important;
-    border-radius: 0 !important;
-  }
-  #photos-window.minimised {
-    transform: translate(-50%, 120%) scale(0.3) !important;
-    opacity: 0 !important;
-  }
+/* ── WINDOW OPEN ANIMATION (liquid drop / pin → window) ── */
+/* A canvas drawn over everything during open anim */
+#open-anim-canvas {
+  position:fixed; inset:0; pointer-events:none; z-index:600;
+}
 
-  /* titlebar */
-  .pw-titlebar {
-    height: 38px; flex-shrink: 0;
-    background: linear-gradient(180deg, #3a3a3c 0%, #2c2c2e 100%);
-    border-bottom: 1px solid rgba(0,0,0,0.4);
-    display: flex; align-items: center;
-    padding: 0 12px; gap: 8px;
-    cursor: default;
-    position: relative;
-  }
-  .pw-dot {
-    width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0;
-    cursor: pointer;
-    box-shadow: inset 0 1px 0 rgba(255,255,255,0.3), 0 1px 2px rgba(0,0,0,0.4);
-    transition: filter 0.1s;
-  }
-  .pw-dot:hover { filter: brightness(1.2); }
-  .pw-dot.close  { background: radial-gradient(circle at 35% 30%, #ff8a80, #dd1e3a); }
-  .pw-dot.min    { background: radial-gradient(circle at 35% 30%, #ffdd7a, #dda500); }
-  .pw-dot.maxb   { background: radial-gradient(circle at 35% 30%, #7aff8a, #1eb830); }
-  .pw-title {
-    position: absolute; left: 50%; transform: translateX(-50%);
-    font-size: 13px; font-weight: 600; color: rgba(255,255,255,0.85);
-    letter-spacing: -0.01em;
-  }
+/* ── PHOTOS WINDOW ── */
+#photos-window {
+  position:fixed; left:50%; top:50%;
+  width:860px; height:560px; max-width:94vw; max-height:86vh;
+  background:#1c1c1e; border-radius:12px;
+  box-shadow:0 32px 90px rgba(0,0,0,0.6),0 0 0 1px rgba(255,255,255,0.09);
+  display:flex; flex-direction:column;
+  z-index:500; overflow:hidden; pointer-events:none; user-select:none;
+  opacity:0;
+  transform:translate(-50%,-50%) scale(0.88) translateY(8px);
+  transition:
+    opacity 0.3s cubic-bezier(0.4,0,0.2,1),
+    transform 0.3s cubic-bezier(0.34,1.2,0.64,1),
+    width 0.3s cubic-bezier(0.4,0,0.2,1),
+    height 0.3s cubic-bezier(0.4,0,0.2,1),
+    border-radius 0.3s ease,
+    left 0.3s cubic-bezier(0.4,0,0.2,1),
+    top 0.3s cubic-bezier(0.4,0,0.2,1);
+}
+#photos-window.open {
+  opacity:1; pointer-events:all;
+  transform:translate(-50%,-50%) scale(1) translateY(0);
+}
+#photos-window.maximised {
+  left:0 !important; top:24px !important;
+  width:100vw !important; height:calc(100vh - 24px - 54px) !important;
+  transform:none !important; border-radius:0 !important;
+  max-width:100vw !important; max-height:100vh !important;
+}
+#photos-window.minimising {
+  opacity:0 !important;
+  transform:translate(var(--min-tx),var(--min-ty)) scale(0.06) !important;
+  transition:opacity 0.35s cubic-bezier(0.4,0,1,1),transform 0.38s cubic-bezier(0.4,0,0.6,1) !important;
+}
 
-  /* sidebar */
-  .pw-body { display: flex; flex: 1; overflow: hidden; }
-  .pw-sidebar {
-    width: 180px; flex-shrink: 0;
-    background: #2c2c2e;
-    border-right: 1px solid rgba(255,255,255,0.06);
-    display: flex; flex-direction: column;
-    padding: 12px 0;
-    overflow-y: auto;
-  }
-  .pw-sidebar-section {
-    font-size: 10px; font-weight: 700; color: rgba(255,255,255,0.35);
-    text-transform: uppercase; letter-spacing: 0.08em;
-    padding: 6px 14px 4px;
-  }
-  .pw-sidebar-item {
-    display: flex; align-items: center; gap: 8px;
-    padding: 6px 14px;
-    font-size: 13px; color: rgba(255,255,255,0.75);
-    cursor: pointer; border-radius: 6px; margin: 0 6px;
-    transition: background 0.12s;
-  }
-  .pw-sidebar-item:hover { background: rgba(255,255,255,0.08); }
-  .pw-sidebar-item.active { background: rgba(255,255,255,0.12); color: white; }
-  .pw-sidebar-item .si-icon { font-size: 15px; width: 20px; text-align: center; }
-
-  /* main grid */
-  .pw-main { flex: 1; overflow-y: auto; padding: 16px; background: #1c1c1e; }
-  .pw-year-label { font-size: 22px; font-weight: 700; color: white; margin-bottom: 10px; }
-  .pw-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-    gap: 3px;
-    margin-bottom: 20px;
-  }
-  .pw-thumb {
-    aspect-ratio: 1;
-    border-radius: 4px;
-    overflow: hidden;
-    cursor: pointer;
-    position: relative;
-    background: #2c2c2e;
-    transition: transform 0.12s;
-  }
-  .pw-thumb:hover { transform: scale(1.03); z-index: 2; }
-  .pw-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
-  .pw-thumb .pw-overlay {
-    position: absolute; inset: 0;
-    background: linear-gradient(to top, rgba(0,0,0,0.5) 0%, transparent 50%);
-    opacity: 0; transition: opacity 0.15s;
-  }
-  .pw-thumb:hover .pw-overlay { opacity: 1; }
-
-  /* toolbar */
-  .pw-toolbar {
-    height: 44px; flex-shrink: 0;
-    background: #2c2c2e;
-    border-top: 1px solid rgba(255,255,255,0.06);
-    display: flex; align-items: center; padding: 0 16px; gap: 12px;
-  }
-  .pw-toolbar-btn {
-    font-size: 11px; color: rgba(255,255,255,0.55);
-    background: rgba(255,255,255,0.07);
-    border: 1px solid rgba(255,255,255,0.1);
-    border-radius: 6px; padding: 4px 10px; cursor: pointer;
-    transition: background 0.1s, color 0.1s;
-  }
-  .pw-toolbar-btn:hover { background: rgba(255,255,255,0.14); color: white; }
-  .pw-toolbar-btn.active { background: #007aff; color: white; border-color: transparent; }
-
-  /* drag-resize handle */
-  .pw-resize {
-    position: absolute; right: 0; bottom: 0;
-    width: 18px; height: 18px; cursor: se-resize;
-    z-index: 10;
-    opacity: 0.3;
-  }
-  .pw-resize::after {
-    content: '';
-    position: absolute; right: 3px; bottom: 3px;
-    width: 8px; height: 8px;
-    border-right: 2px solid rgba(255,255,255,0.6);
-    border-bottom: 2px solid rgba(255,255,255,0.6);
-    border-radius: 1px;
-  }
-
-  /* overlay scrim */
-  #photos-scrim {
-    position: fixed; inset: 0; z-index: 490;
-    background: rgba(0,0,0,0);
-    pointer-events: none;
-    transition: background 0.28s;
-  }
-  #photos-scrim.visible {
-    background: rgba(0,0,0,0.25);
-    pointer-events: all;
-  }
+.pw-titlebar {
+  height:36px; flex-shrink:0;
+  background:linear-gradient(180deg,#3c3c3e 0%,#2c2c2e 100%);
+  border-bottom:1px solid rgba(0,0,0,0.4);
+  display:flex; align-items:center; padding:0 12px; gap:8px;
+  position:relative;
+}
+.pw-dot {
+  width:12px; height:12px; border-radius:50%; flex-shrink:0;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,0.3),0 1px 2px rgba(0,0,0,0.4);
+  transition:filter 0.1s,transform 0.1s; position:relative;
+}
+.pw-dot:hover { filter:brightness(1.25); transform:scale(1.1); }
+.pw-dot:active { filter:brightness(0.8); transform:scale(0.9); }
+.pw-dot.close { background:radial-gradient(circle at 35% 30%,#ff8a80,#dd1e3a); }
+.pw-dot.min   { background:radial-gradient(circle at 35% 30%,#ffdd7a,#dda500); }
+.pw-dot.maxb  { background:radial-gradient(circle at 35% 30%,#7aff8a,#1eb830); }
+.pw-dot::after {
+  content:''; position:absolute; inset:0; display:flex; align-items:center;
+  justify-content:center; opacity:0; transition:opacity 0.1s; font-size:8px; color:rgba(0,0,0,0.55);
+}
+.pw-dot.close:hover::after { content:'✕'; opacity:1; }
+.pw-dot.min:hover::after   { content:'−'; opacity:1; }
+.pw-dot.maxb:hover::after  { content:'↗'; opacity:1; }
+.pw-title {
+  position:absolute; left:50%; transform:translateX(-50%);
+  font-size:13px; font-weight:600; color:rgba(255,255,255,0.82);
+  letter-spacing:-0.01em; pointer-events:none;
+}
+.pw-body { display:flex; flex:1; overflow:hidden; }
+.pw-sidebar {
+  width:180px; flex-shrink:0; background:#2c2c2e;
+  border-right:1px solid rgba(255,255,255,0.06);
+  display:flex; flex-direction:column; padding:12px 0; overflow-y:auto;
+}
+.pw-sidebar-section {
+  font-size:10px; font-weight:700; color:rgba(255,255,255,0.32);
+  text-transform:uppercase; letter-spacing:0.08em; padding:6px 14px 4px;
+}
+.pw-sidebar-item {
+  display:flex; align-items:center; gap:8px; padding:6px 14px;
+  font-size:13px; color:rgba(255,255,255,0.72);
+  border-radius:6px; margin:0 6px; transition:background 0.12s;
+}
+.pw-sidebar-item:hover { background:rgba(255,255,255,0.08); }
+.pw-sidebar-item.active { background:rgba(255,255,255,0.12); color:white; }
+.pw-sidebar-item .si-icon { font-size:15px; width:20px; text-align:center; }
+.pw-main { flex:1; overflow-y:auto; padding:16px; background:#1c1c1e; }
+.pw-year-label { font-size:22px; font-weight:700; color:white; margin-bottom:10px; }
+.pw-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(140px,1fr)); gap:3px; margin-bottom:20px; }
+.pw-thumb { aspect-ratio:1; border-radius:4px; overflow:hidden; position:relative; background:#2c2c2e; transition:transform 0.12s; }
+.pw-thumb:hover { transform:scale(1.03); z-index:2; }
+.pw-thumb img { width:100%; height:100%; object-fit:cover; display:block; }
+.pw-thumb .pw-overlay { position:absolute; inset:0; background:linear-gradient(to top,rgba(0,0,0,0.5) 0%,transparent 50%); opacity:0; transition:opacity 0.15s; }
+.pw-thumb:hover .pw-overlay { opacity:1; }
+.pw-toolbar {
+  height:40px; flex-shrink:0; background:#2c2c2e;
+  border-bottom:1px solid rgba(255,255,255,0.06);
+  display:flex; align-items:center; padding:0 16px; gap:10px;
+}
+.pw-toolbar-btn {
+  font-size:11px; color:rgba(255,255,255,0.5);
+  background:rgba(255,255,255,0.07); border:1px solid rgba(255,255,255,0.1);
+  border-radius:6px; padding:3px 10px; transition:background 0.1s,color 0.1s;
+}
+.pw-toolbar-btn:hover { background:rgba(255,255,255,0.13); color:white; }
+.pw-toolbar-btn.active { background:#007aff; color:white; border-color:transparent; }
+.pw-resize { position:absolute; right:0; bottom:0; width:20px; height:20px; z-index:10; }
+.pw-resize::after {
+  content:''; position:absolute; right:4px; bottom:4px; width:8px; height:8px;
+  border-right:2px solid rgba(255,255,255,0.3); border-bottom:2px solid rgba(255,255,255,0.3); border-radius:1px;
+}
+#photos-scrim {
+  position:fixed; inset:0; z-index:490; background:rgba(0,0,0,0);
+  pointer-events:none; transition:background 0.3s;
+}
+#photos-scrim.visible { background:rgba(0,0,0,0.18); pointer-events:all; }
 </style>
 </head>
 <body>
 
-<!-- p5.js canvas -->
+<!-- custom cursor element -->
+<div id="cursor-dot">
+  <svg width="16" height="24" viewBox="0 0 16 24">
+    <path d="M1 1 L1 19 L5 14.5 L8 21.5 L10.2 20.4 L7.2 13.5 L13 13.5 Z" fill="black" stroke="white" stroke-width="1.1" stroke-linejoin="round"/>
+  </svg>
+</div>
+
+<canvas id="open-anim-canvas"></canvas>
 <div id="p5-canvas"></div>
 
-<!-- ── MENU BAR ── -->
+<!-- MENU BAR -->
 <div class="menubar">
   <div class="menubar-left">
-    <div class="menubar-logo">
-      <img src="south.png" alt="Logo"/>
-    </div>
-    <div class="menu-items">
-      <span class="menu-item bold">Victor Masotti</span>
-      <span class="menu-item">File</span>
-      <span class="menu-item">Edit</span>
-      <span class="menu-item">View</span>
-      <span class="menu-item">Go</span>
-      <span class="menu-item">Window</span>
-      <span class="menu-item">Help</span>
-    </div>
+    <div class="menubar-logo"><img src="south.png" alt="Logo"/></div>
+    <span class="menu-item bold" onclick="menuClick(this,event)">Victor Masotti</span>
+    <span class="menu-item" onclick="menuClick(this,event)">File</span>
+    <span class="menu-item" onclick="menuClick(this,event)">Edit</span>
+    <span class="menu-item" onclick="menuClick(this,event)">View</span>
+    <span class="menu-item" onclick="menuClick(this,event)">Go</span>
+    <span class="menu-item" onclick="menuClick(this,event)">Window</span>
+    <span class="menu-item" onclick="menuClick(this,event)">Tacos Banana Plumber Solution</span>
   </div>
   <div class="menubar-right">
     <span class="status-icon">🔋</span>
     <span class="status-icon">📶</span>
     <span class="status-icon">🔍</span>
-    <span class="menu-item" id="menubar-time" style="font-size:12px;opacity:0.8"></span>
+    <span class="menu-item" id="menubar-time" style="font-size:12px;opacity:0.75"></span>
   </div>
 </div>
 
-<!-- ── WIDGETS ── -->
+<!-- WIDGETS -->
 <div class="desktop">
-  <div class="widgets-column">
-    <div class="widget widget-clock">
-      <div class="time" id="clock-time">9:41</div>
+  <div class="widgets-column" id="widgets-column">
+
+    <div class="widget widget-clock" id="widget-0">
+      <div class="time" id="clock-time">09:41</div>
       <div class="date" id="clock-date">Wednesday, March 19</div>
+      <div class="widget-resize-handle" data-widget="0"></div><div class="widget-resize-right" data-widget="0"></div><div class="widget-resize-top" data-widget="0"></div><div class="widget-resize-left" data-widget="0"></div>
     </div>
-    <div class="widget widget-weather">
+
+    <div class="widget widget-weather" id="widget-1">
       <div>
         <div class="location">London</div>
         <div class="temp">12°</div>
         <div class="condition">Partly Cloudy</div>
       </div>
       <div class="weather-icon">⛅</div>
+      <div class="widget-resize-handle" data-widget="1"></div><div class="widget-resize-right" data-widget="1"></div><div class="widget-resize-top" data-widget="1"></div><div class="widget-resize-left" data-widget="1"></div>
     </div>
-    <div class="widget widget-calendar">
+
+    <div class="widget widget-calendar" id="widget-2">
       <div class="month-header">March 2026</div>
       <div class="cal-grid">
         <div class="cal-day-label">S</div><div class="cal-day-label">M</div><div class="cal-day-label">T</div><div class="cal-day-label">W</div><div class="cal-day-label">T</div><div class="cal-day-label">F</div><div class="cal-day-label">S</div>
@@ -381,36 +385,45 @@
         <div class="cal-day">22</div><div class="cal-day">23</div><div class="cal-day">24</div><div class="cal-day">25</div><div class="cal-day">26</div><div class="cal-day">27</div><div class="cal-day">28</div>
         <div class="cal-day">29</div><div class="cal-day">30</div><div class="cal-day">31</div>
       </div>
+      <div class="widget-resize-handle" data-widget="2"></div>
     </div>
+
   </div>
 </div>
 
-<!-- ── DOCK ── -->
+<!-- DOCK -->
 <div class="dock-container">
   <div class="dock" id="dock">
-    <!-- Photos is first — opens the Photos window -->
-    <div class="dock-icon icon-photos" id="dock-photos" onclick="openPhotos()">🖼️<div class="dock-dot"></div><div class="dock-label">Photos</div></div>
-    <div class="dock-icon icon-finder" onclick="">🗂️<div class="dock-dot"></div><div class="dock-label">Victor Masotti</div></div>
-    <div class="dock-icon icon-safari">🧭<div class="dock-label">Safari</div></div>
-    <div class="dock-icon icon-messages">💬<div class="dock-dot"></div><div class="dock-label">Messages</div></div>
-    <div class="dock-icon icon-mail">✉️<div class="dock-label">Mail</div></div>
-    <div class="dock-icon icon-music">🎵<div class="dock-dot"></div><div class="dock-label">Music</div></div>
+    <div class="dock-icon icon-photos" id="dock-photos" onclick="openPhotos(); dockBounce(this)">🖼️<div class="dock-dot"></div><div class="dock-label">Photos</div></div>
+    <div class="dock-icon icon-finder" onclick="dockBounce(this)">🗂️<div class="dock-dot"></div><div class="dock-label">Victor Masotti</div></div>
+    <div class="dock-icon icon-safari" onclick="dockBounce(this)">🧭<div class="dock-label">Safari</div></div>
+    <div class="dock-icon icon-messages" onclick="dockBounce(this)">💬<div class="dock-dot"></div><div class="dock-label">Messages</div></div>
+    <div class="dock-icon icon-mail" onclick="dockBounce(this)">✉️<div class="dock-label">Mail</div></div>
+    <div class="dock-icon icon-music" onclick="dockBounce(this)">🎵<div class="dock-dot"></div><div class="dock-label">Music</div></div>
     <div class="dock-separator"></div>
-    <div class="dock-icon icon-appstore">🛍️<div class="dock-label">App Store</div></div>
-    <div class="dock-icon icon-settings">⚙️<div class="dock-label">Settings</div></div>
+    <div class="dock-icon icon-appstore" onclick="dockBounce(this)">🛍️<div class="dock-label">App Store</div></div>
+    <div class="dock-icon icon-settings" onclick="dockBounce(this)">⚙️<div class="dock-label">Settings</div></div>
     <div class="dock-separator"></div>
-    <div class="dock-icon icon-trash">🗑️<div class="dock-label">Trash</div></div>
+    <div class="dock-icon icon-trash" onclick="dockBounce(this)">🗑️<div class="dock-label">Trash</div></div>
   </div>
 </div>
 
-<!-- ── PHOTOS WINDOW ── -->
-<div id="photos-scrim" onclick="closePhotos()"></div>
+<!-- PHOTOS WINDOW -->
+<div id="photos-scrim"></div>
 <div id="photos-window">
   <div class="pw-titlebar" id="pw-titlebar">
-    <div class="pw-dot close" onclick="closePhotos()" title="Close"></div>
-    <div class="pw-dot min"   onclick="minimisePhotos()" title="Minimise"></div>
-    <div class="pw-dot maxb"  onclick="maximisePhotos()" title="Maximise"></div>
+    <div class="pw-dot close" onclick="closePhotos()"></div>
+    <div class="pw-dot min"   onclick="minimisePhotos()"></div>
+    <div class="pw-dot maxb"  onclick="maximisePhotos()"></div>
     <span class="pw-title">Photos</span>
+  </div>
+  <div class="pw-toolbar">
+    <div class="pw-toolbar-btn active">Years</div>
+    <div class="pw-toolbar-btn">Months</div>
+    <div class="pw-toolbar-btn">Days</div>
+    <div class="pw-toolbar-btn">All Photos</div>
+    <div style="flex:1"></div>
+    <div class="pw-toolbar-btn">＋ Add</div>
   </div>
   <div class="pw-body">
     <div class="pw-sidebar">
@@ -423,319 +436,704 @@
       <div class="pw-sidebar-item"><span class="si-icon">📷</span> Recents</div>
       <div class="pw-sidebar-item"><span class="si-icon">🎬</span> Videos</div>
       <div class="pw-sidebar-item"><span class="si-icon">🤳</span> Selfies</div>
-      <div class="pw-sidebar-item"><span class="si-icon">🌅</span> Landscape</div>
       <div class="pw-sidebar-section" style="margin-top:10px">Media Types</div>
       <div class="pw-sidebar-item"><span class="si-icon">🎞️</span> Live Photos</div>
       <div class="pw-sidebar-item"><span class="si-icon">🐌</span> Slo-mo</div>
-      <div class="pw-sidebar-item"><span class="si-icon">📸</span> Bursts</div>
     </div>
-    <div style="display:flex;flex-direction:column;flex:1;overflow:hidden;">
-      <div class="pw-toolbar">
-        <div class="pw-toolbar-btn active">Years</div>
-        <div class="pw-toolbar-btn">Months</div>
-        <div class="pw-toolbar-btn">Days</div>
-        <div class="pw-toolbar-btn">All Photos</div>
-        <div style="flex:1"></div>
-        <div class="pw-toolbar-btn">＋ Add</div>
-      </div>
-      <div class="pw-main" id="pw-main">
-        <!-- Photo grid injected by JS -->
-      </div>
-    </div>
+    <div class="pw-main" id="pw-main"></div>
   </div>
-  <!-- drag resize handle -->
   <div class="pw-resize" id="pw-resize"></div>
 </div>
 
 <script>
-// ─────────────────────────────────────────────────────────────────────
-// CLOCK
-// ─────────────────────────────────────────────────────────────────────
+// ══════════════════════════════════════════════════════
+// CUSTOM CURSOR + SPEED ENLARGER
+// ══════════════════════════════════════════════════════
+(function(){
+  const dot = document.getElementById('cursor-dot');
+  let px=0, py=0, lastT=0, bigTimer=null;
+  const THRESH = 9;    // px/ms — very sensitive, fires on any flick
+  const HOLD   = 600;  // ms big stays before fading back
+
+  document.addEventListener('mousemove', e => {
+    const now = performance.now();
+    const dt  = Math.max(1, now - lastT);
+    const dx  = e.clientX - px, dy = e.clientY - py;
+    px = e.clientX; py = e.clientY; lastT = now;
+
+    dot.style.left = px + 'px';
+    dot.style.top  = py + 'px';
+
+    const spd = Math.sqrt(dx*dx + dy*dy) / dt; // px/ms
+    if(spd > THRESH) {
+      dot.classList.add('big');
+      clearTimeout(bigTimer);
+      bigTimer = setTimeout(() => dot.classList.remove('big'), HOLD);
+    }
+  });
+  document.addEventListener('mouseleave', () => { dot.style.opacity='0'; });
+  document.addEventListener('mouseenter', () => { dot.style.opacity='1'; });
+})();
+
+// ══════════════════════════════════════════════════════
+// CLOCK — zero-padded 00:00 format
+// ══════════════════════════════════════════════════════
 function updateClock() {
   const now = new Date();
-  const h = now.getHours(), m = now.getMinutes().toString().padStart(2,'0');
-  const ampm = h >= 12 ? 'PM' : 'AM', h12 = (h % 12) || 12;
-  const days = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
-  const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
-  const sd = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
-  const sm = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-  document.getElementById('clock-time').textContent = `${h12}:${m}`;
+  const h = now.getHours(), m = now.getMinutes();
+  const s = now.getSeconds();
+  const h12 = (h % 12) || 12;
+  const ampm = h >= 12 ? 'PM' : 'AM';
+  const hh = String(h12).padStart(2,'0');
+  const mm = String(m).padStart(2,'0');
+  const days=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+  const months=['January','February','March','April','May','June','July','August','September','October','November','December'];
+  const sd=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+  const sm=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  document.getElementById('clock-time').textContent = `${hh}:${mm}`;
   document.getElementById('clock-date').textContent = `${days[now.getDay()]}, ${months[now.getMonth()]} ${now.getDate()}`;
-  document.getElementById('menubar-time').textContent = `${sd[now.getDay()]} ${sm[now.getMonth()]} ${now.getDate()}  ${h12}:${m} ${ampm}`;
+  document.getElementById('menubar-time').textContent = `${sd[now.getDay()]} ${sm[now.getMonth()]} ${now.getDate()}  ${hh}:${mm} ${ampm}`;
 }
 updateClock(); setInterval(updateClock, 1000);
 
-// ─────────────────────────────────────────────────────────────────────
-// DOCK — macOS wave magnification
-// ─────────────────────────────────────────────────────────────────────
-(function() {
-  const dock = document.getElementById('dock');
+// ══════════════════════════════════════════════════════
+// MENU ITEM RIPPLE
+// ══════════════════════════════════════════════════════
+function menuClick(el, e) {
+  el.classList.add('flash');
+  setTimeout(()=>el.classList.remove('flash'),180);
+  const r = document.createElement('span');
+  r.className = 'ripple';
+  const rect = el.getBoundingClientRect();
+  const size = Math.max(rect.width,rect.height);
+  r.style.cssText=`width:${size}px;height:${size}px;left:${e.clientX-rect.left-size/2}px;top:${e.clientY-rect.top-size/2}px`;
+  el.appendChild(r);
+  setTimeout(()=>r.remove(),450);
+}
+
+// ══════════════════════════════════════════════════════
+// DOCK WAVE MAGNIFICATION
+// ══════════════════════════════════════════════════════
+(function(){
+  const dock  = document.getElementById('dock');
   const icons = Array.from(dock.querySelectorAll('.dock-icon'));
-  const BASE = 52, MAX = 86, SPREAD = 2.8; // px base, px max, neighbour spread
-
-  function getScale(dist) {
-    if (dist > SPREAD) return 1;
-    // cosine bell curve
-    return 1 + (MAX / BASE - 1) * Math.pow(Math.cos((dist / SPREAD) * Math.PI * 0.5), 2);
+  const BASE=44, MAX=76, SPREAD=3.6;
+  function scaleFn(dist){ return dist>=SPREAD?1:1+(MAX/BASE-1)*Math.pow(Math.cos((dist/SPREAD)*Math.PI*0.5),2); }
+  let rafId=null, lastMx=null;
+  function applyMag(mx){
+    const dRect=dock.getBoundingClientRect();
+    icons.forEach(icon=>{
+      const r=icon.getBoundingClientRect();
+      const cx=r.left+r.width/2-dRect.left;
+      const dist=Math.abs(mx-cx)/BASE;
+      const sc=scaleFn(dist);
+      const lift=(sc-1)*BASE*0.55;
+      icon.style.transform=`translateY(${-lift}px) scale(${sc})`;
+      icon.style.fontSize=Math.round(27*sc*0.85)+'px';
+      icon.style.width=Math.round(BASE*sc)+'px';
+      icon.style.height=Math.round(BASE*sc)+'px';
+    });
   }
-
-  dock.addEventListener('mousemove', e => {
-    const dockRect = dock.getBoundingClientRect();
-    const mouseX = e.clientX - dockRect.left;
-
-    icons.forEach(icon => {
-      const rect = icon.getBoundingClientRect();
-      const iconCx = rect.left + rect.width / 2 - dockRect.left;
-      const dist = Math.abs(mouseX - iconCx) / BASE;
-      const scale = getScale(dist);
-      icon.style.transform = `translateY(${-(scale - 1) * BASE * 0.5}px) scale(${scale})`;
-      icon.style.width  = BASE + 'px';
-      icon.style.height = BASE + 'px';
-    });
+  dock.addEventListener('mousemove',e=>{
+    lastMx=e.clientX-dock.getBoundingClientRect().left;
+    if(!rafId) rafId=requestAnimationFrame(()=>{applyMag(lastMx);rafId=null;});
   });
-
-  dock.addEventListener('mouseleave', () => {
-    icons.forEach(icon => {
-      icon.style.transform = '';
-    });
+  dock.addEventListener('mouseleave',()=>{
+    if(rafId){cancelAnimationFrame(rafId);rafId=null;}
+    icons.forEach(icon=>{icon.style.transform='';icon.style.fontSize='';icon.style.width='';icon.style.height='';});
   });
 })();
 
-// ─────────────────────────────────────────────────────────────────────
-// PHOTOS WINDOW
-// ─────────────────────────────────────────────────────────────────────
-const photosWin  = document.getElementById('photos-window');
-const photosScrim= document.getElementById('photos-scrim');
-let photosIsOpen = false;
-let photosIsMax  = false;
-let photosIsMin  = false;
-// saved non-max position/size for restore
-let savedStyle   = {};
+function dockBounce(el){
+  el.classList.remove('bounce'); void el.offsetWidth;
+  el.classList.add('bounce');
+  el.addEventListener('animationend',()=>el.classList.remove('bounce'),{once:true});
+}
 
-// Build photo grid from the images array in the photoPHOTOvm code
-const images = [
-  'cak.jpg','cal.jpg','cam.jpg','can.jpg','cek.jpg','cel.jpg',
+// ══════════════════════════════════════════════════════
+// WIDGET RESIZE — 4-side drag, geometric snap (×1.5),
+//   bounded by menubar (top) and dock (bottom),
+//   content scales proportionally
+// ══════════════════════════════════════════════════════
+(function(){
+  const BASE_H=72,BASE_W=200,RATIO=1.5,STEPS=9;
+  const H_LV=[],W_LV=[];
+  for(let i=0;i<STEPS;i++){H_LV.push(Math.round(BASE_H*Math.pow(RATIO,i)));W_LV.push(Math.round(BASE_W*Math.pow(RATIO,i)));}
+  const snap=(v,lv)=>lv.reduce((b,l)=>Math.abs(l-v)<Math.abs(b-v)?l:b,lv[0]);
+
+  const MENU_H=26, DOCK_H=64; // px reserved at top/bottom
+  const natH={},natW={},natT={},natL={};
+
+  function bounds(){
+    return{
+      top:MENU_H+4,
+      bottom:window.innerHeight-DOCK_H-4,
+      left:4,
+      right:window.innerWidth-4
+    };
+  }
+
+  function scaleContent(w){
+    const sh=w.offsetHeight/(natH[w.id]||BASE_H),sw=w.offsetWidth/(natW[w.id]||BASE_W);
+    const sc=Math.max(0.6,Math.min(2.5,Math.min(sh,sw)));
+    const inner=w.querySelector('.wi');
+    if(inner) inner.style.transform=`scale(${sc})`;
+  }
+
+  // wrap content for scaling
+  document.querySelectorAll('.widget').forEach(w=>{
+    if(w.querySelector('.wi')) return;
+    const handles=[...w.querySelectorAll('[class^=widget-resize]')];
+    const wi=document.createElement('div');
+    wi.className='wi';
+    wi.style.cssText='transform-origin:top left;transition:transform 0.3s ease;';
+    Array.from(w.childNodes).forEach(n=>{if(!handles.includes(n))wi.appendChild(n);});
+    w.appendChild(wi);
+    handles.forEach(h=>w.appendChild(h));
+    natH[w.id]=w.offsetHeight; natW[w.id]=w.offsetWidth;
+    const r=w.getBoundingClientRect();
+    natT[w.id]=r.top; natL[w.id]=r.left;
+  });
+
+  let drag=null,dir='',sp=0,ss=0,st=0,sl=0;
+  // dir: 's'=south(bottom), 'n'=north(top), 'e'=east(right), 'w'=west(left)
+
+  document.getElementById('widgets-column').addEventListener('mousedown',e=>{
+    const bh=e.target.closest('.widget-resize-handle');   // south
+    const rh=e.target.closest('.widget-resize-right');    // east
+    const th=e.target.closest('.widget-resize-top');      // north
+    const lh=e.target.closest('.widget-resize-left');     // west
+    const handle=bh||rh||th||lh;
+    if(!handle) return;
+    const wid=handle.dataset.widget;
+    drag=document.getElementById('widget-'+wid);
+    dir=bh?'s':rh?'e':th?'n':'w';
+    const r=drag.getBoundingClientRect();
+    ss=drag.offsetHeight; sl=drag.offsetWidth;
+    st=r.top; natT[drag.id]=r.top; natL[drag.id]=r.left;
+    sp=bh||th?e.clientY:e.clientX;
+    document.body.style.userSelect='none';
+    e.preventDefault();
+  });
+
+  window.addEventListener('mousemove',e=>{
+    if(!drag) return;
+    const b=bounds();
+    const r=drag.getBoundingClientRect();
+    drag.style.transition='none';
+
+    if(dir==='s'){
+      const maxH=b.bottom-r.top;
+      const newH=Math.min(maxH,Math.max(H_LV[0],ss+(e.clientY-sp)));
+      drag.style.height=newH+'px'; drag.style.minHeight=newH+'px';
+    } else if(dir==='e'){
+      const maxW=b.right-r.left;
+      const newW=Math.min(maxW,Math.max(W_LV[0],sl+(e.clientX-sp)));
+      drag.style.width=newW+'px'; drag.style.minWidth=newW+'px';
+    } else if(dir==='n'){
+      // top drag: move widget up + grow height
+      const delta=sp-e.clientY;
+      const newH=Math.min(b.bottom-b.top,Math.max(H_LV[0],ss+delta));
+      const newTop=Math.max(b.top, r.bottom-newH);
+      drag.style.height=newH+'px'; drag.style.minHeight=newH+'px';
+      drag.style.marginTop=(newTop-natT[drag.id])+'px';
+    } else if(dir==='w'){
+      // left drag: grow left
+      const delta=sp-e.clientX;
+      const newW=Math.min(b.right-b.left,Math.max(W_LV[0],sl+delta));
+      drag.style.width=newW+'px'; drag.style.minWidth=newW+'px';
+    }
+    scaleContent(drag);
+  });
+
+  window.addEventListener('mouseup',()=>{
+    if(!drag) return;
+    const curH=drag.offsetHeight, curW=drag.offsetWidth;
+    const sh=snap(curH,H_LV), sw=snap(curW,W_LV);
+    const tr='height .34s cubic-bezier(.34,1.1,.64,1),width .34s cubic-bezier(.34,1.1,.64,1),min-height .34s cubic-bezier(.34,1.1,.64,1),min-width .34s cubic-bezier(.34,1.1,.64,1)';
+    drag.style.transition=tr;
+    drag.style.height=sh+'px'; drag.style.minHeight=sh+'px';
+    drag.style.width=sw+'px';  drag.style.minWidth=sw+'px';
+    setTimeout(()=>scaleContent(drag),360);
+    drag=null; dir=''; document.body.style.userSelect='';
+  });
+})();
+
+// ══════════════════════════════════════════════════════
+// PHOTOS WINDOW — liquid drop open animation
+// ══════════════════════════════════════════════════════
+const photosWin   = document.getElementById('photos-window');
+const photosScrim = document.getElementById('photos-scrim');
+const animCanvas  = document.getElementById('open-anim-canvas');
+const animCtx     = animCanvas.getContext('2d');
+let animRAF = null;
+
+function resizeAnimCanvas(){
+  animCanvas.width=window.innerWidth; animCanvas.height=window.innerHeight;
+}
+resizeAnimCanvas(); window.addEventListener('resize',resizeAnimCanvas);
+
+let photosOpen=false, photosMax=false, photosMinned=false;
+
+const images=['cak.jpg','cal.jpg','cam.jpg','can.jpg','cek.jpg','cel.jpg',
   'cem.jpg','cen.jpg','cil.jpg','cim.jpg','cin.jpg','col.jpg',
-  'com.jpg','cul.jpg','cum.jpg','cun.jpg',
-];
+  'com.jpg','cul.jpg','cum.jpg','cun.jpg'];
 
-function buildPhotoGrid() {
-  const main = document.getElementById('pw-main');
-  // Group into "years" for aesthetics
-  const years = [
-    { label: '2024', imgs: images.slice(0, 6) },
-    { label: '2023', imgs: images.slice(6, 12) },
-    { label: '2022', imgs: images.slice(12) },
-  ];
-  main.innerHTML = '';
-  years.forEach(yr => {
-    const label = document.createElement('div');
-    label.className = 'pw-year-label';
-    label.textContent = yr.label;
-    main.appendChild(label);
-
-    const grid = document.createElement('div');
-    grid.className = 'pw-grid';
-    yr.imgs.forEach(src => {
-      const thumb = document.createElement('div');
-      thumb.className = 'pw-thumb';
-      thumb.innerHTML = `<img src="${src}" loading="lazy" alt=""/><div class="pw-overlay"></div>`;
-      grid.appendChild(thumb);
+function buildPhotoGrid(){
+  const main=document.getElementById('pw-main');
+  const years=[{label:'2024',imgs:images.slice(0,6)},{label:'2023',imgs:images.slice(6,12)},{label:'2022',imgs:images.slice(12)}];
+  main.innerHTML='';
+  years.forEach(yr=>{
+    const lbl=document.createElement('div'); lbl.className='pw-year-label'; lbl.textContent=yr.label;
+    main.appendChild(lbl);
+    const grid=document.createElement('div'); grid.className='pw-grid';
+    yr.imgs.forEach(src=>{
+      const t=document.createElement('div'); t.className='pw-thumb';
+      t.innerHTML=`<img src="${src}" loading="lazy" alt=""/><div class="pw-overlay"></div>`;
+      grid.appendChild(t);
     });
     main.appendChild(grid);
   });
 }
 
+// ── No canvas open animation — pure CSS spring from icon position ──
+// (canvas still used for close animation)
+
+// ── Close animation: window shrinks back toward dock icon ──
+function runCloseAnimation(fromRect, iconRect, onDone) {
+  if(animRAF) cancelAnimationFrame(animRAF);
+  animCanvas.style.pointerEvents='none';
+
+  const fx=fromRect.left, fy=fromRect.top, fw=fromRect.width, fh=fromRect.height;
+  const ax=iconRect.left+iconRect.width/2, ay=iconRect.top+iconRect.height/2;
+  const THUMB_W=64, THUMB_H=42;
+
+  const DURATION=320;
+  const t0=performance.now();
+
+  function easeInQuart(t){ return t*t*t*t; }
+  function lerp(a,b,t){ return a+(b-a)*t; }
+
+  function drawMiniClose(x,y,w,h,prog){
+    const r=lerp(12,10,prog);
+    const alpha=lerp(1,0,prog*prog); // fade out as it shrinks
+    animCtx.save();
+    animCtx.globalAlpha=alpha;
+    animCtx.shadowColor='rgba(0,0,0,0.35)'; animCtx.shadowBlur=lerp(30,4,prog);
+    animCtx.beginPath(); animCtx.roundRect(x,y,w,h,r);
+    animCtx.fillStyle='#1c1c1e'; animCtx.fill();
+    animCtx.shadowBlur=0;
+    const tbH=Math.max(4,lerp(10,5,prog));
+    animCtx.beginPath(); animCtx.roundRect(x,y,w,tbH,[r,r,0,0]);
+    animCtx.fillStyle='#3a3a3c'; animCtx.fill();
+    const dotR=lerp(2,1,prog), dotY=y+tbH/2;
+    [[x+lerp(8,4,prog),'#dd1e3a'],[x+lerp(16,8,prog),'#dda500'],[x+lerp(24,12,prog),'#1eb830']].forEach(([dx,col])=>{
+      animCtx.beginPath(); animCtx.arc(dx,dotY,dotR,0,Math.PI*2);
+      animCtx.fillStyle=col; animCtx.fill();
+    });
+    animCtx.restore();
+  }
+
+  function draw(now){
+    const raw=Math.min((now-t0)/DURATION,1);
+    const ep=easeInQuart(raw);
+    animCtx.clearRect(0,0,animCanvas.width,animCanvas.height);
+    if(raw>=1){ onDone(); return; }
+    const cw=lerp(fw,THUMB_W,ep);
+    const ch=lerp(fh,THUMB_H,ep);
+    const cx=lerp(fx, ax-THUMB_W/2, ep);
+    const cy=lerp(fy, ay-THUMB_H, ep);
+    drawMiniClose(cx,cy,cw,ch,ep);
+    animRAF=requestAnimationFrame(draw);
+  }
+  animRAF=requestAnimationFrame(draw);
+}
+
 function openPhotos() {
-  if (!photosIsOpen) buildPhotoGrid();
-  photosIsOpen = true;
-  photosIsMin  = false;
-  photosWin.classList.remove('minimised', 'maximised');
-  photosWin.classList.add('open');
+  if(!photosOpen) buildPhotoGrid();
+  photosOpen=true; photosMinned=false; photosMax=false;
+
+  // Get dock icon position — window springs FROM here
+  const icon = document.getElementById('dock-photos');
+  const ir   = icon.getBoundingClientRect();
+  const originX = ir.left + ir.width/2;
+  const originY = ir.top  + ir.height/2;
+
+  // Set transform-origin to dock icon position relative to window center
+  // so the scale-up appears to come FROM the icon
+  photosWin.style.cssText='';
+  photosWin.style.left='50%';
+  photosWin.style.top='50%';
+  photosWin.style.transition='none';
+  photosWin.style.opacity='0';
+
+  // Position transform-origin relative to element
+  const ww=Math.min(860,window.innerWidth*0.94);
+  const wh=Math.min(560,window.innerHeight*0.86);
+  const winCx=window.innerWidth/2, winCy=window.innerHeight/2;
+  const ox=originX-winCx+ww/2, oy=originY-winCy+wh/2;
+  photosWin.style.transformOrigin=`${ox}px ${oy}px`;
+  photosWin.style.transform=`translate(-50%,-50%) scale(0.05)`;
+  photosWin.classList.remove('minimising','maximised','open');
+
   photosScrim.classList.add('visible');
+
+  // Trigger spring open in next frame
+  requestAnimationFrame(()=>requestAnimationFrame(()=>{
+    photosWin.style.transition=
+      'opacity 0.22s ease, transform 0.38s cubic-bezier(0.34,1.28,0.64,1)';
+    photosWin.style.opacity='1';
+    photosWin.style.transform='translate(-50%,-50%) scale(1)';
+    photosWin.style.pointerEvents='all';
+    photosWin.classList.add('open');
+  }));
 }
 
-function closePhotos() {
-  photosWin.classList.remove('open', 'maximised', 'minimised');
+function closePhotos(){
+  if(!photosOpen) return;
+  // Capture current window rect for reverse animation
+  const wr = photosWin.getBoundingClientRect();
+  const iconEl = document.getElementById('dock-photos');
+  const iconRect = iconEl.getBoundingClientRect();
+
+  // Hide real window immediately
+  photosWin.style.transition='none';
+  photosWin.style.opacity='0';
+  photosWin.style.pointerEvents='none';
+  photosWin.classList.remove('open','maximised');
   photosScrim.classList.remove('visible');
-  setTimeout(() => { photosIsOpen = false; photosIsMax = false; photosIsMin = false; }, 300);
+
+  // Animate canvas shrinking from window rect back to icon
+  runCloseAnimation(wr, iconRect, () => {
+    animCtx.clearRect(0,0,animCanvas.width,animCanvas.height);
+    photosWin.style.cssText='';
+    photosOpen=false; photosMax=false; photosMinned=false;
+  });
 }
 
-function minimisePhotos() {
-  if (!photosIsMax) {
-    // save position
-    savedStyle = { left: photosWin.style.left, top: photosWin.style.top };
+function minimisePhotos(){
+  if(!photosOpen) return;
+  if(photosMinned){
+    photosMinned=false;
+    photosWin.classList.remove('minimising');
+    photosWin.style.cssText='';
+    photosWin.style.left='50%'; photosWin.style.top='50%';
+    photosWin.style.transform='translate(-50%,-50%) scale(0.88) translateY(8px)';
+    requestAnimationFrame(()=>requestAnimationFrame(()=>{
+      photosWin.classList.add('open'); photosScrim.classList.add('visible');
+    }));
+    return;
   }
-  photosIsMin = !photosIsMin;
-  if (photosIsMin) {
-    photosWin.classList.add('minimised');
-    photosWin.classList.remove('open', 'maximised');
-    photosScrim.classList.remove('visible');
-    photosIsMax = false;
-  } else {
-    photosWin.classList.remove('minimised');
-    photosWin.classList.add('open');
-    photosScrim.classList.add('visible');
-  }
+  const icon=document.getElementById('dock-photos');
+  const ir=icon.getBoundingClientRect(), wr=photosWin.getBoundingClientRect();
+  photosWin.style.setProperty('--min-tx',(ir.left+ir.width/2-wr.left-wr.width/2)+'px');
+  photosWin.style.setProperty('--min-ty',(ir.top+ir.height/2-wr.top-wr.height/2)+'px');
+  photosWin.classList.remove('open','maximised');
+  photosWin.classList.add('minimising');
+  photosScrim.classList.remove('visible');
+  photosMinned=true; photosMax=false;
 }
 
-function maximisePhotos() {
-  photosIsMax = !photosIsMax;
-  if (photosIsMax) {
+function maximisePhotos(){
+  if(!photosOpen) return;
+  photosMax=!photosMax;
+  if(photosMax){
     photosWin.classList.add('maximised');
-    photosWin.classList.remove('minimised');
-    photosWin.classList.add('open');
+    photosWin.classList.remove('minimising');
     photosScrim.classList.remove('visible');
   } else {
     photosWin.classList.remove('maximised');
-    photosWin.classList.add('open');
-    photosScrim.classList.add('visible');
+    photosWin.style.left='50%'; photosWin.style.top='50%';
+    photosWin.style.width=''; photosWin.style.height='';
+    photosWin.style.transform='';
+    requestAnimationFrame(()=>requestAnimationFrame(()=>{
+      photosWin.classList.add('open'); photosScrim.classList.add('visible');
+    }));
   }
 }
 
-// ── Drag to move window ──
-(function() {
-  const tb = document.getElementById('pw-titlebar');
-  let dragging = false, ox = 0, oy = 0;
-
-  tb.addEventListener('mousedown', e => {
-    if (photosIsMax) return;
-    dragging = true;
-    const rect = photosWin.getBoundingClientRect();
-    ox = e.clientX - rect.left;
-    oy = e.clientY - rect.top;
-    photosWin.style.transition = 'none';
+// drag-move window
+(function(){
+  const tb=document.getElementById('pw-titlebar');
+  let drag=false,ox=0,oy=0;
+  tb.addEventListener('mousedown',e=>{
+    if(photosMax||e.target.classList.contains('pw-dot')) return;
+    drag=true;
+    const r=photosWin.getBoundingClientRect();
+    ox=e.clientX-r.left; oy=e.clientY-r.top;
+    photosWin.style.transition='none'; photosWin.style.transform='none';
+    photosWin.style.left=r.left+'px'; photosWin.style.top=r.top+'px';
     e.preventDefault();
   });
-  window.addEventListener('mousemove', e => {
-    if (!dragging) return;
-    photosWin.style.left = (e.clientX - ox) + 'px';
-    photosWin.style.top  = (e.clientY - oy) + 'px';
-    photosWin.style.transform = 'none';
-  });
-  window.addEventListener('mouseup', () => {
-    dragging = false;
-    photosWin.style.transition = '';
-  });
+  window.addEventListener('mousemove',e=>{ if(!drag) return; photosWin.style.left=(e.clientX-ox)+'px'; photosWin.style.top=(e.clientY-oy)+'px'; });
+  window.addEventListener('mouseup',()=>{ drag=false; photosWin.style.transition=''; });
 })();
 
-// ── Drag to resize window ──
-(function() {
-  const handle = document.getElementById('pw-resize');
-  let resizing = false, sx = 0, sy = 0, sw = 0, sh = 0;
-
-  handle.addEventListener('mousedown', e => {
-    if (photosIsMax) return;
-    resizing = true;
-    sx = e.clientX; sy = e.clientY;
-    sw = photosWin.offsetWidth; sh = photosWin.offsetHeight;
-    e.preventDefault();
-  });
-  window.addEventListener('mousemove', e => {
-    if (!resizing) return;
-    photosWin.style.width  = Math.max(500, sw + e.clientX - sx) + 'px';
-    photosWin.style.height = Math.max(340, sh + e.clientY - sy) + 'px';
-  });
-  window.addEventListener('mouseup', () => { resizing = false; });
+// drag-resize window
+(function(){
+  const h=document.getElementById('pw-resize');
+  let r=false,sx=0,sy=0,sw=0,sh=0;
+  h.addEventListener('mousedown',e=>{ if(photosMax) return; r=true; sx=e.clientX; sy=e.clientY; sw=photosWin.offsetWidth; sh=photosWin.offsetHeight; e.preventDefault(); });
+  window.addEventListener('mousemove',e=>{ if(!r) return; photosWin.style.width=Math.max(500,sw+e.clientX-sx)+'px'; photosWin.style.height=Math.max(340,sh+e.clientY-sy)+'px'; });
+  window.addEventListener('mouseup',()=>{ r=false; });
 })();
 
-// toolbar btn highlight
-document.querySelectorAll('.pw-toolbar-btn').forEach(btn => {
-  btn.addEventListener('click', () => {
-    document.querySelectorAll('.pw-toolbar-btn').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-  });
+document.querySelectorAll('.pw-toolbar-btn').forEach(btn=>{
+  btn.addEventListener('click',()=>{ document.querySelectorAll('.pw-toolbar-btn').forEach(b=>b.classList.remove('active')); btn.classList.add('active'); });
+});
+document.querySelectorAll('.pw-sidebar-item').forEach(item=>{
+  item.addEventListener('click',()=>{ document.querySelectorAll('.pw-sidebar-item').forEach(i=>i.classList.remove('active')); item.classList.add('active'); });
 });
 
-// sidebar item highlight
-document.querySelectorAll('.pw-sidebar-item').forEach(item => {
-  item.addEventListener('click', () => {
-    document.querySelectorAll('.pw-sidebar-item').forEach(i => i.classList.remove('active'));
-    item.classList.add('active');
-  });
-});
+// ══════════════════════════════════════════════════════
+// p5.js — isometric blocks with gradient colour stripes,
+//          white fades, weird shapes, black outlines
+// ══════════════════════════════════════════════════════
+new p5(function(p){
+  const R   = (lo,hi)=>lo+Math.random()*(hi-lo);
+  const Ri  = (lo,hi)=>Math.round(R(lo,hi));
+  const pick= arr=>arr[Math.floor(Math.random()*arr.length)];
 
-// ─────────────────────────────────────────────────────────────────────
-// p5.js — 3D isometric cube wave (unchanged, larger grid)
-// ─────────────────────────────────────────────────────────────────────
-new p5(function(p) {
-  const R = (lo, hi) => lo + Math.random() * (hi - lo);
+  // ── Grid covers full screen ──────────────────────
+  const COLS = Ri(30,50), ROWS = Ri(28,46);
+  const S    = R(22,52);
+  const SPEED= R(0.004,0.018);
+  const OX   = R(-0.30,0.30), OY = R(-0.20,0.25);
 
-  const COLS = Math.round(R(20, 30));
-  const ROWS = Math.round(R(17, 26));
-  const S    = R(34, 46);
-
-  const W = [
-    { freqX: R(1.4,3.0), freqY: R(0.0,0.5), freqD: R(0.0,0.4), speedT: R(0.7,1.4),  amp: R(0.3,0.6),  signT:  1 },
-    { freqX: R(0.0,0.5), freqY: R(1.4,3.0), freqD: R(0.0,0.4), speedT: R(0.6,1.2),  amp: R(0.2,0.45), signT: -1 },
-    { freqX: R(1.2,2.8), freqY: R(1.2,2.8), freqD: R(0.0,0.3), speedT: R(0.4,0.9),  amp: R(0.15,0.35),signT:  1 },
-    { freqX: R(0.0,0.3), freqY: R(0.0,0.3), freqD: R(1.8,3.5), speedT: R(0.9,1.6),  amp: R(0.2,0.5),  signT: -1 },
+  // ── Colour stripes: 2-5 diagonal bands of strong colour ──
+  // Each stripe is defined by a direction angle + position
+  // Cells blend toward stripe colour based on projection distance
+  const STRONG = [
+    [255,210,40],   // yellow
+    [40,140,255],   // blue
+    [255,60,110],   // red-pink
+    [60,210,150],   // teal
+    [180,60,255],   // purple
+    [255,130,40],   // orange
+    [40,200,100],   // green
+    [255,80,200],   // magenta
+    [40,180,255],   // sky
+    [255,200,60],   // gold
   ];
-  const totalAmp = W.reduce((s, w) => s + w.amp, 0);
-  const CY_FRAC  = R(0.28, 0.42);
-  const H_MIN    = R(1, 4);
-  const H_MAX    = R(S * 2.0, S * 3.4);
-  const FX       = R(0.3, 0.7);
-  const FY       = R(0.3, 0.7);
-  let t = 0;
-  const SPEED    = R(0.013, 0.023);
 
-  function isoX(col, row) { return (col - row) * (S * 0.866); }
-  function isoY(col, row, h) { return (col + row) * (S * 0.5) - h; }
+  // Pick 2-4 stripe colours
+  const NS = Ri(2,4);
+  const shuffled = [...STRONG].sort(()=>Math.random()-0.5);
+  const stripeColors = shuffled.slice(0, NS);
 
-  function drawCube(cx, cy, col, row, h) {
-    const hw = S * 0.866, hh = S * 0.5;
-    const x  = cx + isoX(col, row);
-    const y  = cy + isoY(col, row, h);
-    const lift = p.map(h, 0, S * 2.5, 0, 1);
+  // Each stripe: a direction (angle) and a phase offset (0-1)
+  const stripes = stripeColors.map((col,i)=>({
+    col,
+    angle: R(0, Math.PI),           // stripe band direction
+    phase: R(0,1),                  // where the stripe sits across the grid
+    width: R(0.12,0.32),            // fraction of grid covered by full-colour
+    fade:  R(0.10,0.25),            // fade-out width on each side
+  }));
 
-    p.strokeWeight(0.6);
-    p.stroke(0, 0, 0, 140);
+  // White "islands" — random regions that fade to pure white
+  const NW_ZONES = Ri(1,4);
+  const whiteZones = [];
+  for(let i=0;i<NW_ZONES;i++) whiteZones.push({
+    x: R(0,1), y: R(0,1),
+    r: R(0.08,0.22),
+    soft: R(0.06,0.14),
+  });
 
-    p.fill(p.lerp(232,255,lift), p.lerp(230,253,lift), p.lerp(228,250,lift));
-    p.beginShape();
-    p.vertex(x,    y);      p.vertex(x+hw, y+hh);
-    p.vertex(x,    y+hh*2); p.vertex(x-hw, y+hh);
-    p.endShape(p.CLOSE);
+  // ── Cell colour function ──────────────────────────
+  // Returns [r,g,b] for a cell at (nx,ny) normalized position
+  // Base is off-white; stripes tint strongly; white zones pull to 255
+  function cellColor(nx, ny, faceAdjust) {
+    let r=238,g=236,b=232; // base off-white
 
-    p.fill(p.lerp(185,210,lift), p.lerp(183,208,lift), p.lerp(181,205,lift));
-    p.beginShape();
-    p.vertex(x-hw, y+hh);   p.vertex(x, y+hh*2);
-    p.vertex(x,    y+hh*2+S); p.vertex(x-hw, y+hh+S);
-    p.endShape(p.CLOSE);
+    // Project cell onto each stripe axis
+    for(const s of stripes){
+      const proj = nx*Math.cos(s.angle) + ny*Math.sin(s.angle);
+      // normalise proj to 0-1 range
+      const pn = (proj % 1 + 1) % 1;
+      // distance from stripe phase centre (wrap)
+      let dist = Math.abs(pn - s.phase);
+      if(dist > 0.5) dist = 1 - dist;
+      // strength: 1 at centre, 0 outside fade zone
+      const half = s.width/2 + s.fade;
+      if(dist > half) continue;
+      let strength;
+      if(dist <= s.width/2) strength = 1;
+      else strength = 1 - (dist - s.width/2) / s.fade;
+      strength = strength * strength * (3 - 2*strength); // smoothstep
 
-    p.fill(p.lerp(205,230,lift), p.lerp(203,228,lift), p.lerp(200,225,lift));
-    p.beginShape();
-    p.vertex(x+hw, y+hh);   p.vertex(x, y+hh*2);
-    p.vertex(x,    y+hh*2+S); p.vertex(x+hw, y+hh+S);
-    p.endShape(p.CLOSE);
+      // apply face dimming
+      const fa = faceAdjust ?? 1;
+      r = r + (s.col[0]*fa - r) * strength * 0.88;
+      g = g + (s.col[1]*fa - g) * strength * 0.88;
+      b = b + (s.col[2]*fa - b) * strength * 0.88;
+    }
+
+    // White zone fade-out
+    for(const wz of whiteZones){
+      const d = Math.hypot(nx - wz.x, ny - wz.y);
+      if(d >= wz.r + wz.soft) continue;
+      let wt;
+      if(d <= wz.r) wt = 1;
+      else wt = 1 - (d - wz.r) / wz.soft;
+      wt = wt*wt*(3-2*wt);
+      r = r + (255 - r)*wt;
+      g = g + (255 - g)*wt;
+      b = b + (255 - b)*wt;
+    }
+
+    return [Math.min(255,r), Math.min(255,g), Math.min(255,b)];
   }
 
-  p.setup = function() {
-    const cnv = p.createCanvas(p.windowWidth, p.windowHeight);
-    cnv.parent('p5-canvas');
-    p.frameRate(30);
-  };
-  p.windowResized = function() { p.resizeCanvas(p.windowWidth, p.windowHeight); };
+  // ── Wave layers ──────────────────────────────────
+  const NWL=Ri(4,8), W=[];
+  for(let i=0;i<NWL;i++) W.push({
+    fx:R(0,4.2),fy:R(0,4.2),fd:R(0,4.5),
+    st:R(0.2,1.8),amp:R(0.1,0.75),
+    sg:Math.random()<0.5?1:-1,ph:R(0,Math.PI*2)
+  });
+  const TAMP=W.reduce((s,w)=>s+w.amp,0);
 
-  p.draw = function() {
-    p.background(238, 236, 232);
-    t += SPEED;
-    const cx = p.width * 0.5;
-    const cy = p.height * CY_FRAC;
+  const NF=Ri(1,4),FOCI=[];
+  for(let i=0;i<NF;i++) FOCI.push({x:R(-0.1,1.1),y:R(-0.1,1.1),w:R(0.3,1.1)});
 
-    for (let row = 0; row < ROWS; row++) {
-      for (let col = 0; col < COLS; col++) {
-        const nx = col / COLS, ny = row / ROWS;
-        const d  = p.dist(nx, ny, FX, FY);
-        let wave = 0;
-        for (const w of W) {
-          wave += p.sin(nx * p.TWO_PI * w.freqX + ny * p.TWO_PI * w.freqY +
-                        d  * p.TWO_PI * w.freqD + t  * w.speedT * w.signT) * w.amp;
-        }
-        const h = p.map(wave, -totalAmp, totalAmp, H_MIN, H_MAX);
-        drawCube(cx, cy, col - COLS / 2, row - ROWS / 2, h);
+  const H_MIN=R(-S*0.6,S*0.2), H_MAX=R(S*1.2,S*4.5);
+  // Black outlines — thin, always present
+  const SW_BASE = R(0.4,0.85);
+
+  // Special cell probabilities
+  const P_HOLE  = R(0,0.10), P_SPHERE=R(0,0.07);
+  const P_THIN  = R(0,0.12), P_GIANT =R(0,0.07), P_VOID=R(0,0.04);
+
+  // Overlays
+  const HAS_DONUT=Math.random()<0.35,DCX=R(0.2,0.8),DCY=R(0.2,0.8),DOR=R(0.12,0.26),DIR2=R(0.04,0.09);
+  const HAS_SNAKE=Math.random()<0.28,SLEN=Ri(6,20);
+  const HAS_ISLAND=Math.random()<0.38,ICX=R(0.1,0.9),ICY=R(0.1,0.9),IR=R(0.05,0.18);
+
+  const cellType=[],cellScale=[];
+  const snakeCells=new Set();
+  if(HAS_SNAKE){
+    let sc=Ri(0,COLS-1),sr=Ri(0,ROWS-1);
+    for(let i=0;i<SLEN;i++){
+      snakeCells.add(`${sc},${sr}`);
+      const d=pick([[1,0],[-1,0],[0,1],[0,-1],[1,1],[-1,-1]]);
+      sc=Math.max(0,Math.min(COLS-1,sc+d[0]));
+      sr=Math.max(0,Math.min(ROWS-1,sr+d[1]));
+    }
+  }
+
+  let t=0;
+  function isoX(c,r){ return(c-r)*(S*0.866); }
+  function isoY(c,r,h){ return(c+r)*(S*0.5)-h; }
+
+  function drawCube(cx,cy,col,row,h,sc,nx,ny){
+    const ss=S*sc, hw=ss*0.866, hh=ss*0.5;
+    const x=cx+isoX(col,row), y=cy+isoY(col,row,h);
+    const l=p.map(h,H_MIN,H_MAX,0,1);
+    const ch=Math.max(1.5,h*0.82);
+    const bright=0.88+l*0.18;
+
+    const [tr,tg,tb]=cellColor(nx,ny).map(v=>v*bright);
+    const [lr,lg,lb]=cellColor(nx,ny,0.75).map(v=>v*bright);
+    const [rr,rg,rb]=cellColor(nx,ny,0.87).map(v=>v*bright);
+
+    // BLACK outline, always visible
+    p.strokeWeight(SW_BASE); p.stroke(0,0,0, p.lerp(100,170,l));
+
+    p.fill(tr,tg,tb);
+    p.beginShape();p.vertex(x,y);p.vertex(x+hw,y+hh);p.vertex(x,y+hh*2);p.vertex(x-hw,y+hh);p.endShape(p.CLOSE);
+    p.fill(lr,lg,lb);
+    p.beginShape();p.vertex(x-hw,y+hh);p.vertex(x,y+hh*2);p.vertex(x,y+hh*2+ch);p.vertex(x-hw,y+hh+ch);p.endShape(p.CLOSE);
+    p.fill(rr,rg,rb);
+    p.beginShape();p.vertex(x+hw,y+hh);p.vertex(x,y+hh*2);p.vertex(x,y+hh*2+ch);p.vertex(x+hw,y+hh+ch);p.endShape(p.CLOSE);
+  }
+
+  function drawHole(cx,cy,col,row,h,nx,ny){
+    const hw=S*0.866,hh=S*0.5;
+    const x=cx+isoX(col,row),y=cy+isoY(col,row,h);
+    const dep=Math.max(6,Math.abs(h)*0.5+14);
+    const [zr,zg,zb]=cellColor(nx,ny,1);
+    // Dark version of local colour
+    const dr=zr*0.10,dg=zg*0.10,db=zb*0.10;
+    p.strokeWeight(SW_BASE*0.6); p.stroke(0,0,0,190);
+    p.fill(dr,dg,db,240);
+    p.beginShape();p.vertex(x,y);p.vertex(x+hw,y+hh);p.vertex(x,y+hh*2);p.vertex(x-hw,y+hh);p.endShape(p.CLOSE);
+    p.fill(Math.max(0,dr-6),Math.max(0,dg-6),Math.max(0,db-6),252);
+    p.beginShape();p.vertex(x-hw,y+hh);p.vertex(x,y+hh*2);p.vertex(x,y+hh*2+dep);p.vertex(x-hw,y+hh+dep);p.endShape(p.CLOSE);
+    p.fill(dr+12,dg+12,db+12,220);
+    p.beginShape();p.vertex(x+hw,y+hh);p.vertex(x,y+hh*2);p.vertex(x,y+hh*2+dep);p.vertex(x+hw,y+hh+dep);p.endShape(p.CLOSE);
+  }
+
+  function drawSphere(cx,cy,col,row,h,nx,ny){
+    const x=cx+isoX(col,row),y=cy+isoY(col,row,h);
+    const l=p.map(h,H_MIN,H_MAX,0,1),r=S*0.50;
+    const bright=0.88+l*0.18;
+    const [cr,cg,cb]=cellColor(nx,ny).map(v=>v*bright);
+    p.noStroke();p.fill(0,0,0,15);p.ellipse(x,y+r+S*0.22,r*1.85,r*0.42);
+    p.strokeWeight(SW_BASE*0.55);p.stroke(0,0,0,100);
+    p.fill(cr,cg,cb);p.ellipse(x,y,r*2,r*1.26);
+    p.noStroke();p.fill(255,255,255,60);p.ellipse(x-r*0.16,y-r*0.19,r*0.58,r*0.37);
+  }
+
+  function drawThin(cx,cy,col,row,h,nx,ny){
+    const hw=S*0.866,hh=S*0.5;
+    const x=cx+isoX(col,row),y=cy+isoY(col,row,h);
+    const l=p.map(h,H_MIN,H_MAX,0,1),sl=p.lerp(1,3.8,l);
+    const bright=0.88+l*0.18;
+    const [tr,tg,tb]=cellColor(nx,ny).map(v=>v*bright);
+    const [lr,lg,lb]=cellColor(nx,ny,0.75).map(v=>v*bright);
+    const [rr,rg,rb]=cellColor(nx,ny,0.87).map(v=>v*bright);
+    p.strokeWeight(SW_BASE*0.45);p.stroke(0,0,0,100);
+    p.fill(tr,tg,tb);
+    p.beginShape();p.vertex(x,y);p.vertex(x+hw,y+hh);p.vertex(x,y+hh*2);p.vertex(x-hw,y+hh);p.endShape(p.CLOSE);
+    p.fill(lr,lg,lb);
+    p.beginShape();p.vertex(x-hw,y+hh);p.vertex(x,y+hh*2);p.vertex(x,y+hh*2+sl);p.vertex(x-hw,y+hh+sl);p.endShape(p.CLOSE);
+    p.fill(rr,rg,rb);
+    p.beginShape();p.vertex(x+hw,y+hh);p.vertex(x,y+hh*2);p.vertex(x,y+hh*2+sl);p.vertex(x+hw,y+hh+sl);p.endShape(p.CLOSE);
+  }
+
+  p.setup=function(){
+    const cnv=p.createCanvas(p.windowWidth,p.windowHeight);
+    cnv.parent('p5-canvas');p.frameRate(30);
+    for(let r=0;r<ROWS;r++){
+      cellType[r]=[];cellScale[r]=[];
+      for(let c=0;c<COLS;c++){
+        const nx=c/COLS,ny=r/ROWS;
+        const inDonut=HAS_DONUT&&(()=>{const d=Math.hypot(nx-DCX,ny-DCY);return d>DIR2&&d<DOR;})();
+        const inSnake=HAS_SNAKE&&snakeCells.has(`${c},${r}`);
+        const inIsland=HAS_ISLAND&&Math.hypot(nx-ICX,ny-ICY)<IR;
+        let type='cube',sc=1;
+        if(Math.random()<P_VOID)        type='void';
+        else if(inDonut||inSnake)       type='hole';
+        else if(Math.random()<P_HOLE)   type='hole';
+        else if(Math.random()<P_SPHERE) type='sphere';
+        else if(Math.random()<P_THIN)   type='thin';
+        if(inIsland&&type==='cube')     sc=R(1.5,3.6);
+        else if(Math.random()<P_GIANT)  sc=R(1.8,4.0);
+        else if(Math.random()<0.16)     sc=R(0.24,0.72);
+        cellType[r][c]=type;cellScale[r][c]=sc;
       }
+    }
+  };
+
+  p.windowResized=function(){p.resizeCanvas(p.windowWidth,p.windowHeight);};
+
+  p.draw=function(){
+    p.background(238,236,232);
+    t+=SPEED;
+    const cx=p.width*(0.5+OX), cy=p.height*(0.44+OY);
+    for(let row=0;row<ROWS;row++) for(let col=0;col<COLS;col++){
+      if(cellType[row]?.[col]==='void') continue;
+      const nx=col/COLS,ny=row/ROWS;
+      let d=0;for(const f of FOCI) d+=Math.hypot(nx-f.x,ny-f.y)*f.w;d/=NF;
+      let wave=0;
+      for(const w of W) wave+=p.sin(nx*p.TWO_PI*w.fx+ny*p.TWO_PI*w.fy+d*p.TWO_PI*w.fd+t*w.st*w.sg+w.ph)*w.amp;
+      const h=p.map(wave,-TAMP,TAMP,H_MIN,H_MAX);
+      const sc=cellScale[row]?.[col]??1;
+      const tp=cellType[row]?.[col]??'cube';
+      if(tp==='hole')        drawHole  (cx,cy,col-COLS/2,row-ROWS/2,h,nx,ny);
+      else if(tp==='sphere') drawSphere(cx,cy,col-COLS/2,row-ROWS/2,h,nx,ny);
+      else if(tp==='thin')   drawThin  (cx,cy,col-COLS/2,row-ROWS/2,h,nx,ny);
+      else                   drawCube  (cx,cy,col-COLS/2,row-ROWS/2,h,sc,nx,ny);
     }
   };
 });
