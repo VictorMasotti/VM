@@ -23,6 +23,7 @@
 }
 
 * { cursor: none !important; }
+textarea, input, button, a { cursor: none !important; }
 
 body {
   width:100vw; height:100vh; overflow:hidden;
@@ -45,7 +46,7 @@ body {
 #cursor-dot.big svg {
   transform:scale(6); opacity:0.60;
   filter:drop-shadow(0 7px 16px rgba(0,0,0,0.42));
-  transition:transform 0.22s cubic-bezier(0.0,0,0.2,1), opacity 0.15s ease;
+  transition:transform 0.40s cubic-bezier(0.0,0,0.2,1), opacity 0.28s ease;
 }
 
 .menubar {
@@ -91,7 +92,6 @@ body {
   box-shadow:0 8px 32px rgba(0,0,0,0.12),0 1px 4px rgba(0,0,0,0.05),
              inset 0 1px 0 rgba(255,255,255,0.92),inset 0 0 0 0.5px rgba(255,255,255,0.45);
   overflow:hidden; box-sizing:border-box;
-  /* flex so inner content can fill height */
   display:flex; flex-direction:column;
   transition:left .36s cubic-bezier(.34,1.2,.64,1),
              top  .36s cubic-bezier(.34,1.2,.64,1),
@@ -117,6 +117,110 @@ body {
 .cal-day { font-size:clamp(9px,0.7vw,12px); border-radius:50%; width:clamp(14px,1.4vw,20px); height:clamp(14px,1.4vw,20px); display:flex; align-items:center; justify-content:center; margin:0 auto; color:#222; }
 .cal-day.today { background:#ff3b30; font-weight:600; color:white; }
 .cal-day.empty { opacity:0; }
+
+/* ── MUSIC WIDGET ── */
+.widget-musicw {
+  display:flex; flex-direction:column; align-items:center;
+  justify-content:center;
+  height:100%; gap:6px; padding:2px 0;
+}
+/* art: 80% of HEIGHT, square — driven by height not width */
+.wmu-art {
+  position:relative;
+  height:80%;
+  aspect-ratio:1/1;   /* width follows height = square */
+  max-width:calc(100% - 8px); /* never overflow widget horizontally */
+  border-radius:10px; overflow:hidden;
+  box-shadow:0 6px 18px rgba(0,0,0,0.25);
+  flex-shrink:0;
+}
+.wmu-art img { width:100%; height:100%; object-fit:cover; display:block; }
+/* play overlay — sits on top of image */
+.wmu-play-overlay {
+  position:absolute; inset:0;
+  display:flex; align-items:center; justify-content:center;
+  background:rgba(255,255,255,0);
+  transition:background 0.3s ease;
+  border-radius:10px;
+}
+.wmu-play-overlay.flash {
+  animation:wmu-flash 0.55s ease-out forwards;
+}
+@keyframes wmu-flash {
+  0%   { background:rgba(255,255,255,0); }
+  25%  { background:rgba(255,255,255,0.38); }
+  60%  { background:rgba(255,255,255,0.18); }
+  100% { background:rgba(255,255,255,0); }
+}
+.wmu-play-icon {
+  font-size:clamp(18px,2vw,28px);
+  color:rgba(255,255,255,0.9);
+  text-shadow:0 2px 8px rgba(0,0,0,0.5);
+  opacity:0; transform:scale(0.7);
+  transition:opacity 0.18s ease, transform 0.18s cubic-bezier(0.34,1.2,0.64,1);
+  pointer-events:none; user-select:none;
+}
+.wmu-play-icon.show { opacity:1; transform:scale(1); }
+/* text row below art */
+.wmu-bottom {
+  display:flex; flex-direction:column; align-items:center;
+  width:90%; flex-shrink:0; gap:1px;
+}
+.wmu-title { font-size:clamp(9px,0.8vw,12px); font-weight:600; color:#111; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; width:100%; text-align:center; }
+.wmu-sub   { font-size:clamp(8px,0.65vw,10px); color:var(--text-dim); text-align:center; }
+
+/* ── NOTES WIDGET ── */
+.widget-notes-w {
+  display:flex; flex-direction:column; height:100%; gap:5px;
+}
+.wnotes-header { font-size:clamp(9px,0.75vw,11px); font-weight:700; text-transform:uppercase; letter-spacing:0.06em; color:var(--text-dim); }
+.wnotes-area {
+  flex:1; width:100%; resize:none; border:none; background:transparent;
+  font-family:-apple-system,'Helvetica Neue',sans-serif;
+  font-size:clamp(10px,0.9vw,13px); color:#1a1a1a; line-height:1.5;
+  outline:none; overflow-y:auto;
+  cursor:text !important; /* override global cursor:none rule for text input */
+  pointer-events:all !important;
+  user-select:text !important;
+  -webkit-user-select:text !important;
+}
+.wnotes-area::placeholder { color:rgba(0,0,0,0.25); }
+
+/* ── PHOTO LIGHTBOX (inside photos window) ── */
+#pw-lightbox {
+  position:absolute; inset:0; z-index:20;
+  background:rgba(0,0,0,0.90); border-radius:0 0 12px 12px;
+  display:flex; align-items:center; justify-content:center;
+  opacity:0; pointer-events:none;
+  transition:opacity 0.24s ease;
+}
+#pw-lightbox.open { opacity:1; pointer-events:all; }
+#pw-lightbox img {
+  max-width:88%; max-height:84%; border-radius:6px;
+  box-shadow:0 12px 40px rgba(0,0,0,0.6);
+  transform:scale(0.9);
+  transition:transform 0.3s cubic-bezier(0.34,1.2,0.64,1);
+  object-fit:contain;
+}
+#pw-lightbox.open img { transform:scale(1); }
+#pw-lb-close {
+  position:absolute; top:10px; right:12px;
+  color:rgba(255,255,255,0.8); font-size:18px;
+  background:rgba(255,255,255,0.14); border-radius:50%;
+  width:32px; height:32px; display:flex; align-items:center; justify-content:center;
+  transition:background 0.12s;
+}
+#pw-lb-close:hover { background:rgba(255,255,255,0.25); }
+#pw-lb-prev, #pw-lb-next {
+  position:absolute; top:50%; transform:translateY(-50%);
+  color:rgba(255,255,255,0.8); font-size:20px;
+  background:rgba(255,255,255,0.12); border-radius:50%;
+  width:36px; height:36px; display:flex; align-items:center; justify-content:center;
+  transition:background 0.12s;
+}
+#pw-lb-prev { left:10px; }
+#pw-lb-next { right:10px; }
+#pw-lb-prev:hover, #pw-lb-next:hover { background:rgba(255,255,255,0.22); }
 
 /* ── Plus button ── */
 #widget-add-btn {
@@ -153,15 +257,30 @@ body {
   border-bottom:1px solid rgba(0,0,0,0.05); transition:background 0.1s;
 }
 .dd-item:last-child { border-bottom:none; }
-.dd-item:hover { background:rgba(0,0,0,0.05); }
+.dd-item:hover { background:rgba(0,0,0,0.06); }
+.dd-item:active, .dd-item.pressed {
+  background:rgba(0,0,0,0.13);
+  transform:scale(0.96);
+  transition:transform 0.08s ease, background 0.08s ease;
+}
+.dd-item { transition:background 0.12s, transform 0.12s; }
 .dd-icon { font-size:16px; width:22px; text-align:center; }
+
+/* Widget fade-in spawn */
+@keyframes widget-spawn {
+  from { opacity:0; transform:scale(0.7); }
+  to   { opacity:1; transform:scale(1); }
+}
+.widget.spawning {
+  animation:widget-spawn 0.38s cubic-bezier(0.34,1.28,0.64,1) forwards;
+}
 
 /* ── DOCK ── */
 .dock-container { position:absolute; bottom:6px; left:50%; transform:translateX(-50%); z-index:200; }
 .dock {
   display:flex; align-items:flex-end; gap:10px;
   background:var(--dock-bg); backdrop-filter:var(--blur); -webkit-backdrop-filter:var(--blur);
-  border:1px solid var(--dock-border); border-radius:20px; padding:8px 14px 7px;
+  border:1px solid var(--dock-border); border-radius:20px; padding:8px 10px 7px;
   box-shadow:0 4px 20px rgba(0,0,0,0.13),0 1px 3px rgba(0,0,0,0.07),
              inset 0 1px 0 rgba(255,255,255,0.88),inset 0 -1px 0 rgba(255,255,255,0.15);
   position:relative;
@@ -456,9 +575,11 @@ body {
 <div class="desktop" id="desktop-area">
   <div id="widget-add-btn" onclick="toggleDropdown(event)">＋</div>
   <div id="widget-dropdown">
-    <div class="dd-item" onclick="toggleDropdown(event)"><span class="dd-icon">🕐</span> Clock</div>
-    <div class="dd-item" onclick="toggleDropdown(event)"><span class="dd-icon">⛅</span> Weather</div>
-    <div class="dd-item" onclick="toggleDropdown(event)"><span class="dd-icon">📅</span> Calendar</div>
+    <div class="dd-item" onclick="ddAction('clock',this)"><span class="dd-icon">🕐</span> Clock</div>
+    <div class="dd-item" onclick="ddAction('weather',this)"><span class="dd-icon">⛅</span> Weather</div>
+    <div class="dd-item" onclick="ddAction('calendar',this)"><span class="dd-icon">📅</span> Calendar</div>
+    <div class="dd-item" onclick="ddAction('musicw',this)"><span class="dd-icon">🎵</span> Music Player</div>
+    <div class="dd-item" onclick="ddAction('notes',this)"><span class="dd-icon">📝</span> Notes</div>
   </div>
   <div id="widget-grid"></div>
 </div>
@@ -539,6 +660,13 @@ body {
     <div class="pw-main" id="pw-main"></div>
   </div>
   <div class="pw-resize" id="pw-resize"></div>
+  <!-- Inline photo lightbox — inside the window -->
+  <div id="pw-lightbox">
+    <div id="pw-lb-close">✕</div>
+    <div id="pw-lb-prev">‹</div>
+    <img id="pw-lb-img" src="" alt="">
+    <div id="pw-lb-next">›</div>
+  </div>
 </div>
 
 <script>
@@ -546,7 +674,7 @@ body {
 (function(){
   const dot=document.getElementById('cursor-dot');
   let px=0,py=0,lastT=0,bigTimer=null;
-  const THRESH=14,HOLD=700;
+  const THRESH=18,HOLD=700; // higher threshold = needs faster move to trigger
   document.addEventListener('mousemove',e=>{
     const now=performance.now(),dt=Math.max(1,now-lastT);
     const dx=e.clientX-px,dy=e.clientY-py;
@@ -669,6 +797,27 @@ function dockBounce(el){el.classList.remove('bounce');void el.offsetWidth;el.cla
           <div class="cal-day">29</div><div class="cal-day">30</div><div class="cal-day">31</div>
         </div>
       </div>`;
+    if(type==='musicw'){
+      const muPairs=[{image:'breakTHROUGH.png',title:'breakTHROUGH'},{image:'mizu.png',title:'mizu'}];
+      const mp=muPairs[Math.floor(Math.random()*muPairs.length)];
+      return `<div class="widget-musicw">
+        <div class="wmu-art" data-playing="false" onclick="wmuToggle(this,event)">
+          <img src="${mp.image}" alt="art">
+          <div class="wmu-play-overlay">
+            <span class="wmu-play-icon">▶</span>
+          </div>
+        </div>
+        <div class="wmu-bottom">
+          <div class="wmu-title">${mp.title}</div>
+          <div class="wmu-sub">Victor (Masotti)</div>
+        </div>
+      </div>`;
+    }
+    if(type==='notes') return `
+      <div class="widget-notes-w">
+        <div class="wnotes-header">Notes</div>
+        <textarea class="wnotes-area" placeholder="Start typing…"></textarea>
+      </div>`;
     return '';
   }
 
@@ -708,6 +857,8 @@ function dockBounce(el){el.classList.remove('bounce');void el.offsetWidth;el.cla
   function xy(e){return e.touches?{x:e.touches[0].clientX,y:e.touches[0].clientY}:{x:e.clientX,y:e.clientY};}
 
   function onDown(e){
+    // don't intercept interactive elements inside widgets
+    if(e.target.tagName==='TEXTAREA'||e.target.tagName==='INPUT'||e.target.isContentEditable) return;
     const el=e.target.closest('.widget');if(!el)return;
     e.preventDefault();
     drag=el;dragDef=DEFS.find(d=>d.id===el.id);dragMoved=false;
@@ -771,11 +922,151 @@ function dockBounce(el){el.classList.remove('bounce');void el.offsetWidth;el.cla
   window.addEventListener('resize',()=>place(false));
 
   requestAnimationFrame(build);
+
+  // Expose internals for ddAction/spawnWidget
+  window._DEFS=DEFS;
+  window.COLS=COLS;
+  window._elMap=elMap;
+  window._gridMetrics=gridMetrics;
+  window._cellPx=cellPx;
+  window._widgetHTML=widgetHTML;
 })();
 
 // ── DROPDOWN ──
 function toggleDropdown(e){e.stopPropagation();document.getElementById('widget-dropdown').classList.toggle('open');}
 document.addEventListener('click',()=>document.getElementById('widget-dropdown').classList.remove('open'));
+
+function ddAction(type, el){
+  // Press animation on the item
+  el.classList.add('pressed');
+  setTimeout(()=>el.classList.remove('pressed'), 200);
+
+  // Close dropdown
+  setTimeout(()=>{
+    document.getElementById('widget-dropdown').classList.remove('open');
+  }, 160);
+
+  // Spawn new widget after short delay (feels intentional)
+  setTimeout(()=>spawnWidget(type), 220);
+}
+
+function spawnWidget(type){
+  // Access DEFS and grid functions from widget grid closure via exposed API
+  const m=_gridMetrics();
+  const id='wg-'+Date.now();
+  const cw=2;
+  const ch=(type==='calendar'||type==='notes'||type==='musicw')?2:1;
+
+  // Find a free grid position — try from top-left row by row
+  let col=0, row=0, found=false;
+  outer: for(let r=0;r<m.maxRows;r++){
+    for(let c2=0;c2<=COLS-cw;c2++){
+      const candidate={col:c2,row:r,cw,ch};
+      const overlap=_DEFS.some(d=>!(candidate.col+cw<=d.col||d.col+d.cw<=candidate.col||candidate.row+ch<=d.row||d.row+d.ch<=candidate.row));
+      if(!overlap){col=c2;row=r;found=true;break outer;}
+    }
+  }
+  if(!found){col=0;row=0;} // fallback: place at origin
+
+  const def={id,type,col,row,cw,ch};
+  _DEFS.push(def);
+
+  // Build the DOM element
+  const el=document.createElement('div');
+  el.className='widget widget-'+type+' spawning';
+  el.id=id;
+  el.innerHTML=_widgetHTML(type);
+  el.style.display='flex';el.style.flexDirection='column';
+  const px=_cellPx(def,m);
+  el.style.left=px.x+'px';el.style.top=px.y+'px';
+  el.style.width=px.w+'px';el.style.height=px.h+'px';
+  el.style.zIndex='50';
+  document.getElementById('widget-grid').appendChild(el);
+  _elMap[id]=el;
+
+  // Remove spawning class after animation
+  el.addEventListener('animationend',()=>{
+    el.classList.remove('spawning');
+    el.style.zIndex='';
+  },{once:true});
+
+  // Update clock if needed
+  if(type==='clock') updateClock();
+}
+
+// ── MUSIC WIDGET PLAY/PAUSE ──
+const _wmuAudios={};
+function wmuToggle(artEl,e){
+  e.stopPropagation();
+  const widget=artEl.closest('.widget'); if(!widget) return;
+  const imgSrc=artEl.querySelector('img').src;
+  const base=imgSrc.split('/').pop().replace(/\.[^.]+$/,'');
+  const audioSrc=base==='breakTHROUGH'?'breakTHROUGH.mp3':'queso.mp3';
+  const id=widget.id;
+  if(!_wmuAudios[id]){ _wmuAudios[id]=new Audio(audioSrc); _wmuAudios[id].preload='auto'; }
+  const aud=_wmuAudios[id];
+  const overlay=artEl.querySelector('.wmu-play-overlay');
+  const icon=artEl.querySelector('.wmu-play-icon');
+  // flash animation
+  overlay.classList.remove('flash');
+  void overlay.offsetWidth;
+  overlay.classList.add('flash');
+  setTimeout(()=>overlay.classList.remove('flash'),600);
+  if(artEl.dataset.playing==='true'){
+    aud.pause();
+    artEl.dataset.playing='false';
+    icon.textContent='▶';
+    icon.classList.add('show');
+    setTimeout(()=>icon.classList.remove('show'),800);
+  } else {
+    // pause others
+    Object.entries(_wmuAudios).forEach(([k,a])=>{
+      if(k!==id){ a.pause();
+        const other=document.querySelector('#'+k+' .wmu-art');
+        if(other){ other.dataset.playing='false';
+          const oi=other.querySelector('.wmu-play-icon');
+          if(oi){oi.textContent='▶';oi.classList.add('show');setTimeout(()=>oi.classList.remove('show'),600);}
+        }
+      }
+    });
+    aud.play().catch(()=>{});
+    artEl.dataset.playing='true';
+    icon.textContent='⏸';
+    icon.classList.add('show');
+    setTimeout(()=>icon.classList.remove('show'),900);
+  }
+}
+
+// ── PHOTO LIGHTBOX (inside photos window) ──
+(function(){
+  const lb=document.getElementById('pw-lightbox');
+  const img=document.getElementById('pw-lb-img');
+  let allImgs=[],curIdx=0;
+  function openLB(imgs,idx){ allImgs=imgs;curIdx=idx;img.src=allImgs[curIdx];lb.classList.add('open'); }
+  function closeLB(){ lb.classList.remove('open'); }
+  function prev(){ curIdx=(curIdx-1+allImgs.length)%allImgs.length;img.src=allImgs[curIdx]; }
+  function next(){ curIdx=(curIdx+1)%allImgs.length;img.src=allImgs[curIdx]; }
+  document.getElementById('pw-lb-close').addEventListener('click',e=>{e.stopPropagation();closeLB();});
+  document.getElementById('pw-lb-prev').addEventListener('click',e=>{e.stopPropagation();prev();});
+  document.getElementById('pw-lb-next').addEventListener('click',e=>{e.stopPropagation();next();});
+  lb.addEventListener('click',closeLB);
+  img.addEventListener('click',e=>e.stopPropagation());
+  document.addEventListener('keydown',e=>{
+    if(!lb.classList.contains('open'))return;
+    if(e.key==='ArrowLeft')prev();
+    if(e.key==='ArrowRight')next();
+    if(e.key==='Escape')closeLB();
+  });
+  // delegate clicks on thumbnails inside pw-main
+  document.addEventListener('click',e=>{
+    const thumb=e.target.closest('.pw-thumb');
+    if(!thumb)return;
+    const main=thumb.closest('#pw-main');if(!main)return;
+    const imgs=[...main.querySelectorAll('.pw-thumb img')].map(i=>i.src);
+    const idx=[...main.querySelectorAll('.pw-thumb')].indexOf(thumb);
+    openLB(imgs,idx);
+  });
+})();
 
 // ── PHOTOS WINDOW ──
 const photosWin=document.getElementById('photos-window');
