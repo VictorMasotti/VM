@@ -309,7 +309,8 @@ body {
 }
 .dock-icon:hover .dock-label { opacity:1; }
 .dock-separator { width:1px; height:32px; background:rgba(0,0,0,0.12); margin:0 2px; align-self:center; }
-.dock-dot { position:absolute; bottom:-5px; left:50%; transform:translateX(-50%); width:3px; height:3px; border-radius:50%; background:rgba(0,0,0,0.4); }
+.dock-dot { position:absolute; bottom:-5px; left:50%; transform:translateX(-50%); width:3px; height:3px; border-radius:50%; background:rgba(0,0,0,0.4); opacity:0; transition:opacity 0.3s ease; }
+.dock-icon.app-open .dock-dot { opacity:1; }
 .icon-finder   { background:linear-gradient(145deg,#5ac8fa,#007aff); }
 .icon-safari   { background:linear-gradient(145deg,#34aadc,#007aff); }
 .icon-messages { background:linear-gradient(145deg,#4cd964,#30b94d); }
@@ -538,6 +539,216 @@ body {
 }
 
 
+/* ── MENU DROPDOWNS (File / Edit) ── */
+.menu-dropdown {
+  position:fixed; top:28px; /* hair gap from menubar */
+  min-width:220px;
+  background:rgba(242,240,237,0.92);
+  backdrop-filter:blur(28px); -webkit-backdrop-filter:blur(28px);
+  border:1px solid rgba(0,0,0,0.13);
+  border-radius:8px;
+  box-shadow:0 8px 32px rgba(0,0,0,0.18), 0 2px 6px rgba(0,0,0,0.10);
+  z-index:9000; overflow:hidden;
+  opacity:0; pointer-events:none;
+  transform:scale(0.96) translateY(-4px);
+  transform-origin:top left;
+  transition:opacity 0.14s ease, transform 0.14s cubic-bezier(0.34,1.2,0.64,1);
+}
+.menu-dropdown.open {
+  opacity:1; pointer-events:all;
+  transform:scale(1) translateY(0);
+}
+/* File dropdown rows */
+.mdd-row {
+  display:flex; align-items:baseline; gap:8px;
+  padding:7px 14px; font-size:13px; color:#1a1a1a;
+  border-bottom:1px solid rgba(0,0,0,0.06);
+  line-height:1.4;
+}
+.mdd-row:last-child { border-bottom:none; }
+.mdd-label { font-weight:600; font-size:11px; color:rgba(0,0,0,0.4); min-width:60px; }
+.mdd-value { color:#1a1a1a; font-size:13px; }
+/* Edit dropdown — toggle rows */
+.mdd-toggle-row {
+  display:flex; align-items:center; justify-content:space-between;
+  padding:10px 14px; border-bottom:1px solid rgba(0,0,0,0.06);
+}
+.mdd-toggle-row:last-child { border-bottom:none; }
+.mdd-toggle-label { font-size:13px; color:#1a1a1a; font-weight:500; }
+.mdd-toggle-sub { font-size:11px; color:rgba(0,0,0,0.4); margin-top:1px; }
+/* iOS-style toggle switch */
+.ios-toggle { position:relative; width:44px; height:26px; flex-shrink:0; }
+.ios-toggle input { opacity:0; width:0; height:0; position:absolute; }
+.ios-slider {
+  position:absolute; inset:0; border-radius:13px;
+  background:#ccc;
+  transition:background 0.25s ease;
+  cursor:pointer;
+}
+.ios-slider::before {
+  content:''; position:absolute;
+  width:22px; height:22px; left:2px; top:2px;
+  border-radius:50%; background:white;
+  box-shadow:0 1px 4px rgba(0,0,0,0.25);
+  transition:transform 0.22s cubic-bezier(0.34,1.2,0.64,1);
+}
+.ios-toggle input:checked + .ios-slider { background:#34c759; }
+.ios-toggle input:checked + .ios-slider::before { transform:translateX(18px); }
+/* round-corners toggle uses blue */
+#toggle-round:checked + .ios-slider { background:#007aff; }
+/* night-mode toggle uses amber */
+#toggle-night:checked + .ios-slider { background:#ff9f0a; }
+
+/* Screen night-mode overlay */
+/* ── DARK MODE — Apple liquid glass ── */
+body.dark-mode {
+  /* CSS vars drive everything */
+  --widget-bg: rgba(40,40,44,0.72);
+  --widget-border: rgba(255,255,255,0.12);
+  --dock-bg: rgba(28,28,32,0.78);
+  --dock-border: rgba(255,255,255,0.12);
+  --menubar-bg: rgba(24,24,28,0.88);
+  --text: #f2f2f7;
+  --text-dim: rgba(255,255,255,0.50);
+  /* body bg: dark desaturated, not pure black */
+  background: #1c1c22;
+}
+/* Menubar: seamless glass, no white line */
+body.dark-mode .menubar {
+  background: rgba(24,24,28,0.88);
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+  border-top: 1px solid rgba(255,255,255,0.04);
+  box-shadow: 0 2px 18px rgba(0,0,0,0.5);
+}
+body.dark-mode .menu-item { color: #f2f2f7; }
+body.dark-mode .menu-item:hover { background: rgba(255,255,255,0.08); }
+body.dark-mode #menubar-time { color: rgba(255,255,255,0.75) !important; }
+/* Widgets: dark glass with subtle highlight */
+body.dark-mode .widget {
+  color: #f2f2f7;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.55),
+              inset 0 1px 0 rgba(255,255,255,0.10),
+              inset 0 0 0 0.5px rgba(255,255,255,0.07);
+}
+body.dark-mode .widget-clock .time,
+body.dark-mode #clock-time { color: #f2f2f7; }
+body.dark-mode .cal-day { color: #e0e0e5; }
+body.dark-mode .cal-day.today { background: #ff453a; color: white; }
+/* Dock: glass bar, no hard edges */
+body.dark-mode .dock {
+  background: rgba(28,28,32,0.78);
+  border: 1px solid rgba(255,255,255,0.10);
+  box-shadow: 0 4px 24px rgba(0,0,0,0.5),
+              inset 0 1px 0 rgba(255,255,255,0.12),
+              inset 0 -1px 0 rgba(0,0,0,0.3);
+}
+body.dark-mode .dock-separator { background: rgba(255,255,255,0.14); }
+body.dark-mode .dock-label { background: rgba(18,18,22,0.92); }
+/* Add widget button */
+body.dark-mode #widget-add-btn {
+  background: rgba(44,44,50,0.80);
+  border: 1px solid rgba(255,255,255,0.12);
+  color: #f2f2f7;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.08);
+}
+/* Dropdowns */
+body.dark-mode .menu-dropdown {
+  background: rgba(30,30,34,0.96);
+  border: 1px solid rgba(255,255,255,0.10);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.55);
+}
+body.dark-mode .mdd-row,
+body.dark-mode .mdd-toggle-row { border-bottom-color: rgba(255,255,255,0.07); }
+body.dark-mode .mdd-label { color: rgba(255,255,255,0.35); }
+body.dark-mode .mdd-value,
+body.dark-mode .mdd-toggle-label { color: #f2f2f7; }
+body.dark-mode .mdd-toggle-sub { color: rgba(255,255,255,0.35); }
+/* Widget dropdown (+ button) */
+body.dark-mode #widget-dropdown {
+  background: rgba(30,30,34,0.96);
+  border-color: rgba(255,255,255,0.10);
+}
+body.dark-mode .dd-item { color: #f2f2f7; border-bottom-color: rgba(255,255,255,0.07); }
+body.dark-mode .dd-item:hover { background: rgba(255,255,255,0.07); }
+/* Weather and notes text */
+body.dark-mode .widget-weather .location,
+body.dark-mode .widget-weather .condition,
+body.dark-mode .widget-weather .temp { color: #f2f2f7; }
+body.dark-mode .wnotes-area { color: #f2f2f7; }
+body.dark-mode .wnotes-area::placeholder { color: rgba(255,255,255,0.25); }
+body.dark-mode .wnotes-header { color: rgba(255,255,255,0.4); }
+
+/* ── DAY/NIGHT PILL TOGGLE ── */
+#daynight-toggle {
+  display:flex; align-items:center;
+  cursor:pointer; user-select:none; margin-right:2px;
+}
+#daynight-track {
+  position:relative;
+  width:30px; height:14px;   /* same height as text line */
+  border-radius:7px;
+  background:linear-gradient(135deg,#ffb347,#ffcc02);
+  border:1px solid rgba(0,0,0,0.15);
+  box-shadow:inset 0 1px 2px rgba(0,0,0,0.10);
+  transition:background 0.75s ease, border-color 0.75s ease, box-shadow 0.75s ease;
+  overflow:hidden;
+}
+#daynight-icons {
+  position:absolute; inset:0;
+  display:flex; align-items:center; justify-content:space-between;
+  padding:0 2px; font-size:7px; line-height:1;
+  pointer-events:none;
+}
+#daynight-sun  { opacity:1;  transition:opacity 0.5s ease; }
+#daynight-moon { opacity:0.35; transition:opacity 0.5s ease; }
+#daynight-knob {
+  position:absolute; top:1px; left:1px;
+  width:12px; height:12px; border-radius:50%;
+  background:white;
+  box-shadow:0 1px 3px rgba(0,0,0,0.30);
+  transition:transform 0.75s cubic-bezier(0.34,1.2,0.64,1), background 0.75s ease;
+}
+/* Dark state */
+body.dark-mode #daynight-track {
+  background:linear-gradient(135deg,#2e1a5e,#1a0a3a);
+  border-color:rgba(255,255,255,0.14);
+  box-shadow:inset 0 1px 2px rgba(0,0,0,0.4), 0 0 6px rgba(120,80,255,0.25);
+}
+body.dark-mode #daynight-knob {
+  transform:translateX(16px);
+  background:#c4b5fd;
+}
+body.dark-mode #daynight-sun  { opacity:0.3; }
+body.dark-mode #daynight-moon { opacity:1; }
+
+/* Full-page transition for dark mode */
+body, body * {
+  /* only transition colour-related props */
+}
+body {
+  transition:background 0.75s ease;
+}
+.menubar {
+  transition:background 0.75s ease, border-color 0.75s ease, box-shadow 0.75s ease;
+}
+.dock {
+  transition:background 0.75s ease, border-color 0.75s ease, box-shadow 0.75s ease, border-radius 0.3s ease;
+}
+.widget {
+  transition:background 0.75s ease, border-color 0.75s ease, box-shadow 0.75s ease,
+             left .36s cubic-bezier(.34,1.2,.64,1), top .36s cubic-bezier(.34,1.2,.64,1),
+             opacity 0.35s ease, visibility 0.35s ease;
+}
+.menu-item { transition:color 0.75s ease, background 0.08s, transform 0.08s; }
+#widget-add-btn { transition:background 0.75s ease, border-color 0.75s ease, color 0.75s ease, transform 0.12s, box-shadow 0.12s; }
+
+/* ── COLOUR FILTER OVERLAY ── */
+#cw-overlay {
+  position:fixed; inset:0; z-index:450;
+  pointer-events:none;
+  background:rgba(0,0,0,0);
+  transition:background 0.35s ease;
+}
 </style>
 </head>
 <body>
@@ -556,18 +767,108 @@ body {
   <div class="menubar-left">
     <div class="menubar-logo"><img src="south.png" alt="Logo"/></div>
     <span class="menu-item bold" onclick="window.open('https://victormasotti.com/','_blank')">Victor Masotti</span>
-    <span class="menu-item">File</span>
-    <span class="menu-item">Edit</span>
-    <span class="menu-item">View</span>
-    <span class="menu-item">Go</span>
+    <span class="menu-item" id="menu-file" onclick="toggleMenuDD('file',this)">File</span>
+    <span class="menu-item" id="menu-edit" onclick="toggleMenuDD('edit',this)">Edit</span>
+    <span class="menu-item" id="menu-view" onclick="toggleMenuDD('view',this)">Filter</span>
     <span class="menu-item" onclick="window.open('https://victormasotti.com/index2.html','_blank')">Previous Version</span>
-    <span class="menu-item">Tacos Banana Plumber Solution</span>
+    <span class="menu-item" onclick="window.open('https://www.cscassets.com/recipes/large_cknew/large_25946.jpg','_blank')">Tacos Banana Plumber Solution</span>
   </div>
   <div class="menubar-right">
-    <span class="status-icon">🔋</span>
-    <span class="status-icon">📶</span>
-    <span class="status-icon">🔍</span>
+    <div id="daynight-toggle" onclick="toggleDarkMode()" title="Toggle Dark Mode">
+      <div id="daynight-track">
+        <div id="daynight-icons">
+          <span id="daynight-sun">☀️</span>
+          <span id="daynight-moon">🌙</span>
+        </div>
+        <div id="daynight-knob"></div>
+      </div>
+    </div>
     <span class="menu-item" id="menubar-time" style="font-size:12px;opacity:0.75"></span>
+  </div>
+</div>
+
+<!-- FILE DROPDOWN -->
+<div class="menu-dropdown" id="dd-file">
+  <div class="mdd-row"><span class="mdd-label">Full name</span><span class="mdd-value">Victor Masotti</span></div>
+  <div class="mdd-row"><span class="mdd-label">Height</span><span class="mdd-value">175 cm &nbsp;/&nbsp; 5′9″</span></div>
+  <div class="mdd-row"><span class="mdd-label">Based</span><span class="mdd-value">London, UK</span></div>
+  <div class="mdd-row"><span class="mdd-label">Age</span><span class="mdd-value">19 &nbsp;<span style="color:rgba(0,0,0,0.4);font-size:11px">(20/09/2006)</span></span></div>
+  <div class="mdd-row"><span class="mdd-label">Languages</span><span class="mdd-value">Italian &amp; English</span></div>
+</div>
+
+<!-- EDIT DROPDOWN -->
+<div class="menu-dropdown" id="dd-edit">
+  <div class="mdd-toggle-row">
+    <div>
+      <div class="mdd-toggle-label">Rounder Corners</div>
+      <div class="mdd-toggle-sub">Increases widget border radius</div>
+    </div>
+    <label class="ios-toggle">
+      <input type="checkbox" id="toggle-round" onchange="applyRoundCorners(this.checked)">
+      <span class="ios-slider"></span>
+    </label>
+  </div>
+  <div class="mdd-toggle-row">
+    <div>
+      <div class="mdd-toggle-label">Eye Protection</div>
+      <div class="mdd-toggle-sub">Warm tone, reduces blue light</div>
+    </div>
+    <label class="ios-toggle">
+      <input type="checkbox" id="toggle-night" onchange="applyNightMode(this.checked)">
+      <span class="ios-slider"></span>
+    </label>
+  </div>
+  <div class="mdd-toggle-row">
+    <div>
+      <div class="mdd-toggle-label">Hide Widgets</div>
+      <div class="mdd-toggle-sub">Toggle all widgets on / off</div>
+    </div>
+    <label class="ios-toggle">
+      <input type="checkbox" id="toggle-hide-widgets" onchange="applyHideWidgets(this.checked)">
+      <span class="ios-slider"></span>
+    </label>
+  </div>
+  <div class="mdd-toggle-row">
+    <div>
+      <div class="mdd-toggle-label">Hide Taskbar</div>
+      <div class="mdd-toggle-sub">Show / hide the dock</div>
+    </div>
+    <label class="ios-toggle">
+      <input type="checkbox" id="toggle-hide-dock" onchange="applyHideDock(this.checked)">
+      <span class="ios-slider"></span>
+    </label>
+  </div>
+</div>
+
+
+
+<!-- FILTER DROPDOWN -->
+<div class="menu-dropdown" id="dd-view" style="min-width:240px">
+  <div style="padding:12px 14px 10px;border-bottom:1px solid rgba(0,0,0,0.06)">
+    <div class="mdd-toggle-label" style="margin-bottom:8px">Colour Filter</div>
+    <canvas id="color-wheel" width="170" height="170" style="display:block;margin:0 auto;border-radius:50%;cursor:crosshair;box-shadow:0 2px 10px rgba(0,0,0,0.15)"></canvas>
+    <div id="cw-preview" style="margin-top:8px;height:8px;border-radius:4px;background:transparent;transition:background 0.3s;border:1px solid rgba(0,0,0,0.08)"></div>
+    <div style="margin-top:5px;font-size:11px;color:rgba(0,0,0,0.4);text-align:center">Drag or click to pick colour</div>
+  </div>
+  <div class="mdd-toggle-row">
+    <div>
+      <div class="mdd-toggle-label">Strong Filter (50%)</div>
+      <div class="mdd-toggle-sub">Double the filter intensity</div>
+    </div>
+    <label class="ios-toggle">
+      <input type="checkbox" id="toggle-strong-filter" onchange="setFilterStrength(this.checked)">
+      <span class="ios-slider"></span>
+    </label>
+  </div>
+  <div class="mdd-toggle-row">
+    <div>
+      <div class="mdd-toggle-label">Remove Filter</div>
+      <div class="mdd-toggle-sub">Clear any applied colour</div>
+    </div>
+    <label class="ios-toggle">
+      <input type="checkbox" id="toggle-filter-off" onchange="clearColorFilter(this.checked)">
+      <span class="ios-slider"></span>
+    </label>
   </div>
 </div>
 
@@ -613,9 +914,9 @@ body {
   <div class="dock" id="dock">
     <div class="dock-icon icon-photos" id="dock-photos" onclick="openPhotos();dockBounce(this)">🖼️<div class="dock-dot"></div><div class="dock-label">Photos</div></div>
     <div class="dock-icon icon-music" id="dock-music" onclick="openMusic();dockBounce(this)">🎵<div class="dock-dot"></div><div class="dock-label">Music</div></div>
-    <div class="dock-icon icon-finder" onclick="dockBounce(this)">🗂️<div class="dock-dot"></div><div class="dock-label">Victor Masotti</div></div>
+    <div class="dock-icon icon-finder" onclick="dockBounce(this)">🗂️<div class="dock-label">Victor Masotti</div></div>
     <div class="dock-icon icon-safari" onclick="dockBounce(this)">🧭<div class="dock-label">Safari</div></div>
-    <div class="dock-icon icon-messages" onclick="dockBounce(this)">💬<div class="dock-dot"></div><div class="dock-label">Messages</div></div>
+    <div class="dock-icon icon-messages" onclick="dockBounce(this)">💬<div class="dock-label">Messages</div></div>
     <div class="dock-icon icon-mail" onclick="dockBounce(this)">✉️<div class="dock-label">Mail</div></div>
     <div class="dock-separator"></div>
     <div class="dock-icon icon-appstore" onclick="dockBounce(this)">🛍️<div class="dock-label">App Store</div></div>
@@ -1068,6 +1369,154 @@ function wmuToggle(artEl,e){
   });
 })();
 
+// ── MENU DROPDOWNS ──
+const _openDD={current:null};
+function toggleMenuDD(which,el){
+  const ddId='dd-'+which;
+  const dd=document.getElementById(ddId);
+  const isOpen=dd.classList.contains('open');
+  // close all
+  document.querySelectorAll('.menu-dropdown').forEach(d=>d.classList.remove('open'));
+  _openDD.current=null;
+  if(!isOpen){
+    // position below the clicked menu item
+    const r=el.getBoundingClientRect();
+    dd.style.left=r.left+'px';
+    dd.classList.add('open');
+    _openDD.current=ddId;
+  }
+}
+document.addEventListener('click',e=>{
+  if(!e.target.closest('.menu-dropdown')&&!e.target.closest('.menu-item')){
+    document.querySelectorAll('.menu-dropdown').forEach(d=>d.classList.remove('open'));
+    _openDD.current=null;
+  }
+});
+
+function applyRoundCorners(on){
+  document.querySelectorAll('.widget').forEach(w=>{
+    w.style.borderRadius=on?'28px':'16px';
+  });
+  // also update future spawned widgets via CSS var
+  document.documentElement.style.setProperty('--widget-radius', on?'28px':'16px');
+  document.querySelector('.dock').style.borderRadius=on?'28px':'20px';
+  document.getElementById('widget-add-btn').style.borderRadius=on?'18px':'10px';
+}
+
+function applyNightMode(on){
+  document.body.style.filter=on?'sepia(0.15) saturate(0.88) brightness(0.97)':'';
+}
+
+function applyHideDock(on){
+  const dock=document.querySelector('.dock-container');
+  const tr='opacity 0.35s ease, visibility 0.35s ease, transform 0.35s ease';
+  if(on){
+    dock.style.transition=tr;
+    dock.style.opacity='0';
+    dock.style.visibility='hidden';
+    dock.style.transform='translateX(-50%) translateY(20px)';
+    dock.style.pointerEvents='none';
+  } else {
+    dock.style.transition=tr;
+    dock.style.opacity='1';
+    dock.style.visibility='visible';
+    dock.style.transform='translateX(-50%) translateY(0)';
+    dock.style.pointerEvents='all';
+  }
+}
+
+let _darkMode=false;
+function toggleDarkMode(){
+  _darkMode=!_darkMode;
+  applyDarkMode(_darkMode);
+}
+function applyDarkMode(on){
+  _darkMode=on;
+  document.body.classList.toggle('dark-mode', on);
+  // p5 canvas: smooth transition with filter (no overlay)
+  const p5c=document.getElementById('p5-canvas');
+  p5c.style.transition='filter 0.75s ease';
+  p5c.style.filter=on?'brightness(0.52) saturate(1.2) contrast(1.05)':'';
+  // clock text
+  const timeEl=document.getElementById('clock-time');
+  if(timeEl){ timeEl.style.transition='color 0.75s ease'; timeEl.style.color=on?'#f2f2f7':''; }
+}
+
+function applyHideWidgets(on){
+  const grid=document.getElementById('widget-grid');
+  const btn=document.getElementById('widget-add-btn');
+  const dd=document.getElementById('widget-dropdown');
+  const tr='opacity 0.35s ease, visibility 0.35s ease';
+  if(on){
+    [grid,btn,dd].forEach(el=>{ el.style.transition=tr; el.style.opacity='0'; el.style.visibility='hidden'; el.style.pointerEvents='none'; });
+  } else {
+    [grid,btn,dd].forEach(el=>{ el.style.transition=tr; el.style.opacity='1'; el.style.visibility='visible'; el.style.pointerEvents='all'; });
+  }
+}
+
+
+
+
+
+// ── COLOUR WHEEL & FILTER ──
+let _cwColor=[0,0,0], _cwStrong=false;
+(function(){
+  const canvas=document.getElementById('color-wheel');
+  if(!canvas) return;
+  const ctx=canvas.getContext('2d');
+  const W=canvas.width,H=canvas.height,cx=W/2,cy=H/2,r=W/2-2;
+  // Draw HSL wheel
+  for(let a=0;a<360;a++){
+    const s=(a-1)*Math.PI/180, e=(a+1)*Math.PI/180;
+    const g=ctx.createRadialGradient(cx,cy,0,cx,cy,r);
+    g.addColorStop(0,'white');g.addColorStop(1,`hsl(${a},100%,50%)`);
+    ctx.beginPath();ctx.moveTo(cx,cy);ctx.arc(cx,cy,r,s,e);ctx.closePath();
+    ctx.fillStyle=g;ctx.fill();
+  }
+  const eg=ctx.createRadialGradient(cx,cy,r*0.82,cx,cy,r);
+  eg.addColorStop(0,'rgba(0,0,0,0)');eg.addColorStop(1,'rgba(0,0,0,0.18)');
+  ctx.beginPath();ctx.arc(cx,cy,r,0,Math.PI*2);ctx.fillStyle=eg;ctx.fill();
+
+  function pick(e){
+    const rect=canvas.getBoundingClientRect();
+    const sx=canvas.width/rect.width,sy=canvas.height/rect.height;
+    const px=Math.round(Math.min(Math.max((e.clientX-rect.left)*sx,0),W-1));
+    const py=Math.round(Math.min(Math.max((e.clientY-rect.top)*sy,0),H-1));
+    const d=ctx.getImageData(px,py,1,1).data;
+    _cwColor=[d[0],d[1],d[2]];
+    applyColorFilter();
+    // update preview bar
+    const prev=document.getElementById('cw-preview');
+    if(prev) prev.style.background=`rgb(${d[0]},${d[1]},${d[2]})`;
+    // uncheck remove-filter if active
+    const tog=document.getElementById('toggle-filter-off');
+    if(tog&&tog.checked){ tog.checked=false; }
+  }
+  let down=false;
+  canvas.addEventListener('mousedown',e=>{down=true;pick(e);});
+  canvas.addEventListener('mousemove',e=>{if(down)pick(e);});
+  window.addEventListener('mouseup',()=>{down=false;});
+  canvas.addEventListener('click',pick);
+})();
+
+function applyColorFilter(){
+  const alpha=_cwStrong?0.50:0.25;
+  const [r,g,b]=_cwColor;
+  document.getElementById('cw-overlay').style.background=`rgba(${r},${g},${b},${alpha})`;
+}
+function setFilterStrength(on){
+  _cwStrong=on;
+  if(_cwColor[0]||_cwColor[1]||_cwColor[2]) applyColorFilter();
+}
+function clearColorFilter(on){
+  if(on){
+    document.getElementById('cw-overlay').style.background='rgba(0,0,0,0)';
+    const prev=document.getElementById('cw-preview');
+    if(prev) prev.style.background='transparent';
+    _cwColor=[0,0,0];
+  }
+}
+
 // ── PHOTOS WINDOW ──
 const photosWin=document.getElementById('photos-window');
 const photosScrim=document.getElementById('photos-scrim');
@@ -1112,6 +1561,7 @@ function runCloseAnimation(fromRect,iconRect,onDone){
 function openPhotos(){
   if(!photosOpen)buildPhotoGrid();
   photosOpen=true;photosMinned=false;photosMax=false;
+  document.getElementById('dock-photos').classList.add('app-open');
   const icon=document.getElementById('dock-photos');
   const ir=icon.getBoundingClientRect();
   const ww=Math.min(860,window.innerWidth*0.94),wh=Math.min(560,window.innerHeight*0.86);
@@ -1131,6 +1581,7 @@ function openPhotos(){
 }
 function closePhotos(){
   if(!photosOpen)return;
+  document.getElementById('dock-photos').classList.remove('app-open');
   const wr=photosWin.getBoundingClientRect(),iconEl=document.getElementById('dock-photos'),iconRect=iconEl.getBoundingClientRect();
   photosWin.style.transition='none';photosWin.style.opacity='0';photosWin.style.pointerEvents='none';
   photosWin.classList.remove('open','maximised');photosScrim.classList.remove('visible');
@@ -1346,6 +1797,7 @@ function muBuild(){
 function openMusic(){
   muBuild(); // build once
   musicOpen=true; musicMinned=false; musicMax=false;
+  document.getElementById('dock-music').classList.add('app-open');
   if(muAudio) muAudio.play().catch(()=>{});
   const win=document.getElementById('music-window');
   const scrim=document.getElementById('music-scrim');
@@ -1368,6 +1820,7 @@ function openMusic(){
 }
 function closeMusic(){
   if(!musicOpen)return;
+  document.getElementById('dock-music').classList.remove('app-open');
   if(muAudio){muAudio.pause();muAudio.currentTime=0;}
   const win=document.getElementById('music-window'),scrim=document.getElementById('music-scrim');
   win.style.transition='opacity 0.3s ease,transform 0.3s cubic-bezier(0.4,0,0.2,1)';
@@ -1532,5 +1985,6 @@ new p5(function(p){
   p.draw=function(){};
 });
 </script>
+<div id="cw-overlay"></div>
 </body>
 </html>
