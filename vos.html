@@ -33,6 +33,12 @@ body {
 
 #p5-canvas { position:absolute; inset:0; z-index:0; }
 #p5-canvas canvas { display:block; }
+/* 6% darkening overlay on wallpaper */
+#p5-canvas::after {
+  content:''; position:absolute; inset:0;
+  background:rgba(0,0,0,0.06);
+  pointer-events:none; z-index:1;
+}
 
 #cursor-dot {
   position:fixed; pointer-events:none; z-index:9999;
@@ -592,33 +598,25 @@ body {
   box-shadow:0 1px 4px rgba(0,0,0,0.25);
   transition:transform 0.22s cubic-bezier(0.34,1.2,0.64,1);
 }
-.ios-toggle input:checked + .ios-slider { background:#34c759; }
+.ios-toggle input:checked + .ios-slider { background:#3a3a3c; }
 .ios-toggle input:checked + .ios-slider::before { transform:translateX(18px); }
-/* round-corners toggle uses blue */
-#toggle-round:checked + .ios-slider { background:#007aff; }
-/* night-mode toggle uses amber */
-#toggle-night:checked + .ios-slider { background:#ff9f0a; }
 
-/* Screen night-mode overlay */
-/* ── DARK MODE — Apple liquid glass ── */
+/* ── DARK MODE — iPhone black glass ── */
 body.dark-mode {
-  /* CSS vars drive everything */
-  --widget-bg: rgba(40,40,44,0.72);
-  --widget-border: rgba(255,255,255,0.12);
-  --dock-bg: rgba(28,28,32,0.78);
-  --dock-border: rgba(255,255,255,0.12);
-  --menubar-bg: rgba(24,24,28,0.88);
+  --widget-bg: rgba(18,18,20,0.92);
+  --widget-border: rgba(255,255,255,0.11);
+  --dock-bg: rgba(16,16,18,0.94);
+  --dock-border: rgba(255,255,255,0.11);
+  --menubar-bg: rgba(14,14,16,0.95);
   --text: #f2f2f7;
   --text-dim: rgba(255,255,255,0.50);
-  /* body bg: dark desaturated, not pure black */
-  background: #1c1c22;
 }
 /* Menubar: seamless glass, no white line */
 body.dark-mode .menubar {
-  background: rgba(24,24,28,0.88);
+  background: rgba(14,14,16,0.95);
   border-bottom: 1px solid rgba(255,255,255,0.08);
-  border-top: 1px solid rgba(255,255,255,0.04);
-  box-shadow: 0 2px 18px rgba(0,0,0,0.5);
+  border-top: 1px solid rgba(255,255,255,0.05);
+  box-shadow: 0 2px 18px rgba(0,0,0,0.6);
 }
 body.dark-mode .menu-item { color: #f2f2f7; }
 body.dark-mode .menu-item:hover { background: rgba(255,255,255,0.08); }
@@ -626,9 +624,11 @@ body.dark-mode #menubar-time { color: rgba(255,255,255,0.75) !important; }
 /* Widgets: dark glass with subtle highlight */
 body.dark-mode .widget {
   color: #f2f2f7;
+  background: rgba(18,18,20,0.92);
+  border-color: rgba(255,255,255,0.10);
   box-shadow: 0 8px 32px rgba(0,0,0,0.55),
               inset 0 1px 0 rgba(255,255,255,0.10),
-              inset 0 0 0 0.5px rgba(255,255,255,0.07);
+              inset 0 0 0 0.5px rgba(255,255,255,0.06);
 }
 body.dark-mode .widget-clock .time,
 body.dark-mode #clock-time { color: #f2f2f7; }
@@ -636,11 +636,11 @@ body.dark-mode .cal-day { color: #e0e0e5; }
 body.dark-mode .cal-day.today { background: #ff453a; color: white; }
 /* Dock: glass bar, no hard edges */
 body.dark-mode .dock {
-  background: rgba(28,28,32,0.78);
+  background: rgba(16,16,18,0.94);
   border: 1px solid rgba(255,255,255,0.10);
   box-shadow: 0 4px 24px rgba(0,0,0,0.5),
-              inset 0 1px 0 rgba(255,255,255,0.12),
-              inset 0 -1px 0 rgba(0,0,0,0.3);
+              inset 0 1px 0 rgba(255,255,255,0.10),
+              inset 0 -1px 0 rgba(0,0,0,0.4);
 }
 body.dark-mode .dock-separator { background: rgba(255,255,255,0.14); }
 body.dark-mode .dock-label { background: rgba(18,18,22,0.92); }
@@ -742,6 +742,42 @@ body {
 .menu-item { transition:color 0.75s ease, background 0.08s, transform 0.08s; }
 #widget-add-btn { transition:background 0.75s ease, border-color 0.75s ease, color 0.75s ease, transform 0.12s, box-shadow 0.12s; }
 
+/* ── LANGUAGE DROPDOWN ── */
+#lang-search:focus { border-color:rgba(0,0,0,0.25); background:white; }
+.lang-item {
+  display:flex; align-items:center; gap:10px;
+  padding:8px 12px; font-size:13px; color:#1a1a1a;
+  border-bottom:1px solid rgba(0,0,0,0.04);
+  transition:background 0.1s; cursor:pointer;
+}
+.lang-item:last-child { border-bottom:none; }
+.lang-item:hover { background:rgba(0,0,0,0.05); }
+.lang-item.active { background:rgba(0,0,0,0.07); font-weight:600; }
+.lang-flag { font-size:16px; width:22px; text-align:center; }
+/* Page translation fade */
+#translate-overlay {
+  position:fixed; inset:0; z-index:8500;
+  background:rgba(255,255,255,0);
+  pointer-events:none;
+  transition:background 0.4s ease;
+}
+#translate-overlay.fading { background:rgba(255,255,255,0.65); }
+body.dark-mode #translate-overlay.fading { background:rgba(0,0,0,0.55); }
+
+/* ── HIGH CONTRAST FONT ── */
+body.high-contrast { --text:#000; --text-dim:rgba(0,0,0,0.65); }
+body.high-contrast .menu-item { color:#000; font-weight:600; }
+body.high-contrast .widget { color:#000; }
+body.high-contrast .widget-clock .time,
+body.high-contrast #clock-time { color:#000 !important; font-weight:400; }
+body.high-contrast .cal-day { color:#000; font-weight:600; }
+body.high-contrast .cal-day-label { color:rgba(0,0,0,0.7); font-weight:700; }
+body.dark-mode.high-contrast { --text:#fff; --text-dim:rgba(255,255,255,0.85); }
+body.dark-mode.high-contrast .menu-item { color:#fff; font-weight:600; }
+body.dark-mode.high-contrast .widget { color:#fff; }
+body.dark-mode.high-contrast #clock-time { color:#fff !important; }
+body.dark-mode.high-contrast .cal-day { color:#fff; font-weight:600; }
+
 /* ── COLOUR FILTER OVERLAY ── */
 #cw-overlay {
   position:fixed; inset:0; z-index:450;
@@ -770,6 +806,7 @@ body {
     <span class="menu-item" id="menu-file" onclick="toggleMenuDD('file',this)">File</span>
     <span class="menu-item" id="menu-edit" onclick="toggleMenuDD('edit',this)">Edit</span>
     <span class="menu-item" id="menu-view" onclick="toggleMenuDD('view',this)">Filter</span>
+    <span class="menu-item" id="menu-lang" onclick="toggleMenuDD('lang',this)">Language</span>
     <span class="menu-item" onclick="window.open('https://victormasotti.com/index2.html','_blank')">Previous Version</span>
     <span class="menu-item" onclick="window.open('https://www.cscassets.com/recipes/large_cknew/large_25946.jpg','_blank')">Tacos Banana Plumber Solution</span>
   </div>
@@ -838,9 +875,32 @@ body {
       <span class="ios-slider"></span>
     </label>
   </div>
+  <div class="mdd-toggle-row">
+    <div>
+      <div class="mdd-toggle-label">High Contrast Font</div>
+      <div class="mdd-toggle-sub">Bolder, darker text everywhere</div>
+    </div>
+    <label class="ios-toggle">
+      <input type="checkbox" id="toggle-hc" onchange="applyHighContrast(this.checked)">
+      <span class="ios-slider"></span>
+    </label>
+  </div>
 </div>
 
 
+
+<!-- LANGUAGE DROPDOWN -->
+<div class="menu-dropdown" id="dd-lang" style="min-width:260px;max-height:420px;display:flex;flex-direction:column;">
+  <div style="padding:10px 12px 8px;border-bottom:1px solid rgba(0,0,0,0.06);">
+    <input id="lang-search" type="text" placeholder="Search language…"
+      style="width:100%;box-sizing:border-box;padding:6px 10px;font-size:13px;
+             border:1px solid rgba(0,0,0,0.14);border-radius:7px;
+             background:rgba(0,0,0,0.04);outline:none;font-family:inherit;color:#1a1a1a;"
+      oninput="filterLangs(this.value)" autocomplete="off" spellcheck="false">
+  </div>
+  <div id="lang-list" style="overflow-y:auto;flex:1;"></div>
+  <div id="lang-current" style="padding:7px 12px;font-size:11px;color:rgba(0,0,0,0.4);border-top:1px solid rgba(0,0,0,0.06);display:none;"></div>
+</div>
 
 <!-- FILTER DROPDOWN -->
 <div class="menu-dropdown" id="dd-view" style="min-width:240px">
@@ -1086,18 +1146,23 @@ function dockBounce(el){el.classList.remove('bounce');void el.offsetWidth;el.cla
         </div>
         <div style="font-size:clamp(28px,3vw,44px);line-height:1;opacity:0.9">⛅</div>
       </div>`;
-    if(type==='calendar') return `
-      <div style="display:flex;flex-direction:column;height:100%">
-        <div style="font-size:clamp(9px,0.75vw,12px);font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--text-dim);margin-bottom:4px">March 2026</div>
+    if(type==='calendar'){
+      const _now=new Date();
+      const _mn=['January','February','March','April','May','June','July','August','September','October','November','December'];
+      const _y=_now.getFullYear(),_m=_now.getMonth(),_today=_now.getDate();
+      const _first=new Date(_y,_m,1).getDay(); // 0=Sun
+      const _days=new Date(_y,_m+1,0).getDate();
+      let _cells='';
+      for(let i=0;i<_first;i++) _cells+=`<div class="cal-day empty"></div>`;
+      for(let d=1;d<=_days;d++) _cells+=`<div class="cal-day${d===_today?' today':''}">${d}</div>`;
+      return `<div style="display:flex;flex-direction:column;height:100%">
+        <div style="font-size:clamp(9px,0.75vw,12px);font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--text-dim);margin-bottom:4px">${_mn[_m]} ${_y}</div>
         <div class="cal-grid" style="flex:1;align-content:space-evenly;gap:2px">
           <div class="cal-day-label">S</div><div class="cal-day-label">M</div><div class="cal-day-label">T</div><div class="cal-day-label">W</div><div class="cal-day-label">T</div><div class="cal-day-label">F</div><div class="cal-day-label">S</div>
-          <div class="cal-day empty"></div><div class="cal-day">2</div><div class="cal-day">3</div><div class="cal-day">4</div><div class="cal-day">5</div><div class="cal-day">6</div><div class="cal-day">7</div>
-          <div class="cal-day">8</div><div class="cal-day">9</div><div class="cal-day">10</div><div class="cal-day">11</div><div class="cal-day">12</div><div class="cal-day">13</div><div class="cal-day">14</div>
-          <div class="cal-day">15</div><div class="cal-day">16</div><div class="cal-day">17</div><div class="cal-day">18</div><div class="cal-day today">19</div><div class="cal-day">20</div><div class="cal-day">21</div>
-          <div class="cal-day">22</div><div class="cal-day">23</div><div class="cal-day">24</div><div class="cal-day">25</div><div class="cal-day">26</div><div class="cal-day">27</div><div class="cal-day">28</div>
-          <div class="cal-day">29</div><div class="cal-day">30</div><div class="cal-day">31</div>
+          ${_cells}
         </div>
       </div>`;
+    }
     if(type==='musicw'){
       const muPairs=[{image:'breakTHROUGH.png',title:'breakTHROUGH'},{image:'mizu.png',title:'mizu'}];
       const mp=muPairs[Math.floor(Math.random()*muPairs.length)];
@@ -1434,12 +1499,14 @@ function applyDarkMode(on){
   _darkMode=on;
   document.body.classList.toggle('dark-mode', on);
   // p5 canvas: smooth transition with filter (no overlay)
-  const p5c=document.getElementById('p5-canvas');
-  p5c.style.transition='filter 0.75s ease';
-  p5c.style.filter=on?'brightness(0.52) saturate(1.2) contrast(1.05)':'';
+  // p5 wallpaper stays untouched — only UI elements go dark
   // clock text
   const timeEl=document.getElementById('clock-time');
   if(timeEl){ timeEl.style.transition='color 0.75s ease'; timeEl.style.color=on?'#f2f2f7':''; }
+}
+
+function applyHighContrast(on){
+  document.body.classList.toggle('high-contrast', on);
 }
 
 function applyHideWidgets(on){
@@ -1515,6 +1582,143 @@ function clearColorFilter(on){
     if(prev) prev.style.background='transparent';
     _cwColor=[0,0,0];
   }
+}
+
+// ── LANGUAGE TRANSLATION ──
+const LANGUAGES=[
+  {code:'en',name:'English',flag:'🇬🇧'},
+  {code:'it',name:'Italian',flag:'🇮🇹'},
+  {code:'fr',name:'French',flag:'🇫🇷'},
+  {code:'es',name:'Spanish',flag:'🇪🇸'},
+  {code:'de',name:'German',flag:'🇩🇪'},
+  {code:'pt',name:'Portuguese',flag:'🇵🇹'},
+  {code:'nl',name:'Dutch',flag:'🇳🇱'},
+  {code:'pl',name:'Polish',flag:'🇵🇱'},
+  {code:'ru',name:'Russian',flag:'🇷🇺'},
+  {code:'zh',name:'Chinese',flag:'🇨🇳'},
+  {code:'ja',name:'Japanese',flag:'🇯🇵'},
+  {code:'ko',name:'Korean',flag:'🇰🇷'},
+  {code:'ar',name:'Arabic',flag:'🇸🇦'},
+  {code:'hi',name:'Hindi',flag:'🇮🇳'},
+  {code:'tr',name:'Turkish',flag:'🇹🇷'},
+  {code:'sv',name:'Swedish',flag:'🇸🇪'},
+  {code:'da',name:'Danish',flag:'🇩🇰'},
+  {code:'fi',name:'Finnish',flag:'🇫🇮'},
+  {code:'el',name:'Greek',flag:'🇬🇷'},
+  {code:'he',name:'Hebrew',flag:'🇮🇱'},
+];
+
+let _currentLang='en';
+// Map from text node → original text
+const _nodeOriginals=new Map();
+
+// Collect all leaf text nodes in visible UI (skip scripts, styles, canvas, inputs, code)
+function _getTextNodes(){
+  const skip=new Set(['SCRIPT','STYLE','CANVAS','INPUT','TEXTAREA','SVG','PATH']);
+  const nodes=[];
+  function walk(node){
+    if(node.nodeType===Node.TEXT_NODE){
+      const t=node.textContent.trim();
+      // Only translate meaningful text (letters, not just emoji/numbers/punctuation)
+      if(t.length>1 && /[a-zA-ZÀ-ÿА-я؀-ۿ一-鿿]/.test(t)){
+        nodes.push(node);
+      }
+    } else if(node.nodeType===Node.ELEMENT_NODE && !skip.has(node.tagName)){
+      // Skip hidden elements and the lang dropdown itself
+      if(node.id==='dd-lang'||node.id==='translate-overlay') return;
+      node.childNodes.forEach(walk);
+    }
+  }
+  walk(document.body);
+  return nodes;
+}
+
+function _storeOriginals(){
+  _getTextNodes().forEach(n=>{
+    if(!_nodeOriginals.has(n)) _nodeOriginals.set(n,n.textContent);
+  });
+}
+
+function renderLangList(filter=''){
+  const list=document.getElementById('lang-list');
+  const fl=filter.toLowerCase();
+  const filtered=fl?LANGUAGES.filter(l=>l.name.toLowerCase().includes(fl)||l.code.includes(fl)):LANGUAGES;
+  list.innerHTML=filtered.map(l=>`
+    <div class="lang-item${l.code===_currentLang?' active':''}" onclick="selectLanguage('${l.code}','${l.name}','${l.flag}')">
+      <span class="lang-flag">${l.flag}</span>
+      <span>${l.name}</span>
+      ${l.code===_currentLang?'<span style="margin-left:auto;font-size:10px;opacity:0.5">✓</span>':''}
+    </div>`).join('');
+}
+
+function filterLangs(val){ renderLangList(val); }
+
+// Hook into toggleMenuDD to init list on open
+const _origToggle=window.toggleMenuDD;
+window.toggleMenuDD=function(which,el){
+  _origToggle(which,el);
+  if(which==='lang'&&document.getElementById('dd-lang').classList.contains('open')){
+    renderLangList();
+    document.getElementById('lang-search').value='';
+    setTimeout(()=>document.getElementById('lang-search').focus(),50);
+  }
+};
+
+async function selectLanguage(code,name,flag){
+  if(code===_currentLang) return;
+  document.querySelectorAll('.menu-dropdown').forEach(d=>d.classList.remove('open'));
+
+  const ov=document.getElementById('translate-overlay');
+  ov.classList.add('fading');
+
+  if(code==='en'){
+    // Restore all originals
+    _nodeOriginals.forEach((txt,node)=>{ node.textContent=txt; });
+    _currentLang='en';
+    setTimeout(()=>ov.classList.remove('fading'),500);
+    return;
+  }
+
+  // Snapshot text nodes NOW (after widgets rendered)
+  _storeOriginals();
+  const nodes=[..._nodeOriginals.keys()];
+  const origTexts=nodes.map(n=>_nodeOriginals.get(n));
+
+  // Deduplicate
+  const unique=[...new Set(origTexts.filter(t=>t&&t.trim().length>1))];
+
+  // Translate in batches — join with ||| separator to minimise API calls
+  const BATCH=8; // texts per request
+  const translated=new Map();
+
+  for(let i=0;i<unique.length;i+=BATCH){
+    const chunk=unique.slice(i,i+BATCH);
+    const joined=chunk.join(' ||| ');
+    try{
+      const url=`https://api.mymemory.translated.net/get?q=${encodeURIComponent(joined)}&langpair=en|${code}`;
+      const r=await fetch(url);
+      const d=await r.json();
+      const result=d.responseData?.translatedText||joined;
+      const parts=result.split(/\s*\|\|\|\s*/);
+      chunk.forEach((orig,idx)=>{
+        translated.set(orig, parts[idx]||orig);
+      });
+    }catch{
+      chunk.forEach(orig=>translated.set(orig,orig));
+    }
+    await new Promise(r=>setTimeout(r,60));
+  }
+
+  // Apply to text nodes
+  nodes.forEach(node=>{
+    const orig=_nodeOriginals.get(node);
+    if(orig && translated.has(orig)){
+      node.textContent=translated.get(orig);
+    }
+  });
+
+  _currentLang=code;
+  setTimeout(()=>ov.classList.remove('fading'),500);
 }
 
 // ── PHOTOS WINDOW ──
@@ -1986,5 +2190,6 @@ new p5(function(p){
 });
 </script>
 <div id="cw-overlay"></div>
+<div id="translate-overlay"></div>
 </body>
 </html>
