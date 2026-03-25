@@ -392,8 +392,7 @@ body {
 .pw-toolbar-btn.active { background:#007aff; color:white; border-color:transparent; }
 .pw-resize { position:absolute; right:0; bottom:0; width:20px; height:20px; z-index:10; }
 .pw-resize::after { content:''; position:absolute; right:4px; bottom:4px; width:8px; height:8px; border-right:2px solid rgba(255,255,255,0.3); border-bottom:2px solid rgba(255,255,255,0.3); border-radius:1px; }
-#photos-scrim { position:fixed; inset:0; z-index:490; background:rgba(0,0,0,0); pointer-events:none; transition:background 0.3s; }
-#photos-scrim.visible { background:rgba(0,0,0,0.18); pointer-events:all; }
+#photos-scrim { display:none; }
 
 /* ── MUSIC APP STYLES ── */
 #music-window {
@@ -418,8 +417,7 @@ body {
   transform:translate(var(--mw-tx),var(--mw-ty)) scale(0.06)!important;
   transition:opacity 0.35s cubic-bezier(0.4,0,1,1),transform 0.38s cubic-bezier(0.4,0,0.6,1)!important;
 }
-#music-scrim { position:fixed;inset:0;z-index:495;background:rgba(0,0,0,0);pointer-events:none;transition:background 0.3s; }
-#music-scrim.visible { background:rgba(0,0,0,0.20);pointer-events:all; }
+#music-scrim { display:none; }
 #music-titlebar {
   height:36px;flex-shrink:0;
   background:linear-gradient(180deg,#2a2a2c 0%,#1c1c1e 100%);
@@ -678,6 +676,7 @@ body.dark-mode .wnotes-area { color: #f2f2f7; }
 body.dark-mode .wnotes-area::placeholder { color: rgba(255,255,255,0.25); }
 body.dark-mode .wnotes-header { color: rgba(255,255,255,0.4); }
 
+
 /* ── DAY/NIGHT PILL TOGGLE ── */
 #daynight-toggle {
   display:flex; align-items:center;
@@ -754,6 +753,17 @@ body {
 .lang-item:hover { background:rgba(0,0,0,0.05); }
 .lang-item.active { background:rgba(0,0,0,0.07); font-weight:600; }
 .lang-flag { font-size:16px; width:22px; text-align:center; }
+/* Language dropdown dark mode */
+body.dark-mode #lang-search {
+  background:rgba(255,255,255,0.08); border-color:rgba(255,255,255,0.14);
+  color:#f2f2f7;
+}
+body.dark-mode #lang-search::placeholder { color:rgba(255,255,255,0.35); }
+body.dark-mode #lang-search:focus { background:rgba(255,255,255,0.12); }
+body.dark-mode .lang-item { color:#f2f2f7; border-bottom-color:rgba(255,255,255,0.07); }
+body.dark-mode .lang-item:hover { background:rgba(255,255,255,0.07); }
+body.dark-mode .lang-item.active { background:rgba(255,255,255,0.12); }
+body.dark-mode #lang-current { color:rgba(255,255,255,0.4); border-top-color:rgba(255,255,255,0.07); }
 /* Page translation fade */
 #translate-overlay {
   position:fixed; inset:0; z-index:8500;
@@ -941,6 +951,8 @@ body.dark-mode.high-contrast .cal-day { color:#fff; font-weight:600; }
     <div class="dd-item" onclick="ddAction('calendar',this)"><span class="dd-icon">📅</span> Calendar</div>
     <div class="dd-item" onclick="ddAction('musicw',this)"><span class="dd-icon">🎵</span> Music Player</div>
     <div class="dd-item" onclick="ddAction('notes',this)"><span class="dd-icon">📝</span> Notes</div>
+    <div class="dd-item" onclick="ddAction('appshelf-s',this)"><span class="dd-icon">📱</span> App Shelf (small)</div>
+    <div class="dd-item" onclick="ddAction('appshelf-l',this)"><span class="dd-icon">📱</span> App Shelf (large)</div>
   </div>
   <div id="widget-grid"></div>
 </div>
@@ -972,9 +984,9 @@ body.dark-mode.high-contrast .cal-day { color:#fff; font-weight:600; }
 <!-- DOCK -->
 <div class="dock-container">
   <div class="dock" id="dock">
-    <div class="dock-icon icon-photos" id="dock-photos" onclick="openPhotos();dockBounce(this)">🖼️<div class="dock-dot"></div><div class="dock-label">Photos</div></div>
-    <div class="dock-icon icon-music" id="dock-music" onclick="openMusic();dockBounce(this)">🎵<div class="dock-dot"></div><div class="dock-label">Music</div></div>
-    <div class="dock-icon icon-finder" onclick="dockBounce(this)">🗂️<div class="dock-label">Victor Masotti</div></div>
+    <div class="dock-icon" id="dock-photos" onclick="openPhotos();dockBounce(this)" style="background:none;padding:0;overflow:hidden;border-radius:12px"><img src="appo.png" style="width:100%;height:100%;object-fit:cover;border-radius:12px;display:block;"><div class="dock-dot"></div><div class="dock-label">Gallery</div></div>
+    <div class="dock-icon" id="dock-music" onclick="openMusic();dockBounce(this)" style="background:none;padding:0;overflow:hidden;border-radius:12px"><img src="appe.png" style="width:100%;height:100%;object-fit:cover;border-radius:12px;display:block;"><div class="dock-dot"></div><div class="dock-label">Music</div></div>
+    <div class="dock-icon" id="dock-notes-app" onclick="dockBounce(this)" style="background:linear-gradient(145deg,#ffd60a,#ff9f0a);border-radius:12px;font-size:26px;overflow:hidden;position:relative;">📝<div class="dock-label">Notes</div></div>
     <div class="dock-icon icon-safari" onclick="dockBounce(this)">🧭<div class="dock-label">Safari</div></div>
     <div class="dock-icon icon-messages" onclick="dockBounce(this)">💬<div class="dock-label">Messages</div></div>
     <div class="dock-icon icon-mail" onclick="dockBounce(this)">✉️<div class="dock-label">Mail</div></div>
@@ -1184,6 +1196,29 @@ function dockBounce(el){el.classList.remove('bounce');void el.offsetWidth;el.cla
         <div class="wnotes-header">Notes</div>
         <textarea class="wnotes-area" placeholder="Start typing…"></textarea>
       </div>`;
+    if(type==='appshelf-s'||type==='appshelf-l'){
+      const apps=[
+        {icon:'🖼️',label:'Gallery',fn:'openPhotos()'},
+        {icon:'🎵',label:'Music',fn:'openMusic()'},
+        {icon:'📝',label:'Notes',fn:''},
+        {icon:'🧭',label:'Safari',fn:''},
+        {icon:'💬',label:'Messages',fn:''},
+        {icon:'✉️',label:'Mail',fn:''},
+        {icon:'🛍️',label:'App Store',fn:''},
+        {icon:'⚙️',label:'Settings',fn:''},
+      ];
+      const max=type==='appshelf-s'?4:8;
+      const shown=apps.slice(0,max);
+      const cols=type==='appshelf-s'?4:4;
+      const items=shown.map(a=>`<div onclick="${a.fn||''}" style="display:flex;flex-direction:column;align-items:center;gap:3px;padding:4px 2px;border-radius:10px;transition:background 0.1s;" onmouseover="this.style.background='rgba(0,0,0,0.07)'" onmouseout="this.style.background='none'">
+        <div style="width:clamp(32px,3.2vw,48px);height:clamp(32px,3.2vw,48px);border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:clamp(18px,1.8vw,26px);box-shadow:0 2px 8px rgba(0,0,0,0.15)">${a.icon}</div>
+        <div style="font-size:clamp(8px,0.65vw,10px);color:var(--text-dim);text-align:center;line-height:1.2">${a.label}</div>
+      </div>`).join('');
+      return `<div style="display:flex;flex-direction:column;height:100%;gap:4px">
+        <div style="font-size:clamp(9px,0.7vw,11px);font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--text-dim)">Apps</div>
+        <div style="display:grid;grid-template-columns:repeat(${cols},1fr);gap:4px;flex:1;align-content:center">${items}</div>
+      </div>`;
+    }
     return '';
   }
 
@@ -1321,7 +1356,7 @@ function spawnWidget(type){
   const m=_gridMetrics();
   const id='wg-'+Date.now();
   const cw=2;
-  const ch=(type==='calendar'||type==='notes'||type==='musicw')?2:1;
+  const ch=(type==='calendar'||type==='notes'||type==='musicw'||type==='appshelf-l')?2:1;
 
   // Find a free grid position — try from top-left row by row
   let col=0, row=0, found=false;
@@ -1514,10 +1549,14 @@ function applyHideWidgets(on){
   const btn=document.getElementById('widget-add-btn');
   const dd=document.getElementById('widget-dropdown');
   const tr='opacity 0.35s ease, visibility 0.35s ease';
+  // always close the dropdown first to avoid the stuck-open bug
+  dd.classList.remove('open');
   if(on){
-    [grid,btn,dd].forEach(el=>{ el.style.transition=tr; el.style.opacity='0'; el.style.visibility='hidden'; el.style.pointerEvents='none'; });
+    [grid,btn].forEach(el=>{ el.style.transition=tr; el.style.opacity='0'; el.style.visibility='hidden'; el.style.pointerEvents='none'; });
+    dd.style.opacity='0'; dd.style.visibility='hidden'; dd.style.pointerEvents='none';
   } else {
-    [grid,btn,dd].forEach(el=>{ el.style.transition=tr; el.style.opacity='1'; el.style.visibility='visible'; el.style.pointerEvents='all'; });
+    [grid,btn].forEach(el=>{ el.style.transition=tr; el.style.opacity='1'; el.style.visibility='visible'; el.style.pointerEvents='all'; });
+    dd.style.opacity=''; dd.style.visibility=''; dd.style.pointerEvents='';
   }
 }
 
@@ -1605,7 +1644,6 @@ const LANGUAGES=[
   {code:'da',name:'Danish',flag:'🇩🇰'},
   {code:'fi',name:'Finnish',flag:'🇫🇮'},
   {code:'el',name:'Greek',flag:'🇬🇷'},
-  {code:'he',name:'Hebrew',flag:'🇮🇱'},
 ];
 
 let _currentLang='en';
@@ -1619,13 +1657,12 @@ function _getTextNodes(){
   function walk(node){
     if(node.nodeType===Node.TEXT_NODE){
       const t=node.textContent.trim();
-      // Only translate meaningful text (letters, not just emoji/numbers/punctuation)
       if(t.length>1 && /[a-zA-ZÀ-ÿА-я؀-ۿ一-鿿]/.test(t)){
         nodes.push(node);
       }
     } else if(node.nodeType===Node.ELEMENT_NODE && !skip.has(node.tagName)){
-      // Skip hidden elements and the lang dropdown itself
-      if(node.id==='dd-lang'||node.id==='translate-overlay') return;
+      if(node.id==='dd-lang'||node.id==='translate-overlay'||node.id==='cw-overlay') return;
+      // include hidden elements too so dock labels and closed dropdowns get translated
       node.childNodes.forEach(walk);
     }
   }
@@ -1762,6 +1799,21 @@ function runCloseAnimation(fromRect,iconRect,onDone){
   }
   animRAF=requestAnimationFrame(draw);
 }
+// ── WINDOW FOCUS / BRING TO FRONT ──
+let _winZ=502;
+function bringToFront(winEl){
+  _winZ++;
+  winEl.style.zIndex=_winZ;
+}
+document.addEventListener('mousedown',e=>{
+  const win=e.target.closest('#photos-window,#music-window');
+  if(win) bringToFront(win);
+},true);
+document.addEventListener('touchstart',e=>{
+  const win=e.target.closest('#photos-window,#music-window');
+  if(win) bringToFront(win);
+},true);
+
 function openPhotos(){
   if(!photosOpen)buildPhotoGrid();
   photosOpen=true;photosMinned=false;photosMax=false;
@@ -1805,7 +1857,14 @@ function maximisePhotos(){
   if(photosMax){photosWin.classList.add('maximised');photosWin.classList.remove('minimising');photosScrim.classList.remove('visible');}
   else{photosWin.classList.remove('maximised');photosWin.style.left='50%';photosWin.style.top='50%';photosWin.style.width='';photosWin.style.height='';photosWin.style.transform='';requestAnimationFrame(()=>requestAnimationFrame(()=>{photosWin.classList.add('open');photosScrim.classList.add('visible');}));}
 }
-(function(){const tb=document.getElementById('pw-titlebar');let drag=false,ox=0,oy=0;tb.addEventListener('mousedown',e=>{if(photosMax||e.target.classList.contains('pw-dot'))return;drag=true;const r=photosWin.getBoundingClientRect();ox=e.clientX-r.left;oy=e.clientY-r.top;photosWin.style.transition='none';photosWin.style.transform='none';photosWin.style.left=r.left+'px';photosWin.style.top=r.top+'px';e.preventDefault();});window.addEventListener('mousemove',e=>{if(!drag)return;photosWin.style.left=(e.clientX-ox)+'px';photosWin.style.top=(e.clientY-oy)+'px';});window.addEventListener('mouseup',()=>{drag=false;photosWin.style.transition='';});})();
+(function(){const tb=document.getElementById('pw-titlebar');let drag=false,ox=0,oy=0;
+function startDrag(cx,cy){const r=photosWin.getBoundingClientRect();ox=cx-r.left;oy=cy-r.top;photosWin.style.transition='none';photosWin.style.transform='none';photosWin.style.left=r.left+'px';photosWin.style.top=r.top+'px';}
+tb.addEventListener('mousedown',e=>{if(photosMax||e.target.classList.contains('pw-dot'))return;drag=true;startDrag(e.clientX,e.clientY);e.preventDefault();});
+tb.addEventListener('touchstart',e=>{if(photosMax||e.target.classList.contains('pw-dot'))return;drag=true;startDrag(e.touches[0].clientX,e.touches[0].clientY);e.preventDefault();},{passive:false});
+window.addEventListener('mousemove',e=>{if(!drag)return;photosWin.style.left=(e.clientX-ox)+'px';photosWin.style.top=(e.clientY-oy)+'px';});
+window.addEventListener('touchmove',e=>{if(!drag)return;photosWin.style.left=(e.touches[0].clientX-ox)+'px';photosWin.style.top=(e.touches[0].clientY-oy)+'px';},{passive:false});
+window.addEventListener('mouseup',()=>{drag=false;photosWin.style.transition='';});
+window.addEventListener('touchend',()=>{drag=false;photosWin.style.transition='';});})();
 (function(){const h=document.getElementById('pw-resize');let r=false,sx=0,sy=0,sw=0,sh=0;h.addEventListener('mousedown',e=>{if(photosMax)return;r=true;sx=e.clientX;sy=e.clientY;sw=photosWin.offsetWidth;sh=photosWin.offsetHeight;e.preventDefault();});window.addEventListener('mousemove',e=>{if(!r)return;photosWin.style.width=Math.max(500,sw+e.clientX-sx)+'px';photosWin.style.height=Math.max(340,sh+e.clientY-sy)+'px';});window.addEventListener('mouseup',()=>{r=false;});})();
 document.querySelectorAll('.pw-toolbar-btn').forEach(btn=>{btn.addEventListener('click',()=>{document.querySelectorAll('.pw-toolbar-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');});});
 document.querySelectorAll('.pw-sidebar-item').forEach(item=>{item.addEventListener('click',()=>{document.querySelectorAll('.pw-sidebar-item').forEach(i=>i.classList.remove('active'));item.classList.add('active');});});
@@ -2057,15 +2116,13 @@ function maximiseMusic(){
 (function(){
   const tb=document.getElementById('music-titlebar');
   let drag=false,ox=0,oy=0;
-  tb.addEventListener('mousedown',e=>{
-    const win=document.getElementById('music-window');
-    if(musicMax||e.target.classList.contains('pw-dot'))return;
-    drag=true;const r=win.getBoundingClientRect();ox=e.clientX-r.left;oy=e.clientY-r.top;
-    win.style.transition='none';win.style.transform='none';win.style.left=r.left+'px';win.style.top=r.top+'px';
-    e.preventDefault();
-  });
+  function startDrag(cx,cy){const win=document.getElementById('music-window');const r=win.getBoundingClientRect();ox=cx-r.left;oy=cy-r.top;win.style.transition='none';win.style.transform='none';win.style.left=r.left+'px';win.style.top=r.top+'px';}
+  tb.addEventListener('mousedown',e=>{const win=document.getElementById('music-window');if(musicMax||e.target.classList.contains('pw-dot'))return;drag=true;startDrag(e.clientX,e.clientY);e.preventDefault();});
+  tb.addEventListener('touchstart',e=>{if(musicMax||e.target.classList.contains('pw-dot'))return;drag=true;startDrag(e.touches[0].clientX,e.touches[0].clientY);e.preventDefault();},{passive:false});
   window.addEventListener('mousemove',e=>{if(!drag)return;const win=document.getElementById('music-window');win.style.left=(e.clientX-ox)+'px';win.style.top=(e.clientY-oy)+'px';});
+  window.addEventListener('touchmove',e=>{if(!drag)return;const win=document.getElementById('music-window');win.style.left=(e.touches[0].clientX-ox)+'px';win.style.top=(e.touches[0].clientY-oy)+'px';},{passive:false});
   window.addEventListener('mouseup',()=>{drag=false;const win=document.getElementById('music-window');if(win)win.style.transition='';});
+  window.addEventListener('touchend',()=>{drag=false;const win=document.getElementById('music-window');if(win)win.style.transition='';});
 })();
 
 // ── P5 ──
