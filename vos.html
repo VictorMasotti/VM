@@ -338,7 +338,7 @@ body {
   z-index:500; overflow:hidden; pointer-events:none; user-select:none;
   opacity:0; transform:translate(-50%,-50%) scale(0.88) translateY(8px);
   transition:opacity 0.3s cubic-bezier(0.4,0,0.2,1),transform 0.3s cubic-bezier(0.34,1.2,0.64,1),
-    width 0.3s,height 0.3s,border-radius 0.3s,left 0.3s,top 0.3s;
+    width 0.3s,height 0.3s,border-radius 0.3s;
 }
 #photos-window.open { opacity:1; pointer-events:all; transform:translate(-50%,-50%) scale(1) translateY(0); }
 #photos-window.maximised {
@@ -788,6 +788,71 @@ body.dark-mode.high-contrast .widget { color:#fff; }
 body.dark-mode.high-contrast #clock-time { color:#fff !important; }
 body.dark-mode.high-contrast .cal-day { color:#fff; font-weight:600; }
 
+/* ── NOTEPAD APP ── */
+#notepad-window {
+  position:fixed; left:50%; top:50%;
+  width:720px; height:520px; max-width:94vw; max-height:88vh;
+  background:#faf8f5; border-radius:12px;
+  box-shadow:0 24px 70px rgba(0,0,0,0.45), 0 0 0 1px rgba(0,0,0,0.10);
+  display:flex; flex-direction:column;
+  z-index:500; overflow:hidden; pointer-events:none; user-select:none;
+  opacity:0; transform:translate(-50%,-50%) scale(0.88) translateY(8px);
+  transition:opacity 0.3s cubic-bezier(0.4,0,0.2,1), transform 0.3s cubic-bezier(0.34,1.2,0.64,1);
+}
+#notepad-window.open { opacity:1; pointer-events:all; transform:translate(-50%,-50%) scale(1) translateY(0); }
+#notepad-window.minimising {
+  opacity:0!important;
+  transform:translate(var(--np-tx),var(--np-ty)) scale(0.06)!important;
+  transition:opacity 0.35s ease, transform 0.38s ease!important;
+}
+#notepad-window.maximised {
+  left:0!important; top:24px!important; width:100vw!important;
+  height:calc(100vh - 24px - 54px)!important; transform:none!important; border-radius:0!important;
+  max-width:100vw!important; max-height:100vh!important;
+}
+#notepad-titlebar {
+  height:36px; flex-shrink:0;
+  background:linear-gradient(180deg,#f0ede8 0%,#e8e4df 100%);
+  border-bottom:1px solid rgba(0,0,0,0.10);
+  display:flex; align-items:center; padding:0 12px; gap:8px; position:relative;
+}
+#notepad-toolbar {
+  height:34px; flex-shrink:0; display:flex; align-items:center; gap:3px;
+  padding:0 10px; background:#f5f2ee; border-bottom:1px solid rgba(0,0,0,0.08);
+}
+.np-tb-btn {
+  height:22px; min-width:26px; padding:0 6px; border-radius:5px;
+  background:transparent; border:none; font-size:12px; color:#333;
+  display:flex; align-items:center; justify-content:center;
+  transition:background 0.1s; font-family:inherit;
+}
+.np-tb-btn:hover { background:rgba(0,0,0,0.08); }
+.np-tb-btn:active { background:rgba(0,0,0,0.15); }
+.np-tb-sep { width:1px; height:18px; background:rgba(0,0,0,0.15); margin:0 3px; }
+#notepad-body { display:flex; flex:1; overflow:hidden; }
+#notepad-sidebar {
+  width:200px; flex-shrink:0; background:#ede9e3;
+  border-right:1px solid rgba(0,0,0,0.09);
+  overflow-y:auto; display:flex; flex-direction:column;
+}
+.np-note-item {
+  padding:10px 14px; border-bottom:1px solid rgba(0,0,0,0.06);
+  cursor:pointer; transition:background 0.1s; user-select:none;
+}
+.np-note-item:hover { background:rgba(0,0,0,0.05); }
+.np-note-item.active { background:rgba(255,200,50,0.35); }
+.np-note-title { font-size:13px; font-weight:600; color:#1a1a1a; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.np-note-preview { font-size:11px; color:rgba(0,0,0,0.45); margin-top:2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.np-note-date { font-size:10px; color:rgba(0,0,0,0.35); margin-top:2px; }
+#notepad-main { flex:1; display:flex; flex-direction:column; overflow:hidden; background:#faf8f5; }
+#notepad-editor {
+  flex:1; padding:20px 24px; overflow-y:auto; outline:none;
+  font-family:-apple-system,'Helvetica Neue',sans-serif;
+  font-size:15px; line-height:1.7; color:#1a1a1a;
+  user-select:text; -webkit-user-select:text;
+  cursor:text!important; pointer-events:all!important;
+}
+#notepad-editor:empty::before { content:attr(placeholder); color:rgba(0,0,0,0.25); pointer-events:none; }
 /* ── COLOUR FILTER OVERLAY ── */
 #cw-overlay {
   position:fixed; inset:0; z-index:450;
@@ -986,7 +1051,7 @@ body.dark-mode.high-contrast .cal-day { color:#fff; font-weight:600; }
   <div class="dock" id="dock">
     <div class="dock-icon" id="dock-photos" onclick="openPhotos();dockBounce(this)" style="background:none;padding:0;overflow:hidden;border-radius:12px"><img src="appo.png" style="width:100%;height:100%;object-fit:cover;border-radius:12px;display:block;"><div class="dock-dot"></div><div class="dock-label">Gallery</div></div>
     <div class="dock-icon" id="dock-music" onclick="openMusic();dockBounce(this)" style="background:none;padding:0;overflow:hidden;border-radius:12px"><img src="appe.png" style="width:100%;height:100%;object-fit:cover;border-radius:12px;display:block;"><div class="dock-dot"></div><div class="dock-label">Music</div></div>
-    <div class="dock-icon" id="dock-notes-app" onclick="dockBounce(this)" style="background:linear-gradient(145deg,#ffd60a,#ff9f0a);border-radius:12px;font-size:26px;overflow:hidden;position:relative;">📝<div class="dock-label">Notes</div></div>
+    <div class="dock-icon" id="dock-notes-app" onclick="openNotepad();dockBounce(this)" style="background:none;padding:0;overflow:hidden;border-radius:12px"><img src="nota.png" style="width:100%;height:100%;object-fit:cover;border-radius:12px;display:block;"><div class="dock-dot"></div><div class="dock-label">Notes</div></div>
     <div class="dock-icon icon-safari" onclick="dockBounce(this)">🧭<div class="dock-label">Safari</div></div>
     <div class="dock-icon icon-messages" onclick="dockBounce(this)">💬<div class="dock-label">Messages</div></div>
     <div class="dock-icon icon-mail" onclick="dockBounce(this)">✉️<div class="dock-label">Mail</div></div>
@@ -995,6 +1060,35 @@ body.dark-mode.high-contrast .cal-day { color:#fff; font-weight:600; }
     <div class="dock-icon icon-settings" onclick="dockBounce(this)">⚙️<div class="dock-label">Settings</div></div>
     <div class="dock-separator"></div>
     <div class="dock-icon icon-trash" onclick="dockBounce(this)">🗑️<div class="dock-label">Trash</div></div>
+  </div>
+</div>
+
+<!-- NOTEPAD WINDOW -->
+<div id="notepad-window">
+  <div id="notepad-titlebar">
+    <div class="pw-dot close" onclick="closeNotepad()"></div>
+    <div class="pw-dot min" onclick="minimiseNotepad()"></div>
+    <div class="pw-dot maxb" onclick="maximiseNotepad()"></div>
+    <span style="position:absolute;left:50%;transform:translateX(-50%);font-size:13px;font-weight:600;color:rgba(255,255,255,0.80);pointer-events:none">Notes</span>
+  </div>
+  <div id="notepad-toolbar">
+    <button class="np-tb-btn" onclick="npFormat('bold')" title="Bold"><b>B</b></button>
+    <button class="np-tb-btn" onclick="npFormat('italic')" title="Italic"><i>I</i></button>
+    <button class="np-tb-btn" onclick="npFormat('underline')" title="Underline"><u>U</u></button>
+    <div class="np-tb-sep"></div>
+    <button class="np-tb-btn" onclick="npFormat('insertUnorderedList')" title="List">≡</button>
+    <button class="np-tb-btn" onclick="npAlign('left')" title="Left">⬅</button>
+    <button class="np-tb-btn" onclick="npAlign('center')" title="Center">↔</button>
+    <div style="flex:1"></div>
+    <button class="np-tb-btn" onclick="npNew()" title="New note" style="opacity:0.7">＋</button>
+  </div>
+  <div id="notepad-body">
+    <div id="notepad-sidebar">
+      <div id="notepad-note-list"></div>
+    </div>
+    <div id="notepad-main">
+      <div id="notepad-editor" contenteditable="true" spellcheck="true" placeholder="Start writing…"></div>
+    </div>
   </div>
 </div>
 
@@ -1179,7 +1273,7 @@ function dockBounce(el){el.classList.remove('bounce');void el.offsetWidth;el.cla
       const muPairs=[{image:'breakTHROUGH.png',title:'breakTHROUGH'},{image:'mizu.png',title:'mizu'}];
       const mp=muPairs[Math.floor(Math.random()*muPairs.length)];
       return `<div class="widget-musicw">
-        <div class="wmu-art" data-playing="false" onclick="wmuToggle(this,event)">
+        <div class="wmu-art" data-playing="false" onclick="wmuToggle(this,event)" ontouchend="wmuToggle(this,event)">
           <img src="${mp.image}" alt="art">
           <div class="wmu-play-overlay">
             <span class="wmu-play-icon">▶</span>
@@ -1197,26 +1291,37 @@ function dockBounce(el){el.classList.remove('bounce');void el.offsetWidth;el.cla
         <textarea class="wnotes-area" placeholder="Start typing…"></textarea>
       </div>`;
     if(type==='appshelf-s'||type==='appshelf-l'){
+      // Apps with PNG images where available, emoji fallback otherwise
       const apps=[
-        {icon:'🖼️',label:'Gallery',fn:'openPhotos()'},
-        {icon:'🎵',label:'Music',fn:'openMusic()'},
-        {icon:'📝',label:'Notes',fn:''},
-        {icon:'🧭',label:'Safari',fn:''},
-        {icon:'💬',label:'Messages',fn:''},
-        {icon:'✉️',label:'Mail',fn:''},
-        {icon:'🛍️',label:'App Store',fn:''},
-        {icon:'⚙️',label:'Settings',fn:''},
+        {img:'appo.png', icon:'🖼️',label:'Gallery',  fn:'openPhotos()',  bg:'linear-gradient(145deg,#ff9f0a,#ff3a30)'},
+        {img:'appe.png', icon:'🎵',label:'Music',     fn:'openMusic()',   bg:'linear-gradient(145deg,#fc3c44,#c0152b)'},
+        {img:'nota.png', icon:'📝',label:'Notes',     fn:'openNotepad()', bg:'linear-gradient(145deg,#ffd60a,#ff9f0a)'},
+        {img:'',         icon:'🧭',label:'Safari',    fn:'',              bg:'linear-gradient(145deg,#34aadc,#007aff)'},
+        {img:'',         icon:'💬',label:'Messages',  fn:'',              bg:'linear-gradient(145deg,#4cd964,#30b94d)'},
+        {img:'',         icon:'✉️',label:'Mail',      fn:'',              bg:'linear-gradient(145deg,#007aff,#0055c1)'},
+        {img:'',         icon:'🛍️',label:'App Store', fn:'',              bg:'linear-gradient(145deg,#007aff,#5ac8fa)'},
+        {img:'',         icon:'⚙️',label:'Settings',  fn:'',              bg:'linear-gradient(145deg,#8e8e93,#636366)'},
+        {img:'',         icon:'📷',label:'Camera',    fn:'',              bg:'linear-gradient(145deg,#3a3a3c,#1c1c1e)'},
+        {img:'',         icon:'🗓️',label:'Calendar',  fn:'',              bg:'linear-gradient(145deg,#ff3b30,#ff6b6b)'},
+        {img:'',         icon:'🗺️',label:'Maps',      fn:'',              bg:'linear-gradient(145deg,#34c759,#248a3d)'},
+        {img:'',         icon:'🎙️',label:'Podcasts',  fn:'',              bg:'linear-gradient(145deg,#9b59b6,#6c3483)'},
       ];
-      const max=type==='appshelf-s'?4:8;
+      const isLarge=type==='appshelf-l';
+      const max=isLarge?12:4;
       const shown=apps.slice(0,max);
-      const cols=type==='appshelf-s'?4:4;
-      const items=shown.map(a=>`<div onclick="${a.fn||''}" style="display:flex;flex-direction:column;align-items:center;gap:3px;padding:4px 2px;border-radius:10px;transition:background 0.1s;" onmouseover="this.style.background='rgba(0,0,0,0.07)'" onmouseout="this.style.background='none'">
-        <div style="width:clamp(32px,3.2vw,48px);height:clamp(32px,3.2vw,48px);border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:clamp(18px,1.8vw,26px);box-shadow:0 2px 8px rgba(0,0,0,0.15)">${a.icon}</div>
-        <div style="font-size:clamp(8px,0.65vw,10px);color:var(--text-dim);text-align:center;line-height:1.2">${a.label}</div>
-      </div>`).join('');
-      return `<div style="display:flex;flex-direction:column;height:100%;gap:4px">
-        <div style="font-size:clamp(9px,0.7vw,11px);font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--text-dim)">Apps</div>
-        <div style="display:grid;grid-template-columns:repeat(${cols},1fr);gap:4px;flex:1;align-content:center">${items}</div>
+      const cols=4, rows=isLarge?3:1;
+      const items=shown.map(a=>{
+        const iconContent=a.img
+          ? `<img src="${a.img}" style="width:100%;height:100%;object-fit:cover;border-radius:10px;display:block;">`
+          : a.icon;
+        return `<div onclick="${a.fn||''}" ontouchend="event.stopPropagation();${a.fn||''}" style="display:flex;flex-direction:column;align-items:center;gap:2px;padding:3px 2px;border-radius:10px;transition:background 0.1s;cursor:pointer;pointer-events:all;" onmouseover="this.style.background='rgba(0,0,0,0.07)'" onmouseout="this.style.background='none'">
+          <div style="width:clamp(28px,2.8vw,42px);height:clamp(28px,2.8vw,42px);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:clamp(15px,1.5vw,22px);background:${a.img?'none':a.bg};box-shadow:0 2px 6px rgba(0,0,0,0.2);overflow:hidden;pointer-events:none;">${iconContent}</div>
+          <div style="font-size:clamp(7px,0.6vw,9px);color:var(--text-dim);text-align:center;line-height:1.2;white-space:nowrap;pointer-events:none">${a.label}</div>
+        </div>`;
+      }).join('');
+      return `<div style="display:flex;flex-direction:column;height:100%;gap:3px">
+        <div style="font-size:clamp(9px,0.7vw,11px);font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--text-dim);flex-shrink:0">Apps</div>
+        <div style="display:grid;grid-template-columns:repeat(${cols},1fr);grid-template-rows:repeat(${rows},1fr);gap:3px;flex:1">${items}</div>
       </div>`;
     }
     return '';
@@ -1257,20 +1362,41 @@ function dockBounce(el){el.classList.remove('bounce');void el.offsetWidth;el.cla
 
   function xy(e){return e.touches?{x:e.touches[0].clientX,y:e.touches[0].clientY}:{x:e.clientX,y:e.clientY};}
 
+  let touchHoldTimer=null;
   function onDown(e){
-    // don't intercept interactive elements inside widgets
     if(e.target.tagName==='TEXTAREA'||e.target.tagName==='INPUT'||e.target.isContentEditable) return;
     const el=e.target.closest('.widget');if(!el)return;
-    e.preventDefault();
-    drag=el;dragDef=DEFS.find(d=>d.id===el.id);dragMoved=false;
-    const p=xy(e),r=el.getBoundingClientRect();
-    dragOX=p.x-r.left;dragOY=p.y-r.top;
-    el.style.transition='none';el.style.zIndex='200';
-    document.body.style.userSelect='none';
+    // Mouse: drag immediately. Touch: require 350ms hold to start drag
+    if(e.type==='touchstart'){
+      const p=xy(e),r=el.getBoundingClientRect();
+      dragOX=p.x-r.left;dragOY=p.y-r.top;
+      touchHoldTimer=setTimeout(()=>{
+        drag=el;dragDef=DEFS.find(d=>d.id===el.id);dragMoved=false;
+        el.style.transition='none';el.style.zIndex='200';
+        document.body.style.userSelect='none';
+        el.classList.add('dragging'); // visual feedback
+      },350);
+      // Don't preventDefault on touchstart so tap events still fire
+    } else {
+      e.preventDefault();
+      drag=el;dragDef=DEFS.find(d=>d.id===el.id);dragMoved=false;
+      const p=xy(e),r=el.getBoundingClientRect();
+      dragOX=p.x-r.left;dragOY=p.y-r.top;
+      el.style.transition='none';el.style.zIndex='200';
+      document.body.style.userSelect='none';
+    }
   }
   function onMove(e){
-    if(!drag||!dragDef)return;
-    e.preventDefault();dragMoved=true;
+    if(!drag||!dragDef){
+      // cancel hold timer if finger moved significantly without drag starting
+      if(e.touches&&touchHoldTimer){
+        const p=xy(e);
+        if(Math.abs(p.x-dragOX)>8||Math.abs(p.y-dragOY)>8){clearTimeout(touchHoldTimer);touchHoldTimer=null;}
+      }
+      return;
+    }
+    if(e.cancelable)e.preventDefault();
+    dragMoved=true;
     const p=xy(e);
     drag.classList.add('dragging');
     drag.style.left=(p.x-dragOX)+'px';
@@ -1297,6 +1423,7 @@ function dockBounce(el){el.classList.remove('bounce');void el.offsetWidth;el.cla
   }
 
   function onUp(){
+    if(touchHoldTimer){clearTimeout(touchHoldTimer);touchHoldTimer=null;}
     if(!drag||!dragDef)return;
     drag.classList.remove('dragging');drag.style.zIndex='';
     document.body.style.userSelect='';
@@ -1315,11 +1442,12 @@ function dockBounce(el){el.classList.remove('bounce');void el.offsetWidth;el.cla
 
   const grid=document.getElementById('widget-grid');
   grid.addEventListener('mousedown',onDown);
-  grid.addEventListener('touchstart',onDown,{passive:false});
+  grid.addEventListener('touchstart',onDown,{passive:true}); // passive:true lets taps fire naturally
   window.addEventListener('mousemove',onMove);
   window.addEventListener('touchmove',onMove,{passive:false});
   window.addEventListener('mouseup',onUp);
   window.addEventListener('touchend',onUp);
+  window.addEventListener('touchcancel',()=>{if(touchHoldTimer){clearTimeout(touchHoldTimer);touchHoldTimer=null;}drag=null;dragDef=null;dragMoved=false;});
   window.addEventListener('resize',()=>place(false));
 
   requestAnimationFrame(build);
@@ -1758,6 +1886,119 @@ async function selectLanguage(code,name,flag){
   setTimeout(()=>ov.classList.remove('fading'),500);
 }
 
+// ── NOTEPAD APP ──
+let notepadOpen=false,notepadMax=false,notepadMinned=false;
+const notepadWin=document.getElementById('notepad-window');
+let npNotes=[{id:1,title:'Welcome',content:'<b>Welcome to Notes</b><br>Start writing your thoughts here.',date:'Today'}];
+let npActive=0;
+
+function npRenderList(){
+  const list=document.getElementById('notepad-note-list');
+  if(!list)return;
+  list.innerHTML=npNotes.map((n,i)=>`
+    <div class="np-note-item${i===npActive?' active':''}" onclick="npSelect(${i})">
+      <div class="np-note-title">${n.title||'Untitled'}</div>
+      <div class="np-note-preview">${n.content.replace(/<[^>]+>/g,' ').trim().slice(0,40)||'No content'}</div>
+      <div class="np-note-date">${n.date}</div>
+    </div>`).join('');
+}
+function npSelect(i){
+  // Save current
+  const ed=document.getElementById('notepad-editor');
+  if(ed) npNotes[npActive].content=ed.innerHTML;
+  npActive=i;
+  if(ed) ed.innerHTML=npNotes[i].content;
+  npRenderList();
+}
+function npNew(){
+  const ed=document.getElementById('notepad-editor');
+  if(ed) npNotes[npActive].content=ed.innerHTML;
+  const d=new Date(),ds=d.toLocaleDateString('en-GB',{day:'numeric',month:'short'});
+  npNotes.unshift({id:Date.now(),title:'New Note',content:'',date:ds});
+  npActive=0;
+  if(ed){ed.innerHTML='';ed.focus();}
+  npRenderList();
+}
+function npFormat(cmd){ document.execCommand(cmd,false,null); document.getElementById('notepad-editor')?.focus(); }
+function npAlign(dir){ document.execCommand('justify'+dir[0].toUpperCase()+dir.slice(1),false,null); }
+
+// Auto-save note title from first line
+document.addEventListener('input',e=>{
+  if(e.target.id==='notepad-editor'){
+    const text=e.target.innerText.trim().split('\n')[0].slice(0,40)||'Untitled';
+    npNotes[npActive].title=text;
+    npRenderList();
+  }
+});
+
+function openNotepad(){
+  notepadOpen=true;notepadMinned=false;notepadMax=false;
+  document.getElementById('dock-notes-app').classList.add('app-open');
+  npRenderList();
+  const ed=document.getElementById('notepad-editor');
+  if(ed) ed.innerHTML=npNotes[npActive].content;
+  notepadWin.style.cssText='';
+  notepadWin.style.left='50%';notepadWin.style.top='50%';
+  notepadWin.style.transition='none';notepadWin.style.opacity='0';
+  notepadWin.style.transform='translate(-50%,-50%) scale(0.05)';
+  notepadWin.classList.remove('minimising','maximised','open');
+  requestAnimationFrame(()=>requestAnimationFrame(()=>{
+    notepadWin.style.transition='opacity 0.22s ease,transform 0.38s cubic-bezier(0.34,1.28,0.64,1)';
+    notepadWin.style.opacity='1';notepadWin.style.transform='translate(-50%,-50%) scale(1)';
+    notepadWin.style.pointerEvents='all';notepadWin.classList.add('open');
+  }));
+}
+function closeNotepad(){
+  if(!notepadOpen)return;
+  document.getElementById('dock-notes-app').classList.remove('app-open');
+  const ed=document.getElementById('notepad-editor');
+  if(ed) npNotes[npActive].content=ed.innerHTML;
+  notepadWin.style.transition='opacity 0.3s ease,transform 0.3s ease';
+  notepadWin.style.opacity='0';notepadWin.style.transform='translate(-50%,-50%) scale(0.88) translateY(8px)';
+  notepadWin.style.pointerEvents='none';
+  setTimeout(()=>{notepadWin.classList.remove('open','maximised');notepadWin.style.cssText='';notepadOpen=false;},320);
+}
+function minimiseNotepad(){
+  if(!notepadOpen)return;
+  if(notepadMinned){
+    notepadMinned=false;notepadWin.classList.remove('minimising');notepadWin.style.cssText='';
+    notepadWin.style.left='50%';notepadWin.style.top='50%';
+    notepadWin.style.transform='translate(-50%,-50%) scale(0.88) translateY(8px)';
+    requestAnimationFrame(()=>requestAnimationFrame(()=>notepadWin.classList.add('open')));return;
+  }
+  const icon=document.getElementById('dock-notes-app'),ir=icon.getBoundingClientRect(),wr=notepadWin.getBoundingClientRect();
+  notepadWin.style.setProperty('--np-tx',(ir.left+ir.width/2-wr.left-wr.width/2)+'px');
+  notepadWin.style.setProperty('--np-ty',(ir.top+ir.height/2-wr.top-wr.height/2)+'px');
+  notepadWin.classList.remove('open','maximised');notepadWin.classList.add('minimising');
+  notepadMinned=true;notepadMax=false;
+}
+function maximiseNotepad(){
+  if(!notepadOpen)return;
+  notepadMax=!notepadMax;
+  if(notepadMax){notepadWin.classList.add('maximised');notepadWin.classList.remove('minimising');}
+  else{notepadWin.classList.remove('maximised');notepadWin.style.left='50%';notepadWin.style.top='50%';
+    notepadWin.style.width='';notepadWin.style.height='';notepadWin.style.transform='';
+    requestAnimationFrame(()=>requestAnimationFrame(()=>notepadWin.classList.add('open')));}
+}
+// Notepad drag
+(function(){
+  const tb=document.getElementById('notepad-titlebar');
+  const MENU_H=24,DOCK_H=78;
+  let drag=false,ox=0,oy=0,raf=null;
+  function startDrag(ex,ey){const r=notepadWin.getBoundingClientRect();ox=ex-r.left;oy=ey-r.top;notepadWin.style.transition='none';notepadWin.style.transform='none';notepadWin.style.left=r.left+'px';notepadWin.style.top=r.top+'px';}
+  function moveDrag(ex,ey){if(!drag||raf)return;raf=requestAnimationFrame(()=>{raf=null;const x=Math.max(0,Math.min(window.innerWidth-notepadWin.offsetWidth,ex-ox));const y=Math.max(MENU_H,Math.min(window.innerHeight-DOCK_H-36,ey-oy));notepadWin.style.left=x+'px';notepadWin.style.top=y+'px';});}
+  tb.addEventListener('mousedown',e=>{if(notepadMax||e.target.classList.contains('pw-dot'))return;drag=true;startDrag(e.clientX,e.clientY);e.preventDefault();});
+  tb.addEventListener('touchstart',e=>{if(notepadMax||e.target.classList.contains('pw-dot'))return;drag=true;startDrag(e.touches[0].clientX,e.touches[0].clientY);e.preventDefault();},{passive:false});
+  window.addEventListener('mousemove',e=>{moveDrag(e.clientX,e.clientY);});
+  window.addEventListener('touchmove',e=>{if(!drag)return;e.preventDefault();moveDrag(e.touches[0].clientX,e.touches[0].clientY);},{passive:false});
+  window.addEventListener('mouseup',()=>{drag=false;raf=null;});
+  window.addEventListener('touchend',()=>{drag=false;raf=null;});
+})();
+// Notepad in bringToFront
+document.querySelectorAll && document.addEventListener && (()=>{
+  const _oldBTF=document.onmousedown;
+})();
+
 // ── PHOTOS WINDOW ──
 const photosWin=document.getElementById('photos-window');
 const photosScrim=document.getElementById('photos-scrim');
@@ -1806,11 +2047,11 @@ function bringToFront(winEl){
   winEl.style.zIndex=_winZ;
 }
 document.addEventListener('mousedown',e=>{
-  const win=e.target.closest('#photos-window,#music-window');
+  const win=e.target.closest('#photos-window,#music-window,#notepad-window');
   if(win) bringToFront(win);
 },true);
 document.addEventListener('touchstart',e=>{
-  const win=e.target.closest('#photos-window,#music-window');
+  const win=e.target.closest('#photos-window,#music-window,#notepad-window');
   if(win) bringToFront(win);
 },true);
 
@@ -1857,14 +2098,30 @@ function maximisePhotos(){
   if(photosMax){photosWin.classList.add('maximised');photosWin.classList.remove('minimising');photosScrim.classList.remove('visible');}
   else{photosWin.classList.remove('maximised');photosWin.style.left='50%';photosWin.style.top='50%';photosWin.style.width='';photosWin.style.height='';photosWin.style.transform='';requestAnimationFrame(()=>requestAnimationFrame(()=>{photosWin.classList.add('open');photosScrim.classList.add('visible');}));}
 }
-(function(){const tb=document.getElementById('pw-titlebar');let drag=false,ox=0,oy=0;
-function startDrag(cx,cy){const r=photosWin.getBoundingClientRect();ox=cx-r.left;oy=cy-r.top;photosWin.style.transition='none';photosWin.style.transform='none';photosWin.style.left=r.left+'px';photosWin.style.top=r.top+'px';}
+(function(){const tb=document.getElementById('pw-titlebar');let drag=false,ox=0,oy=0,raf=null;
+const MENU_H=24,DOCK_H=78;
+function clamp(x,y){
+  const w=photosWin.offsetWidth,h=photosWin.offsetHeight;
+  const cx=Math.max(0,Math.min(window.innerWidth-w,x));
+  const cy=Math.max(MENU_H,Math.min(window.innerHeight-DOCK_H-36,y));
+  return {cx,cy};
+}
+function startDrag(ex,ey){const r=photosWin.getBoundingClientRect();ox=ex-r.left;oy=ey-r.top;photosWin.style.transition='none';photosWin.style.transform='none';photosWin.style.left=r.left+'px';photosWin.style.top=r.top+'px';}
+function moveDrag(ex,ey){
+  if(!drag)return;
+  if(raf)return;
+  raf=requestAnimationFrame(()=>{
+    raf=null;
+    const {cx,cy}=clamp(ex-ox,ey-oy);
+    photosWin.style.left=cx+'px';photosWin.style.top=cy+'px';
+  });
+}
 tb.addEventListener('mousedown',e=>{if(photosMax||e.target.classList.contains('pw-dot'))return;drag=true;startDrag(e.clientX,e.clientY);e.preventDefault();});
 tb.addEventListener('touchstart',e=>{if(photosMax||e.target.classList.contains('pw-dot'))return;drag=true;startDrag(e.touches[0].clientX,e.touches[0].clientY);e.preventDefault();},{passive:false});
-window.addEventListener('mousemove',e=>{if(!drag)return;photosWin.style.left=(e.clientX-ox)+'px';photosWin.style.top=(e.clientY-oy)+'px';});
-window.addEventListener('touchmove',e=>{if(!drag)return;photosWin.style.left=(e.touches[0].clientX-ox)+'px';photosWin.style.top=(e.touches[0].clientY-oy)+'px';},{passive:false});
-window.addEventListener('mouseup',()=>{drag=false;photosWin.style.transition='';});
-window.addEventListener('touchend',()=>{drag=false;photosWin.style.transition='';});})();
+window.addEventListener('mousemove',e=>{moveDrag(e.clientX,e.clientY);});
+window.addEventListener('touchmove',e=>{if(!drag)return;e.preventDefault();moveDrag(e.touches[0].clientX,e.touches[0].clientY);},{passive:false});
+window.addEventListener('mouseup',()=>{drag=false;raf=null;});
+window.addEventListener('touchend',()=>{drag=false;raf=null;});})();
 (function(){const h=document.getElementById('pw-resize');let r=false,sx=0,sy=0,sw=0,sh=0;h.addEventListener('mousedown',e=>{if(photosMax)return;r=true;sx=e.clientX;sy=e.clientY;sw=photosWin.offsetWidth;sh=photosWin.offsetHeight;e.preventDefault();});window.addEventListener('mousemove',e=>{if(!r)return;photosWin.style.width=Math.max(500,sw+e.clientX-sx)+'px';photosWin.style.height=Math.max(340,sh+e.clientY-sy)+'px';});window.addEventListener('mouseup',()=>{r=false;});})();
 document.querySelectorAll('.pw-toolbar-btn').forEach(btn=>{btn.addEventListener('click',()=>{document.querySelectorAll('.pw-toolbar-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');});});
 document.querySelectorAll('.pw-sidebar-item').forEach(item=>{item.addEventListener('click',()=>{document.querySelectorAll('.pw-sidebar-item').forEach(i=>i.classList.remove('active'));item.classList.add('active');});});
@@ -2115,14 +2372,26 @@ function maximiseMusic(){
 }
 (function(){
   const tb=document.getElementById('music-titlebar');
-  let drag=false,ox=0,oy=0;
-  function startDrag(cx,cy){const win=document.getElementById('music-window');const r=win.getBoundingClientRect();ox=cx-r.left;oy=cy-r.top;win.style.transition='none';win.style.transform='none';win.style.left=r.left+'px';win.style.top=r.top+'px';}
-  tb.addEventListener('mousedown',e=>{const win=document.getElementById('music-window');if(musicMax||e.target.classList.contains('pw-dot'))return;drag=true;startDrag(e.clientX,e.clientY);e.preventDefault();});
+  const MENU_H=24,DOCK_H=78;
+  let drag=false,ox=0,oy=0,raf=null;
+  function clampW(x,y){const win=document.getElementById('music-window');const w=win.offsetWidth,h=win.offsetHeight;return{cx:Math.max(0,Math.min(window.innerWidth-w,x)),cy:Math.max(MENU_H,Math.min(window.innerHeight-DOCK_H-36,y))};}
+  function startDrag(ex,ey){const win=document.getElementById('music-window');const r=win.getBoundingClientRect();ox=ex-r.left;oy=ey-r.top;win.style.transition='none';win.style.transform='none';win.style.left=r.left+'px';win.style.top=r.top+'px';}
+  function moveDrag(ex,ey){
+    if(!drag)return;
+    if(raf)return;
+    raf=requestAnimationFrame(()=>{
+      raf=null;
+      const win=document.getElementById('music-window');
+      const {cx,cy}=clampW(ex-ox,ey-oy);
+      win.style.left=cx+'px';win.style.top=cy+'px';
+    });
+  }
+  tb.addEventListener('mousedown',e=>{if(musicMax||e.target.classList.contains('pw-dot'))return;drag=true;startDrag(e.clientX,e.clientY);e.preventDefault();});
   tb.addEventListener('touchstart',e=>{if(musicMax||e.target.classList.contains('pw-dot'))return;drag=true;startDrag(e.touches[0].clientX,e.touches[0].clientY);e.preventDefault();},{passive:false});
-  window.addEventListener('mousemove',e=>{if(!drag)return;const win=document.getElementById('music-window');win.style.left=(e.clientX-ox)+'px';win.style.top=(e.clientY-oy)+'px';});
-  window.addEventListener('touchmove',e=>{if(!drag)return;const win=document.getElementById('music-window');win.style.left=(e.touches[0].clientX-ox)+'px';win.style.top=(e.touches[0].clientY-oy)+'px';},{passive:false});
-  window.addEventListener('mouseup',()=>{drag=false;const win=document.getElementById('music-window');if(win)win.style.transition='';});
-  window.addEventListener('touchend',()=>{drag=false;const win=document.getElementById('music-window');if(win)win.style.transition='';});
+  window.addEventListener('mousemove',e=>{moveDrag(e.clientX,e.clientY);});
+  window.addEventListener('touchmove',e=>{if(!drag)return;e.preventDefault();moveDrag(e.touches[0].clientX,e.touches[0].clientY);},{passive:false});
+  window.addEventListener('mouseup',()=>{drag=false;raf=null;});
+  window.addEventListener('touchend',()=>{drag=false;raf=null;});
 })();
 
 // ── P5 ──
