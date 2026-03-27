@@ -366,10 +366,7 @@ body {
 .pw-dot.close { background:radial-gradient(circle at 35% 30%,#ff8a80,#dd1e3a); }
 .pw-dot.min   { background:radial-gradient(circle at 35% 30%,#ffdd7a,#dda500); }
 .pw-dot.maxb  { background:radial-gradient(circle at 35% 30%,#7aff8a,#1eb830); }
-.pw-dot::after { content:''; position:absolute; inset:0; display:flex; align-items:center; justify-content:center; opacity:0; transition:opacity 0.1s; font-size:8px; color:rgba(0,0,0,0.55); }
-.pw-dot.close:hover::after { content:'✕'; opacity:1; }
-.pw-dot.min:hover::after   { content:'−'; opacity:1; }
-.pw-dot.maxb:hover::after  { content:'↗'; opacity:1; }
+.pw-dot::after { content:""; }
 .pw-title { position:absolute; left:50%; transform:translateX(-50%); font-size:13px; font-weight:600; color:rgba(255,255,255,0.82); pointer-events:none; }
 .pw-body { display:flex; flex:1; overflow:hidden; }
 .pw-sidebar { width:180px; flex-shrink:0; background:#2c2c2e; border-right:1px solid rgba(255,255,255,0.06); display:flex; flex-direction:column; padding:12px 0; overflow-y:auto; }
@@ -831,10 +828,15 @@ body.dark-mode.high-contrast .cal-day { color:#fff; font-weight:600; }
 .np-tb-sep { width:1px; height:18px; background:rgba(0,0,0,0.15); margin:0 3px; }
 #notepad-body { display:flex; flex:1; overflow:hidden; }
 #notepad-sidebar {
-  width:200px; flex-shrink:0; background:#ede9e3;
+  width:160px; min-width:100px; max-width:320px; flex-shrink:0; background:#ede9e3;
   border-right:1px solid rgba(0,0,0,0.09);
-  overflow-y:auto; display:flex; flex-direction:column;
+  overflow-y:auto; display:flex; flex-direction:column; position:relative;
 }
+#np-sidebar-resize { position:absolute; right:0; top:0; bottom:0; width:5px; cursor:col-resize; z-index:5; }
+#np-sidebar-resize:hover { background:rgba(0,0,0,0.09); }
+#np-new-btn { display:flex; align-items:center; justify-content:space-between; padding:7px 10px 7px 12px; font-size:12px; font-weight:600; color:#444; border-bottom:1px solid rgba(0,0,0,0.08); flex-shrink:0; background:#e5e0da; }
+#np-new-btn button { width:20px; height:20px; border-radius:50%; border:none; background:rgba(0,0,0,0.14); font-size:14px; line-height:1; display:flex; align-items:center; justify-content:center; color:#333; }
+#np-new-btn button:hover { background:rgba(0,0,0,0.24); }
 .np-note-item {
   padding:10px 14px; border-bottom:1px solid rgba(0,0,0,0.06);
   cursor:pointer; transition:background 0.1s; user-select:none;
@@ -1069,22 +1071,47 @@ body.dark-mode.high-contrast .cal-day { color:#fff; font-weight:600; }
     <div class="pw-dot close" onclick="closeNotepad()"></div>
     <div class="pw-dot min" onclick="minimiseNotepad()"></div>
     <div class="pw-dot maxb" onclick="maximiseNotepad()"></div>
-    <span style="position:absolute;left:50%;transform:translateX(-50%);font-size:13px;font-weight:600;color:rgba(255,255,255,0.80);pointer-events:none">Notes</span>
+    <span style="position:absolute;left:50%;transform:translateX(-50%);font-size:13px;font-weight:600;color:rgba(0,0,0,0.65);pointer-events:none">Notes</span>
   </div>
-  <div id="notepad-toolbar">
-    <button class="np-tb-btn" onclick="npFormat('bold')" title="Bold"><b>B</b></button>
-    <button class="np-tb-btn" onclick="npFormat('italic')" title="Italic"><i>I</i></button>
-    <button class="np-tb-btn" onclick="npFormat('underline')" title="Underline"><u>U</u></button>
+  <div id="notepad-toolbar" style="flex-wrap:wrap;height:auto;padding:4px 8px;gap:2px;">
+    <select class="np-tb-btn" onchange="document.execCommand('fontName',false,this.value)" title="Font" style="padding:0 4px;font-size:11px;max-width:80px;">
+      <option value="-apple-system,sans-serif">System</option>
+      <option value="Georgia,serif">Georgia</option>
+      <option value="'Courier New',monospace">Mono</option>
+      <option value="Arial,sans-serif">Arial</option>
+    </select>
+    <select class="np-tb-btn" onchange="document.execCommand('fontSize',false,this.value)" title="Size" style="padding:0 4px;width:46px;font-size:11px;">
+      <option value="2">S</option>
+      <option value="3" selected>M</option>
+      <option value="4">L</option>
+      <option value="5">XL</option>
+      <option value="6">2X</option>
+    </select>
     <div class="np-tb-sep"></div>
-    <button class="np-tb-btn" onclick="npFormat('insertUnorderedList')" title="List">≡</button>
-    <button class="np-tb-btn" onclick="npAlign('left')" title="Left">⬅</button>
-    <button class="np-tb-btn" onclick="npAlign('center')" title="Center">↔</button>
+    <button class="np-tb-btn" onclick="document.execCommand('bold')" title="Bold"><b>B</b></button>
+    <button class="np-tb-btn" onclick="document.execCommand('italic')" title="Italic"><i>I</i></button>
+    <button class="np-tb-btn" onclick="document.execCommand('underline')" title="Underline"><u>U</u></button>
+    <button class="np-tb-btn" onclick="document.execCommand('strikeThrough')" title="Strike" style="text-decoration:line-through;">S</button>
+    <div class="np-tb-sep"></div>
+    <button class="np-tb-btn" onclick="document.execCommand('justifyLeft')" title="Left">&#8676;</button>
+    <button class="np-tb-btn" onclick="document.execCommand('justifyCenter')" title="Centre">&#8652;</button>
+    <button class="np-tb-btn" onclick="document.execCommand('justifyRight')" title="Right">&#8677;</button>
+    <div class="np-tb-sep"></div>
+    <button class="np-tb-btn" onclick="document.execCommand('insertUnorderedList')" title="Bullets">•≡</button>
+    <button class="np-tb-btn" onclick="document.execCommand('insertOrderedList')" title="Numbered">1≡</button>
+    <button class="np-tb-btn" onclick="document.execCommand('indent')" title="Indent">⇥</button>
+    <button class="np-tb-btn" onclick="document.execCommand('outdent')" title="Outdent">⇤</button>
+    <div class="np-tb-sep"></div>
+    <input type="color" class="np-tb-btn" onchange="document.execCommand('foreColor',false,this.value)" title="Text colour" style="padding:1px;width:26px;height:22px;border:1px solid rgba(0,0,0,0.15);background:#fff;border-radius:4px;">
+    <button class="np-tb-btn" onclick="npDownloadPDF()" title="Download PDF" style="font-size:11px;padding:0 6px;">⬇ PDF</button>
     <div style="flex:1"></div>
-    <button class="np-tb-btn" onclick="npNew()" title="New note" style="opacity:0.7">＋</button>
+    <button class="np-tb-btn" onclick="npNew()" title="New note" style="font-weight:700;font-size:15px;padding:0 8px;">＋</button>
   </div>
   <div id="notepad-body">
     <div id="notepad-sidebar">
+      <div id="np-new-btn"><span>Notes</span><button onclick="npNew()">＋</button></div>
       <div id="notepad-note-list"></div>
+      <div id="np-sidebar-resize"></div>
     </div>
     <div id="notepad-main">
       <div id="notepad-editor" contenteditable="true" spellcheck="true" placeholder="Start writing…"></div>
@@ -1921,6 +1948,24 @@ function npNew(){
 }
 function npFormat(cmd){ document.execCommand(cmd,false,null); document.getElementById('notepad-editor')?.focus(); }
 function npAlign(dir){ document.execCommand('justify'+dir[0].toUpperCase()+dir.slice(1),false,null); }
+function npDownloadPDF(){
+  const ed=document.getElementById('notepad-editor');
+  const title=(npNotes&&npNotes[npActive])?npNotes[npActive].title||'Note':'Note';
+  const html='<!DOCTYPE html><html><head><meta charset="UTF-8"><title>'+title+'</title><style>body{font-family:-apple-system,sans-serif;font-size:15px;line-height:1.7;color:#1a1a1a;padding:48px;max-width:680px;margin:0 auto;}h1{font-size:22px;margin-bottom:20px;color:#1a1a1a;}</style></head><body><h1>'+title+'</h1>'+ed.innerHTML+'</body></html>';
+  const blob=new Blob([html],{type:'text/html'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');a.href=url;a.download=title+'.html';document.body.appendChild(a);a.click();document.body.removeChild(a);
+  setTimeout(()=>URL.revokeObjectURL(url),1000);
+}
+(function(){
+  const handle=document.getElementById('np-sidebar-resize');
+  const sb=document.getElementById('notepad-sidebar');
+  if(!handle||!sb)return;
+  let rsz=false,sx=0,sw=0;
+  handle.addEventListener('mousedown',e=>{rsz=true;sx=e.clientX;sw=sb.offsetWidth;e.preventDefault();});
+  window.addEventListener('mousemove',e=>{if(!rsz)return;sb.style.width=Math.max(100,Math.min(320,sw+e.clientX-sx))+'px';});
+  window.addEventListener('mouseup',()=>{rsz=false;});
+})();
 
 // Auto-save note title from first line
 document.addEventListener('input',e=>{
@@ -1942,6 +1987,7 @@ function openNotepad(){
   notepadWin.style.transition='none';notepadWin.style.opacity='0';
   notepadWin.style.transform='translate(-50%,-50%) scale(0.05)';
   notepadWin.classList.remove('minimising','maximised','open');
+  bringToFront(notepadWin);
   requestAnimationFrame(()=>requestAnimationFrame(()=>{
     notepadWin.style.transition='opacity 0.22s ease,transform 0.38s cubic-bezier(0.34,1.28,0.64,1)';
     notepadWin.style.opacity='1';notepadWin.style.transform='translate(-50%,-50%) scale(1)';
