@@ -665,14 +665,39 @@ body.dark-mode #widget-dropdown {
 }
 body.dark-mode .dd-item { color: #f2f2f7; border-bottom-color: rgba(255,255,255,0.07); }
 body.dark-mode .dd-item:hover { background: rgba(255,255,255,0.07); }
-/* Weather and notes text */
+/* Weather and notes widget text */
 body.dark-mode .widget-weather .location,
 body.dark-mode .widget-weather .condition,
 body.dark-mode .widget-weather .temp { color: #f2f2f7; }
 body.dark-mode .wnotes-area { color: #f2f2f7; }
 body.dark-mode .wnotes-area::placeholder { color: rgba(255,255,255,0.25); }
 body.dark-mode .wnotes-header { color: rgba(255,255,255,0.4); }
+/* Notepad APP dark mode */
+body.dark-mode #notepad-window { background:#1c1c1e; box-shadow:0 24px 70px rgba(0,0,0,0.6),0 0 0 1px rgba(255,255,255,0.08); }
+body.dark-mode #notepad-titlebar { background:linear-gradient(180deg,#3c3c3e,#2c2c2e); border-bottom-color:rgba(0,0,0,0.4); }
+body.dark-mode #notepad-titlebar span { color:rgba(255,255,255,0.78)!important; }
+body.dark-mode #notepad-toolbar { background:#2a2a2c; border-bottom:1px solid rgba(255,255,255,0.06); }
+body.dark-mode .np-tb-btn { color:#e0e0e2; }
+body.dark-mode .np-tb-btn:hover { background:rgba(255,255,255,0.10); }
+body.dark-mode .np-tb-sep { background:rgba(255,255,255,0.14); }
+body.dark-mode #notepad-sidebar { background:#252527; border-right-color:rgba(255,255,255,0.06); }
+body.dark-mode #np-new-btn { background:#2e2e30; color:rgba(255,255,255,0.6); border-bottom-color:rgba(255,255,255,0.07); }
+body.dark-mode .np-note-item { border-bottom-color:rgba(255,255,255,0.05); }
+body.dark-mode .np-note-item:hover { background:rgba(255,255,255,0.06); }
+body.dark-mode .np-note-item.active { background:rgba(255,200,50,0.18); }
+body.dark-mode .np-note-title { color:#e8e8ea; }
+body.dark-mode .np-note-preview, body.dark-mode .np-note-date { color:rgba(255,255,255,0.38); }
+body.dark-mode #notepad-main { background:#1c1c1e; }
+body.dark-mode #np-note-title { color:#f2f2f7; border-bottom-color:rgba(255,255,255,0.08); }
+body.dark-mode #notepad-editor { color:#e8e8ea; }
 
+
+/* ── SAVE WALLPAPER BUTTON ── */
+#save-wallpaper-btn { display:flex;align-items:center;justify-content:center;cursor:pointer;user-select:none;margin-right:4px;opacity:0.7;border-radius:3px;transition:opacity 0.15s; }
+#save-wallpaper-btn:hover { opacity:1; }
+#save-wallpaper-btn:active { opacity:0.45; }
+body.dark-mode #save-wallpaper-btn svg rect { fill:rgba(255,255,255,0.10); }
+body.dark-mode #save-wallpaper-btn svg path { stroke:rgba(255,255,255,0.65); }
 
 /* ── DAY/NIGHT PILL TOGGLE ── */
 #daynight-toggle {
@@ -788,7 +813,7 @@ body.dark-mode.high-contrast .cal-day { color:#fff; font-weight:600; }
 /* ── NOTEPAD APP ── */
 #notepad-window {
   position:fixed; left:50%; top:50%;
-  width:720px; height:520px; max-width:94vw; max-height:88vh;
+  width:820px; height:580px; max-width:96vw; max-height:90vh;
   background:#faf8f5; border-radius:12px;
   box-shadow:0 24px 70px rgba(0,0,0,0.45), 0 0 0 1px rgba(0,0,0,0.10);
   display:flex; flex-direction:column;
@@ -855,6 +880,7 @@ body.dark-mode.high-contrast .cal-day { color:#fff; font-weight:600; }
   cursor:text!important; pointer-events:all!important;
 }
 #notepad-editor:empty::before { content:attr(placeholder); color:rgba(0,0,0,0.25); pointer-events:none; }
+#np-note-title:empty::before { content:attr(data-placeholder); color:rgba(0,0,0,0.22); pointer-events:none; }
 /* ── COLOUR FILTER OVERLAY ── */
 #cw-overlay {
   position:fixed; inset:0; z-index:450;
@@ -888,6 +914,12 @@ body.dark-mode.high-contrast .cal-day { color:#fff; font-weight:600; }
     <span class="menu-item" onclick="window.open('https://www.cscassets.com/recipes/large_cknew/large_25946.jpg','_blank')">Tacos Banana Plumber Solution</span>
   </div>
   <div class="menubar-right">
+    <div id="save-wallpaper-btn" onclick="saveWallpaper()" title="Save Wallpaper">
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect width="14" height="14" rx="3" fill="rgba(0,0,0,0.07)"/>
+        <path d="M7 2.5v5M4.5 6L7 8.5 9.5 6M3 10.5h8" stroke="rgba(0,0,0,0.55)" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </div>
     <div id="daynight-toggle" onclick="toggleDarkMode()" title="Toggle Dark Mode">
       <div id="daynight-track">
         <div id="daynight-icons">
@@ -1102,8 +1134,16 @@ body.dark-mode.high-contrast .cal-day { color:#fff; font-weight:600; }
     <button class="np-tb-btn" onclick="document.execCommand('indent')" title="Indent">⇥</button>
     <button class="np-tb-btn" onclick="document.execCommand('outdent')" title="Outdent">⇤</button>
     <div class="np-tb-sep"></div>
-    <input type="color" class="np-tb-btn" onchange="document.execCommand('foreColor',false,this.value)" title="Text colour" style="padding:1px;width:26px;height:22px;border:1px solid rgba(0,0,0,0.15);background:#fff;border-radius:4px;">
-    <button class="np-tb-btn" onclick="npDownloadPDF()" title="Download PDF" style="font-size:11px;padding:0 6px;">⬇ PDF</button>
+    <label title="Text colour" style="position:relative;width:20px;height:20px;border-radius:50%;overflow:hidden;cursor:pointer;border:2px solid rgba(0,0,0,0.14);box-shadow:0 1px 3px rgba(0,0,0,0.14);flex-shrink:0;transition:transform 0.1s;" onmouseover="this.style.transform='scale(1.18)'" onmouseout="this.style.transform='scale(1)'">
+      <span style="position:absolute;inset:0;background:conic-gradient(red,yellow,lime,cyan,blue,magenta,red);border-radius:50%;pointer-events:none;"></span>
+      <input type="color" onchange="document.execCommand('foreColor',false,this.value)" style="opacity:0;position:absolute;inset:0;width:100%;height:100%;cursor:pointer;">
+    </label>
+    <label title="Highlight" style="position:relative;width:20px;height:20px;border-radius:50%;overflow:hidden;cursor:pointer;border:2px solid rgba(0,0,0,0.12);box-shadow:0 1px 3px rgba(0,0,0,0.12);flex-shrink:0;transition:transform 0.1s;" onmouseover="this.style.transform='scale(1.18)'" onmouseout="this.style.transform='scale(1)'">
+      <span style="position:absolute;inset:0;background:linear-gradient(135deg,#ffe066,#ff9f0a,#ff6b9d,#a8edea);border-radius:50%;pointer-events:none;"></span>
+      <input type="color" value="#ffff00" onchange="document.execCommand('hiliteColor',false,this.value)" style="opacity:0;position:absolute;inset:0;width:100%;height:100%;cursor:pointer;">
+    </label>
+    <button class="np-tb-btn" onclick="npDownloadPDF()" title="Export PDF"
+      style="background:linear-gradient(135deg,#0a84ff,#0055c1);color:white;border-radius:6px;padding:0 8px;font-size:10px;font-weight:600;letter-spacing:0.03em;height:22px;box-shadow:0 1px 4px rgba(0,84,255,0.3);border:none;flex-shrink:0;">PDF ↓</button>
     <div style="flex:1"></div>
     <button class="np-tb-btn" onclick="npNew()" title="New note" style="font-weight:700;font-size:15px;padding:0 8px;">＋</button>
   </div>
@@ -1114,6 +1154,12 @@ body.dark-mode.high-contrast .cal-day { color:#fff; font-weight:600; }
       <div id="np-sidebar-resize"></div>
     </div>
     <div id="notepad-main">
+      <div id="np-note-title" contenteditable="true" spellcheck="false"
+        style="padding:16px 24px 4px;font-size:20px;font-weight:700;color:#1a1a1a;outline:none;
+               border:none;background:transparent;user-select:text;-webkit-user-select:text;
+               cursor:text!important;pointer-events:all!important;white-space:nowrap;overflow:hidden;
+               border-bottom:1px solid rgba(0,0,0,0.06);flex-shrink:0;"
+        data-placeholder="Untitled"></div>
       <div id="notepad-editor" contenteditable="true" spellcheck="true" placeholder="Start writing…"></div>
     </div>
   </div>
@@ -1680,6 +1726,15 @@ function applyHideDock(on){
   }
 }
 
+function saveWallpaper(){
+  const canvas=document.querySelector('#p5-canvas canvas');
+  if(!canvas){alert('Wallpaper not ready');return;}
+  const a=document.createElement('a');
+  a.download='wallpaper.png';
+  a.href=canvas.toDataURL('image/png');
+  document.body.appendChild(a);a.click();document.body.removeChild(a);
+}
+
 let _darkMode=false;
 function toggleDarkMode(){
   _darkMode=!_darkMode;
@@ -1916,7 +1971,7 @@ async function selectLanguage(code,name,flag){
 // ── NOTEPAD APP ──
 let notepadOpen=false,notepadMax=false,notepadMinned=false;
 const notepadWin=document.getElementById('notepad-window');
-let npNotes=[{id:1,title:'Welcome',content:'<b>Welcome to Notes</b><br>Start writing your thoughts here.',date:'Today'}];
+let npNotes=[{id:1,title:'Untitled',content:'',date:new Date().toLocaleDateString('en-GB',{day:'numeric',month:'short'})}];
 let npActive=0;
 
 function npRenderList(){
@@ -1930,32 +1985,40 @@ function npRenderList(){
     </div>`).join('');
 }
 function npSelect(i){
-  // Save current
   const ed=document.getElementById('notepad-editor');
+  const tEl=document.getElementById('np-note-title');
   if(ed) npNotes[npActive].content=ed.innerHTML;
+  if(tEl) npNotes[npActive].title=tEl.textContent.trim()||'Untitled';
   npActive=i;
   if(ed) ed.innerHTML=npNotes[i].content;
+  if(tEl) tEl.textContent=npNotes[i].title==='Untitled'?'':npNotes[i].title;
   npRenderList();
 }
 function npNew(){
   const ed=document.getElementById('notepad-editor');
+  const tEl=document.getElementById('np-note-title');
   if(ed) npNotes[npActive].content=ed.innerHTML;
+  if(tEl) npNotes[npActive].title=tEl.textContent.trim()||'Untitled';
   const d=new Date(),ds=d.toLocaleDateString('en-GB',{day:'numeric',month:'short'});
-  npNotes.unshift({id:Date.now(),title:'New Note',content:'',date:ds});
+  npNotes.unshift({id:Date.now(),title:'',content:'',date:ds});
   npActive=0;
   if(ed){ed.innerHTML='';ed.focus();}
+  if(tEl){tEl.textContent='';tEl.focus();}
   npRenderList();
 }
 function npFormat(cmd){ document.execCommand(cmd,false,null); document.getElementById('notepad-editor')?.focus(); }
 function npAlign(dir){ document.execCommand('justify'+dir[0].toUpperCase()+dir.slice(1),false,null); }
 function npDownloadPDF(){
   const ed=document.getElementById('notepad-editor');
-  const title=(npNotes&&npNotes[npActive])?npNotes[npActive].title||'Note':'Note';
-  const html='<!DOCTYPE html><html><head><meta charset="UTF-8"><title>'+title+'</title><style>body{font-family:-apple-system,sans-serif;font-size:15px;line-height:1.7;color:#1a1a1a;padding:48px;max-width:680px;margin:0 auto;}h1{font-size:22px;margin-bottom:20px;color:#1a1a1a;}</style></head><body><h1>'+title+'</h1>'+ed.innerHTML+'</body></html>';
-  const blob=new Blob([html],{type:'text/html'});
-  const url=URL.createObjectURL(blob);
-  const a=document.createElement('a');a.href=url;a.download=title+'.html';document.body.appendChild(a);a.click();document.body.removeChild(a);
-  setTimeout(()=>URL.revokeObjectURL(url),1000);
+  const titleEl=document.getElementById('np-note-title');
+  const title=(titleEl&&titleEl.textContent.trim())||(npNotes&&npNotes[npActive])?npNotes[npActive].title||'Note':'Note';
+  const html='<!DOCTYPE html><html><head><meta charset="UTF-8"><title>'+title+'</title><style>@page{margin:2cm}body{font-family:-apple-system,sans-serif;font-size:14pt;line-height:1.7;color:#1a1a1a;max-width:100%;}h1{font-size:20pt;margin:0 0 18px;border-bottom:1px solid #ddd;padding-bottom:8px;}@media print{body{padding:0;}}</style></head><body><h1>'+title+'</h1>'+ed.innerHTML+'</body></html>';
+  const w=window.open('','_blank','width=800,height=600');
+  if(!w)return;
+  w.document.write(html);
+  w.document.close();
+  w.focus();
+  setTimeout(()=>{w.print();},400);
 }
 (function(){
   const handle=document.getElementById('np-sidebar-resize');
@@ -1967,12 +2030,21 @@ function npDownloadPDF(){
   window.addEventListener('mouseup',()=>{rsz=false;});
 })();
 
-// Auto-save note title from first line
+// Auto-save: editor content + title field
 document.addEventListener('input',e=>{
   if(e.target.id==='notepad-editor'){
-    const text=e.target.innerText.trim().split('\n')[0].slice(0,40)||'Untitled';
-    npNotes[npActive].title=text;
+    npNotes[npActive].content=e.target.innerHTML;
+  }
+  if(e.target.id==='np-note-title'){
+    npNotes[npActive].title=e.target.textContent.trim()||'Untitled';
     npRenderList();
+  }
+});
+// Prevent newlines in title
+document.addEventListener('keydown',e=>{
+  if(e.target.id==='np-note-title'&&e.key==='Enter'){
+    e.preventDefault();
+    document.getElementById('notepad-editor')?.focus();
   }
 });
 
@@ -1982,6 +2054,8 @@ function openNotepad(){
   npRenderList();
   const ed=document.getElementById('notepad-editor');
   if(ed) ed.innerHTML=npNotes[npActive].content;
+  const titleEl=document.getElementById('np-note-title');
+  if(titleEl) titleEl.textContent=npNotes[npActive].title==='Untitled'?'':npNotes[npActive].title;
   notepadWin.style.cssText='';
   notepadWin.style.left='50%';notepadWin.style.top='50%';
   notepadWin.style.transition='none';notepadWin.style.opacity='0';
@@ -2054,17 +2128,14 @@ let animRAF=null;
 function resizeAnimCanvas(){animCanvas.width=window.innerWidth;animCanvas.height=window.innerHeight;}
 resizeAnimCanvas();window.addEventListener('resize',resizeAnimCanvas);
 let photosOpen=false,photosMax=false,photosMinned=false;
-const images=['cak.jpg','cal.jpg','cam.jpg','can.jpg','cek.jpg','cel.jpg','cem.jpg','cen.jpg','cil.jpg','cim.jpg','cin.jpg','col.jpg','com.jpg','cul.jpg','cum.jpg','cun.jpg'];
+const images=["27a.jpg", "27b.jpg", "27c.jpg", "27d.jpg", "27e.jpg", "27f.jpg", "27g.jpg", "27h.jpg", "27i.jpg", "27j.jpg", "27k.jpg", "27l.jpg", "27m.jpg", "27n.jpg", "27o.jpg", "27p.jpg", "27q.jpg", "27r.jpg", "27s.jpg", "27t.jpg", "27u.jpg", "27v.jpg", "27w.jpg"];
 function buildPhotoGrid(){
   const main=document.getElementById('pw-main');
-  const years=[{label:'2024',imgs:images.slice(0,6)},{label:'2023',imgs:images.slice(6,12)},{label:'2022',imgs:images.slice(12)}];
   main.innerHTML='';
-  years.forEach(yr=>{
-    const lbl=document.createElement('div');lbl.className='pw-year-label';lbl.textContent=yr.label;main.appendChild(lbl);
-    const grid=document.createElement('div');grid.className='pw-grid';
-    yr.imgs.forEach(src=>{const t=document.createElement('div');t.className='pw-thumb';t.innerHTML=`<img src="${src}" loading="lazy" alt=""/><div class="pw-overlay"></div>`;grid.appendChild(t);});
-    main.appendChild(grid);
-  });
+  const lbl=document.createElement('div');lbl.className='pw-year-label';lbl.textContent='2026';main.appendChild(lbl);
+  const grid=document.createElement('div');grid.className='pw-grid';
+  images.forEach(src=>{const t=document.createElement('div');t.className='pw-thumb';t.innerHTML=`<img src="${src}" loading="lazy" alt=""/><div class="pw-overlay"></div>`;grid.appendChild(t);});
+  main.appendChild(grid);
 }
 function runCloseAnimation(fromRect,iconRect,onDone){
   if(animRAF)cancelAnimationFrame(animRAF);
