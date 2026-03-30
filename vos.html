@@ -573,9 +573,10 @@ body.dark-mode .dock-dot { background: rgba(255,255,255,0.6); }
   pointer-events:all;
   border-radius:8px;
   padding:6px 4px 4px;
-  transition:background 0.1s;
+  transition:background 0.1s, left 0.32s cubic-bezier(0.34,1.2,0.64,1), top 0.32s cubic-bezier(0.34,1.2,0.64,1), transform 0.18s ease, opacity 0.18s ease;
   user-select:none;
 }
+
 .desk-icon:hover { background:rgba(0,0,0,0.06); }
 .desk-icon.selected { background:rgba(0,122,255,0.14); outline:1px solid rgba(0,122,255,0.25); }
 body.dark-mode .desk-icon:hover { background:rgba(255,255,255,0.08); }
@@ -1738,13 +1739,31 @@ function dockBounce(el){el.classList.remove('bounce');void el.offsetWidth;el.cla
   }
 
   function resolveOverlap(moved){
-    DEFS.forEach(other=>{
-      if(other.id===moved.id) return;
+    const m=gridMetrics();
+    // Build list of all occupied zones: other widgets + folders as phantom defs
+    const obstacles=[];
+    DEFS.forEach(other=>{ if(other.id!==moved.id) obstacles.push(other); });
+    // Convert each folder to widget-grid coords using shared pixel math
+    // Folder grid: FPAD=14, FGAP=10, FCW=80, FCH=92, FMENU=26
+    const FPAD=14,FGAP=10,FCW=80,FCH=92,FMENU=26;
+    if(window._folderList){
+      window._folderList.forEach(f=>{
+        const fx=FPAD+f.col*(FCW+FGAP);
+        const fy=FMENU+FPAD+f.row*(FCH+FGAP);
+        // convert folder top-left pixel to widget col/row
+        const wCol=Math.round((fx - m.gridX)/(m.cellW+GAP));
+        const wRow=Math.round((fy - m.gridY)/(m.cellH+GAP));
+        obstacles.push({id:'folder-'+f.id, col:Math.max(0,wCol), row:Math.max(0,wRow), cw:1, ch:1});
+      });
+    }
+    obstacles.forEach(other=>{
       if(overlaps(moved,other)){
-        other.row=moved.row+moved.ch;
-        const m=gridMetrics();
-        other.row=Math.min(m.maxRows-other.ch, other.row);
-        resolveOverlap(other);
+        // push moved below the obstacle
+        const newRow=other.row+other.ch;
+        if(moved.row<newRow){
+          moved.row=Math.min(m.maxRows-moved.ch, newRow);
+          resolveOverlap(moved); // cascade
+        }
       }
     });
   }
@@ -2649,89 +2668,224 @@ function maximiseMusic(){
 
 // ── DESKTOP FOLDER ICONS ──
 (function(){
-  const FOLDERS=[
-    {name:'Work',  img:'folder.png', action:()=>openPhotos()},
-    {name:'Work',  img:'folder.png', action:()=>openMusic()},
-    {name:'Work',  img:'folder.png', action:()=>openNotepad()},
-    {name:'Work',  img:'folder.png', action:null},
-    {name:'Work',  img:'folder.png', action:()=>openTrash()},
-  ];
+  const MENU_H=26, DOCK_H=78;
+  const CELL_W=80, CELL_H=92, GAP=10, PAD=14;
 
-  // Grid params — right side, strict column
-  const ICON_W=72, ICON_H=90; // cell size
-  const GAP_X=16, GAP_Y=10;
-  const COLS=2; // 2-column grid on the right
-
-  function buildIcons(){
-    const container=document.getElementById('desktop-icons');
-    if(!container) return;
-    container.innerHTML='';
-
-    const MENU_H=26, DOCK_H=78;
-    const areaH=window.innerHeight - MENU_H - DOCK_H;
-    const rightEdge=window.innerWidth - 16; // 16px from right edge
-
-    // Grid origin — top-right, fills downward
-    // Place icons: col 0 is innermost, col 1 is outermost (right edge)
-    // Start from top with a small top offset
-    const TOP_PAD=18;
-
-    // Assign each folder a fixed grid cell (col, row) — scattered but strict
-    // Layout: use positions that look like a natural macOS right-side arrangement
-    const positions=[
-      {col:1, row:0},
-      {col:0, row:0},
-      {col:1, row:1},
-      {col:0, row:2},
-      {col:1, row:3},
+  // Place folders on right side dynamically based on screen width
+  function initFolders(){
+    const c=cols();
+    return [
+      {id:'f1', name:'Work',    img:'folder.png', col:c-2, row:0},
+      {id:'f2', name:'Music',   img:'folder.png', col:c-1, row:0},
+      {id:'f3', name:'Notes',   img:'folder.png', col:c-2, row:1},
+      {id:'f4', name:'Archive', img:'folder.png', col:c-1, row:1},
+      {id:'f5', name:'Trash',   img:'folder.png', col:c-2, row:2},
     ];
+  }
+  let folders=[];
 
-    FOLDERS.forEach((f,i)=>{
-      const pos=positions[i];
-      // x: right-aligned — col 1 is rightmost
-      const x=rightEdge - (COLS - pos.col)*(ICON_W + GAP_X) + GAP_X;
-      const y=MENU_H + TOP_PAD + pos.row*(ICON_H + GAP_Y);
+  function cols(){ return Math.floor((window.innerWidth - PAD*2 + GAP)/(CELL_W+GAP)); }
+  function rows(){ return Math.floor((window.innerHeight - MENU_H - DOCK_H - PAD*2 + GAP)/(CELL_H+GAP)); }
+  function toX(col){ return PAD + col*(CELL_W+GAP); }
+  function toY(row){ return MENU_H + PAD + row*(CELL_H+GAP); }
+  function clampC(c){ return Math.max(0,Math.min(cols()-1,c)); }
+  function clampR(r){ return Math.max(0,Math.min(rows()-1,r)); }
 
+  const container=document.getElementById('desktop-icons');
+  const elMap={};
+
+  function build(){
+    container.innerHTML='';
+    folders.forEach(f=>{
       const el=document.createElement('div');
       el.className='desk-icon';
-      el.style.left=x+'px';
-      el.style.top=y+'px';
-
+      el.id='di-'+f.id;
+      el.style.left=toX(f.col)+'px';
+      el.style.top=toY(f.row)+'px';
+      el.style.transition='background 0.1s, left 0.3s cubic-bezier(0.34,1.2,0.64,1), top 0.3s cubic-bezier(0.34,1.2,0.64,1)';
       const img=document.createElement('img');
-      img.src=f.img;
-      img.alt='';
-
-      const label=document.createElement('div');
-      label.className='desk-icon-label';
-      label.textContent=f.name;
-
-      el.appendChild(img);
-      el.appendChild(label);
+      img.src=f.img; img.alt='';
+      const lbl=document.createElement('div');
+      lbl.className='desk-icon-label';
+      lbl.textContent=f.name;
+      el.appendChild(img); el.appendChild(lbl);
       container.appendChild(el);
-
-      // Single click = select
-      el.addEventListener('click',e=>{
-        e.stopPropagation();
-        document.querySelectorAll('.desk-icon').forEach(d=>d.classList.remove('selected'));
-        el.classList.add('selected');
-      });
-      // Double click = open
-      el.addEventListener('dblclick',e=>{
-        e.stopPropagation();
-        if(f.action) f.action();
-      });
-    });
-
-    // Click anywhere on desktop = deselect
-    document.getElementById('desktop-area').addEventListener('click',()=>{
-      document.querySelectorAll('.desk-icon').forEach(d=>d.classList.remove('selected'));
+      elMap[f.id]=el;
     });
   }
 
-  buildIcons();
-  window.addEventListener('resize', buildIcons);
-})();
+  // ── DRAG ──
+  let drag=null;
 
+  container.addEventListener('mousedown', e=>{
+    const el=e.target.closest('.desk-icon'); if(!el) return;
+    e.stopPropagation(); e.preventDefault();
+    const f=folders.find(f=>('di-'+f.id)===el.id); if(!f) return;
+
+    // Select: click without shift deselects others unless already in group
+    if(!e.shiftKey && !el.classList.contains('selected')){
+      document.querySelectorAll('.desk-icon.selected').forEach(d=>d.classList.remove('selected'));
+    }
+    el.classList.add('selected');
+
+    // Snapshot all selected for group drag
+    const selected=folders.filter(fd=>elMap[fd.id]?.classList.contains('selected'));
+    const snapshots=selected.map(fd=>({
+      id:fd.id, startCol:fd.col, startRow:fd.row,
+      startLeft:toX(fd.col), startTop:toY(fd.row)
+    }));
+
+    drag={
+      startX:e.clientX, startY:e.clientY,
+      moved:false, snapshots
+    };
+
+    selected.forEach(fd=>{
+      const el2=elMap[fd.id];
+      el2.style.transition='background 0.1s';
+      el2.style.zIndex='999';
+    });
+  });
+
+  window.addEventListener('mousemove', e=>{
+    if(!drag) return;
+    const dx=e.clientX-drag.startX, dy=e.clientY-drag.startY;
+    if(!drag.moved && Math.hypot(dx,dy)<3) return;
+    drag.moved=true;
+    drag.snapshots.forEach(s=>{
+      const el2=elMap[s.id]; if(!el2) return;
+      el2.style.left=(s.startLeft+dx)+'px';
+      el2.style.top=(s.startTop+dy)+'px';
+      el2.style.transform='scale(1.05)';
+    });
+  });
+
+  function foldersOverlap(a,b){
+    return a.col===b.col && a.row===b.row;
+  }
+  function resolveFolderOverlap(moved, others){
+    let changed=true, safety=0;
+    while(changed && safety++<20){
+      changed=false;
+      others.forEach(other=>{
+        if(other.id===moved.id) return;
+        if(foldersOverlap(moved, other)){
+          moved.col=clampC(moved.col+1);
+          if(moved.col>=clampC(moved.col)) moved.row=clampR(moved.row+1);
+          changed=true;
+        }
+      });
+      // Also repel from widgets
+      if(window._DEFS){
+        const m=window._gridMetrics();
+        const FPAD=14,FGAP=10,FCW=80,FCH=92,FMENU=26;
+        const fx=FPAD+moved.col*(FCW+FGAP);
+        const fy=FMENU+FPAD+moved.row*(FCH+FGAP);
+        const wCol=Math.round((fx-m.gridX)/(m.cellW+8));
+        const wRow=Math.round((fy-m.gridY)/(m.cellH+8));
+        window._DEFS.forEach(wd=>{
+          const phantom={col:wCol,row:wRow,cw:1,ch:1};
+          if(!(phantom.col+1<=wd.col||wd.col+wd.cw<=phantom.col||phantom.row+1<=wd.row||wd.row+wd.ch<=phantom.row)){
+            moved.col=clampC(moved.col+wd.cw);
+            changed=true;
+          }
+        });
+      }
+    }
+  }
+
+  window.addEventListener('mouseup', e=>{
+    if(!drag) return;
+    if(drag.moved){
+      const dx=e.clientX-drag.startX, dy=e.clientY-drag.startY;
+      const dc=Math.round(dx/(CELL_W+GAP)), dr=Math.round(dy/(CELL_H+GAP));
+      drag.snapshots.forEach(s=>{
+        const fd=folders.find(f=>f.id===s.id); if(!fd) return;
+        fd.col=clampC(s.startCol+dc);
+        fd.row=clampR(s.startRow+dr);
+      });
+      // Resolve folder-on-folder overlaps
+      drag.snapshots.forEach(s=>{
+        const fd=folders.find(f=>f.id===s.id); if(!fd) return;
+        resolveFolderOverlap(fd, folders.filter(f=>f.id!==s.id));
+      });
+      drag.snapshots.forEach(s=>{
+        const fd=folders.find(f=>f.id===s.id); if(!fd) return;
+        const el2=elMap[fd.id]; if(!el2) return;
+        el2.style.transition='background 0.1s, left 0.3s cubic-bezier(0.34,1.2,0.64,1), top 0.3s cubic-bezier(0.34,1.2,0.64,1), transform 0.2s ease';
+        el2.style.left=toX(fd.col)+'px';
+        el2.style.top=toY(fd.row)+'px';
+        el2.style.transform='';
+        el2.style.zIndex='';
+      });
+    }
+    drag=null;
+  });
+
+  // Click on empty desktop = deselect
+  document.getElementById('desktop-area').addEventListener('click', e=>{
+    if(e.target.closest('.desk-icon')) return;
+    document.querySelectorAll('.desk-icon.selected').forEach(d=>d.classList.remove('selected'));
+  });
+
+  // Touch: single tap selects, drag moves
+  let touchDrag=null;
+  container.addEventListener('touchstart', e=>{
+    const el=e.target.closest('.desk-icon'); if(!el) return;
+    const f=folders.find(f=>('di-'+f.id)===el.id); if(!f) return;
+    if(!el.classList.contains('selected')){
+      document.querySelectorAll('.desk-icon.selected').forEach(d=>d.classList.remove('selected'));
+      el.classList.add('selected');
+    }
+    const t=e.touches[0];
+    const selected=folders.filter(fd=>elMap[fd.id]?.classList.contains('selected'));
+    touchDrag={
+      startX:t.clientX, startY:t.clientY, moved:false,
+      snapshots:selected.map(fd=>({id:fd.id,startCol:fd.col,startRow:fd.row,startLeft:toX(fd.col),startTop:toY(fd.row)}))
+    };
+    selected.forEach(fd=>{ const el2=elMap[fd.id]; if(el2){ el2.style.transition='background 0.1s'; el2.style.zIndex='999'; }});
+  },{passive:true});
+
+  container.addEventListener('touchmove', e=>{
+    if(!touchDrag) return;
+    const t=e.touches[0];
+    const dx=t.clientX-touchDrag.startX, dy=t.clientY-touchDrag.startY;
+    if(!touchDrag.moved && Math.hypot(dx,dy)<4) return;
+    touchDrag.moved=true;
+    touchDrag.snapshots.forEach(s=>{
+      const el2=elMap[s.id]; if(!el2) return;
+      el2.style.left=(s.startLeft+dx)+'px';
+      el2.style.top=(s.startTop+dy)+'px';
+      el2.style.transform='scale(1.05)';
+    });
+  },{passive:true});
+
+  container.addEventListener('touchend', e=>{
+    if(!touchDrag) return;
+    if(touchDrag.moved){
+      const t=e.changedTouches[0];
+      const dx=t.clientX-touchDrag.startX, dy=t.clientY-touchDrag.startY;
+      const dc=Math.round(dx/(CELL_W+GAP)), dr=Math.round(dy/(CELL_H+GAP));
+      touchDrag.snapshots.forEach(s=>{
+        const fd=folders.find(f=>f.id===s.id); if(!fd) return;
+        fd.col=clampC(s.startCol+dc); fd.row=clampR(s.startRow+dr);
+        const el2=elMap[fd.id]; if(!el2) return;
+        el2.style.transition='background 0.1s, left 0.3s cubic-bezier(0.34,1.2,0.64,1), top 0.3s cubic-bezier(0.34,1.2,0.64,1), transform 0.2s ease';
+        el2.style.left=toX(fd.col)+'px'; el2.style.top=toY(fd.row)+'px';
+        el2.style.transform=''; el2.style.zIndex='';
+      });
+    }
+    touchDrag=null;
+  },{passive:true});
+
+  folders=initFolders();
+  window._folderList=folders; // expose for widget overlap system
+  build();
+  window.addEventListener('resize',()=>{
+    folders.forEach(f=>{ const el=elMap[f.id]; if(el){ el.style.left=toX(f.col)+'px'; el.style.top=toY(f.row)+'px'; }});
+  });
+
+})();
 // ── WALLPAPER (vanilla canvas isometric) ──
 (function(){
   const container=document.getElementById('p5-canvas');
@@ -2860,6 +3014,7 @@ function maximiseMusic(){
 })();
 </script>
 <div id="frost-overlay"></div>
+
 <div id="cw-overlay"></div>
 <div id="widget-ctx-menu">
   <div class="wctx-item danger" id="wctx-remove">🗑 Remove Widget</div>
