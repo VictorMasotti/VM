@@ -74,7 +74,7 @@ body {
 .menu-item.bold { font-weight:600; opacity:1; }
 .menu-item:hover { background:rgba(0,0,0,0.06); opacity:1; }
 .menu-item:active { transform:scale(0.96); background:rgba(0,0,0,0.12) !important; }
-.menubar-right { display:flex; align-items:center; gap:9px; }
+.menubar-right { display:flex; align-items:center; gap:11px; margin-left:auto; }
 .status-icon { font-size:11px; opacity:0.65; }
 
 .desktop {
@@ -937,6 +937,61 @@ body.dark-mode #trash-footer { background:#2c2c2e; border-top-color:rgba(255,255
   transition:background 0.35s ease;
 }
 
+#frost-overlay {
+  position:fixed; inset:0; z-index:5;
+  pointer-events:none;
+  backdrop-filter:blur(0px) saturate(1); -webkit-backdrop-filter:blur(0px) saturate(1);
+  background:rgba(255,255,255,0);
+  opacity:0;
+  transition:opacity 0.9s ease, backdrop-filter 0.9s ease, -webkit-backdrop-filter 0.9s ease, background 0.9s ease;
+}
+#frost-overlay.active {
+  opacity:1;
+  backdrop-filter:blur(28px) saturate(1.4); -webkit-backdrop-filter:blur(28px) saturate(1.4);
+  background:rgba(255,255,255,0.18);
+}
+body.dark-mode #frost-overlay.active {
+  background:rgba(0,0,0,0.22);
+}
+
+/* ── WIDGET CONTEXT MENU ── */
+#widget-ctx-menu {
+  position:fixed; z-index:9200;
+  background:rgba(242,240,237,0.92);
+  backdrop-filter:blur(28px); -webkit-backdrop-filter:blur(28px);
+  border:1px solid rgba(0,0,0,0.13);
+  border-radius:12px;
+  box-shadow:0 8px 32px rgba(0,0,0,0.18), 0 2px 6px rgba(0,0,0,0.10);
+  overflow:hidden; min-width:160px;
+  opacity:0; pointer-events:none;
+  transform:scale(0.92) translateY(-6px);
+  transform-origin:top left;
+  transition:opacity 0.13s ease, transform 0.13s cubic-bezier(0.34,1.2,0.64,1);
+}
+#widget-ctx-menu.open {
+  opacity:1; pointer-events:all;
+  transform:scale(1) translateY(0);
+}
+body.dark-mode #widget-ctx-menu {
+  background:rgba(20,20,24,0.98);
+  border-color:rgba(255,255,255,0.12);
+  box-shadow:0 8px 32px rgba(0,0,0,0.55);
+}
+.wctx-item {
+  display:flex; align-items:center; justify-content:center; gap:8px;
+  padding:11px 18px; font-size:13px; color:#1a1a1a;
+  border-bottom:1px solid rgba(0,0,0,0.06);
+  transition:background 0.1s;
+}
+.wctx-item:last-child { border-bottom:none; }
+.wctx-item:hover { background:rgba(0,0,0,0.06); }
+.wctx-item.danger { color:#ff3b30; }
+.wctx-item.danger:hover { background:rgba(255,59,48,0.08); }
+body.dark-mode .wctx-item { color:#f2f2f7; border-bottom-color:rgba(255,255,255,0.07); }
+body.dark-mode .wctx-item:hover { background:rgba(255,255,255,0.07); }
+body.dark-mode .wctx-item.danger { color:#ff453a; }
+body.dark-mode .wctx-item.danger:hover { background:rgba(255,69,58,0.12); }
+
 /* ── WIFI & BATTERY ICONS ── */
 .mb-status-btn {
   display:flex; align-items:center; justify-content:center;
@@ -1100,7 +1155,7 @@ body.dark-mode .sd-body { color:#f2f2f7; }
       </div>
     </div>
 
-    <div id="daynight-toggle" onclick="toggleDarkMode()" title="Toggle Dark Mode" style="margin-right:0;">
+    <div id="daynight-toggle" onclick="toggleDarkMode()" title="Toggle Dark Mode">
       <div id="daynight-track">
         <div id="daynight-icons">
           <span id="daynight-sun">☀️</span>
@@ -1109,7 +1164,7 @@ body.dark-mode .sd-body { color:#f2f2f7; }
         <div id="daynight-knob"></div>
       </div>
     </div>
-    <span class="menu-item" id="menubar-time" style="font-size:12px;opacity:0.75;margin-left:6px;padding-left:8px;border-left:1px solid rgba(0,0,0,0.12);"></span>
+    <span class="menu-item" id="menubar-time" style="font-size:12px;opacity:0.75;"></span>
   </div>
 </div>
 
@@ -1169,6 +1224,16 @@ body.dark-mode .sd-body { color:#f2f2f7; }
     </div>
     <label class="ios-toggle">
       <input type="checkbox" id="toggle-hc" onchange="applyHighContrast(this.checked)">
+      <span class="ios-slider"></span>
+    </label>
+  </div>
+  <div class="mdd-toggle-row">
+    <div>
+      <div class="mdd-toggle-label">Frosted Glass</div>
+      <div class="mdd-toggle-sub">Blur & frost the wallpaper</div>
+    </div>
+    <label class="ios-toggle">
+      <input type="checkbox" id="toggle-frost" onchange="applyFrost(this.checked)">
       <span class="ios-slider"></span>
     </label>
   </div>
@@ -1749,6 +1814,13 @@ function ddAction(type, el){
 }
 
 function spawnWidget(type){
+  // ── WIDGET LIMITS ──
+  const unlimited = new Set(['notes','musicw','appshelf-s','appshelf-l']);
+  if(!unlimited.has(type)){
+    const existing = _DEFS.filter(d => d.type === type).length;
+    if(existing >= 1) return; // already one on screen, silently ignore
+  }
+
   const m=_gridMetrics();
   const id='wg-'+Date.now();
   const cw=2;
@@ -1892,6 +1964,7 @@ function applyDarkMode(on){
   if(timeEl){timeEl.style.transition='color 0.75s ease';timeEl.style.color=on?'#f2f2f7':'';}
 }
 function applyHighContrast(on){ document.body.classList.toggle('high-contrast', on); }
+function applyFrost(on){ document.getElementById('frost-overlay').classList.toggle('active', on); }
 function applyHideWidgets(on){
   const grid=document.getElementById('widget-grid');
   const dd=document.getElementById('widget-dropdown');
@@ -2786,7 +2859,11 @@ function maximiseMusic(){
   window._wallpaperCanvas=cv;
 })();
 </script>
+<div id="frost-overlay"></div>
 <div id="cw-overlay"></div>
+<div id="widget-ctx-menu">
+  <div class="wctx-item danger" id="wctx-remove">🗑 Remove Widget</div>
+</div>
 <div id="translate-overlay"></div>
 
 <!-- WIFI DROPDOWN -->
@@ -2875,6 +2952,79 @@ function maximiseMusic(){
     if(!e.target.closest('.status-dropdown') && !e.target.closest('.mb-status-btn')){
       document.querySelectorAll('.status-dropdown').forEach(d => d.classList.remove('open'));
     }
+  });
+})();
+</script>
+
+<script>
+// ── WIDGET CONTEXT MENU ──
+(function(){
+  const menu = document.getElementById('widget-ctx-menu');
+  let targetWidget = null;
+
+  function openCtx(x, y, widget){
+    targetWidget = widget;
+    // Clamp to viewport
+    const mw = 160, mh = 50;
+    const lx = Math.min(x, window.innerWidth - mw - 8);
+    const ly = Math.min(y, window.innerHeight - mh - 8);
+    menu.style.left = lx + 'px';
+    menu.style.top  = ly + 'px';
+    menu.style.transformOrigin = 'top left';
+    menu.classList.add('open');
+  }
+
+  function closeCtx(){
+    menu.classList.remove('open');
+    targetWidget = null;
+  }
+
+  // Right-click on widget
+  document.getElementById('widget-grid').addEventListener('contextmenu', e => {
+    const widget = e.target.closest('.widget');
+    if(!widget) return;
+    e.preventDefault();
+    openCtx(e.clientX, e.clientY, widget);
+  });
+
+  // Double-tap on touch
+  let lastTap = 0, lastTapEl = null;
+  document.getElementById('widget-grid').addEventListener('touchend', e => {
+    const widget = e.target.closest('.widget');
+    if(!widget) return;
+    const now = Date.now();
+    if(lastTapEl === widget && now - lastTap < 350){
+      const t = e.changedTouches[0];
+      openCtx(t.clientX, t.clientY, widget);
+      lastTap = 0; lastTapEl = null;
+    } else {
+      lastTap = now; lastTapEl = widget;
+    }
+  });
+
+  // Remove action
+  document.getElementById('wctx-remove').addEventListener('click', () => {
+    if(!targetWidget) return;
+    const widgetId = targetWidget.id;
+    const widgetEl = targetWidget;
+    // Remove from DEFS and elMap immediately so limit check works right away
+    const idx = window._DEFS.findIndex(d => d.id === widgetId);
+    if(idx !== -1) window._DEFS.splice(idx, 1);
+    delete window._elMap[widgetId];
+    // Animate out then remove from DOM
+    widgetEl.style.transition = 'opacity 0.45s ease, transform 0.45s ease';
+    widgetEl.style.opacity = '0';
+    widgetEl.style.transform = 'scale(0.8)';
+    setTimeout(() => widgetEl.remove(), 460);
+    closeCtx();
+  });
+
+  // Close on outside click
+  document.addEventListener('click', e => {
+    if(!e.target.closest('#widget-ctx-menu')) closeCtx();
+  });
+  document.addEventListener('keydown', e => {
+    if(e.key === 'Escape') closeCtx();
   });
 })();
 </script>
