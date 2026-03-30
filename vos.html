@@ -1290,6 +1290,7 @@ body.dark-mode .sd-body { color:#f2f2f7; }
     <div class="dd-item" onclick="ddAction('notes',this)"><span class="dd-icon">📝</span> Notes</div>
     <div class="dd-item" onclick="ddAction('appshelf-s',this)"><span class="dd-icon">📱</span> App Shelf (small)</div>
     <div class="dd-item" onclick="ddAction('appshelf-l',this)"><span class="dd-icon">📱</span> App Shelf (large)</div>
+    <div class="dd-item" onclick="ddAction('folder',this)"><span class="dd-icon"><img src="folder.png" style="width:16px;height:16px;object-fit:contain;vertical-align:middle;"></span> Add Folder</div>
   </div>
   <div id="desktop-icons"></div>
   <div id="widget-grid"></div>
@@ -1833,6 +1834,7 @@ function ddAction(type, el){
 }
 
 function spawnWidget(type){
+  if(type==='folder'){ spawnFolder(); return; }
   // ── WIDGET LIMITS ──
   const unlimited = new Set(['notes','musicw','appshelf-s','appshelf-l']);
   if(!unlimited.has(type)){
@@ -2669,9 +2671,19 @@ function maximiseMusic(){
 // ── DESKTOP FOLDER ICONS ──
 (function(){
   const MENU_H=26, DOCK_H=78;
-  const CELL_W=80, CELL_H=92, GAP=10, PAD=14;
 
-  // Place folders on right side dynamically based on screen width
+  // Folders use EXACT same grid as widgets
+  function fm(){ return window._gridMetrics ? window._gridMetrics() : null; }
+  function toX(col){ const m=fm(); return m ? m.gridX + col*(m.cellW+8) : col*88; }
+  function toY(row){ const m=fm(); return m ? m.gridY + row*(m.cellH+8) : row*88; }
+  function cols(){ const m=fm(); return m ? window.COLS : 10; }
+  function rows(){ const m=fm(); return m ? m.maxRows : 6; }
+  function clampC(c){ return Math.max(0,Math.min(cols()-1,c)); }
+  function clampR(r){ return Math.max(0,Math.min(rows()-1,r)); }
+  // Cell size for drag snapping
+  function cellW(){ const m=fm(); return m ? m.cellW : 80; }
+  function cellH(){ const m=fm(); return m ? m.cellH : 80; }
+
   function initFolders(){
     const c=cols();
     return [
@@ -2683,35 +2695,96 @@ function maximiseMusic(){
     ];
   }
   let folders=[];
-
-  function cols(){ return Math.floor((window.innerWidth - PAD*2 + GAP)/(CELL_W+GAP)); }
-  function rows(){ return Math.floor((window.innerHeight - MENU_H - DOCK_H - PAD*2 + GAP)/(CELL_H+GAP)); }
-  function toX(col){ return PAD + col*(CELL_W+GAP); }
-  function toY(row){ return MENU_H + PAD + row*(CELL_H+GAP); }
-  function clampC(c){ return Math.max(0,Math.min(cols()-1,c)); }
-  function clampR(r){ return Math.max(0,Math.min(rows()-1,r)); }
+  let _nextFolderId=6;
+  window.spawnFolder=function(){
+    const m=fm();
+    const id='f'+(_nextFolderId++);
+    // Find first free cell
+    const occupied=new Set(folders.map(f=>f.col+','+f.row));
+    let fc=cols()-2, fr=0, found=false;
+    outer: for(let r=0;r<rows();r++) for(let c=cols()-2;c<cols();c++){
+      if(!occupied.has(c+','+r)){fc=c;fr=r;found=true;break outer;}
+    }
+    if(!found){ fc=0; fr=0; }
+    const nf={id,name:'Untitled',img:'folder.png',col:fc,row:fr};
+    folders.push(nf);
+    window._folderList=folders;
+    makeIcon(nf);
+    const el=elMap[id];
+    if(el){
+      el.style.opacity='0'; el.style.transform='scale(0.7)';
+      requestAnimationFrame(()=>requestAnimationFrame(()=>{
+        el.style.transition='opacity 0.3s ease, transform 0.3s cubic-bezier(0.34,1.28,0.64,1), background 0.1s, left 0.3s cubic-bezier(0.34,1.2,0.64,1), top 0.3s cubic-bezier(0.34,1.2,0.64,1)';
+        el.style.opacity='1'; el.style.transform='';
+        setTimeout(()=>startRename(el,nf), 380);
+      }));
+    }
+  };
 
   const container=document.getElementById('desktop-icons');
   const elMap={};
 
+  function makeIcon(f){
+    const m2=fm(); const sz=m2?m2.cellW:80;
+    const el=document.createElement('div');
+    el.className='desk-icon';
+    el.id='di-'+f.id;
+    el.style.left=toX(f.col)+'px';
+    el.style.top=toY(f.row)+'px';
+    el.style.width=sz+'px';
+    el.style.height=sz+'px';
+    el.style.transition='background 0.1s, left 0.3s cubic-bezier(0.34,1.2,0.64,1), top 0.3s cubic-bezier(0.34,1.2,0.64,1)';
+    const img=document.createElement('img');
+    img.src=f.img; img.alt='';
+    const lbl=document.createElement('div');
+    lbl.className='desk-icon-label';
+    lbl.textContent=f.name;
+    el.appendChild(img); el.appendChild(lbl);
+    container.appendChild(el);
+    elMap[f.id]=el;
+
+    // Double-click rename
+    let lastClick=0;
+    el.addEventListener('mousedown', ev=>{ ev._folderDown=true; });
+    el.addEventListener('click', ev=>{
+      const now=Date.now();
+      if(now-lastClick<400){ ev.stopPropagation(); startRename(el,f); }
+      lastClick=now;
+    });
+    // Double-tap rename
+    let lastTap=0;
+    el.addEventListener('touchend', ev=>{
+      const now=Date.now();
+      if(now-lastTap<400){ ev.stopPropagation(); startRename(el,f); lastTap=0; return; }
+      lastTap=now;
+    },{passive:true});
+  }
+
+  function startRename(el, f){
+    const lbl=el.querySelector('.desk-icon-label');
+    if(!lbl||lbl.contentEditable==='true') return;
+    lbl.contentEditable='true';
+    lbl.style.background='rgba(0,0,0,0.6)';
+    lbl.style.outline='none';
+    lbl.style.cursor='text';
+    lbl.focus();
+    const range=document.createRange();
+    range.selectNodeContents(lbl);
+    const sel=window.getSelection();
+    sel.removeAllRanges(); sel.addRange(range);
+    function commit(){
+      const val=lbl.textContent.trim()||'Untitled';
+      f.name=val; lbl.textContent=val;
+      lbl.contentEditable='false';
+      lbl.style.background=''; lbl.style.cursor='';
+    }
+    lbl.onkeydown=e=>{ if(e.key==='Enter'){e.preventDefault();commit();} if(e.key==='Escape'){lbl.textContent=f.name;commit();} };
+    lbl.onblur=commit;
+  }
+
   function build(){
     container.innerHTML='';
-    folders.forEach(f=>{
-      const el=document.createElement('div');
-      el.className='desk-icon';
-      el.id='di-'+f.id;
-      el.style.left=toX(f.col)+'px';
-      el.style.top=toY(f.row)+'px';
-      el.style.transition='background 0.1s, left 0.3s cubic-bezier(0.34,1.2,0.64,1), top 0.3s cubic-bezier(0.34,1.2,0.64,1)';
-      const img=document.createElement('img');
-      img.src=f.img; img.alt='';
-      const lbl=document.createElement('div');
-      lbl.className='desk-icon-label';
-      lbl.textContent=f.name;
-      el.appendChild(img); el.appendChild(lbl);
-      container.appendChild(el);
-      elMap[f.id]=el;
-    });
+    folders.forEach(f=>makeIcon(f));
   }
 
   // ── DRAG ──
@@ -2775,17 +2848,10 @@ function maximiseMusic(){
           changed=true;
         }
       });
-      // Also repel from widgets
+      // Also repel from widgets — same grid so direct col/row compare
       if(window._DEFS){
-        const m=window._gridMetrics();
-        const FPAD=14,FGAP=10,FCW=80,FCH=92,FMENU=26;
-        const fx=FPAD+moved.col*(FCW+FGAP);
-        const fy=FMENU+FPAD+moved.row*(FCH+FGAP);
-        const wCol=Math.round((fx-m.gridX)/(m.cellW+8));
-        const wRow=Math.round((fy-m.gridY)/(m.cellH+8));
         window._DEFS.forEach(wd=>{
-          const phantom={col:wCol,row:wRow,cw:1,ch:1};
-          if(!(phantom.col+1<=wd.col||wd.col+wd.cw<=phantom.col||phantom.row+1<=wd.row||wd.row+wd.ch<=phantom.row)){
+          if(!(moved.col+1<=wd.col||wd.col+wd.cw<=moved.col||moved.row+1<=wd.row||wd.row+wd.ch<=moved.row)){
             moved.col=clampC(moved.col+wd.cw);
             changed=true;
           }
@@ -2798,7 +2864,7 @@ function maximiseMusic(){
     if(!drag) return;
     if(drag.moved){
       const dx=e.clientX-drag.startX, dy=e.clientY-drag.startY;
-      const dc=Math.round(dx/(CELL_W+GAP)), dr=Math.round(dy/(CELL_H+GAP));
+      const dc=Math.round(dx/(cellW()+8)), dr=Math.round(dy/(cellH()+8));
       drag.snapshots.forEach(s=>{
         const fd=folders.find(f=>f.id===s.id); if(!fd) return;
         fd.col=clampC(s.startCol+dc);
@@ -2865,7 +2931,7 @@ function maximiseMusic(){
     if(touchDrag.moved){
       const t=e.changedTouches[0];
       const dx=t.clientX-touchDrag.startX, dy=t.clientY-touchDrag.startY;
-      const dc=Math.round(dx/(CELL_W+GAP)), dr=Math.round(dy/(CELL_H+GAP));
+      const dc=Math.round(dx/(cellW()+8)), dr=Math.round(dy/(cellH()+8));
       touchDrag.snapshots.forEach(s=>{
         const fd=folders.find(f=>f.id===s.id); if(!fd) return;
         fd.col=clampC(s.startCol+dc); fd.row=clampR(s.startRow+dr);
@@ -2882,7 +2948,8 @@ function maximiseMusic(){
   window._folderList=folders; // expose for widget overlap system
   build();
   window.addEventListener('resize',()=>{
-    folders.forEach(f=>{ const el=elMap[f.id]; if(el){ el.style.left=toX(f.col)+'px'; el.style.top=toY(f.row)+'px'; }});
+    const m2=fm(); const sz2=m2?m2.cellW:80;
+    folders.forEach(f=>{ const el=elMap[f.id]; if(el){ el.style.left=toX(f.col)+'px'; el.style.top=toY(f.row)+'px'; el.style.width=sz2+'px'; el.style.height=sz2+'px'; }});
   });
 
 })();
