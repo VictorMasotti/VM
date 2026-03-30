@@ -100,19 +100,7 @@ body {
              top  .36s cubic-bezier(.34,1.2,.64,1),
              box-shadow .2s ease, transform .2s ease;
 }
-.widget.widget-folders {
-  background: transparent !important;
-  backdrop-filter: none !important;
-  -webkit-backdrop-filter: none !important;
-  border-color: transparent !important;
-  box-shadow: none !important;
-  padding: 4px 6px;
-}
-  transition:none !important;
-  box-shadow:0 24px 60px rgba(0,0,0,0.28) !important;
-  transform:scale(1.04) !important;
-  z-index:100;
-}
+
 
 .widget-clock .time { font-size:44px; font-weight:200; letter-spacing:-2px; line-height:1; color:#111; }
 .widget-clock .date { font-size:12px; font-weight:400; color:var(--text-dim); margin-top:4px; }
@@ -223,21 +211,23 @@ body {
 #pw-lb-prev:hover, #pw-lb-next:hover { background:rgba(255,255,255,0.22); }
 
 #widget-add-btn {
-  position:absolute; top:14px; left:14px;
-  width:36px; height:36px; border-radius:10px;
-  background:rgba(245,243,240,0.75);
-  backdrop-filter:blur(24px); -webkit-backdrop-filter:blur(24px);
-  border:1px solid rgba(255,255,255,0.55);
-  box-shadow:0 4px 14px rgba(0,0,0,0.10),inset 0 1px 0 rgba(255,255,255,0.9);
+  position:relative; top:auto; left:auto;
+  width:14px; height:14px; padding:0;
+  border-radius:50%;
+  background:linear-gradient(135deg,#e8e4de,#ccc8c2);
+  border:1px solid rgba(0,0,0,0.15);
+  box-shadow:inset 0 1px 2px rgba(255,255,255,0.9), 0 1px 3px rgba(0,0,0,0.20);
   display:flex; align-items:center; justify-content:center;
-  font-size:18px; color:#333; font-weight:300;
-  z-index:20; transition:transform 0.12s, box-shadow 0.12s;
-  pointer-events:all;
+  font-size:9px; font-weight:400; color:rgba(0,0,0,0.55); line-height:1;
+  z-index:301; transition:background 0.25s ease, box-shadow 0.25s ease, transform 0.12s;
+  pointer-events:all; flex-shrink:0; margin-right:3px;
 }
+#widget-add-btn:hover { background:linear-gradient(135deg,#f0ece6,#d8d4ce); box-shadow:inset 0 1px 2px rgba(255,255,255,0.9), 0 2px 5px rgba(0,0,0,0.22); }
+#widget-add-btn:active { transform:scale(0.85); box-shadow:inset 0 2px 4px rgba(0,0,0,0.18); }
 #widget-add-btn:active { transform:scale(0.88); }
 
 #widget-dropdown {
-  position:absolute; top:56px; left:14px; width:200px;
+  position:fixed; top:28px; left:10px; width:200px;
   background:rgba(245,243,240,0.90);
   backdrop-filter:blur(28px); -webkit-backdrop-filter:blur(28px);
   border:1px solid rgba(255,255,255,0.6); border-radius:12px;
@@ -308,6 +298,7 @@ body {
 .dock-dot { position:absolute; bottom:-5px; left:50%; transform:translateX(-50%); width:3px; height:3px; border-radius:50%; background:rgba(0,0,0,0.4); opacity:0; transition:opacity 0.3s ease; }
 .dock-icon.app-open .dock-dot { opacity:1; }
 #dock-music.app-open .dock-dot { background: rgba(255,255,255,0.85); }
+body.dark-mode .dock-dot { background: rgba(255,255,255,0.6); }
 .icon-finder   { background:linear-gradient(145deg,#5ac8fa,#007aff); }
 .icon-safari   { background:linear-gradient(145deg,#34aadc,#007aff); }
 .icon-messages { background:linear-gradient(145deg,#4cd964,#30b94d); }
@@ -317,6 +308,7 @@ body {
 .icon-appstore { background:linear-gradient(145deg,#007aff,#5ac8fa); }
 .icon-settings { background:linear-gradient(145deg,#8e8e93,#636366); }
 .icon-trash    { background:linear-gradient(145deg,#636366,#3a3a3c); }
+.icon-globe3d  { background:linear-gradient(145deg,#1a1a2e,#0f3460,#16213e); }
 
 #open-anim-canvas { position:fixed; inset:0; pointer-events:none; z-index:600; }
 
@@ -357,7 +349,6 @@ body {
 .pw-dot.close { background:radial-gradient(circle at 35% 30%,#ff8a80,#dd1e3a); }
 .pw-dot.min   { background:radial-gradient(circle at 35% 30%,#ffdd7a,#dda500); }
 .pw-dot.maxb  { background:radial-gradient(circle at 35% 30%,#7aff8a,#1eb830); }
-.pw-dot::after { content:""; }
 .pw-title { position:absolute; left:50%; transform:translateX(-50%); font-size:13px; font-weight:600; color:rgba(0,0,0,0.68); pointer-events:none; }
 .pw-body { display:flex; flex:1; overflow:hidden; }
 .pw-sidebar { width:180px; flex-shrink:0; background:#e8e8ed; border-right:1px solid rgba(0,0,0,0.08); display:flex; flex-direction:column; padding:12px 0; overflow-y:auto; }
@@ -571,22 +562,58 @@ body {
 .ios-toggle input:checked + .ios-slider { background:#3a3a3c; }
 .ios-toggle input:checked + .ios-slider::before { transform:translateX(18px); }
 
+/* ── DESKTOP FOLDER ICONS ── */
+#desktop-icons {
+  position:absolute; inset:0; pointer-events:none; z-index:12;
+}
+.desk-icon {
+  position:absolute;
+  width:72px;
+  display:flex; flex-direction:column; align-items:center; gap:4px;
+  pointer-events:all;
+  border-radius:8px;
+  padding:6px 4px 4px;
+  transition:background 0.1s;
+  user-select:none;
+}
+.desk-icon:hover { background:rgba(0,0,0,0.06); }
+.desk-icon.selected { background:rgba(0,122,255,0.14); outline:1px solid rgba(0,122,255,0.25); }
+body.dark-mode .desk-icon:hover { background:rgba(255,255,255,0.08); }
+body.dark-mode .desk-icon.selected { background:rgba(0,122,255,0.22); }
+.desk-icon img {
+  width:52px; height:52px; object-fit:contain; display:block;
+  filter:drop-shadow(0 3px 8px rgba(0,0,0,0.22));
+  pointer-events:none;
+}
+.desk-icon-label {
+  font-size:11px; font-weight:500; color:#fff; text-align:center;
+  line-height:1.2; max-width:70px; word-break:break-word;
+  text-shadow:0 1px 3px rgba(0,0,0,0.6), 0 0 8px rgba(0,0,0,0.4);
+  pointer-events:none;
+  padding:1px 4px; border-radius:3px;
+}
+.desk-icon.selected .desk-icon-label {
+  background:rgba(0,122,255,0.7); text-shadow:none;
+}
+
+
 body.dark-mode {
   --widget-bg: rgba(18,18,20,0.92);
   --widget-border: rgba(255,255,255,0.11);
   --dock-bg: rgba(16,16,18,0.94);
   --dock-border: rgba(255,255,255,0.11);
-  --menubar-bg: rgba(14,14,16,0.95);
+  --menubar-bg: rgba(10,10,12,0.98);
   --text: #f2f2f7;
   --text-dim: rgba(255,255,255,0.50);
 }
 body.dark-mode .menubar {
-  background: rgba(14,14,16,0.95);
-  border-bottom: 1px solid rgba(255,255,255,0.08);
-  border-top: 1px solid rgba(255,255,255,0.05);
-  box-shadow: 0 2px 18px rgba(0,0,0,0.6);
+  background: rgba(10,10,12,0.98) !important;
+  border-bottom: 1px solid rgba(255,255,255,0.08) !important;
+  border-top: 1px solid rgba(255,255,255,0.04) !important;
+  box-shadow: 0 2px 18px rgba(0,0,0,0.75) !important;
 }
 body.dark-mode .menu-item { color: #f2f2f7; }
+body.dark-mode .menu-item.bold { color: #f2f2f7 !important; }
 body.dark-mode .menu-item:hover { background: rgba(255,255,255,0.08); }
 body.dark-mode #menubar-time { color: rgba(255,255,255,0.75) !important; }
 body.dark-mode .widget {
@@ -625,14 +652,17 @@ body.dark-mode .pw-toolbar-btn.active { background:#007aff!important; color:whit
 body.dark-mode .pw-main { background:#1c1c1e!important; }
 body.dark-mode .pw-year-label { color:white!important; }
 body.dark-mode #widget-add-btn {
-  background: rgba(44,44,50,0.80);
+  background: linear-gradient(135deg,#3a3a3e,#28282c);
   border: 1px solid rgba(255,255,255,0.12);
-  color: #f2f2f7;
-  box-shadow: 0 4px 14px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.08);
+  color: rgba(255,255,255,0.65);
+  box-shadow: inset 0 1px 2px rgba(255,255,255,0.08), 0 1px 3px rgba(0,0,0,0.4);
+}
+body.dark-mode #widget-add-btn:hover {
+  background: linear-gradient(135deg,#48484c,#343438);
 }
 body.dark-mode .menu-dropdown {
-  background: rgba(30,30,34,0.96);
-  border: 1px solid rgba(255,255,255,0.10);
+  background: rgba(20,20,24,0.98);
+  border: 1px solid rgba(255,255,255,0.12);
   box-shadow: 0 8px 32px rgba(0,0,0,0.55);
 }
 body.dark-mode .mdd-row,
@@ -642,8 +672,8 @@ body.dark-mode .mdd-value,
 body.dark-mode .mdd-toggle-label { color: #f2f2f7; }
 body.dark-mode .mdd-toggle-sub { color: rgba(255,255,255,0.35); }
 body.dark-mode #widget-dropdown {
-  background: rgba(30,30,34,0.96);
-  border-color: rgba(255,255,255,0.10);
+  background: rgba(20,20,24,0.98);
+  border-color: rgba(255,255,255,0.12);
 }
 body.dark-mode .dd-item { color: #f2f2f7; border-bottom-color: rgba(255,255,255,0.07); }
 body.dark-mode .dd-item:hover { background: rgba(255,255,255,0.07); }
@@ -673,11 +703,26 @@ body.dark-mode #notepad-main { background:#1c1c1e; }
 body.dark-mode #np-note-title { color:#f2f2f7; border-bottom-color:rgba(255,255,255,0.08); }
 body.dark-mode #notepad-editor { color:#e8e8ea; }
 
-#save-wallpaper-btn { display:flex;align-items:center;justify-content:center;cursor:pointer;user-select:none;margin-right:4px;opacity:0.7;border-radius:3px;transition:opacity 0.15s; }
-#save-wallpaper-btn:hover { opacity:1; }
-#save-wallpaper-btn:active { opacity:0.45; }
-body.dark-mode #save-wallpaper-btn svg rect { fill:rgba(255,255,255,0.10); }
-body.dark-mode #save-wallpaper-btn svg path { stroke:rgba(255,255,255,0.65); }
+#save-wallpaper-btn {
+  width:14px; height:14px; border-radius:50%;
+  background:linear-gradient(135deg,#e8e4de,#ccc8c2);
+  border:1px solid rgba(0,0,0,0.15);
+  box-shadow:inset 0 1px 2px rgba(255,255,255,0.9), 0 1px 3px rgba(0,0,0,0.20);
+  display:flex; align-items:center; justify-content:center;
+  cursor:pointer; user-select:none; margin-right:4px; flex-shrink:0;
+  transition:background 0.25s ease, transform 0.12s;
+  position:relative;
+}
+#save-wallpaper-btn::before {
+  content:'↓';
+  font-size:8px; font-weight:600; color:rgba(0,0,0,0.55); line-height:1;
+  pointer-events:none;
+}
+#save-wallpaper-btn:hover { background:linear-gradient(135deg,#f0ece6,#d8d4ce); box-shadow:inset 0 1px 2px rgba(255,255,255,0.9), 0 2px 5px rgba(0,0,0,0.22); }
+#save-wallpaper-btn:active { transform:scale(0.85); }
+body.dark-mode #save-wallpaper-btn { background:linear-gradient(135deg,#3a3a3e,#28282c); border-color:rgba(255,255,255,0.12); box-shadow:inset 0 1px 2px rgba(255,255,255,0.08), 0 1px 3px rgba(0,0,0,0.4); }
+body.dark-mode #save-wallpaper-btn::before { color:rgba(255,255,255,0.6); }
+body.dark-mode #save-wallpaper-btn:hover { background:linear-gradient(135deg,#48484c,#343438); }
 
 #daynight-toggle {
   display:flex; align-items:center;
@@ -748,6 +793,11 @@ body {
 .lang-item:hover { background:rgba(0,0,0,0.05); }
 .lang-item.active { background:rgba(0,0,0,0.07); font-weight:600; }
 .lang-flag { font-size:16px; width:22px; text-align:center; }
+#lang-active-bar {
+  padding:6px 12px; font-size:11px; color:rgba(0,0,0,0.45);
+  border-top:1px solid rgba(0,0,0,0.06); background:rgba(0,0,0,0.02);
+  display:none;
+}
 body.dark-mode #lang-search {
   background:rgba(255,255,255,0.08); border-color:rgba(255,255,255,0.14);
   color:#f2f2f7;
@@ -757,7 +807,7 @@ body.dark-mode #lang-search:focus { background:rgba(255,255,255,0.12); }
 body.dark-mode .lang-item { color:#f2f2f7; border-bottom-color:rgba(255,255,255,0.07); }
 body.dark-mode .lang-item:hover { background:rgba(255,255,255,0.07); }
 body.dark-mode .lang-item.active { background:rgba(255,255,255,0.12); }
-body.dark-mode #lang-current { color:rgba(255,255,255,0.4); border-top-color:rgba(255,255,255,0.07); }
+body.dark-mode #lang-active-bar { color:rgba(255,255,255,0.4); border-top-color:rgba(255,255,255,0.07); background:rgba(255,255,255,0.03); }
 #translate-overlay {
   position:fixed; inset:0; z-index:8500;
   background:rgba(255,255,255,0);
@@ -848,7 +898,6 @@ body.dark-mode.high-contrast .cal-day { color:#fff; font-weight:600; }
   font-family:-apple-system,'Helvetica Neue',sans-serif;
   font-size:15px; line-height:1.7; color:#1a1a1a;
   user-select:text; -webkit-user-select:text;
-  cursor:text!important; pointer-events:all!important;
 }
 #notepad-editor:empty::before { content:attr(placeholder); color:rgba(0,0,0,0.25); pointer-events:none; }
 #np-note-title:empty::before { content:attr(data-placeholder); color:rgba(0,0,0,0.22); pointer-events:none; }
@@ -903,21 +952,16 @@ body.dark-mode #trash-footer { background:#2c2c2e; border-top-color:rgba(255,255
 <div class="menubar">
   <div class="menubar-left">
     <div class="menubar-logo"><img src="south.png" alt="Logo"/></div>
+    <div id="widget-add-btn" onclick="toggleDropdown(event)" title="Add Widget">＋</div>
     <span class="menu-item bold" onclick="window.open('https://victormasotti.com/','_blank')">Victor Masotti</span>
     <span class="menu-item" id="menu-file" onclick="toggleMenuDD('file',this)">File</span>
     <span class="menu-item" id="menu-edit" onclick="toggleMenuDD('edit',this)">Edit</span>
     <span class="menu-item" id="menu-view" onclick="toggleMenuDD('view',this)">Filter</span>
     <span class="menu-item" id="menu-lang" onclick="toggleMenuDD('lang',this)">Language</span>
     <span class="menu-item" onclick="window.open('https://victormasotti.com/index2.html','_blank')">Previous Version</span>
-
   </div>
   <div class="menubar-right">
-    <div id="save-wallpaper-btn" onclick="saveWallpaper()" title="Save Wallpaper">
-      <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <rect width="14" height="14" rx="3" fill="rgba(0,0,0,0.07)"/>
-        <path d="M7 2.5v5M4.5 6L7 8.5 9.5 6M3 10.5h8" stroke="rgba(0,0,0,0.55)" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
-      </svg>
-    </div>
+    <div id="save-wallpaper-btn" onclick="saveWallpaper()" title="Save Wallpaper"></div>
     <div id="daynight-toggle" onclick="toggleDarkMode()" title="Toggle Dark Mode">
       <div id="daynight-track">
         <div id="daynight-icons">
@@ -1001,7 +1045,7 @@ body.dark-mode #trash-footer { background:#2c2c2e; border-top-color:rgba(255,255
       oninput="filterLangs(this.value)" autocomplete="off" spellcheck="false">
   </div>
   <div id="lang-list" style="overflow-y:auto;flex:1;"></div>
-  <div id="lang-current" style="padding:7px 12px;font-size:11px;color:rgba(0,0,0,0.4);border-top:1px solid rgba(0,0,0,0.06);display:none;"></div>
+  <div id="lang-active-bar"></div>
 </div>
 
 <div class="menu-dropdown" id="dd-view" style="min-width:240px">
@@ -1034,10 +1078,8 @@ body.dark-mode #trash-footer { background:#2c2c2e; border-top-color:rgba(255,255
 </div>
 
 <div class="desktop" id="desktop-area">
-  <div id="widget-add-btn" onclick="toggleDropdown(event)">＋</div>
   <div id="widget-dropdown">
     <div class="dd-item" onclick="ddAction('clock',this)"><span class="dd-icon">🕐</span> Clock</div>
-    <div class="dd-item" onclick="ddAction('folders',this)"><span class="dd-icon">📁</span> Folders</div>
     <div class="dd-item" onclick="ddAction('weather',this)"><span class="dd-icon">⛅</span> Weather</div>
     <div class="dd-item" onclick="ddAction('calendar',this)"><span class="dd-icon">📅</span> Calendar</div>
     <div class="dd-item" onclick="ddAction('musicw',this)"><span class="dd-icon">🎵</span> Music Player</div>
@@ -1045,6 +1087,7 @@ body.dark-mode #trash-footer { background:#2c2c2e; border-top-color:rgba(255,255
     <div class="dd-item" onclick="ddAction('appshelf-s',this)"><span class="dd-icon">📱</span> App Shelf (small)</div>
     <div class="dd-item" onclick="ddAction('appshelf-l',this)"><span class="dd-icon">📱</span> App Shelf (large)</div>
   </div>
+  <div id="desktop-icons"></div>
   <div id="widget-grid"></div>
 </div>
 
@@ -1073,10 +1116,14 @@ body.dark-mode #trash-footer { background:#2c2c2e; border-top-color:rgba(255,255
 <div class="dock-container">
   <div class="dock" id="dock">
     <div class="dock-icon" id="dock-photos" onclick="openPhotos();dockBounce(this)" style="background:none;padding:0;overflow:hidden;border-radius:12px"><img src="appo.png" style="width:100%;height:100%;object-fit:cover;border-radius:12px;display:block;"><div class="dock-dot"></div><div class="dock-label">Gallery</div></div>
-
     <div class="dock-icon" id="dock-music" onclick="openMusic();dockBounce(this)" style="background:none;padding:0;overflow:hidden;border-radius:12px"><img src="appe.png" style="width:100%;height:100%;object-fit:cover;border-radius:12px;display:block;"><div class="dock-dot"></div><div class="dock-label">Music Player 1</div></div>
     <div class="dock-icon" id="dock-notes-app" onclick="openNotepad();dockBounce(this)" style="background:none;padding:0;overflow:hidden;border-radius:12px"><img src="nota.png" style="width:100%;height:100%;object-fit:cover;border-radius:12px;display:block;"><div class="dock-dot"></div><div class="dock-label">Notes</div></div>
     <div class="dock-icon icon-safari" onclick="dockBounce(this)">🧭<div class="dock-label">Safari</div></div>
+    <div class="dock-icon" onclick="dockBounce(this)" style="background:linear-gradient(145deg,#ff6b35,#f7c59f);">🎬<div class="dock-label">Vista</div></div>
+    <div class="dock-icon" onclick="dockBounce(this)" style="background:linear-gradient(145deg,#6c63ff,#a78bfa);">🪐<div class="dock-label">Orbit</div></div>
+    <div class="dock-icon" onclick="dockBounce(this)" style="background:none;padding:0;overflow:hidden;border-radius:12px;"><img src="clay.png" style="width:100%;height:100%;object-fit:cover;border-radius:12px;display:block;pointer-events:none;"><div class="dock-dot"></div><div class="dock-label">Clayround</div></div>
+    <div class="dock-icon" onclick="dockBounce(this)" style="background:linear-gradient(145deg,#ff3cac,#784ba0);">🎵<div class="dock-label">Echo</div></div>
+    <div class="dock-icon" onclick="dockBounce(this)" style="background:linear-gradient(145deg,#f7971e,#ffd200);">⚡<div class="dock-label">Bolt</div></div>
     <div class="dock-icon icon-messages" onclick="dockBounce(this)">💬<div class="dock-label">Messages</div></div>
     <div class="dock-icon icon-mail" onclick="dockBounce(this)">✉️<div class="dock-label">Mail</div></div>
     <div class="dock-separator"></div>
@@ -1292,11 +1339,11 @@ function dockBounce(el){el.classList.remove('bounce');void el.offsetWidth;el.cla
     return {cellW,cellH,gridW,gridX,gridY,maxRows};
   }
 
+  // ── WIDGETS DEFAULT TO LEFT SIDE (cols 0-3) ──
   const DEFS=[
-    {id:'wg-folders', type:'folders',  col:6,row:0,cw:2,ch:1},
-    {id:'wg-clock',   type:'clock',    col:8,row:0,cw:2,ch:1},
-    {id:'wg-weather', type:'weather',  col:8,row:1,cw:2,ch:1},
-    {id:'wg-cal',     type:'calendar', col:8,row:2,cw:2,ch:2},
+    {id:'wg-clock',   type:'clock',    col:0,row:0,cw:2,ch:1},
+    {id:'wg-weather', type:'weather',  col:0,row:1,cw:2,ch:1},
+    {id:'wg-cal',     type:'calendar', col:0,row:2,cw:2,ch:2},
   ];
 
   function cellPx(def,m){
@@ -1309,16 +1356,6 @@ function dockBounce(el){el.classList.remove('bounce');void el.offsetWidth;el.cla
   }
 
   function widgetHTML(type){
-    if(type==='folders') return `
-      <div style="display:flex;flex-direction:column;height:100%;gap:0;position:relative;" id="folders-inner-${Date.now()}">
-        <div class="folders-row" style="display:flex;flex:1;align-items:center;justify-content:space-between;gap:4px;">
-          ${[0,1,2].map(i=>`
-            <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;border-radius:6px;padding:2px;transition:background 0.1s;" onmouseover="this.style.background='rgba(0,0,0,0.07)'" onmouseout="this.style.background='transparent'">
-              <img src="folders.png" style="width:100%;height:auto;object-fit:contain;display:block;filter:drop-shadow(0 2px 5px rgba(0,0,0,0.20));">
-            </div>`).join('')}
-        </div>
-        <div style="position:absolute;top:0;right:0;width:18px;height:18px;display:flex;align-items:center;justify-content:center;font-size:13px;color:var(--text-dim);font-weight:300;cursor:pointer;opacity:0.6;border-radius:4px;transition:opacity 0.1s,background 0.1s;z-index:5;" onmouseover="this.style.opacity='1';this.style.background='rgba(0,0,0,0.08)'" onmouseout="this.style.opacity='0.6';this.style.background='transparent'" onclick="foldersAddRow(this)">＋</div>
-      </div>`;
     if(type==='clock') return `
       <div style="display:flex;flex-direction:column;justify-content:center;height:100%;gap:5px">
         <div style="font-size:clamp(26px,3.5vw,52px);font-weight:200;letter-spacing:-2px;line-height:1;color:#111;white-space:nowrap" id="clock-time">09:41</div>
@@ -1450,7 +1487,6 @@ function dockBounce(el){el.classList.remove('bounce');void el.offsetWidth;el.cla
       const p=xy(e),r=el.getBoundingClientRect();
       dragOX=p.x-r.left;dragOY=p.y-r.top;
       touchStartPos={x:p.x,y:p.y};
-      // Visual "about to drag" hint at 150ms
       const hintTimer=setTimeout(()=>{
         el.style.transition='transform 0.15s ease, box-shadow 0.15s ease';
         el.style.transform='scale(1.02)';
@@ -1481,12 +1517,8 @@ function dockBounce(el){el.classList.remove('bounce');void el.offsetWidth;el.cla
         const moved=Math.hypot(p.x-touchStartPos.x,p.y-touchStartPos.y);
         if(moved>12){
           clearTimeout(touchHoldTimer);touchHoldTimer=null;
-          // Reset any hint styling
           const el=e.target.closest('.widget');
-          if(el){
-            clearTimeout(el._hintTimer);
-            el.style.transform='';el.style.boxShadow='';
-          }
+          if(el){clearTimeout(el._hintTimer);el.style.transform='';el.style.boxShadow='';}
         }
       }
       return;
@@ -1518,7 +1550,6 @@ function dockBounce(el){el.classList.remove('bounce');void el.offsetWidth;el.cla
     if(touchHoldTimer){clearTimeout(touchHoldTimer);touchHoldTimer=null;}
     touchStartPos=null;
     if(!drag||!dragDef){
-      // Clean up any hint styling on widgets that didn't become drags
       document.querySelectorAll('.widget').forEach(w=>{
         if(!w.classList.contains('dragging')){w.style.transform='';w.style.boxShadow='';}
       });
@@ -1561,15 +1592,21 @@ function dockBounce(el){el.classList.remove('bounce');void el.offsetWidth;el.cla
 })();
 
 // ── DROPDOWN ──
-function toggleDropdown(e){e.stopPropagation();document.getElementById('widget-dropdown').classList.toggle('open');}
+function toggleDropdown(e){
+  e.stopPropagation();
+  const dd=document.getElementById('widget-dropdown');
+  const btn=document.getElementById('widget-add-btn');
+  const r=btn.getBoundingClientRect();
+  dd.style.left=r.left+'px';
+  dd.style.top=(r.bottom+4)+'px';
+  dd.classList.toggle('open');
+}
 document.addEventListener('click',()=>document.getElementById('widget-dropdown').classList.remove('open'));
 
 function ddAction(type, el){
   el.classList.add('pressed');
   setTimeout(()=>el.classList.remove('pressed'), 200);
-  setTimeout(()=>{
-    document.getElementById('widget-dropdown').classList.remove('open');
-  }, 160);
+  setTimeout(()=>{document.getElementById('widget-dropdown').classList.remove('open');}, 160);
   setTimeout(()=>spawnWidget(type), 220);
 }
 
@@ -1579,12 +1616,10 @@ function spawnWidget(type){
   const cw=2;
   const ch=(type==='calendar'||type==='notes'||type==='musicw'||type==='appshelf-l')?2:1;
 
-  // L-shape: fill right-to-left across the top row first (beside the tower),
-  // then next row right-to-left, etc.
-  // Tower occupies cols 8-9, so we scan cols 6,4,2,0 then next row cols 6,4,2,0...
+  // Scan left-to-right, top-to-bottom for first free slot
   let col=0, row=0, found=false;
   outer: for(let r=0;r<m.maxRows;r++){
-    for(let c2=COLS-cw-cw; c2>=0; c2-=cw){
+    for(let c2=0; c2<=COLS-cw; c2+=1){
       const candidate={col:c2,row:r,cw,ch};
       const overlap=_DEFS.some(d=>!(candidate.col+cw<=d.col||d.col+d.cw<=candidate.col||candidate.row+ch<=d.row||d.row+d.ch<=candidate.row));
       if(!overlap){col=c2;row=r;found=true;break outer;}
@@ -1607,42 +1642,11 @@ function spawnWidget(type){
   document.getElementById('widget-grid').appendChild(el);
   _elMap[id]=el;
 
-  el.addEventListener('animationend',()=>{
-    el.classList.remove('spawning');
-    el.style.zIndex='';
-  },{once:true});
-
+  el.addEventListener('animationend',()=>{el.classList.remove('spawning');el.style.zIndex='';},{once:true});
   if(type==='clock') updateClock();
 }
 
-// ── FOLDER WIDGET EXPAND ──
-function foldersAddRow(btn){
-  const inner=btn.closest('[id^="folders-inner-"]');
-  if(!inner) return;
-  // find parent widget and its def
-  const widget=inner.closest('.widget');
-  if(!widget) return;
-  const def=window._DEFS.find(d=>d.id===widget.id);
-  if(!def) return;
-  // add a new row of 3 folders
-  const newRow=document.createElement('div');
-  newRow.className='folders-row';
-  newRow.style.cssText='display:flex;flex:1;align-items:center;justify-content:space-between;gap:4px;';
-  newRow.innerHTML=[0,1,2].map(()=>`
-    <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;border-radius:6px;padding:2px;transition:background 0.1s;" onmouseover="this.style.background='rgba(0,0,0,0.07)'" onmouseout="this.style.background='transparent'">
-      <img src="folders.png" style="width:100%;height:auto;object-fit:contain;display:block;filter:drop-shadow(0 2px 5px rgba(0,0,0,0.20));">
-    </div>`).join('');
-  // insert before the + button
-  inner.insertBefore(newRow, btn);
-  // grow widget by 1 cell height
-  def.ch += 1;
-  const m=window._gridMetrics();
-  const px=window._cellPx(def,m);
-  widget.style.height=px.h+'px';
-  widget.style.transition='height 0.3s cubic-bezier(0.34,1.2,0.64,1)';
-}
-
-
+// ── FOLDER WIDGET ──
 const _wmuAudios={};
 function wmuToggle(artEl,e){
   e.stopPropagation();
@@ -1655,31 +1659,15 @@ function wmuToggle(artEl,e){
   const aud=_wmuAudios[id];
   const overlay=artEl.querySelector('.wmu-play-overlay');
   const icon=artEl.querySelector('.wmu-play-icon');
-  overlay.classList.remove('flash');
-  void overlay.offsetWidth;
-  overlay.classList.add('flash');
+  overlay.classList.remove('flash');void overlay.offsetWidth;overlay.classList.add('flash');
   setTimeout(()=>overlay.classList.remove('flash'),600);
   if(artEl.dataset.playing==='true'){
-    aud.pause();
-    artEl.dataset.playing='false';
-    icon.textContent='▶';
-    icon.classList.add('show');
-    setTimeout(()=>icon.classList.remove('show'),800);
+    aud.pause();artEl.dataset.playing='false';icon.textContent='▶';icon.classList.add('show');setTimeout(()=>icon.classList.remove('show'),800);
   } else {
     Object.entries(_wmuAudios).forEach(([k,a])=>{
-      if(k!==id){ a.pause();
-        const other=document.querySelector('#'+k+' .wmu-art');
-        if(other){ other.dataset.playing='false';
-          const oi=other.querySelector('.wmu-play-icon');
-          if(oi){oi.textContent='▶';oi.classList.add('show');setTimeout(()=>oi.classList.remove('show'),600);}
-        }
-      }
+      if(k!==id){a.pause();const other=document.querySelector('#'+k+' .wmu-art');if(other){other.dataset.playing='false';const oi=other.querySelector('.wmu-play-icon');if(oi){oi.textContent='▶';oi.classList.add('show');setTimeout(()=>oi.classList.remove('show'),600);}}}
     });
-    aud.play().catch(()=>{});
-    artEl.dataset.playing='true';
-    icon.textContent='⏸';
-    icon.classList.add('show');
-    setTimeout(()=>icon.classList.remove('show'),900);
+    aud.play().catch(()=>{});artEl.dataset.playing='true';icon.textContent='⏸';icon.classList.add('show');setTimeout(()=>icon.classList.remove('show'),900);
   }
 }
 
@@ -1704,8 +1692,7 @@ function wmuToggle(artEl,e){
     if(e.key==='Escape')closeLB();
   });
   document.addEventListener('click',e=>{
-    const thumb=e.target.closest('.pw-thumb');
-    if(!thumb)return;
+    const thumb=e.target.closest('.pw-thumb');if(!thumb)return;
     const main=thumb.closest('#pw-main');if(!main)return;
     const imgs=[...main.querySelectorAll('.pw-thumb img')].map(i=>i.src);
     const idx=[...main.querySelectorAll('.pw-thumb')].indexOf(thumb);
@@ -1726,6 +1713,11 @@ function toggleMenuDD(which,el){
     dd.style.left=r.left+'px';
     dd.classList.add('open');
     _openDD.current=ddId;
+    if(which==='lang'){
+      renderLangList();
+      document.getElementById('lang-search').value='';
+      setTimeout(()=>document.getElementById('lang-search').focus(),50);
+    }
   }
 }
 document.addEventListener('click',e=>{
@@ -1736,74 +1728,39 @@ document.addEventListener('click',e=>{
 });
 
 function applyRoundCorners(on){
-  document.querySelectorAll('.widget').forEach(w=>{
-    w.style.borderRadius=on?'28px':'16px';
-  });
-  document.documentElement.style.setProperty('--widget-radius', on?'28px':'16px');
+  document.querySelectorAll('.widget').forEach(w=>{w.style.borderRadius=on?'28px':'16px';});
   document.querySelector('.dock').style.borderRadius=on?'28px':'20px';
-  document.getElementById('widget-add-btn').style.borderRadius=on?'18px':'10px';
 }
-
-function applyNightMode(on){
-  document.body.style.filter=on?'sepia(0.15) saturate(0.88) brightness(0.97)':'';
-}
-
+function applyNightMode(on){ document.body.style.filter=on?'sepia(0.15) saturate(0.88) brightness(0.97)':''; }
 function applyHideDock(on){
   const dock=document.querySelector('.dock-container');
   const tr='opacity 0.35s ease, visibility 0.35s ease, transform 0.35s ease';
-  if(on){
-    dock.style.transition=tr;
-    dock.style.opacity='0';
-    dock.style.visibility='hidden';
-    dock.style.transform='translateX(-50%) translateY(20px)';
-    dock.style.pointerEvents='none';
-  } else {
-    dock.style.transition=tr;
-    dock.style.opacity='1';
-    dock.style.visibility='visible';
-    dock.style.transform='translateX(-50%) translateY(0)';
-    dock.style.pointerEvents='all';
-  }
+  if(on){dock.style.transition=tr;dock.style.opacity='0';dock.style.visibility='hidden';dock.style.transform='translateX(-50%) translateY(20px)';dock.style.pointerEvents='none';}
+  else{dock.style.transition=tr;dock.style.opacity='1';dock.style.visibility='visible';dock.style.transform='translateX(-50%) translateY(0)';dock.style.pointerEvents='all';}
 }
-
 function saveWallpaper(){
   const canvas=document.querySelector('#p5-canvas canvas');
   if(!canvas){alert('Wallpaper not ready');return;}
-  const a=document.createElement('a');
-  a.download='wallpaper.png';
-  a.href=canvas.toDataURL('image/png');
+  const a=document.createElement('a');a.download='wallpaper.png';a.href=canvas.toDataURL('image/png');
   document.body.appendChild(a);a.click();document.body.removeChild(a);
 }
 
 let _darkMode=false;
-function toggleDarkMode(){
-  _darkMode=!_darkMode;
-  applyDarkMode(_darkMode);
-}
+function toggleDarkMode(){ _darkMode=!_darkMode; applyDarkMode(_darkMode); }
 function applyDarkMode(on){
   _darkMode=on;
   document.body.classList.toggle('dark-mode', on);
   const timeEl=document.getElementById('clock-time');
-  if(timeEl){ timeEl.style.transition='color 0.75s ease'; timeEl.style.color=on?'#f2f2f7':''; }
+  if(timeEl){timeEl.style.transition='color 0.75s ease';timeEl.style.color=on?'#f2f2f7':'';}
 }
-
-function applyHighContrast(on){
-  document.body.classList.toggle('high-contrast', on);
-}
-
+function applyHighContrast(on){ document.body.classList.toggle('high-contrast', on); }
 function applyHideWidgets(on){
   const grid=document.getElementById('widget-grid');
-  const btn=document.getElementById('widget-add-btn');
   const dd=document.getElementById('widget-dropdown');
   const tr='opacity 0.35s ease, visibility 0.35s ease';
   dd.classList.remove('open');
-  if(on){
-    [grid,btn].forEach(el=>{ el.style.transition=tr; el.style.opacity='0'; el.style.visibility='hidden'; el.style.pointerEvents='none'; });
-    dd.style.opacity='0'; dd.style.visibility='hidden'; dd.style.pointerEvents='none';
-  } else {
-    [grid,btn].forEach(el=>{ el.style.transition=tr; el.style.opacity='1'; el.style.visibility='visible'; el.style.pointerEvents='all'; });
-    dd.style.opacity=''; dd.style.visibility=''; dd.style.pointerEvents='';
-  }
+  if(on){grid.style.transition=tr;grid.style.opacity='0';grid.style.visibility='hidden';grid.style.pointerEvents='none';dd.style.opacity='0';dd.style.visibility='hidden';dd.style.pointerEvents='none';}
+  else{grid.style.transition=tr;grid.style.opacity='1';grid.style.visibility='visible';grid.style.pointerEvents='all';dd.style.opacity='';dd.style.visibility='';dd.style.pointerEvents='';}
 }
 
 // ── COLOUR WHEEL & FILTER ──
@@ -1823,7 +1780,6 @@ let _cwColor=[0,0,0], _cwStrong=false;
   const eg=ctx.createRadialGradient(cx,cy,r*0.82,cx,cy,r);
   eg.addColorStop(0,'rgba(0,0,0,0)');eg.addColorStop(1,'rgba(0,0,0,0.18)');
   ctx.beginPath();ctx.arc(cx,cy,r,0,Math.PI*2);ctx.fillStyle=eg;ctx.fill();
-
   function pick(e){
     const rect=canvas.getBoundingClientRect();
     const sx=canvas.width/rect.width,sy=canvas.height/rect.height;
@@ -1835,7 +1791,7 @@ let _cwColor=[0,0,0], _cwStrong=false;
     const prev=document.getElementById('cw-preview');
     if(prev) prev.style.background=`rgb(${d[0]},${d[1]},${d[2]})`;
     const tog=document.getElementById('toggle-filter-off');
-    if(tog&&tog.checked){ tog.checked=false; }
+    if(tog&&tog.checked){tog.checked=false;}
   }
   let down=false;
   canvas.addEventListener('mousedown',e=>{down=true;pick(e);});
@@ -1849,15 +1805,11 @@ function applyColorFilter(){
   const [r,g,b]=_cwColor;
   document.getElementById('cw-overlay').style.background=`rgba(${r},${g},${b},${alpha})`;
 }
-function setFilterStrength(on){
-  _cwStrong=on;
-  if(_cwColor[0]||_cwColor[1]||_cwColor[2]) applyColorFilter();
-}
+function setFilterStrength(on){ _cwStrong=on; if(_cwColor[0]||_cwColor[1]||_cwColor[2]) applyColorFilter(); }
 function clearColorFilter(on){
   if(on){
     document.getElementById('cw-overlay').style.background='rgba(0,0,0,0)';
-    const prev=document.getElementById('cw-preview');
-    if(prev) prev.style.background='transparent';
+    const prev=document.getElementById('cw-preview');if(prev) prev.style.background='transparent';
     _cwColor=[0,0,0];
   }
 }
@@ -1885,20 +1837,21 @@ const LANGUAGES=[
   {code:'el',name:'Greek',flag:'🇬🇷'},
 ];
 
-let _currentLang='en';
 const _nodeOriginals=new Map();
+let _currentLang='en';
 
 function _getTextNodes(){
-  const skip=new Set(['SCRIPT','STYLE','CANVAS','INPUT','TEXTAREA','SVG','PATH']);
+  const skip=new Set(['SCRIPT','STYLE','CANVAS','INPUT','SVG','PATH','RECT','CIRCLE']);
+  const skipIds=new Set(['dd-lang','translate-overlay','cw-overlay','lang-list','lang-active-bar','lang-search']);
   const nodes=[];
   function walk(node){
     if(node.nodeType===Node.TEXT_NODE){
       const t=node.textContent.trim();
-      if(t.length>1 && /[a-zA-ZÀ-ÿА-я؀-ۿ一-鿿]/.test(t)){
-        nodes.push(node);
-      }
-    } else if(node.nodeType===Node.ELEMENT_NODE && !skip.has(node.tagName)){
-      if(node.id==='dd-lang'||node.id==='translate-overlay'||node.id==='cw-overlay') return;
+      if(t.length>0 && /[a-zA-ZÀ-ÿА-я؀-ۿ一-鿿\u0600-\u06FF\u3040-\u30FF\uAC00-\uD7AF]/.test(t)) nodes.push(node);
+    } else if(node.nodeType===Node.ELEMENT_NODE){
+      if(skip.has(node.tagName)) return;
+      if(skipIds.has(node.id)) return;
+      if(node.tagName==='TEXTAREA') return;
       node.childNodes.forEach(walk);
     }
   }
@@ -1908,11 +1861,12 @@ function _getTextNodes(){
 
 function _storeOriginals(){
   _getTextNodes().forEach(n=>{
-    if(!_nodeOriginals.has(n)) _nodeOriginals.set(n,n.textContent);
+    if(!_nodeOriginals.has(n)) _nodeOriginals.set(n, n.textContent);
   });
 }
-// Snapshot immediately so menubar labels are captured before any translation
-setTimeout(_storeOriginals, 100);
+
+// Store after full render — 800ms so dock labels and desktop icons are all built
+setTimeout(_storeOriginals, 800);
 
 function renderLangList(filter=''){
   const list=document.getElementById('lang-list');
@@ -1924,69 +1878,74 @@ function renderLangList(filter=''){
       <span>${l.name}</span>
       ${l.code===_currentLang?'<span style="margin-left:auto;font-size:10px;opacity:0.5">✓</span>':''}
     </div>`).join('');
+  const bar=document.getElementById('lang-active-bar');
+  if(bar){
+    const active=LANGUAGES.find(l=>l.code===_currentLang);
+    if(active&&_currentLang!=='en'){bar.style.display='block';bar.textContent=`Active: ${active.flag} ${active.name}`;}
+    else bar.style.display='none';
+  }
 }
 
 function filterLangs(val){ renderLangList(val); }
 
-const _origToggle=window.toggleMenuDD;
-window.toggleMenuDD=function(which,el){
-  _origToggle(which,el);
-  if(which==='lang'&&document.getElementById('dd-lang').classList.contains('open')){
-    renderLangList();
-    document.getElementById('lang-search').value='';
-    setTimeout(()=>document.getElementById('lang-search').focus(),50);
-  }
-};
-
 async function selectLanguage(code,name,flag){
   if(code===_currentLang) return;
   document.querySelectorAll('.menu-dropdown').forEach(d=>d.classList.remove('open'));
-
   const ov=document.getElementById('translate-overlay');
   ov.classList.add('fading');
 
+  // Always re-snapshot before translating to catch any newly added nodes
+  _storeOriginals();
+
   if(code==='en'){
-    _nodeOriginals.forEach((txt,node)=>{ node.textContent=txt; });
+    _nodeOriginals.forEach((txt,node)=>{ try{node.textContent=txt;}catch(e){} });
     _currentLang='en';
+    renderLangList();
     setTimeout(()=>ov.classList.remove('fading'),500);
     return;
   }
 
-  _storeOriginals();
   const nodes=[..._nodeOriginals.keys()];
   const origTexts=nodes.map(n=>_nodeOriginals.get(n));
 
-  const unique=[...new Set(origTexts.filter(t=>t&&t.trim().length>1))];
-
-  const BATCH=8;
+  // Deduplicate for API efficiency
+  const unique=[...new Set(origTexts.filter(t=>t&&t.trim().length>0))];
+  const BATCH=6; // smaller batches = fewer truncation issues with MyMemory
   const translated=new Map();
 
   for(let i=0;i<unique.length;i+=BATCH){
     const chunk=unique.slice(i,i+BATCH);
-    const joined=chunk.join(' ||| ');
-    try{
-      const url=`https://api.mymemory.translated.net/get?q=${encodeURIComponent(joined)}&langpair=en|${code}`;
-      const r=await fetch(url);
-      const d=await r.json();
-      const result=d.responseData?.translatedText||joined;
-      const parts=result.split(/\s*\|\|\|\s*/);
-      chunk.forEach((orig,idx)=>{
-        translated.set(orig, parts[idx]||orig);
-      });
-    }catch{
-      chunk.forEach(orig=>translated.set(orig,orig));
-    }
-    await new Promise(r=>setTimeout(r,60));
+    // Translate each string individually to avoid delimiter confusion
+    await Promise.all(chunk.map(async orig=>{
+      if(translated.has(orig)) return;
+      try{
+        const url=`https://api.mymemory.translated.net/get?q=${encodeURIComponent(orig.trim())}&langpair=en|${code}`;
+        const r=await fetch(url);
+        const d=await r.json();
+        const result=d.responseData?.translatedText;
+        // Only use result if it looks valid (not an error string, not empty)
+        if(result && result.length>0 && !result.includes('INVALID') && !result.includes('NO QUERY')) {
+          translated.set(orig, result);
+        } else {
+          translated.set(orig, orig);
+        }
+      }catch{
+        translated.set(orig, orig);
+      }
+    }));
+    // Small pause between batches to respect rate limits
+    if(i+BATCH<unique.length) await new Promise(r=>setTimeout(r,80));
   }
 
   nodes.forEach(node=>{
     const orig=_nodeOriginals.get(node);
     if(orig && translated.has(orig)){
-      node.textContent=translated.get(orig);
+      try{ node.textContent=translated.get(orig); }catch(e){}
     }
   });
 
   _currentLang=code;
+  renderLangList();
   setTimeout(()=>ov.classList.remove('fading'),500);
 }
 
@@ -1997,8 +1956,7 @@ let npNotes=[{id:1,title:'Untitled',content:'',date:new Date().toLocaleDateStrin
 let npActive=0;
 
 function npRenderList(){
-  const list=document.getElementById('notepad-note-list');
-  if(!list)return;
+  const list=document.getElementById('notepad-note-list');if(!list)return;
   list.innerHTML=npNotes.map((n,i)=>`
     <div class="np-note-item${i===npActive?' active':''}" onclick="npSelect(${i})">
       <div class="np-note-title">${n.title||'Untitled'}</div>
@@ -2028,19 +1986,13 @@ function npNew(){
   if(tEl){tEl.textContent='';tEl.focus();}
   npRenderList();
 }
-function npFormat(cmd){ document.execCommand(cmd,false,null); document.getElementById('notepad-editor')?.focus(); }
-function npAlign(dir){ document.execCommand('justify'+dir[0].toUpperCase()+dir.slice(1),false,null); }
 function npDownloadPDF(){
   const ed=document.getElementById('notepad-editor');
   const titleEl=document.getElementById('np-note-title');
-  const title=(titleEl&&titleEl.textContent.trim())||(npNotes&&npNotes[npActive])?npNotes[npActive].title||'Note':'Note';
-  const html='<!DOCTYPE html><html><head><meta charset="UTF-8"><title>'+title+'</title><style>@page{margin:2cm}body{font-family:-apple-system,sans-serif;font-size:14pt;line-height:1.7;color:#1a1a1a;max-width:100%;}h1{font-size:20pt;margin:0 0 18px;border-bottom:1px solid #ddd;padding-bottom:8px;}@media print{body{padding:0;}}</style></head><body><h1>'+title+'</h1>'+ed.innerHTML+'</body></html>';
-  const w=window.open('','_blank','width=800,height=600');
-  if(!w)return;
-  w.document.write(html);
-  w.document.close();
-  w.focus();
-  setTimeout(()=>{w.print();},400);
+  const title=(titleEl&&titleEl.textContent.trim())||npNotes[npActive].title||'Note';
+  const html='<!DOCTYPE html><html><head><meta charset="UTF-8"><title>'+title+'</title><style>@page{margin:2cm}body{font-family:-apple-system,sans-serif;font-size:14pt;line-height:1.7;color:#1a1a1a;}h1{font-size:20pt;margin:0 0 18px;border-bottom:1px solid #ddd;padding-bottom:8px;}</style></head><body><h1>'+title+'</h1>'+ed.innerHTML+'</body></html>';
+  const w=window.open('','_blank','width=800,height=600');if(!w)return;
+  w.document.write(html);w.document.close();w.focus();setTimeout(()=>{w.print();},400);
 }
 (function(){
   const handle=document.getElementById('np-sidebar-resize');
@@ -2051,33 +2003,21 @@ function npDownloadPDF(){
   window.addEventListener('mousemove',e=>{if(!rsz)return;sb.style.width=Math.max(100,Math.min(320,sw+e.clientX-sx))+'px';});
   window.addEventListener('mouseup',()=>{rsz=false;});
 })();
-
 document.addEventListener('input',e=>{
-  if(e.target.id==='notepad-editor'){
-    npNotes[npActive].content=e.target.innerHTML;
-  }
-  if(e.target.id==='np-note-title'){
-    npNotes[npActive].title=e.target.textContent.trim()||'Untitled';
-    npRenderList();
-  }
+  if(e.target.id==='notepad-editor') npNotes[npActive].content=e.target.innerHTML;
+  if(e.target.id==='np-note-title'){npNotes[npActive].title=e.target.textContent.trim()||'Untitled';npRenderList();}
 });
 document.addEventListener('keydown',e=>{
-  if(e.target.id==='np-note-title'&&e.key==='Enter'){
-    e.preventDefault();
-    document.getElementById('notepad-editor')?.focus();
-  }
+  if(e.target.id==='np-note-title'&&e.key==='Enter'){e.preventDefault();document.getElementById('notepad-editor')?.focus();}
 });
 
 function openNotepad(){
   notepadOpen=true;notepadMinned=false;notepadMax=false;
   document.getElementById('dock-notes-app').classList.add('app-open');
   npRenderList();
-  const ed=document.getElementById('notepad-editor');
-  if(ed) ed.innerHTML=npNotes[npActive].content;
-  const titleEl=document.getElementById('np-note-title');
-  if(titleEl) titleEl.textContent=npNotes[npActive].title==='Untitled'?'':npNotes[npActive].title;
-  notepadWin.style.cssText='';
-  notepadWin.style.left='50%';notepadWin.style.top='50%';
+  const ed=document.getElementById('notepad-editor');if(ed) ed.innerHTML=npNotes[npActive].content;
+  const titleEl=document.getElementById('np-note-title');if(titleEl) titleEl.textContent=npNotes[npActive].title==='Untitled'?'':npNotes[npActive].title;
+  notepadWin.style.cssText='';notepadWin.style.left='50%';notepadWin.style.top='50%';
   notepadWin.style.transition='none';notepadWin.style.opacity='0';
   notepadWin.style.transform='translate(-50%,-50%) scale(0.05)';
   notepadWin.classList.remove('minimising','maximised','open');
@@ -2091,8 +2031,7 @@ function openNotepad(){
 function closeNotepad(){
   if(!notepadOpen)return;
   document.getElementById('dock-notes-app').classList.remove('app-open');
-  const ed=document.getElementById('notepad-editor');
-  if(ed) npNotes[npActive].content=ed.innerHTML;
+  const ed=document.getElementById('notepad-editor');if(ed) npNotes[npActive].content=ed.innerHTML;
   notepadWin.style.transition='opacity 0.3s ease,transform 0.3s ease';
   notepadWin.style.opacity='0';notepadWin.style.transform='translate(-50%,-50%) scale(0.88) translateY(8px)';
   notepadWin.style.pointerEvents='none';
@@ -2100,12 +2039,7 @@ function closeNotepad(){
 }
 function minimiseNotepad(){
   if(!notepadOpen)return;
-  if(notepadMinned){
-    notepadMinned=false;notepadWin.classList.remove('minimising');notepadWin.style.cssText='';
-    notepadWin.style.left='50%';notepadWin.style.top='50%';
-    notepadWin.style.transform='translate(-50%,-50%) scale(0.88) translateY(8px)';
-    requestAnimationFrame(()=>requestAnimationFrame(()=>notepadWin.classList.add('open')));return;
-  }
+  if(notepadMinned){notepadMinned=false;notepadWin.classList.remove('minimising');notepadWin.style.cssText='';notepadWin.style.left='50%';notepadWin.style.top='50%';notepadWin.style.transform='translate(-50%,-50%) scale(0.88) translateY(8px)';requestAnimationFrame(()=>requestAnimationFrame(()=>notepadWin.classList.add('open')));return;}
   const icon=document.getElementById('dock-notes-app'),ir=icon.getBoundingClientRect(),wr=notepadWin.getBoundingClientRect();
   notepadWin.style.setProperty('--np-tx',(ir.left+ir.width/2-wr.left-wr.width/2)+'px');
   notepadWin.style.setProperty('--np-ty',(ir.top+ir.height/2-wr.top-wr.height/2)+'px');
@@ -2113,12 +2047,9 @@ function minimiseNotepad(){
   notepadMinned=true;notepadMax=false;
 }
 function maximiseNotepad(){
-  if(!notepadOpen)return;
-  notepadMax=!notepadMax;
+  if(!notepadOpen)return;notepadMax=!notepadMax;
   if(notepadMax){notepadWin.classList.add('maximised');notepadWin.classList.remove('minimising');}
-  else{notepadWin.classList.remove('maximised');notepadWin.style.left='50%';notepadWin.style.top='50%';
-    notepadWin.style.width='';notepadWin.style.height='';notepadWin.style.transform='';
-    requestAnimationFrame(()=>requestAnimationFrame(()=>notepadWin.classList.add('open')));}
+  else{notepadWin.classList.remove('maximised');notepadWin.style.left='50%';notepadWin.style.top='50%';notepadWin.style.width='';notepadWin.style.height='';notepadWin.style.transform='';requestAnimationFrame(()=>requestAnimationFrame(()=>notepadWin.classList.add('open')));}
 }
 (function(){
   const tb=document.getElementById('notepad-titlebar');
@@ -2142,10 +2073,9 @@ let animRAF=null;
 function resizeAnimCanvas(){animCanvas.width=window.innerWidth;animCanvas.height=window.innerHeight;}
 resizeAnimCanvas();window.addEventListener('resize',resizeAnimCanvas);
 let photosOpen=false,photosMax=false,photosMinned=false;
-const images=["27a.jpg", "27b.jpg", "27c.jpg", "27d.jpg", "27e.jpg", "27f.jpg", "27g.jpg", "27h.jpg", "27i.jpg", "27j.jpg", "27k.jpg", "27l.jpg", "27m.jpg", "27n.jpg", "27o.jpg", "27p.jpg", "27q.jpg", "27r.jpg", "27s.jpg", "27t.jpg", "27u.jpg", "27v.jpg", "27w.jpg", 'cak.jpg','cal.jpg','cam.jpg','can.jpg','cek.jpg','cel.jpg','cem.jpg','cen.jpg','cil.jpg','cim.jpg','cin.jpg','col.jpg','com.jpg','cul.jpg','cum.jpg','cun.jpg'];
+const images=["27a.jpg","27b.jpg","27c.jpg","27d.jpg","27e.jpg","27f.jpg","27g.jpg","27h.jpg","27i.jpg","27j.jpg","27k.jpg","27l.jpg","27m.jpg","27n.jpg","27o.jpg","27p.jpg","27q.jpg","27r.jpg","27s.jpg","27t.jpg","27u.jpg","27v.jpg","27w.jpg","cak.jpg","cal.jpg","cam.jpg","can.jpg","cek.jpg","cel.jpg","cem.jpg","cen.jpg","cil.jpg","cim.jpg","cin.jpg","col.jpg","com.jpg","cul.jpg","cum.jpg","cun.jpg"];
 function buildPhotoGrid(){
-  const main=document.getElementById('pw-main');
-  main.innerHTML='';
+  const main=document.getElementById('pw-main');main.innerHTML='';
   const lbl=document.createElement('div');lbl.className='pw-year-label';lbl.textContent='2026';main.appendChild(lbl);
   const grid=document.createElement('div');grid.className='pw-grid';
   images.forEach(src=>{const t=document.createElement('div');t.className='pw-thumb';t.innerHTML=`<img src="${src}" loading="lazy" alt=""/><div class="pw-overlay"></div>`;grid.appendChild(t);});
@@ -2172,52 +2102,44 @@ function runCloseAnimation(fromRect,iconRect,onDone){
   animRAF=requestAnimationFrame(draw);
 }
 
-// ── TRASH APP ──
-let trashOpen=false, trashMinned=false;
+// ── TRASH ──
+let trashOpen=false,trashMinned=false;
 function openTrash(){
   const win=document.getElementById('trash-window');
-  trashOpen=true; trashMinned=false;
+  trashOpen=true;trashMinned=false;
   document.getElementById('dock-trash').classList.add('app-open');
   bringToFront(win);
-  win.style.cssText=''; win.style.left='50%'; win.style.top='50%';
-  win.style.transition='none'; win.style.opacity='0';
-  win.style.transform='translate(-50%,-50%) scale(0.05)';
+  win.style.cssText='';win.style.left='50%';win.style.top='50%';
+  win.style.transition='none';win.style.opacity='0';win.style.transform='translate(-50%,-50%) scale(0.05)';
   win.classList.remove('minimising','open');
   requestAnimationFrame(()=>requestAnimationFrame(()=>{
     win.style.transition='opacity 0.22s ease,transform 0.38s cubic-bezier(0.34,1.28,0.64,1)';
-    win.style.opacity='1'; win.style.transform='translate(-50%,-50%) scale(1)';
-    win.style.pointerEvents='all'; win.classList.add('open');
+    win.style.opacity='1';win.style.transform='translate(-50%,-50%) scale(1)';
+    win.style.pointerEvents='all';win.classList.add('open');
   }));
 }
 function closeTrash(){
-  const win=document.getElementById('trash-window');
-  if(!trashOpen)return;
+  const win=document.getElementById('trash-window');if(!trashOpen)return;
   document.getElementById('dock-trash').classList.remove('app-open');
   const icon=document.getElementById('dock-trash');
-  const ir=icon.getBoundingClientRect(), wr=win.getBoundingClientRect();
-  const tx=ir.left+ir.width/2-wr.left-wr.width/2, ty=ir.top+ir.height/2-wr.top-wr.height/2;
+  const ir=icon.getBoundingClientRect(),wr=win.getBoundingClientRect();
+  const tx=ir.left+ir.width/2-wr.left-wr.width/2,ty=ir.top+ir.height/2-wr.top-wr.height/2;
   win.style.transition='opacity 0.3s ease,transform 0.35s cubic-bezier(0.4,0,0.6,1)';
-  win.style.opacity='0'; win.style.transform=`translate(calc(-50% + ${tx}px),calc(-50% + ${ty}px)) scale(0.04)`;
+  win.style.opacity='0';win.style.transform=`translate(calc(-50% + ${tx}px),calc(-50% + ${ty}px)) scale(0.04)`;
   win.style.pointerEvents='none';
   setTimeout(()=>{win.classList.remove('open');win.style.cssText='';trashOpen=false;},360);
 }
 function minimiseTrash(){
-  const win=document.getElementById('trash-window');
-  if(!trashOpen)return;
-  if(trashMinned){
-    trashMinned=false; win.classList.remove('minimising'); win.style.cssText='';
-    win.style.left='50%'; win.style.top='50%';
-    win.style.transform='translate(-50%,-50%) scale(0.88) translateY(8px)';
-    requestAnimationFrame(()=>requestAnimationFrame(()=>win.classList.add('open'))); return;
-  }
-  const icon=document.getElementById('dock-trash'), ir=icon.getBoundingClientRect(), wr=win.getBoundingClientRect();
+  const win=document.getElementById('trash-window');if(!trashOpen)return;
+  if(trashMinned){trashMinned=false;win.classList.remove('minimising');win.style.cssText='';win.style.left='50%';win.style.top='50%';win.style.transform='translate(-50%,-50%) scale(0.88) translateY(8px)';requestAnimationFrame(()=>requestAnimationFrame(()=>win.classList.add('open')));return;}
+  const icon=document.getElementById('dock-trash'),ir=icon.getBoundingClientRect(),wr=win.getBoundingClientRect();
   win.style.setProperty('--tr-tx',(ir.left+ir.width/2-wr.left-wr.width/2)+'px');
   win.style.setProperty('--tr-ty',(ir.top+ir.height/2-wr.top-wr.height/2)+'px');
-  win.classList.remove('open'); win.classList.add('minimising'); trashMinned=true;
+  win.classList.remove('open');win.classList.add('minimising');trashMinned=true;
 }
 (function(){
   const tb=document.getElementById('trash-titlebar');
-  const MENU_H=24, DOCK_H=78;
+  const MENU_H=24,DOCK_H=78;
   let drag=false,ox=0,oy=0,raf=null;
   function startD(ex,ey){const win=document.getElementById('trash-window');const r=win.getBoundingClientRect();ox=ex-r.left;oy=ey-r.top;win.style.transition='none';win.style.transform='none';win.style.left=r.left+'px';win.style.top=r.top+'px';}
   function moveD(ex,ey){if(!drag||raf)return;raf=requestAnimationFrame(()=>{raf=null;const win=document.getElementById('trash-window');win.style.left=Math.max(0,Math.min(window.innerWidth-win.offsetWidth,ex-ox))+'px';win.style.top=Math.max(MENU_H,Math.min(window.innerHeight-DOCK_H-36,ey-oy))+'px';});}
@@ -2230,10 +2152,7 @@ function minimiseTrash(){
 })();
 
 let _winZ=502;
-function bringToFront(winEl){
-  _winZ++;
-  winEl.style.zIndex=_winZ;
-}
+function bringToFront(winEl){_winZ++;winEl.style.zIndex=_winZ;}
 document.addEventListener('mousedown',e=>{
   const win=e.target.closest('#photos-window,#music-window,#notepad-window,#trash-window');
   if(win) bringToFront(win);
@@ -2251,13 +2170,10 @@ function openPhotos(){
   const ir=icon.getBoundingClientRect();
   const ww=Math.min(860,window.innerWidth*0.94),wh=Math.min(560,window.innerHeight*0.86);
   const ox=ir.left+ir.width/2-window.innerWidth/2+ww/2,oy=ir.top+ir.height/2-window.innerHeight/2+wh/2;
-  photosWin.style.cssText='';
-  photosWin.style.left='50%';photosWin.style.top='50%';
+  photosWin.style.cssText='';photosWin.style.left='50%';photosWin.style.top='50%';
   photosWin.style.transition='none';photosWin.style.opacity='0';
-  photosWin.style.transformOrigin=`${ox}px ${oy}px`;
-  photosWin.style.transform='translate(-50%,-50%) scale(0.05)';
-  photosWin.classList.remove('minimising','maximised','open');
-  photosScrim.classList.add('visible');
+  photosWin.style.transformOrigin=`${ox}px ${oy}px`;photosWin.style.transform='translate(-50%,-50%) scale(0.05)';
+  photosWin.classList.remove('minimising','maximised','open');photosScrim.classList.add('visible');
   requestAnimationFrame(()=>requestAnimationFrame(()=>{
     photosWin.style.transition='opacity 0.22s ease,transform 0.38s cubic-bezier(0.34,1.28,0.64,1)';
     photosWin.style.opacity='1';photosWin.style.transform='translate(-50%,-50%) scale(1)';
@@ -2288,22 +2204,9 @@ function maximisePhotos(){
 }
 (function(){const tb=document.getElementById('pw-titlebar');let drag=false,ox=0,oy=0,raf=null;
 const MENU_H=24,DOCK_H=78;
-function clamp(x,y){
-  const w=photosWin.offsetWidth,h=photosWin.offsetHeight;
-  const cx=Math.max(0,Math.min(window.innerWidth-w,x));
-  const cy=Math.max(MENU_H,Math.min(window.innerHeight-DOCK_H-36,y));
-  return {cx,cy};
-}
+function clamp(x,y){const w=photosWin.offsetWidth,h=photosWin.offsetHeight;return{cx:Math.max(0,Math.min(window.innerWidth-w,x)),cy:Math.max(MENU_H,Math.min(window.innerHeight-DOCK_H-36,y))};}
 function startDrag(ex,ey){const r=photosWin.getBoundingClientRect();ox=ex-r.left;oy=ey-r.top;photosWin.style.transition='none';photosWin.style.transform='none';photosWin.style.left=r.left+'px';photosWin.style.top=r.top+'px';}
-function moveDrag(ex,ey){
-  if(!drag)return;
-  if(raf)return;
-  raf=requestAnimationFrame(()=>{
-    raf=null;
-    const {cx,cy}=clamp(ex-ox,ey-oy);
-    photosWin.style.left=cx+'px';photosWin.style.top=cy+'px';
-  });
-}
+function moveDrag(ex,ey){if(!drag)return;if(raf)return;raf=requestAnimationFrame(()=>{raf=null;const {cx,cy}=clamp(ex-ox,ey-oy);photosWin.style.left=cx+'px';photosWin.style.top=cy+'px';});}
 tb.addEventListener('mousedown',e=>{if(photosMax||e.target.classList.contains('pw-dot'))return;drag=true;startDrag(e.clientX,e.clientY);e.preventDefault();});
 tb.addEventListener('touchstart',e=>{if(photosMax||e.target.classList.contains('pw-dot'))return;drag=true;startDrag(e.touches[0].clientX,e.touches[0].clientY);e.preventDefault();},{passive:false});
 window.addEventListener('mousemove',e=>{moveDrag(e.clientX,e.clientY);});
@@ -2314,12 +2217,11 @@ window.addEventListener('touchend',()=>{drag=false;raf=null;});})();
 document.querySelectorAll('.pw-toolbar-btn').forEach(btn=>{btn.addEventListener('click',()=>{document.querySelectorAll('.pw-toolbar-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');});});
 document.querySelectorAll('.pw-sidebar-item').forEach(item=>{item.addEventListener('click',()=>{document.querySelectorAll('.pw-sidebar-item').forEach(i=>i.classList.remove('active'));item.classList.add('active');});});
 
-let muAudio=null, muAudioCtx=null, muGain=null, muLP=null, muHP=null, muBass=null, muTreble=null, muPan=null, muComp=null;
-let musicOpen=false, musicMax=false, musicMinned=false, muBuilt=false;
-
+// ── MUSIC PLAYER ──
+let muAudio=null,muAudioCtx=null,muGain=null,muLP=null,muHP=null,muBass=null,muTreble=null,muPan=null,muComp=null;
+let musicOpen=false,musicMax=false,musicMinned=false,muBuilt=false;
 const muPairs=[{image:'breakTHROUGH.png',audio:'breakTHROUGH.mp3'},{image:'mizu.png',audio:'queso.mp3'}];
 const muPair=muPairs[Math.floor(Math.random()*muPairs.length)];
-
 const muEffects=[
   (v)=>{muAudio.playbackRate=1+Math.sin(Date.now()/1000)*((v/100)*0.08);},
   (v)=>{muBass.gain.value=(v/100)*25;muBass.frequency.value=60+(v/100)*40;},
@@ -2345,9 +2247,7 @@ function muBtnFx(el){
 
 function muBuild(){
   if(muBuilt) return; muBuilt=true;
-
   document.getElementById('mu-albumArt').src=muPair.image;
-
   muAudio=new Audio(muPair.audio);muAudio.preload='auto';
   muAudioCtx=new(window.AudioContext||window.webkitAudioContext)();
   const src=muAudioCtx.createMediaElementSource(muAudio);
@@ -2393,25 +2293,21 @@ function muBuild(){
     blk.appendChild(btn);sB.appendChild(blk);
   }
   const b0=sB.children[0].querySelector('.mu-btn');
-  const homeA=document.createElement('a');homeA.href='https://victormasotti.com/';
-  homeA.style.cssText='display:flex;justify-content:center;align-items:center;width:100%;height:100%;';
+  const homeA=document.createElement('a');homeA.href='https://victormasotti.com/';homeA.style.cssText='display:flex;justify-content:center;align-items:center;width:100%;height:100%;';
   const homeImg=document.createElement('img');homeImg.src='home.png';homeImg.style.cssText='width:60%;height:60%;object-fit:contain;pointer-events:none;';
   homeA.appendChild(homeImg);b0.appendChild(homeA);
 
   const bv1=sB.children[1].querySelector('.mu-btn');
   const lImg=document.createElement('img');lImg.src='less.png';lImg.style.cssText='width:60%;height:60%;object-fit:contain;pointer-events:none;';
-  bv1.appendChild(lImg);
-  bv1.addEventListener('click',()=>{muAudio.volume=Math.max(0,muAudio.volume-0.05);muBtnFx(bv1);});
+  bv1.appendChild(lImg);bv1.addEventListener('click',()=>{muAudio.volume=Math.max(0,muAudio.volume-0.05);muBtnFx(bv1);});
 
   const bv2=sB.children[2].querySelector('.mu-btn');
   const mImg=document.createElement('img');mImg.src='more.png';mImg.style.cssText='width:60%;height:60%;object-fit:contain;pointer-events:none;';
-  bv2.appendChild(mImg);
-  bv2.addEventListener('click',()=>{muAudio.volume=Math.min(1,muAudio.volume+0.05);muBtnFx(bv2);});
+  bv2.appendChild(mImg);bv2.addEventListener('click',()=>{muAudio.volume=Math.min(1,muAudio.volume+0.05);muBtnFx(bv2);});
 
   const b3=sB.children[3].querySelector('.mu-btn');
   const leafImg=document.createElement('img');leafImg.src='leaflet.png';leafImg.style.cssText='width:60%;height:60%;object-fit:contain;pointer-events:none;';
-  b3.appendChild(leafImg);
-  b3.addEventListener('click',()=>{ muBtnFx(b3); });
+  b3.appendChild(leafImg);b3.addEventListener('click',()=>{muBtnFx(b3);});
 
   ['#ff8000','#00e054','#ffb343','#40bcf4'].forEach((col,i)=>{
     const circ=document.createElement('div');circ.className='mu-inner-circle';circ.style.background=col;
@@ -2420,21 +2316,13 @@ function muBuild(){
 
   const b8=sB.children[8].querySelector('.mu-btn');
   b8.innerHTML='<span style="font-size:1.2em;pointer-events:none">⏯</span>';
-  b8.addEventListener('click',()=>{
-    muBtnFx(b8);
-    if(muAudio.paused) muAudio.play().catch(()=>{});
-    else muAudio.pause();
-  });
+  b8.addEventListener('click',()=>{muBtnFx(b8);if(muAudio.paused)muAudio.play().catch(()=>{});else muAudio.pause();});
 
   let pCnt=0;
   const bPaint=sB.children[9].querySelector('.mu-btn');
   const paintImg=document.createElement('img');paintImg.src='paint.png';paintImg.style.cssText='width:60%;height:60%;object-fit:contain;pointer-events:none;';
   bPaint.appendChild(paintImg);
-  const muSchemes=[
-    ['#FF6B6B','#FFE66D'],['#4ECDC4','#C7F0DB'],['#A8DADC','#F1FAEE'],['#FFB4A2','#FFCDB2'],
-    ['#06FFA5','#FFFFC7'],['#E63946','#F8B195'],['#188f65','#d7cfbd'],['#FEE715','#101820'],
-    ['#FF6B9D','#FEC8D8'],['#645995','#D5BEE7'],['#0000FF','#FFFFFF'],['#DC143C','#FFD700'],
-  ].sort(()=>Math.random()-0.5);
+  const muSchemes=[['#FF6B6B','#FFE66D'],['#4ECDC4','#C7F0DB'],['#A8DADC','#F1FAEE'],['#FFB4A2','#FFCDB2'],['#06FFA5','#FFFFC7'],['#E63946','#F8B195'],['#188f65','#d7cfbd'],['#FEE715','#101820'],['#FF6B9D','#FEC8D8'],['#645995','#D5BEE7'],['#0000FF','#FFFFFF'],['#DC143C','#FFD700']].sort(()=>Math.random()-0.5);
   bPaint.addEventListener('click',()=>{
     muBtnFx(bPaint);pCnt++;
     const[a,b]=pCnt%5===0?['#C9CED4','#C9CED4']:muSchemes[pCnt%muSchemes.length];
@@ -2451,8 +2339,7 @@ function muBuild(){
 
   const sC=document.getElementById('mu-sectionC');
   for(let i=0;i<10;i++){
-    const blk=document.createElement('div');blk.className='mu-blk';
-    blk.style.position='relative';
+    const blk=document.createElement('div');blk.className='mu-blk';blk.style.position='relative';
     const track=document.createElement('div');track.className='mu-slider-track';
     const knob=document.createElement('div');knob.className='mu-slider-knob';
     const sImg2=document.createElement('img');sImg2.src=`slider${i+1}.png`;sImg2.style.cssText='width:60%;height:60%;object-fit:contain;pointer-events:none;';
@@ -2489,7 +2376,7 @@ function muBuild(){
 
 function openMusic(){
   muBuild();
-  musicOpen=true; musicMinned=false; musicMax=false;
+  musicOpen=true;musicMinned=false;musicMax=false;
   document.getElementById('dock-music').classList.add('app-open');
   if(muAudio) muAudio.play().catch(()=>{});
   const win=document.getElementById('music-window');
@@ -2497,14 +2384,11 @@ function openMusic(){
   const icon=document.getElementById('dock-music');
   const ir=icon.getBoundingClientRect();
   const ww=Math.min(900,window.innerWidth*0.96),wh=Math.min(620,window.innerHeight*0.92);
-  const ox=ir.left+ir.width/2-window.innerWidth/2+ww/2;
-  const oy=ir.top+ir.height/2-window.innerHeight/2+wh/2;
+  const ox=ir.left+ir.width/2-window.innerWidth/2+ww/2,oy=ir.top+ir.height/2-window.innerHeight/2+wh/2;
   win.style.cssText='';win.style.left='50%';win.style.top='50%';
   win.style.transition='none';win.style.opacity='0';
-  win.style.transformOrigin=`${ox}px ${oy}px`;
-  win.style.transform='translate(-50%,-50%) scale(0.05)';
-  win.classList.remove('minimising','maximised','open');
-  scrim.classList.add('visible');
+  win.style.transformOrigin=`${ox}px ${oy}px`;win.style.transform='translate(-50%,-50%) scale(0.05)';
+  win.classList.remove('minimising','maximised','open');scrim.classList.add('visible');
   requestAnimationFrame(()=>requestAnimationFrame(()=>{
     win.style.transition='opacity 0.22s ease,transform 0.38s cubic-bezier(0.34,1.28,0.64,1)';
     win.style.opacity='1';win.style.transform='translate(-50%,-50%) scale(1)';
@@ -2524,24 +2408,18 @@ function closeMusic(){
 function minimiseMusic(){
   if(!musicOpen)return;
   const win=document.getElementById('music-window'),scrim=document.getElementById('music-scrim');
-  if(musicMinned){
-    musicMinned=false;win.classList.remove('minimising');win.style.cssText='';
-    win.style.left='50%';win.style.top='50%';win.style.transform='translate(-50%,-50%) scale(0.88) translateY(8px)';
-    requestAnimationFrame(()=>requestAnimationFrame(()=>{win.classList.add('open');scrim.classList.add('visible');}));return;
-  }
+  if(musicMinned){musicMinned=false;win.classList.remove('minimising');win.style.cssText='';win.style.left='50%';win.style.top='50%';win.style.transform='translate(-50%,-50%) scale(0.88) translateY(8px)';requestAnimationFrame(()=>requestAnimationFrame(()=>{win.classList.add('open');scrim.classList.add('visible');}));return;}
   const icon=document.getElementById('dock-music'),ir=icon.getBoundingClientRect(),wr=win.getBoundingClientRect();
   win.style.setProperty('--mw-tx',(ir.left+ir.width/2-wr.left-wr.width/2)+'px');
   win.style.setProperty('--mw-ty',(ir.top+ir.height/2-wr.top-wr.height/2)+'px');
-  win.classList.remove('open','maximised');win.classList.add('minimising');
-  scrim.classList.remove('visible');musicMinned=true;musicMax=false;
+  win.classList.remove('open','maximised');win.classList.add('minimising');scrim.classList.remove('visible');musicMinned=true;musicMax=false;
 }
 function maximiseMusic(){
   if(!musicOpen)return;
   const win=document.getElementById('music-window'),scrim=document.getElementById('music-scrim');
   musicMax=!musicMax;
   if(musicMax){win.classList.add('maximised');win.classList.remove('minimising');scrim.classList.remove('visible');}
-  else{win.classList.remove('maximised');win.style.left='50%';win.style.top='50%';win.style.width='';win.style.height='';win.style.transform='';
-    requestAnimationFrame(()=>requestAnimationFrame(()=>{win.classList.add('open');scrim.classList.add('visible');}));}
+  else{win.classList.remove('maximised');win.style.left='50%';win.style.top='50%';win.style.width='';win.style.height='';win.style.transform='';requestAnimationFrame(()=>requestAnimationFrame(()=>{win.classList.add('open');scrim.classList.add('visible');}));}
 }
 (function(){
   const tb=document.getElementById('music-titlebar');
@@ -2549,16 +2427,7 @@ function maximiseMusic(){
   let drag=false,ox=0,oy=0,raf=null;
   function clampW(x,y){const win=document.getElementById('music-window');const w=win.offsetWidth,h=win.offsetHeight;return{cx:Math.max(0,Math.min(window.innerWidth-w,x)),cy:Math.max(MENU_H,Math.min(window.innerHeight-DOCK_H-36,y))};}
   function startDrag(ex,ey){const win=document.getElementById('music-window');const r=win.getBoundingClientRect();ox=ex-r.left;oy=ey-r.top;win.style.transition='none';win.style.transform='none';win.style.left=r.left+'px';win.style.top=r.top+'px';}
-  function moveDrag(ex,ey){
-    if(!drag)return;
-    if(raf)return;
-    raf=requestAnimationFrame(()=>{
-      raf=null;
-      const win=document.getElementById('music-window');
-      const {cx,cy}=clampW(ex-ox,ey-oy);
-      win.style.left=cx+'px';win.style.top=cy+'px';
-    });
-  }
+  function moveDrag(ex,ey){if(!drag)return;if(raf)return;raf=requestAnimationFrame(()=>{raf=null;const win=document.getElementById('music-window');const{cx,cy}=clampW(ex-ox,ey-oy);win.style.left=cx+'px';win.style.top=cy+'px';});}
   tb.addEventListener('mousedown',e=>{if(musicMax||e.target.classList.contains('pw-dot'))return;drag=true;startDrag(e.clientX,e.clientY);e.preventDefault();});
   tb.addEventListener('touchstart',e=>{if(musicMax||e.target.classList.contains('pw-dot'))return;drag=true;startDrag(e.touches[0].clientX,e.touches[0].clientY);e.preventDefault();},{passive:false});
   window.addEventListener('mousemove',e=>{moveDrag(e.clientX,e.clientY);});
@@ -2567,7 +2436,92 @@ function maximiseMusic(){
   window.addEventListener('touchend',()=>{drag=false;raf=null;});
 })();
 
-// ── P5 ──
+// ── DESKTOP FOLDER ICONS ──
+(function(){
+  const FOLDERS=[
+    {name:'Work',  img:'folder.png', action:()=>openPhotos()},
+    {name:'Work',  img:'folder.png', action:()=>openMusic()},
+    {name:'Work',  img:'folder.png', action:()=>openNotepad()},
+    {name:'Work',  img:'folder.png', action:null},
+    {name:'Work',  img:'folder.png', action:()=>openTrash()},
+  ];
+
+  // Grid params — right side, strict column
+  const ICON_W=72, ICON_H=90; // cell size
+  const GAP_X=16, GAP_Y=10;
+  const COLS=2; // 2-column grid on the right
+
+  function buildIcons(){
+    const container=document.getElementById('desktop-icons');
+    if(!container) return;
+    container.innerHTML='';
+
+    const MENU_H=26, DOCK_H=78;
+    const areaH=window.innerHeight - MENU_H - DOCK_H;
+    const rightEdge=window.innerWidth - 16; // 16px from right edge
+
+    // Grid origin — top-right, fills downward
+    // Place icons: col 0 is innermost, col 1 is outermost (right edge)
+    // Start from top with a small top offset
+    const TOP_PAD=18;
+
+    // Assign each folder a fixed grid cell (col, row) — scattered but strict
+    // Layout: use positions that look like a natural macOS right-side arrangement
+    const positions=[
+      {col:1, row:0},
+      {col:0, row:0},
+      {col:1, row:1},
+      {col:0, row:2},
+      {col:1, row:3},
+    ];
+
+    FOLDERS.forEach((f,i)=>{
+      const pos=positions[i];
+      // x: right-aligned — col 1 is rightmost
+      const x=rightEdge - (COLS - pos.col)*(ICON_W + GAP_X) + GAP_X;
+      const y=MENU_H + TOP_PAD + pos.row*(ICON_H + GAP_Y);
+
+      const el=document.createElement('div');
+      el.className='desk-icon';
+      el.style.left=x+'px';
+      el.style.top=y+'px';
+
+      const img=document.createElement('img');
+      img.src=f.img;
+      img.alt='';
+
+      const label=document.createElement('div');
+      label.className='desk-icon-label';
+      label.textContent=f.name;
+
+      el.appendChild(img);
+      el.appendChild(label);
+      container.appendChild(el);
+
+      // Single click = select
+      el.addEventListener('click',e=>{
+        e.stopPropagation();
+        document.querySelectorAll('.desk-icon').forEach(d=>d.classList.remove('selected'));
+        el.classList.add('selected');
+      });
+      // Double click = open
+      el.addEventListener('dblclick',e=>{
+        e.stopPropagation();
+        if(f.action) f.action();
+      });
+    });
+
+    // Click anywhere on desktop = deselect
+    document.getElementById('desktop-area').addEventListener('click',()=>{
+      document.querySelectorAll('.desk-icon').forEach(d=>d.classList.remove('selected'));
+    });
+  }
+
+  buildIcons();
+  window.addEventListener('resize', buildIcons);
+})();
+
+// ── P5 WALLPAPER ──
 new p5(function(p){
   const R=(lo,hi)=>lo+Math.random()*(hi-lo);
   const Ri=(lo,hi)=>Math.round(R(lo,hi));
@@ -2588,9 +2542,7 @@ new p5(function(p){
       let strength=dist<=s.width/2?1:1-(dist-s.width/2)/s.fade;
       strength=strength*strength*(3-2*strength);
       const fa=faceAdjust??1;
-      r=r+(s.col[0]*fa-r)*strength*0.88;
-      g=g+(s.col[1]*fa-g)*strength*0.88;
-      b=b+(s.col[2]*fa-b)*strength*0.88;
+      r=r+(s.col[0]*fa-r)*strength*0.88;g=g+(s.col[1]*fa-g)*strength*0.88;b=b+(s.col[2]*fa-b)*strength*0.88;
     }
     for(const wz of whiteZones){
       const d=Math.hypot(nx-wz.x,ny-wz.y);if(d>=wz.r+wz.soft)continue;
