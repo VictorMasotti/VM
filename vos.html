@@ -1880,15 +1880,13 @@ function dockBounce(el){el.classList.remove('bounce');void el.offsetWidth;el.cla
       </div>`;
     if(type==='weather') return `
       <div style="container-type:size;width:100%;height:100%;">
-        <div style="display:flex;flex-direction:column;justify-content:space-between;width:100%;height:100%;padding:2px 0;">
-          <div style="font-size:clamp(10px,1vw,13px);font-weight:600;color:var(--text-dim);letter-spacing:0.03em;" id="weather-city">London</div>
-          <div style="display:flex;align-items:flex-end;justify-content:space-between;">
-            <div style="display:flex;flex-direction:column;gap:1px;">
-              <div style="font-size:clamp(32px,3.5vw,72px);font-weight:200;letter-spacing:-2px;line-height:1;color:var(--text);" id="weather-temp">12°</div>
-              <div style="font-size:clamp(11px,1vw,14px);color:var(--text-dim);" id="weather-cond">Partly Cloudy</div>
-            </div>
-            <div style="font-size:clamp(32px,3.5vw,64px);line-height:1;opacity:0.9;" id="weather-icon">⛅</div>
+        <div style="display:flex;align-items:center;justify-content:space-between;width:100%;height:100%;padding:2px 0;">
+          <div style="display:flex;flex-direction:column;justify-content:center;gap:4px;">
+            <div style="font-size:clamp(10px,1vw,13px);font-weight:600;color:var(--text-dim);letter-spacing:0.03em;" id="weather-city">London</div>
+            <div style="font-size:clamp(32px,3.5vw,72px);font-weight:200;letter-spacing:-2px;line-height:1;color:var(--text);" id="weather-temp">12°</div>
+            <div style="font-size:clamp(11px,1vw,14px);color:var(--text-dim);" id="weather-cond">Partly Cloudy</div>
           </div>
+          <div style="font-size:clamp(32px,3.5vw,64px);line-height:1;opacity:0.9;align-self:center;" id="weather-icon">⛅</div>
         </div>
       </div>`;
     if(type==='calendar'){
@@ -3002,8 +3000,22 @@ function maximiseMusic(){
 
   // Folders use EXACT same grid as widgets
   function fm(){ return window._gridMetrics ? window._gridMetrics() : null; }
-  function toX(col){ const m=fm(); return m ? m.gridX + col*(m.cellW+8) : col*88; }
-  function toY(row){ const m=fm(); return m ? m.gridY + row*(m.cellH+8) : row*88; }
+  function toX(col){
+    const m=fm(); if(!m) return col*88;
+    const fsz=Math.round(m.cellW*0.67);
+    const fgap=Math.round(8*0.67);
+    const totalCols=window.COLS||10;
+    // Anchor folder grid to right edge
+    const rightEdge=window.innerWidth-14;
+    const fromRight=totalCols-1-col;
+    return rightEdge - fromRight*(fsz+fgap) - fsz;
+  }
+  function toY(row){
+    const m=fm(); if(!m) return row*88;
+    const fsz=Math.round(m.cellW*0.67);
+    const fgap=Math.round(8*0.67);
+    return m.gridY + row*(fsz+fgap);
+  }
   function cols(){ const m=fm(); return m ? window.COLS : 10; }
   function rows(){ const m=fm(); return m ? m.maxRows : 6; }
   function clampC(c){ return Math.max(0,Math.min(cols()-1,c)); }
@@ -3053,7 +3065,7 @@ function maximiseMusic(){
   const elMap={};
 
   function makeIcon(f){
-    const m2=fm(); const sz=m2?m2.cellW:80;
+    const m2=fm(); const sz=m2?Math.round(m2.cellW*0.67):54;
     const el=document.createElement('div');
     el.className='desk-icon';
     el.id='di-'+f.id;
@@ -3192,7 +3204,7 @@ function maximiseMusic(){
     if(!drag) return;
     if(drag.moved){
       const dx=e.clientX-drag.startX, dy=e.clientY-drag.startY;
-      const dc=Math.round(dx/(cellW()+8)), dr=Math.round(dy/(cellH()+8));
+      const dc=Math.round(dx/(Math.round(cellW()*0.67)+Math.round(8*0.67))), dr=Math.round(dy/(Math.round(cellH()*0.67)+Math.round(8*0.67)));
       drag.snapshots.forEach(s=>{
         const fd=folders.find(f=>f.id===s.id); if(!fd) return;
         fd.col=clampC(s.startCol+dc);
@@ -3259,7 +3271,7 @@ function maximiseMusic(){
     if(touchDrag.moved){
       const t=e.changedTouches[0];
       const dx=t.clientX-touchDrag.startX, dy=t.clientY-touchDrag.startY;
-      const dc=Math.round(dx/(cellW()+8)), dr=Math.round(dy/(cellH()+8));
+      const dc=Math.round(dx/(Math.round(cellW()*0.67)+Math.round(8*0.67))), dr=Math.round(dy/(Math.round(cellH()*0.67)+Math.round(8*0.67)));
       touchDrag.snapshots.forEach(s=>{
         const fd=folders.find(f=>f.id===s.id); if(!fd) return;
         fd.col=clampC(s.startCol+dc); fd.row=clampR(s.startRow+dr);
