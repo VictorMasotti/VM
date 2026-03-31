@@ -1849,7 +1849,7 @@ function dockBounce(el){el.classList.remove('bounce');void el.offsetWidth;el.cla
     const cellH=cellW;
     const gridW=COLS*cellW+(COLS-1)*GAP;
     const gridX=PAD;
-    const gridY=PAD;
+    const gridY=MENU_H+PAD;
     const maxRows=Math.floor((deskH-PAD*2+GAP)/(cellH+GAP));
     return {cellW,cellH,gridW,gridX,gridY,maxRows};
   }
@@ -3264,19 +3264,13 @@ function maximiseMusic(){
   },{passive:true});
 
   folders=initFolders();
-  window._folderList=folders; 
+  window._folderList=folders;
   build();
   window.addEventListener('resize',()=>{
-    const m2=fm(); const sz2=Math.round((m2?m2.cellW:80)*0.67);
-    const img_sz=sz2;
     folders.forEach(f=>{
       const el=elMap[f.id]; if(!el) return;
       el.style.left=toX(f.col)+'px';
       el.style.top=toY(f.row)+'px';
-      el.style.width=sz2+'px';
-      el.style.height=sz2+'px';
-      const img=el.querySelector('img');
-      if(img){img.style.width=sz2+'px';img.style.height=sz2+'px';}
     });
   });
 
@@ -3542,7 +3536,8 @@ function maximiseMusic(){
       const noisy=l.offset+l.slope*nx+Math.sin(nx*31+ny*17)*0.02;
       if(Math.abs(ny-noisy)<l.width) return l;
     }
-    return null;   }
+    return null;
+  }
 
   function patchTint(nx,ny){
     let r=0,g=0,b=0,a=0;
@@ -3556,7 +3551,8 @@ function maximiseMusic(){
         a+=tt*p.opacity;
       }
     }
-    return a>0?[r/a,g/a,b/a,Math.min(a,0.55)]:null;   }
+    return a>0?[r/a,g/a,b/a,Math.min(a,0.55)]:null;
+  }
 
   function drawDrill(cx,cy,col,row,h,nx,ny){
     const x=cx+isoX(col,row),y=cy+isoY(col,row,h);
@@ -3726,6 +3722,7 @@ function maximiseMusic(){
 })();
 </script>
 
+<!-- ── CLAYROUND APP WINDOW ── -->
 <div id="clay-window">
   <div id="clay-titlebar">
     <div class="pw-dot close" onclick="closeClay()"></div>
@@ -3734,6 +3731,7 @@ function maximiseMusic(){
     <span style="position:absolute;left:50%;transform:translateX(-50%);font-size:13px;font-weight:600;color:rgba(0,0,0,0.65);pointer-events:none;">Clayround</span>
   </div>
 
+  <!-- Loading screen -->
   <div id="clay-loader">
     <div class="clay-loader-rule"></div>
     <div id="clay-loader-icon-wrap"><img src="clay.png" alt="Clayround"></div>
@@ -3780,11 +3778,15 @@ function maximiseMusic(){
       </div>
     </div>
 
+    <!-- 3D Viewport -->
     <div id="clay-viewport">
       <iframe id="clay-iframe" style="width:100%;height:100%;border:none;display:block;" allowfullscreen></iframe>
     </div>
+
+    <!-- Resize handle -->
     <div id="clay-panel-resize"></div>
 
+    <!-- Right properties panel -->
     <div id="clay-props">
       <div class="clay-no-sel" id="clay-no-sel">Select an object<br>to see properties</div>
       <div id="clay-props-content" style="display:none">
@@ -3833,6 +3835,7 @@ function maximiseMusic(){
 </div>
 <div id="translate-overlay"></div>
 
+<!-- WIFI DROPDOWN -->
 <div class="status-dropdown" id="dd-wifi">
   <div class="sd-header">Wi-Fi</div>
   <div class="sd-body" style="align-items:center;gap:10px;">
@@ -3846,6 +3849,7 @@ function maximiseMusic(){
   </div>
 </div>
 
+<!-- BATTERY DROPDOWN -->
 <div class="status-dropdown" id="dd-battery">
   <div class="sd-header">Session Time</div>
   <div class="sd-body" style="align-items:center;justify-content:center;">
