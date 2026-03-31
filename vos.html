@@ -1841,13 +1841,13 @@ function dockBounce(el){el.classList.remove('bounce');void el.offsetWidth;el.cla
 // ── WIDGET LEGO GRID ──
 (function(){
   const GAP=8, PAD=14;
-  const COLS=14;
+  const COLS=10;
   const MENU_H=26, DOCK_H=78;
 
   function gridMetrics(){
     const deskW=window.innerWidth-PAD*2;
     const deskH=window.innerHeight-MENU_H-DOCK_H;
-    const cellW=Math.min(90, Math.floor((deskW - GAP*(COLS-1))/COLS));
+    const cellW=Math.min(120, Math.floor((deskW - GAP*(COLS-1))/COLS));
     const cellH=cellW;
     const gridW=COLS*cellW+(COLS-1)*GAP;
     const gridX=PAD;
