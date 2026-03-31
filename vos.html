@@ -361,7 +361,7 @@ body.dark-mode .dock-dot { background: rgba(255,255,255,0.6); }
 .pw-year-label { font-size:22px; font-weight:700; color:#1a1a1a; margin-bottom:10px; }
 .pw-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(140px,1fr)); gap:3px; margin-bottom:20px; }
 .pw-thumb { aspect-ratio:1; border-radius:4px; overflow:hidden; position:relative; background:#2c2c2e; }
-.pw-thumb:hover { outline:2px solid rgba(0,122,255,0.6); outline-offset:-2px; z-index:2; }
+.pw-thumb:hover { box-shadow:inset 0 0 0 2px rgba(0,122,255,0.5); z-index:2; }
 .pw-thumb img { width:100%; height:100%; object-fit:cover; display:block; }
 .pw-thumb .pw-overlay { position:absolute; inset:0; background:linear-gradient(to top,rgba(0,0,0,0.5) 0%,transparent 50%); opacity:0; }
 .pw-thumb:hover .pw-overlay { opacity:1; }
@@ -1148,13 +1148,19 @@ body.dark-mode #clay-titlebar span { color:rgba(255,255,255,0.78)!important; }
 @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&display=swap');
 #clay-loader {
   position:absolute; inset:0; z-index:10;
-  background:radial-gradient(ellipse at 40% 35%, #f5efe6 0%, #ede4d6 45%, #ddd0bc 100%);
+  background:
+    radial-gradient(ellipse at 30% 20%, rgba(255,220,160,0.35) 0%, transparent 55%),
+    radial-gradient(ellipse at 75% 80%, rgba(200,170,120,0.22) 0%, transparent 50%),
+    radial-gradient(ellipse at 50% 50%, #f5efe6 0%, #e8dcc8 50%, #d4c4a0 100%);
   display:flex; flex-direction:column; align-items:center; justify-content:center; gap:0;
   transition:opacity 0.7s ease;
   overflow:hidden;
 }
 body.dark-mode #clay-loader {
-  background:radial-gradient(ellipse at 40% 35%, #2a2420 0%, #1e1a16 45%, #141210 100%);
+  background:
+    radial-gradient(ellipse at 30% 20%, rgba(120,80,30,0.25) 0%, transparent 55%),
+    radial-gradient(ellipse at 75% 80%, rgba(80,50,20,0.20) 0%, transparent 50%),
+    radial-gradient(ellipse at 50% 50%, #2a2420 0%, #1e1a16 55%, #100e0c 100%);
 }
 /* Decorative corner ornaments */
 #clay-loader::before, #clay-loader::after {
@@ -1172,7 +1178,7 @@ body.dark-mode #clay-loader {
   margin-bottom:24px; opacity:0.5;
 }
 .clay-loader-rule-h {
-  width:180px; height:1px;
+  width:220px; height:1px;
   background:linear-gradient(90deg, transparent, #b8a080, transparent);
   margin:20px 0 0; opacity:0.45;
 }
@@ -1187,8 +1193,8 @@ body.dark-mode #clay-loader {
 #clay-loader-icon-wrap::before { left:-24px; }
 #clay-loader-icon-wrap::after  { right:-24px; }
 #clay-loader img {
-  width:64px; height:64px; object-fit:contain; border-radius:14px;
-  box-shadow:0 4px 20px rgba(0,0,0,0.15), 0 1px 0 rgba(255,255,255,0.6) inset;
+  width:72px; height:72px; object-fit:contain; border-radius:16px;
+  box-shadow:0 8px 32px rgba(160,120,60,0.35), 0 2px 0 rgba(255,255,255,0.7) inset, 0 0 0 1px rgba(160,120,60,0.15);
   animation:clay-float 3s ease-in-out infinite;
 }
 @keyframes clay-float {
@@ -1200,8 +1206,20 @@ body.dark-mode #clay-loader {
   font-size:32px; font-weight:300; letter-spacing:0.22em;
   color:#5c4a2a; text-transform:uppercase;
   line-height:1;
+  background:linear-gradient(90deg,#7a5c30,#c8a060,#7a5c30);
+  background-size:200% auto;
+  -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+  background-clip:text;
+  animation:clay-shimmer 3s linear infinite;
 }
-body.dark-mode #clay-loader-name { color:#d4c4a0; }
+@keyframes clay-shimmer { 0%{background-position:0% center} 100%{background-position:200% center} }
+body.dark-mode #clay-loader-name {
+  background:linear-gradient(90deg,#a08050,#e8c880,#a08050);
+  background-size:200% auto;
+  -webkit-background-clip:text; background-clip:text;
+  -webkit-text-fill-color:transparent;
+  animation:clay-shimmer 3s linear infinite;
+}
 #clay-loader-sub {
   font-family:'Cormorant Garamond', Georgia, serif;
   font-size:12px; font-weight:400; font-style:italic;
@@ -1289,6 +1307,57 @@ body.dark-mode .clay-prop-val { color:#f2f2f7; background:rgba(255,255,255,0.08)
 body.dark-mode .clay-props-obj-name { color:#f2f2f7; }
 .clay-no-sel { padding:20px 12px; font-size:12px; color:rgba(0,0,0,0.35); text-align:center; line-height:1.5; }
 body.dark-mode .clay-no-sel { color:rgba(255,255,255,0.28); }
+
+/* Sun controls */
+.clay-sun-wheel-wrap { padding:8px 0 6px; display:flex; flex-direction:column; align-items:center; gap:6px; }
+#clay-sun-wheel {
+  width:130px; height:130px; border-radius:50%;
+  background:radial-gradient(circle at 35% 35%, #fff8e8 0%, #e8d8b0 55%, #c8a860 100%);
+  border:1px solid rgba(0,0,0,0.12);
+  box-shadow:0 2px 10px rgba(0,0,0,0.13), inset 0 1px 0 rgba(255,255,255,0.7);
+  position:relative; cursor:crosshair; flex-shrink:0;
+}
+body.dark-mode #clay-sun-wheel {
+  background:radial-gradient(circle at 35% 35%, #3a3020 0%, #1e1810 55%, #0e0c08 100%);
+  border-color:rgba(255,255,255,0.10);
+  box-shadow:0 2px 10px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.06);
+}
+#clay-sun-dot {
+  position:absolute; width:12px; height:12px; border-radius:50%;
+  background:radial-gradient(circle at 35% 35%, #ffe080, #ffb830);
+  border:2px solid rgba(255,255,255,0.9);
+  box-shadow:0 1px 6px rgba(0,0,0,0.35), 0 0 8px rgba(255,184,48,0.5);
+  transform:translate(-50%,-50%);
+  pointer-events:none;
+  left:70%; top:25%;
+  transition:left 0.05s, top 0.05s;
+}
+.clay-sun-label { font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:0.07em; color:rgba(0,0,0,0.35); }
+body.dark-mode .clay-sun-label { color:rgba(255,255,255,0.28); }
+
+/* macOS-style slider */
+#clay-sun-slider {
+  width:100%; appearance:none; -webkit-appearance:none;
+  height:4px; border-radius:2px; outline:none; cursor:pointer;
+  background:rgba(0,0,0,0.10);
+  box-shadow:inset 0 1px 2px rgba(0,0,0,0.12);
+}
+body.dark-mode #clay-sun-slider { background:rgba(255,255,255,0.10); }
+#clay-sun-slider::-webkit-slider-thumb {
+  -webkit-appearance:none; appearance:none;
+  width:18px; height:18px; border-radius:50%;
+  background:radial-gradient(circle at 35% 30%, rgba(255,255,255,0.9), #e8e0d8);
+  border:1px solid rgba(0,0,0,0.18);
+  box-shadow:0 2px 6px rgba(0,0,0,0.22), inset 0 1px 0 rgba(255,255,255,0.9);
+  cursor:pointer;
+}
+#clay-sun-slider::-moz-range-thumb {
+  width:18px; height:18px; border-radius:50%;
+  background:radial-gradient(circle at 35% 30%, rgba(255,255,255,0.9), #e8e0d8);
+  border:1px solid rgba(0,0,0,0.18);
+  box-shadow:0 2px 6px rgba(0,0,0,0.22);
+  cursor:pointer;
+}
 
 /* Resize handle between toolbar and panel */
 #clay-panel-resize {
@@ -3358,6 +3427,15 @@ function maximiseMusic(){
         <div class="clay-prop-row"><span class="clay-prop-label">Type</span><span class="clay-prop-val" id="cprop-type">Clay</span></div>
         <div class="clay-props-section">Object</div>
         <div class="clay-prop-row"><span class="clay-prop-label">Verts</span><span class="clay-prop-val" id="cprop-verts">–</span></div>
+        <div class="clay-props-section">Lighting</div>
+        <div class="clay-sun-wheel-wrap">
+          <div class="clay-sun-label">Sun Direction</div>
+          <div id="clay-sun-wheel"><div id="clay-sun-dot"></div></div>
+          <div class="clay-sun-label" style="margin-top:4px;">Intensity</div>
+          <div style="padding:0 12px;width:100%;box-sizing:border-box;">
+            <input type="range" id="clay-sun-slider" min="0" max="100" value="40">
+          </div>
+        </div>
         <div class="clay-prop-row" style="padding:8px 12px;">
           <button onclick="deleteSelected()" style="width:100%;padding:5px;font-size:11px;border-radius:6px;border:none;background:rgba(255,59,48,0.12);color:#ff3b30;font-weight:600;cursor:pointer;">Delete Object</button>
         </div>
@@ -3685,12 +3763,12 @@ function maximiseMusic(){
   scene.add(ground);
 
   // Lights
-  scene.add(new THREE.AmbientLight(0xfff5e6,${dark?0.5:0.75}));
-  const sun=new THREE.DirectionalLight(0xfff8f0,${dark?1.0:1.5});
+  scene.add(new THREE.AmbientLight(0xfff5e6,${dark?0.55:0.80}));
+  const sun=new THREE.DirectionalLight(0xfff8f0,${dark?0.55:0.65});
   sun.position.set(6,12,8); sun.castShadow=true;
   sun.shadow.mapSize.width=2048; sun.shadow.mapSize.height=2048;
   scene.add(sun);
-  const fill=new THREE.DirectionalLight(0xdce8ff,0.35);
+  const fill=new THREE.DirectionalLight(0xdce8ff,0.20);
   fill.position.set(-5,4,-6); scene.add(fill);
 
   function mat(hex,rough){return new THREE.MeshStandardMaterial({color:new THREE.Color(hex),roughness:rough||0.88,metalness:0});}
@@ -3782,6 +3860,12 @@ function maximiseMusic(){
     if(d.type==='deleteSelected'&&selected){scene.remove(selected);if(outlineMesh){scene.remove(outlineMesh);outlineMesh=null;}meshes.splice(meshes.indexOf(selected),1);selected=null;}
     if(d.type==='setColor'&&selected){selected.material.color.set(d.color);}
     if(d.type==='darkMode'){renderer.setClearColor(d.dark?0x18181a:0xf0ede8);ground.material.color.set(d.dark?0x1e1e20:0xe8e3da);}
+    if(d.type==='setSun'){
+      const az=d.azimuth||0, el2=d.elevation||0.6, inten=d.intensity||0.4;
+      const r=10;
+      sun.position.set(Math.sin(az)*Math.cos(el2)*r, Math.sin(el2)*r, Math.cos(az)*Math.cos(el2)*r);
+      sun.intensity=inten*1.2;
+    }
   });
 
   function animate(){requestAnimationFrame(animate);if(outlineMesh&&selected){outlineMesh.position.copy(selected.position);}renderer.render(scene,cam);}
@@ -3826,6 +3910,49 @@ function maximiseMusic(){
     document.getElementById('cprop-type').textContent='Clay';
     document.getElementById('cprop-verts').textContent=obj.type==='sphere'?'~2000':'48';
   }
+
+  // ── SUN CONTROLS ──
+  (function(){
+    const wheel=document.getElementById('clay-sun-wheel');
+    const dot=document.getElementById('clay-sun-dot');
+    const slider=document.getElementById('clay-sun-slider');
+    if(!wheel||!dot||!slider) return;
+
+    let sunAzimuth=0.8, sunElevation=0.6; // radians
+
+    function sendSun(){
+      const iframe=document.getElementById('clay-iframe');
+      if(!iframe||!iframe.contentWindow) return;
+      iframe.contentWindow.postMessage({type:'setSun',azimuth:sunAzimuth,elevation:sunElevation,intensity:slider.value/100},'*');
+    }
+
+    // Wheel interaction
+    function pickFromEvent(e){
+      const rect=wheel.getBoundingClientRect();
+      const cx=rect.left+rect.width/2, cy=rect.top+rect.height/2;
+      const dx=(e.clientX||e.touches[0].clientX)-cx;
+      const dy=(e.clientY||e.touches[0].clientY)-cy;
+      const r=rect.width/2-8;
+      const dist=Math.hypot(dx,dy);
+      const nx=dx/Math.max(dist,r)*r, ny=dy/Math.max(dist,r)*r;
+      dot.style.left=(50+nx/rect.width*100)+'%';
+      dot.style.top=(50+ny/rect.height*100)+'%';
+      sunAzimuth=Math.atan2(dx,dy);
+      sunElevation=Math.max(0.05,Math.min(1.5,1.2-dist/r*1.0));
+      sendSun();
+    }
+
+    let dragging=false;
+    wheel.addEventListener('mousedown',e=>{dragging=true;pickFromEvent(e);e.preventDefault();});
+    window.addEventListener('mousemove',e=>{if(dragging)pickFromEvent(e);});
+    window.addEventListener('mouseup',()=>dragging=false);
+    wheel.addEventListener('touchstart',e=>{dragging=true;pickFromEvent(e);},{passive:true});
+    window.addEventListener('touchmove',e=>{if(dragging)pickFromEvent(e);},{passive:true});
+    window.addEventListener('touchend',()=>dragging=false,{passive:true});
+    wheel.addEventListener('click',pickFromEvent);
+
+    slider.addEventListener('input',sendSun);
+  })();
 
   // ── TOOLS & ACTIONS ──
   window.setClayTool=function(tool,el){
