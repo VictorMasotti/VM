@@ -593,8 +593,8 @@ body.dark-mode .desk-icon.selected { background:rgba(0,122,255,0.28); }
   padding:3px 4px 0; flex-shrink:0;
 }
 .desk-icon.selected .desk-icon-label {
-  background:rgba(0,122,255,0.82); text-shadow:none;
-  border-radius:20px; padding:2px 10px;
+  background:transparent;
+  user-select:none; -webkit-user-select:none;
 }
 
 
@@ -1847,7 +1847,7 @@ function dockBounce(el){el.classList.remove('bounce');void el.offsetWidth;el.cla
   function gridMetrics(){
     const deskW=window.innerWidth-PAD*2;
     const deskH=window.innerHeight-MENU_H-DOCK_H;
-    const cellW=Math.min(120, Math.floor((deskW - GAP*(COLS-1))/COLS));
+    const cellW=Math.floor((deskW - GAP*(COLS-1))/COLS);
     const cellH=cellW;
     const gridW=COLS*cellW+(COLS-1)*GAP;
     const gridX=PAD;
@@ -1874,18 +1874,22 @@ function dockBounce(el){el.classList.remove('bounce');void el.offsetWidth;el.cla
 
   function widgetHTML(type){
     if(type==='clock') return `
-      <div style="display:flex;flex-direction:column;justify-content:center;height:100%;gap:4px;overflow:hidden;">
-        <div style="font-size:clamp(18px,2.8vw,52px);font-weight:200;letter-spacing:-1.5px;line-height:1;color:#111;white-space:nowrap;overflow:hidden;text-overflow:clip;" id="clock-time">09:41</div>
-        <div style="font-size:clamp(9px,0.75vw,13px);color:var(--text-dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" id="clock-date">Wed, March 19</div>
+      <div style="display:flex;flex-direction:column;justify-content:center;width:100%;height:100%;padding:2px 0;gap:3px;">
+        <div style="font-size:clamp(32px,3.5vw,72px);font-weight:200;letter-spacing:-2px;line-height:1;color:#111;" id="clock-time">09:41</div>
+        <div style="font-size:clamp(12px,1.1vw,16px);font-weight:600;color:var(--text-dim);" id="clock-date">Wed, March 19</div>
       </div>`;
     if(type==='weather') return `
-      <div style="display:flex;align-items:center;justify-content:space-between;width:100%;height:100%;padding:2px 0">
-        <div style="display:flex;flex-direction:column;justify-content:center;gap:3px">
-          <div style="font-size:clamp(10px,0.9vw,13px);font-weight:600;color:var(--text-dim)">London</div>
-          <div style="font-size:clamp(28px,3.2vw,48px);font-weight:200;letter-spacing:-2px;line-height:1;color:var(--text)">12°</div>
-          <div style="font-size:clamp(10px,0.9vw,13px);color:var(--text-dim)">Partly Cloudy</div>
+      <div style="container-type:size;width:100%;height:100%;">
+        <div style="display:flex;flex-direction:column;justify-content:space-between;width:100%;height:100%;padding:2px 0;">
+          <div style="font-size:clamp(10px,1vw,13px);font-weight:600;color:var(--text-dim);letter-spacing:0.03em;" id="weather-city">London</div>
+          <div style="display:flex;align-items:flex-end;justify-content:space-between;">
+            <div style="display:flex;flex-direction:column;gap:1px;">
+              <div style="font-size:clamp(32px,3.5vw,72px);font-weight:200;letter-spacing:-2px;line-height:1;color:var(--text);" id="weather-temp">12°</div>
+              <div style="font-size:clamp(11px,1vw,14px);color:var(--text-dim);" id="weather-cond">Partly Cloudy</div>
+            </div>
+            <div style="font-size:clamp(32px,3.5vw,64px);line-height:1;opacity:0.9;" id="weather-icon">⛅</div>
+          </div>
         </div>
-        <div style="font-size:clamp(28px,3vw,44px);line-height:1;opacity:0.9">⛅</div>
       </div>`;
     if(type==='calendar'){
       const _now=new Date();
@@ -3513,6 +3517,7 @@ function maximiseMusic(){
 <div id="cw-overlay"></div>
 <div id="widget-ctx-menu">
   <div class="wctx-item" id="wctx-resize" style="display:none;color:#1a1a1a;">⬌ Resize</div>
+  <div class="wctx-item" id="wctx-locate" style="display:none;color:#1a1a1a;">Use My Location</div>
   <div class="wctx-item danger" id="wctx-remove">🗑 Remove Widget</div>
 </div>
 <div id="translate-overlay"></div>
@@ -3617,13 +3622,16 @@ function maximiseMusic(){
     targetWidget = widget;
     const def = window._DEFS && window._DEFS.find(d=>d.id===widget.id);
     const isClock = def && def.type==='clock';
+    const isWeather = def && def.type==='weather';
     const resizeEl = document.getElementById('wctx-resize');
-    if(isClock && resizeEl){
+    const locateEl = document.getElementById('wctx-locate');
+    if((isClock||isWeather) && resizeEl){
       resizeEl.style.display='flex';
       resizeEl.textContent = (def.cw===1) ? 'Expand 2×' : 'Resize 1/2';
     } else if(resizeEl){
       resizeEl.style.display='none';
     }
+    if(locateEl) locateEl.style.display = isWeather ? 'flex' : 'none';
     const mw=160, mh=isClock?90:55;
     const lx=Math.min(x, window.innerWidth-mw-8);
     const ly=Math.min(y, window.innerHeight-mh-8);
@@ -3678,32 +3686,66 @@ function maximiseMusic(){
     closeCtx();
   });
 
-  // Resize clock handler
+  // Resize clock/weather handler
   document.getElementById('wctx-resize').addEventListener('click', () => {
     if(!targetWidget) return;
     const def = window._DEFS && window._DEFS.find(d=>d.id===targetWidget.id);
-    if(!def || def.type!=='clock') return;
+    if(!def || (def.type!=='clock' && def.type!=='weather')) return;
     const m = window._gridMetrics();
     const GAP = 8;
-    if(def.cw === 2){
-      // halve
-      def.cw = 1;
-    } else {
-      // double — make sure it fits
-      def.cw = Math.min(2, window.COLS - def.col);
-    }
+    def.cw = def.cw===2 ? 1 : Math.min(2, window.COLS - def.col);
     const el = window._elMap[def.id];
     if(el){
       el.style.transition = 'left 0.32s cubic-bezier(0.34,1.2,0.64,1), top 0.32s cubic-bezier(0.34,1.2,0.64,1), width 0.32s cubic-bezier(0.34,1.2,0.64,1)';
       el.style.width = (def.cw * m.cellW + (def.cw-1)*GAP) + 'px';
-      // Scale clock font with new width
-      const timeEl = el.querySelector('#clock-time');
-      const dateEl = el.querySelector('#clock-date');
-      const newW = def.cw * m.cellW + (def.cw-1)*GAP;
-      if(timeEl) timeEl.style.fontSize = Math.min(52, Math.max(18, newW*0.28))+'px';
-      if(dateEl) dateEl.style.fontSize = Math.min(13, Math.max(9, newW*0.065))+'px';
+      // Clock font scale
+      if(def.type==='clock'){
+        const timeEl=el.querySelector('#clock-time'), dateEl=el.querySelector('#clock-date');
+        const newW=def.cw*m.cellW+(def.cw-1)*GAP;
+        if(timeEl) timeEl.style.fontSize=Math.min(52,Math.max(18,newW*0.28))+'px';
+        if(dateEl) dateEl.style.fontSize=Math.min(13,Math.max(9,newW*0.065))+'px';
+      }
+      // Weather: hide icon when halved, restore when expanded
+      if(def.type==='weather'){
+        const iconEl=el.querySelector('#weather-icon');
+        if(iconEl) iconEl.style.display=def.cw===1?'none':'';
+      }
     }
     closeCtx();
+  });
+
+  // Geolocation for weather
+  document.getElementById('wctx-locate').addEventListener('click', () => {
+    if(!targetWidget) return;
+    const el = targetWidget;
+    closeCtx();
+    if(!navigator.geolocation){ alert('Geolocation not supported'); return; }
+    const cityEl=el.querySelector('#weather-city');
+    const tempEl=el.querySelector('#weather-temp');
+    const condEl=el.querySelector('#weather-cond');
+    const iconEl=el.querySelector('#weather-icon');
+    if(cityEl) cityEl.textContent='Locating…';
+    navigator.geolocation.getCurrentPosition(async pos=>{
+      const {latitude:lat, longitude:lon} = pos.coords;
+      try{
+        const r = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true&hourly=relativehumidity_2m`);
+        const d = await r.json();
+        const temp = Math.round(d.current_weather.temperature);
+        const wcode = d.current_weather.weathercode;
+        const icons={0:'☀️',1:'🌤',2:'⛅',3:'☁️',45:'🌫',48:'🌫',51:'🌦',53:'🌦',55:'🌧',61:'🌧',63:'🌧',65:'🌧',71:'🌨',73:'🌨',75:'❄️',80:'🌦',81:'🌧',82:'⛈',95:'⛈',96:'⛈',99:'⛈'};
+        const conditions={0:'Clear',1:'Mainly Clear',2:'Partly Cloudy',3:'Overcast',45:'Foggy',51:'Drizzle',61:'Rain',71:'Snow',80:'Showers',95:'Thunderstorm'};
+        const ic = icons[wcode]||'🌡';
+        const cn = conditions[Math.floor(wcode/10)*10] || conditions[wcode] || 'Unknown';
+        // Reverse geocode city name
+        const gr = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json`);
+        const gd = await gr.json();
+        const city = gd.address?.city||gd.address?.town||gd.address?.village||'Here';
+        if(tempEl) tempEl.textContent=temp+'°';
+        if(cityEl) cityEl.textContent=city;
+        if(condEl) condEl.textContent=cn;
+        if(iconEl) iconEl.textContent=ic;
+      } catch(e){ if(cityEl) cityEl.textContent='Error'; }
+    }, ()=>{ if(cityEl) cityEl.textContent='Denied'; });
   });
 
   // Close on outside click
