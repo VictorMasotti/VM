@@ -725,6 +725,44 @@ body.dark-mode #save-wallpaper-btn { background:linear-gradient(135deg,#3a3a3e,#
 body.dark-mode #save-wallpaper-btn::before { color:rgba(255,255,255,0.6); }
 body.dark-mode #save-wallpaper-btn:hover { background:linear-gradient(135deg,#48484c,#343438); }
 
+#fullscreen-toggle {
+  display:flex; align-items:center;
+  cursor:pointer; user-select:none;
+}
+#fullscreen-track {
+  position:relative;
+  width:30px; height:14px;
+  border-radius:7px;
+  background:linear-gradient(135deg,#3a3a3e,#28282c);
+  border:1px solid rgba(0,0,0,0.25);
+  box-shadow:inset 0 1px 2px rgba(0,0,0,0.20);
+  transition:background 0.3s ease;
+  overflow:hidden;
+}
+#fullscreen-icons {
+  position:absolute; inset:0;
+  display:flex; align-items:center; justify-content:space-between;
+  padding:0 3px; pointer-events:none;
+}
+#fs-icon-expand { opacity:0.7; transition:opacity 0.3s; }
+#fs-icon-compress { opacity:0.3; transition:opacity 0.3s; }
+#fullscreen-knob {
+  position:absolute; top:1px; left:1px;
+  width:12px; height:12px; border-radius:50%;
+  background:#888;
+  box-shadow:0 1px 3px rgba(0,0,0,0.40);
+  transition:transform 0.3s cubic-bezier(0.34,1.2,0.64,1), background 0.3s ease;
+}
+body.fullscreen-active #fullscreen-track {
+  background:linear-gradient(135deg,#555,#333);
+}
+body.fullscreen-active #fullscreen-knob {
+  transform:translateX(16px);
+  background:#ccc;
+}
+body.fullscreen-active #fs-icon-expand { opacity:0.3; }
+body.fullscreen-active #fs-icon-compress { opacity:0.9; }
+
 #daynight-toggle {
   display:flex; align-items:center;
   cursor:pointer; user-select:none; margin-right:2px;
@@ -1421,6 +1459,15 @@ body.dark-mode #clay-statusbar { background:#1e1e20; border-top-color:rgba(255,2
       </div>
     </div>
 
+    <div id="fullscreen-toggle" onclick="toggleFullscreen()" title="Toggle Fullscreen">
+      <div id="fullscreen-track">
+        <div id="fullscreen-icons">
+          <span id="fs-icon-expand" style="font-size:7px;line-height:1;">⛶</span>
+          <span id="fs-icon-compress" style="font-size:7px;line-height:1;">⊡</span>
+        </div>
+        <div id="fullscreen-knob"></div>
+      </div>
+    </div>
     <div id="daynight-toggle" onclick="toggleDarkMode()" title="Toggle Dark Mode">
       <div id="daynight-track">
         <div id="daynight-icons">
@@ -1794,17 +1841,16 @@ function dockBounce(el){el.classList.remove('bounce');void el.offsetWidth;el.cla
 // ── WIDGET LEGO GRID ──
 (function(){
   const GAP=8, PAD=14;
-  const COLS=10;
+  const COLS=14;
   const MENU_H=26, DOCK_H=78;
 
   function gridMetrics(){
     const deskW=window.innerWidth-PAD*2;
     const deskH=window.innerHeight-MENU_H-DOCK_H;
-    const cellW=Math.floor((deskW - GAP*(COLS-1))/COLS);
+    const cellW=Math.min(90, Math.floor((deskW - GAP*(COLS-1))/COLS));
     const cellH=cellW;
     const gridW=COLS*cellW+(COLS-1)*GAP;
-    const gridW2=COLS*cellW+(COLS-1)*GAP;
-    const gridX=Math.max(PAD, Math.floor((window.innerWidth-gridW2)/2));
+    const gridX=PAD;
     const gridY=PAD;
     const maxRows=Math.floor((deskH-PAD*2+GAP)/(cellH+GAP));
     return {cellW,cellH,gridW,gridX,gridY,maxRows};
@@ -2244,6 +2290,17 @@ function saveWallpaper(){
 
 let _darkMode=false;
 function toggleDarkMode(){ _darkMode=!_darkMode; applyDarkMode(_darkMode); }
+function toggleFullscreen(){
+  if(!document.fullscreenElement){
+    document.documentElement.requestFullscreen().catch(()=>{});
+  } else {
+    document.exitFullscreen().catch(()=>{});
+  }
+}
+document.addEventListener('fullscreenchange',()=>{
+  document.body.classList.toggle('fullscreen-active', !!document.fullscreenElement);
+});
+
 function applyDarkMode(on){
   _darkMode=on;
   document.body.classList.toggle('dark-mode', on);
