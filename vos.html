@@ -2053,25 +2053,11 @@ function dockBounce(el){el.classList.remove('bounce');void el.offsetWidth;el.cla
 
   function resolveOverlap(moved){
     const m=gridMetrics();
-    const obstacles=[];
-    DEFS.forEach(other=>{ if(other.id!==moved.id) obstacles.push(other); });
-    const FPAD=14,FGAP=10,FCW=80,FCH=92,FMENU=26;
-    if(window._folderList){
-      window._folderList.forEach(f=>{
-        const fx=FPAD+f.col*(FCW+FGAP);
-        const fy=FMENU+FPAD+f.row*(FCH+FGAP);
-        const wCol=Math.round((fx - m.gridX)/(m.cellW+GAP));
-        const wRow=Math.round((fy - m.gridY)/(m.cellH+GAP));
-        obstacles.push({id:'folder-'+f.id, col:Math.max(0,wCol), row:Math.max(0,wRow), cw:1, ch:1});
-      });
-    }
-    obstacles.forEach(other=>{
+    DEFS.forEach(other=>{
+      if(other.id===moved.id) return;
       if(overlaps(moved,other)){
-        const newRow=other.row+other.ch;
-        if(moved.row<newRow){
-          moved.row=Math.min(m.maxRows-moved.ch, newRow);
-          resolveOverlap(moved); // cascade
-        }
+        other.row=moved.row+moved.ch;
+        other.row=Math.min(m.maxRows-other.ch, other.row);
       }
     });
   }
