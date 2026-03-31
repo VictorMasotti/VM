@@ -570,7 +570,7 @@ body.dark-mode .dock-dot { background: rgba(255,255,255,0.6); }
   position:absolute;
   display:flex; flex-direction:column; align-items:center; gap:4px;
   pointer-events:all;
-  border-radius:8px;
+  border-radius:12px;
   padding:0;
   transition:background 0.1s, left 0.32s cubic-bezier(0.34,1.2,0.64,1), top 0.32s cubic-bezier(0.34,1.2,0.64,1), transform 0.18s ease, opacity 0.18s ease;
   user-select:none;
@@ -593,7 +593,8 @@ body.dark-mode .desk-icon.selected { background:rgba(0,122,255,0.28); }
   padding:3px 4px 0; flex-shrink:0;
 }
 .desk-icon.selected .desk-icon-label {
-  background:rgba(0,122,255,0.7); text-shadow:none;
+  background:rgba(0,122,255,0.82); text-shadow:none;
+  border-radius:20px; padding:2px 10px;
 }
 
 
@@ -1799,10 +1800,11 @@ function dockBounce(el){el.classList.remove('bounce');void el.offsetWidth;el.cla
   function gridMetrics(){
     const deskW=window.innerWidth-PAD*2;
     const deskH=window.innerHeight-MENU_H-DOCK_H;
-    const cellW=Math.floor((deskW - GAP*(COLS-1))/COLS);
+    const cellW=Math.min(110, Math.floor((deskW - GAP*(COLS-1))/COLS));
     const cellH=cellW;
     const gridW=COLS*cellW+(COLS-1)*GAP;
-    const gridX=PAD;
+    const gridW2=COLS*cellW+(COLS-1)*GAP;
+    const gridX=Math.floor((window.innerWidth-gridW2)/2);
     const gridY=PAD;
     const maxRows=Math.floor((deskH-PAD*2+GAP)/(cellH+GAP));
     return {cellW,cellH,gridW,gridX,gridY,maxRows};
