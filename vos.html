@@ -1634,13 +1634,13 @@ body.dark-mode #clay-statusbar { background:#1e1e20; border-top-color:rgba(255,2
 
 <div class="dock-container">
   <div class="dock" id="dock">
-    <div class="dock-icon" id="dock-photos" onclick="openPhotos();dockBounce(this)" style="background:none;padding:0;overflow:hidden;border-radius:12px"><img src="appo.png" style="width:100%;height:100%;object-fit:cover;border-radius:12px;display:block;"><div class="dock-dot"></div><div class="dock-label">Gallery</div></div>
-    <div class="dock-icon" id="dock-music" onclick="openMusic();dockBounce(this)" style="background:none;padding:0;overflow:hidden;border-radius:12px"><img src="appe.png" style="width:100%;height:100%;object-fit:cover;border-radius:12px;display:block;"><div class="dock-dot"></div><div class="dock-label">Music Player 1</div></div>
-    <div class="dock-icon" id="dock-notes-app" onclick="openNotepad();dockBounce(this)" style="background:none;padding:0;overflow:hidden;border-radius:12px"><img src="nota.png" style="width:100%;height:100%;object-fit:cover;border-radius:12px;display:block;"><div class="dock-dot"></div><div class="dock-label">Notes</div></div>
+    <div class="dock-icon" id="dock-photos" onclick="openPhotos();dockBounce(this)" style="background:none;padding:0;border-radius:12px"><img src="appo.png" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:12px;display:block;"><div class="dock-dot"></div><div class="dock-label">Gallery</div></div>
+    <div class="dock-icon" id="dock-music" onclick="openMusic();dockBounce(this)" style="background:none;padding:0;border-radius:12px"><img src="appe.png" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:12px;display:block;"><div class="dock-dot"></div><div class="dock-label">Music Player</div></div>
+    <div class="dock-icon" id="dock-notes-app" onclick="openNotepad();dockBounce(this)" style="background:none;padding:0;border-radius:12px"><img src="nota.png" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:12px;display:block;"><div class="dock-dot"></div><div class="dock-label">Notes</div></div>
     <div class="dock-icon icon-safari" onclick="dockBounce(this)">🧭<div class="dock-label">Safari</div></div>
     <div class="dock-icon" onclick="dockBounce(this)" style="background:linear-gradient(145deg,#ff6b35,#f7c59f);">🎬<div class="dock-label">Vista</div></div>
     <div class="dock-icon" onclick="dockBounce(this)" style="background:linear-gradient(145deg,#6c63ff,#a78bfa);">🪐<div class="dock-label">Orbit</div></div>
-    <div class="dock-icon" id="dock-clay" onclick="openClay();dockBounce(this)" style="background:none;padding:0;overflow:hidden;border-radius:12px;"><img src="clay.png" style="width:100%;height:100%;object-fit:cover;border-radius:12px;display:block;pointer-events:none;"><div class="dock-dot"></div><div class="dock-label">Clayround</div></div>
+    <div class="dock-icon" id="dock-clay" onclick="openClay();dockBounce(this)" style="background:none;padding:0;border-radius:12px;"><img src="clay.png" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:12px;display:block;pointer-events:none;"><div class="dock-dot"></div><div class="dock-label">Clayround</div></div>
     <div class="dock-icon" onclick="dockBounce(this)" style="background:linear-gradient(145deg,#ff3cac,#784ba0);">🎵<div class="dock-label">Echo</div></div>
     <div class="dock-icon" onclick="dockBounce(this)" style="background:linear-gradient(145deg,#f7971e,#ffd200);">⚡<div class="dock-label">Bolt</div></div>
     <div class="dock-icon icon-messages" onclick="dockBounce(this)">💬<div class="dock-label">Messages</div></div>
@@ -1649,7 +1649,7 @@ body.dark-mode #clay-statusbar { background:#1e1e20; border-top-color:rgba(255,2
     <div class="dock-icon icon-appstore" onclick="dockBounce(this)">🛍️<div class="dock-label">App Store</div></div>
     <div class="dock-icon icon-settings" onclick="dockBounce(this)">⚙️<div class="dock-label">Settings</div></div>
     <div class="dock-separator"></div>
-    <div class="dock-icon" id="dock-trash" onclick="openTrash();dockBounce(this)" style="background:none;padding:0;overflow:hidden;border-radius:12px;"><img src="bin.png" style="width:100%;height:100%;object-fit:cover;border-radius:12px;display:block;"><div class="dock-dot"></div><div class="dock-label">Trash</div></div>
+    <div class="dock-icon" id="dock-trash" onclick="openTrash();dockBounce(this)" style="background:none;padding:0;border-radius:12px;"><img src="bin.png" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:12px;display:block;"><div class="dock-dot"></div><div class="dock-label">Trash</div></div>
   </div>
 </div>
 
