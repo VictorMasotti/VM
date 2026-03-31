@@ -105,7 +105,6 @@ body {
              box-shadow .2s ease, transform .2s ease;
 }
 
-
 .widget-clock .time { font-size:44px; font-weight:200; letter-spacing:-2px; line-height:1; color:#111; }
 .widget-clock .date { font-size:12px; font-weight:400; color:var(--text-dim); margin-top:4px; }
 .widget-weather { display:flex; align-items:center; justify-content:space-between; height:100%; }
@@ -600,7 +599,6 @@ body.dark-mode .desk-icon.selected { background:rgba(0,122,255,0.28); }
   background:transparent;
   user-select:none; -webkit-user-select:none;
 }
-
 
 body.dark-mode {
   --widget-bg: rgba(18,18,20,0.92);
@@ -1779,7 +1777,6 @@ body.dark-mode #clay-statusbar { background:#1e1e20; border-top-color:rgba(255,2
 </div>
 
 <script>
-// ── CURSOR ──
 (function(){
   const dot=document.getElementById('cursor-dot');
   let px=0,py=0,lastT=0,bigTimer=null;
@@ -1796,7 +1793,6 @@ body.dark-mode #clay-statusbar { background:#1e1e20; border-top-color:rgba(255,2
   document.addEventListener('mouseenter',()=>{dot.style.opacity='1';});
 })();
 
-// ── CLOCK ──
 function updateClock(){
   const now=new Date();
   const h=now.getHours(),m=now.getMinutes();
@@ -1812,7 +1808,6 @@ function updateClock(){
 }
 updateClock();setInterval(updateClock,1000);
 
-// ── DOCK WAVE ──
 (function(){
   const dock=document.getElementById('dock');
   const icons=Array.from(dock.querySelectorAll('.dock-icon'));
@@ -1842,7 +1837,6 @@ updateClock();setInterval(updateClock,1000);
 
 function dockBounce(el){el.classList.remove('bounce');void el.offsetWidth;el.classList.add('bounce');el.addEventListener('animationend',()=>el.classList.remove('bounce'),{once:true});}
 
-// ── WIDGET LEGO GRID ──
 (function(){
   const GAP=8, PAD=14;
   const COLS=10;
@@ -2059,17 +2053,13 @@ function dockBounce(el){el.classList.remove('bounce');void el.offsetWidth;el.cla
 
   function resolveOverlap(moved){
     const m=gridMetrics();
-    // Build list of all occupied zones: other widgets + folders as phantom defs
     const obstacles=[];
     DEFS.forEach(other=>{ if(other.id!==moved.id) obstacles.push(other); });
-    // Convert each folder to widget-grid coords using shared pixel math
-    // Folder grid: FPAD=14, FGAP=10, FCW=80, FCH=92, FMENU=26
     const FPAD=14,FGAP=10,FCW=80,FCH=92,FMENU=26;
     if(window._folderList){
       window._folderList.forEach(f=>{
         const fx=FPAD+f.col*(FCW+FGAP);
         const fy=FMENU+FPAD+f.row*(FCH+FGAP);
-        // convert folder top-left pixel to widget col/row
         const wCol=Math.round((fx - m.gridX)/(m.cellW+GAP));
         const wRow=Math.round((fy - m.gridY)/(m.cellH+GAP));
         obstacles.push({id:'folder-'+f.id, col:Math.max(0,wCol), row:Math.max(0,wRow), cw:1, ch:1});
@@ -2077,7 +2067,6 @@ function dockBounce(el){el.classList.remove('bounce');void el.offsetWidth;el.cla
     }
     obstacles.forEach(other=>{
       if(overlaps(moved,other)){
-        // push moved below the obstacle
         const newRow=other.row+other.ch;
         if(moved.row<newRow){
           moved.row=Math.min(m.maxRows-moved.ch, newRow);
@@ -2132,7 +2121,6 @@ function dockBounce(el){el.classList.remove('bounce');void el.offsetWidth;el.cla
   window._widgetHTML=widgetHTML;
 })();
 
-// ── DROPDOWN ──
 function toggleDropdown(e){
   e.stopPropagation();
   const dd=document.getElementById('widget-dropdown');
@@ -2153,7 +2141,6 @@ function ddAction(type, el){
 
 function spawnWidget(type){
   if(type==='folder'){ spawnFolder(); return; }
-  // ── WIDGET LIMITS ──
   const unlimited = new Set(['notes','musicw','appshelf-s','appshelf-l']);
   if(!unlimited.has(type)){
     const existing = _DEFS.filter(d => d.type === type).length;
@@ -2165,7 +2152,6 @@ function spawnWidget(type){
   const cw=2;
   const ch=(type==='calendar'||type==='notes'||type==='musicw'||type==='appshelf-l')?2:1;
 
-  // Scan left-to-right, top-to-bottom for first free slot
   let col=0, row=0, found=false;
   outer: for(let r=0;r<m.maxRows;r++){
     for(let c2=0; c2<=COLS-cw; c2+=1){
@@ -2195,7 +2181,6 @@ function spawnWidget(type){
   if(type==='clock') updateClock();
 }
 
-// ── FOLDER WIDGET ──
 const _wmuAudios={};
 function wmuToggle(artEl,e){
   e.stopPropagation();
@@ -2220,7 +2205,6 @@ function wmuToggle(artEl,e){
   }
 }
 
-// ── PHOTO LIGHTBOX ──
 (function(){
   const lb=document.getElementById('pw-lightbox');
   const img=document.getElementById('pw-lb-img');
@@ -2249,7 +2233,6 @@ function wmuToggle(artEl,e){
   });
 })();
 
-// ── MENU DROPDOWNS ──
 const _openDD={current:null};
 function toggleMenuDD(which,el){
   const ddId='dd-'+which;
@@ -2312,13 +2295,11 @@ function toggleVMTitle(){
   const el = document.getElementById('vm-title');
   if(!el) return;
   _vmExpanded = !_vmExpanded;
-  // Shrink + blur out
   el.style.opacity = '0';
   el.style.transform = 'scale(0.82) translateY(-3px)';
   el.style.filter = 'blur(4px)';
   setTimeout(()=>{
     el.textContent = _vmExpanded ? 'Victor 360' : 'Victor Masotti';
-    // Pop back in
     el.style.opacity = '1';
     el.style.transform = 'scale(1) translateY(0)';
     el.style.filter = 'blur(0px)';
@@ -2343,7 +2324,6 @@ function applyHideWidgets(on){
   else{grid.style.transition=tr;grid.style.opacity='1';grid.style.visibility='visible';grid.style.pointerEvents='all';dd.style.opacity='';dd.style.visibility='';dd.style.pointerEvents='';}
 }
 
-// ── COLOUR WHEEL & FILTER ──
 let _cwColor=[0,0,0], _cwStrong=false;
 (function(){
   const canvas=document.getElementById('color-wheel');
@@ -2394,7 +2374,6 @@ function clearColorFilter(on){
   }
 }
 
-// ── LANGUAGE TRANSLATION ──
 const LANGUAGES=[
   {code:'en',name:'English',flag:'🇬🇧'},
   {code:'it',name:'Italian',flag:'🇮🇹'},
@@ -2445,7 +2424,6 @@ function _storeOriginals(){
   });
 }
 
-// Store after full render — 800ms so dock labels and desktop icons are all built
 setTimeout(_storeOriginals, 800);
 
 function renderLangList(filter=''){
@@ -2474,7 +2452,6 @@ async function selectLanguage(code,name,flag){
   const ov=document.getElementById('translate-overlay');
   ov.classList.add('fading');
 
-  // Always re-snapshot before translating to catch any newly added nodes
   _storeOriginals();
 
   if(code==='en'){
@@ -2488,14 +2465,12 @@ async function selectLanguage(code,name,flag){
   const nodes=[..._nodeOriginals.keys()];
   const origTexts=nodes.map(n=>_nodeOriginals.get(n));
 
-  // Deduplicate for API efficiency
   const unique=[...new Set(origTexts.filter(t=>t&&t.trim().length>0))];
   const BATCH=6; // smaller batches = fewer truncation issues with MyMemory
   const translated=new Map();
 
   for(let i=0;i<unique.length;i+=BATCH){
     const chunk=unique.slice(i,i+BATCH);
-    // Translate each string individually to avoid delimiter confusion
     await Promise.all(chunk.map(async orig=>{
       if(translated.has(orig)) return;
       try{
@@ -2513,7 +2488,6 @@ async function selectLanguage(code,name,flag){
         translated.set(orig, orig);
       }
     }));
-    // Small pause between batches to respect rate limits
     if(i+BATCH<unique.length) await new Promise(r=>setTimeout(r,80));
   }
 
@@ -2529,7 +2503,6 @@ async function selectLanguage(code,name,flag){
   setTimeout(()=>ov.classList.remove('fading'),500);
 }
 
-// ── NOTEPAD APP ──
 let notepadOpen=false,notepadMax=false,notepadMinned=false;
 const notepadWin=document.getElementById('notepad-window');
 let npNotes=[{id:1,title:'Untitled',content:'',date:new Date().toLocaleDateString('en-GB',{day:'numeric',month:'short'})}];
@@ -2682,7 +2655,6 @@ function runCloseAnimation(fromRect,iconRect,onDone){
   animRAF=requestAnimationFrame(draw);
 }
 
-// ── TRASH ──
 let trashOpen=false,trashMinned=false;
 function openTrash(){
   const win=document.getElementById('trash-window');
@@ -2797,7 +2769,6 @@ window.addEventListener('touchend',()=>{drag=false;raf=null;});})();
 document.querySelectorAll('.pw-toolbar-btn').forEach(btn=>{btn.addEventListener('click',()=>{document.querySelectorAll('.pw-toolbar-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');});});
 document.querySelectorAll('.pw-sidebar-item').forEach(item=>{item.addEventListener('click',()=>{document.querySelectorAll('.pw-sidebar-item').forEach(i=>i.classList.remove('active'));item.classList.add('active');});});
 
-// ── MUSIC PLAYER ──
 let muAudio=null,muAudioCtx=null,muGain=null,muLP=null,muHP=null,muBass=null,muTreble=null,muPan=null,muComp=null;
 let musicOpen=false,musicMax=false,musicMinned=false,muBuilt=false;
 const muPairs=[{image:'breakTHROUGH.png',audio:'breakTHROUGH.mp3'},{image:'mizu.png',audio:'queso.mp3'}];
@@ -3016,18 +2987,15 @@ function maximiseMusic(){
   window.addEventListener('touchend',()=>{drag=false;raf=null;});
 })();
 
-// ── DESKTOP FOLDER ICONS ──
 (function(){
   const MENU_H=26, DOCK_H=78;
 
-  // Folders use EXACT same grid as widgets
   function fm(){ return window._gridMetrics ? window._gridMetrics() : null; }
   function toX(col){
     const m=fm(); if(!m) return col*88;
     const fsz=Math.round(m.cellW*0.67);
     const fgap=Math.round(8*0.67);
     const totalCols=window.COLS||10;
-    // Anchor folder grid to right edge
     const rightEdge=window.innerWidth-14;
     const fromRight=totalCols-1-col;
     return rightEdge - fromRight*(fsz+fgap) - fsz;
@@ -3042,7 +3010,6 @@ function maximiseMusic(){
   function rows(){ const m=fm(); return m ? m.maxRows : 6; }
   function clampC(c){ return Math.max(0,Math.min(cols()-1,c)); }
   function clampR(r){ return Math.max(0,Math.min(rows()-1,r)); }
-  // Cell size for drag snapping
   function cellW(){ const m=fm(); return m ? m.cellW : 80; }
   function cellH(){ const m=fm(); return m ? m.cellH : 80; }
 
@@ -3061,7 +3028,6 @@ function maximiseMusic(){
   window.spawnFolder=function(){
     const m=fm();
     const id='f'+(_nextFolderId++);
-    // Find first free cell
     const occupied=new Set(folders.map(f=>f.col+','+f.row));
     let fc=cols()-2, fr=0, found=false;
     outer: for(let r=0;r<rows();r++) for(let c=cols()-2;c<cols();c++){
@@ -3105,7 +3071,6 @@ function maximiseMusic(){
     container.appendChild(el);
     elMap[f.id]=el;
 
-    // Double-click rename
     let lastClick=0;
     el.addEventListener('mousedown', ev=>{ ev._folderDown=true; });
     el.addEventListener('click', ev=>{
@@ -3113,7 +3078,6 @@ function maximiseMusic(){
       if(now-lastClick<400){ ev.stopPropagation(); startRename(el,f); }
       lastClick=now;
     });
-    // Double-tap rename
     let lastTap=0;
     el.addEventListener('touchend', ev=>{
       const now=Date.now();
@@ -3149,7 +3113,6 @@ function maximiseMusic(){
     folders.forEach(f=>makeIcon(f));
   }
 
-  // ── DRAG ──
   let drag=null;
 
   container.addEventListener('mousedown', e=>{
@@ -3157,13 +3120,11 @@ function maximiseMusic(){
     e.stopPropagation(); e.preventDefault();
     const f=folders.find(f=>('di-'+f.id)===el.id); if(!f) return;
 
-    // Select: click without shift deselects others unless already in group
     if(!e.shiftKey && !el.classList.contains('selected')){
       document.querySelectorAll('.desk-icon.selected').forEach(d=>d.classList.remove('selected'));
     }
     el.classList.add('selected');
 
-    // Snapshot all selected for group drag
     const selected=folders.filter(fd=>elMap[fd.id]?.classList.contains('selected'));
     const snapshots=selected.map(fd=>({
       id:fd.id, startCol:fd.col, startRow:fd.row,
@@ -3210,7 +3171,6 @@ function maximiseMusic(){
           changed=true;
         }
       });
-      // Also repel from widgets — same grid so direct col/row compare
       if(window._DEFS){
         window._DEFS.forEach(wd=>{
           if(!(moved.col+1<=wd.col||wd.col+wd.cw<=moved.col||moved.row+1<=wd.row||wd.row+wd.ch<=moved.row)){
@@ -3232,7 +3192,6 @@ function maximiseMusic(){
         fd.col=clampC(s.startCol+dc);
         fd.row=clampR(s.startRow+dr);
       });
-      // Resolve folder-on-folder overlaps
       drag.snapshots.forEach(s=>{
         const fd=folders.find(f=>f.id===s.id); if(!fd) return;
         resolveFolderOverlap(fd, folders.filter(f=>f.id!==s.id));
@@ -3250,13 +3209,11 @@ function maximiseMusic(){
     drag=null;
   });
 
-  // Click on empty desktop = deselect
   document.getElementById('desktop-area').addEventListener('click', e=>{
     if(e.target.closest('.desk-icon')) return;
     document.querySelectorAll('.desk-icon.selected').forEach(d=>d.classList.remove('selected'));
   });
 
-  // Touch: single tap selects, drag moves
   let touchDrag=null;
   container.addEventListener('touchstart', e=>{
     const el=e.target.closest('.desk-icon'); if(!el) return;
@@ -3307,7 +3264,7 @@ function maximiseMusic(){
   },{passive:true});
 
   folders=initFolders();
-  window._folderList=folders; // expose for widget overlap system
+  window._folderList=folders; 
   build();
   window.addEventListener('resize',()=>{
     const m2=fm(); const sz2=Math.round((m2?m2.cellW:80)*0.67);
@@ -3337,7 +3294,6 @@ function maximiseMusic(){
   const STRONG=[[255,210,40],[40,140,255],[255,60,110],[60,210,150],[180,60,255],[255,130,40],[40,200,100],[255,80,200],[40,180,255],[255,200,60]];
   const NS=Ri(4,6),stripeColors=[...STRONG].sort(()=>Math.random()-0.5).slice(0,NS);
   const stripes=stripeColors.map(col=>({col,angle:R(0,Math.PI),phase:R(0,1),width:R(0.12,0.32),fade:R(0.10,0.25)}));
-  // Pick a dark tinted stroke colour from the palette
   const strokeBase=stripeColors[Ri(0,stripeColors.length-1)];
   const strokeCol=(a)=>`rgba(${Math.round(strokeBase[0]*0.18)},${Math.round(strokeBase[1]*0.18)},${Math.round(strokeBase[2]*0.18)},${a})`;
   const NW_ZONES=Ri(1,4),whiteZones=[];
@@ -3352,7 +3308,6 @@ function maximiseMusic(){
   const HAS_DONUT=Math.random()<0.35,DCX=R(0.2,0.8),DCY=R(0.2,0.8),DOR=R(0.12,0.26),DIR2=R(0.04,0.09);
   const HAS_SNAKE=Math.random()<0.28,SLEN=Ri(6,20);
   const HAS_ISLAND=Math.random()<0.38,ICX=R(0.1,0.9),ICY=R(0.1,0.9),IR=R(0.05,0.18);
-  // Swiss cheese holes — random circular void regions
   const N_CHEESE=Ri(4,10);
   const cheeseHoles=[];
   for(let i=0;i<N_CHEESE;i++) cheeseHoles.push({x:R(0.05,0.95),y:R(0.05,0.95),r:R(0.04,0.12)});
@@ -3360,7 +3315,6 @@ function maximiseMusic(){
   const snakeCells=new Set();
   if(HAS_SNAKE){let sc=Ri(0,COLS-1),sr=Ri(0,ROWS-1);for(let i=0;i<SLEN;i++){snakeCells.add(`${sc},${sr}`);const d=[[1,0],[-1,0],[0,1],[0,-1]][Ri(0,3)];sc=Math.max(0,Math.min(COLS-1,sc+d[0]));sr=Math.max(0,Math.min(ROWS-1,sr+d[1]));}}
   const cellType=[],cellScale=[],cellPuffy=[],cellExtraH=[];
-  // 3 random tower positions
   const TOWERS=[];
   for(let t=0;t<3;t++) TOWERS.push({c:Ri(Math.floor(COLS*0.15),Math.floor(COLS*0.85)),r:Ri(Math.floor(ROWS*0.15),Math.floor(ROWS*0.85)),mult:R(6,14)});
   for(let r=0;r<ROWS;r++){cellType[r]=[];cellScale[r]=[];for(let c=0;c<COLS;c++){
@@ -3369,7 +3323,6 @@ function maximiseMusic(){
     const inSnake=HAS_SNAKE&&snakeCells.has(`${c},${r}`);
     const inIsland=HAS_ISLAND&&Math.hypot(nx-ICX,ny-ICY)<IR;
     let type='cube',sc=1;
-    // Swiss cheese voids — scattered circular void blobs
     let inCheese=false;
     for(const ch of cheeseHoles){
       if(Math.hypot(nx-ch.x,ny-ch.y)<ch.r){inCheese=true;break;}
@@ -3429,7 +3382,6 @@ function maximiseMusic(){
     const [rr,rg,rb]=cellColor(nx,ny,0.87).map(v=>v*bright);
     const sa=strokeCol(0.28+l*0.18);
     const b=puffy?hh*0.45*sc:hh*0.12*sc;
-    // Puffy top face
     ctx.beginPath();
     ctx.moveTo(x,y);
     ctx.bezierCurveTo(x+hw*0.6,y-b*0.5,  x+hw*1.1,y+hh*0.4, x+hw,y+hh);
@@ -3437,21 +3389,18 @@ function maximiseMusic(){
     ctx.bezierCurveTo(x-hw*1.1,y+hh*0.4,  x-hw*0.6,y-b*0.5, x,y);
     ctx.closePath();ctx.fillStyle=rc(tr,tg,tb);ctx.fill();
     ctx.strokeStyle=sa;ctx.lineWidth=SW_BASE;ctx.stroke();
-    // Puffy left side
     ctx.beginPath();
     ctx.moveTo(x-hw,y+hh);
     ctx.bezierCurveTo(x-hw-b*0.4,y+hh*1.3, x-hw-b*0.4,y+hh+ch*0.7, x-hw,y+hh+ch);
     ctx.lineTo(x,y+hh*2+ch);
     ctx.bezierCurveTo(x+b*0.2,y+hh*2+ch*0.6, x+b*0.2,y+hh*1.6, x,y+hh*2);
     ctx.closePath();ctx.fillStyle=rc(lr,lg,lb);ctx.fill();ctx.strokeStyle=sa;ctx.lineWidth=SW_BASE;ctx.stroke();
-    // Puffy right side
     ctx.beginPath();
     ctx.moveTo(x+hw,y+hh);
     ctx.bezierCurveTo(x+hw+b*0.4,y+hh*1.3, x+hw+b*0.4,y+hh+ch*0.7, x+hw,y+hh+ch);
     ctx.lineTo(x,y+hh*2+ch);
     ctx.bezierCurveTo(x-b*0.2,y+hh*2+ch*0.6, x-b*0.2,y+hh*1.6, x,y+hh*2);
     ctx.closePath();ctx.fillStyle=rc(rr,rg,rb);ctx.fill();ctx.strokeStyle=sa;ctx.lineWidth=SW_BASE;ctx.stroke();
-    // Soft highlight on top
     ctx.beginPath();ctx.ellipse(x-hw*0.18,y+hh*0.55,hw*0.28,hh*0.22,-0.3,0,Math.PI*2);
     ctx.fillStyle='rgba(255,255,255,0.14)';ctx.fill();
   }
@@ -3488,17 +3437,14 @@ function maximiseMusic(){
     const [cr,cg,cb]=cellColor(nx,ny).map(v=>v*bright);
     const [dr,dg,db]=cellColor(nx,ny,0.75).map(v=>v*bright);
     const sa=strokeCol(0.25+l*0.18);
-    // Trunk — thin rectangle
     const tw=rs*0.18, th=rs*0.55;
     ctx.beginPath();
     ctx.roundRect(x-tw,y-th*0.2,tw*2,th,3);
     ctx.fillStyle=rc(dr,dg,db);ctx.fill();ctx.strokeStyle=sa;ctx.lineWidth=SW_BASE*0.6;ctx.stroke();
-    // Canopy — fat round blob on top
     const cr2=rs*0.72;
     ctx.beginPath();
     ctx.ellipse(x,y-th*0.15,cr2,cr2*0.72,0,0,Math.PI*2);
     ctx.fillStyle=rc(cr,cg,cb);ctx.fill();ctx.strokeStyle=sa;ctx.lineWidth=SW_BASE*0.8;ctx.stroke();
-    // Highlight on canopy
     ctx.beginPath();
     ctx.ellipse(x-cr2*0.22,y-th*0.15-cr2*0.28,cr2*0.3,cr2*0.2,-0.4,0,Math.PI*2);
     ctx.fillStyle='rgba(255,255,255,0.18)';ctx.fill();
@@ -3510,7 +3456,6 @@ function maximiseMusic(){
     const [dr,dg,db]=cellColor(nx,ny,0.7).map(v=>v*bright);
     const sa=strokeCol(0.28+l*0.2);
     const top=y-hh*1.4, bot=y+hh*2.4, mid=y+hh*0.5;
-    // Upper blob — soft rounded top
     ctx.beginPath();
     ctx.moveTo(x,top);
     ctx.quadraticCurveTo(x+hw*0.7,top+hh*0.3,x+hw,mid);
@@ -3518,7 +3463,6 @@ function maximiseMusic(){
     ctx.quadraticCurveTo(x-hw*0.5,mid+hh*0.5,x-hw,mid);
     ctx.quadraticCurveTo(x-hw*0.7,top+hh*0.3,x,top);
     ctx.closePath();ctx.fillStyle=rc(cr,cg,cb);ctx.fill();ctx.strokeStyle=sa;ctx.lineWidth=SW_BASE;ctx.stroke();
-    // Lower tapered point
     ctx.beginPath();
     ctx.moveTo(x-hw,mid);ctx.quadraticCurveTo(x-hw*0.5,mid+hh*0.5,x,mid+hh);
     ctx.quadraticCurveTo(x+hw*0.5,mid+hh*0.5,x+hw,mid);
@@ -3534,13 +3478,10 @@ function maximiseMusic(){
     const sa=strokeCol(0.22+l*0.16);
     const rx=S*sc*0.92, ry=S*sc*0.58;
     const bumpH=S*sc*0.7;
-    // Shadow
     ctx.beginPath();ctx.ellipse(x,y+ry*0.3+2,rx*0.85,ry*0.28,0,0,Math.PI*2);
     ctx.fillStyle='rgba(0,0,0,0.07)';ctx.fill();
-    // Bottom dark half
     ctx.beginPath();ctx.ellipse(x,y,rx,ry,0,Math.PI,Math.PI*2);
     ctx.fillStyle=rc(dr,dg,db);ctx.fill();
-    // Top dome
     ctx.beginPath();
     ctx.moveTo(x-rx,y);
     ctx.bezierCurveTo(x-rx,y-bumpH*1.1,x-rx*0.3,y-bumpH*1.4,x,y-bumpH);
@@ -3548,7 +3489,6 @@ function maximiseMusic(){
     ctx.ellipse(x,y,rx,ry,0,0,Math.PI);
     ctx.closePath();
     ctx.fillStyle=rc(cr,cg,cb);ctx.fill();ctx.strokeStyle=sa;ctx.lineWidth=SW_BASE*0.7;ctx.stroke();
-    // Highlight
     ctx.beginPath();ctx.ellipse(x-rx*0.25,y-bumpH*0.55,rx*0.28,ry*0.22,-0.3,0,Math.PI*2);
     ctx.fillStyle='rgba(255,255,255,0.22)';ctx.fill();
   }
@@ -3561,29 +3501,24 @@ function maximiseMusic(){
     // Outer ellipse (floor level)
     ctx.beginPath();ctx.ellipse(x,y,rx,ry,0,0,Math.PI*2);
     ctx.fillStyle=rc(dr,dg,db);ctx.fill();ctx.strokeStyle=sa;ctx.lineWidth=SW_BASE*0.8;ctx.stroke();
-    // Inner depth ellipse
     const dep=S*0.55;
     ctx.beginPath();ctx.ellipse(x,y+dep*0.38,rx*0.55,ry*0.55,0,0,Math.PI*2);
     ctx.fillStyle=rc(Math.max(0,dr-8),Math.max(0,dg-8),Math.max(0,db-8));ctx.fill();
-    // Rim highlight
     ctx.beginPath();ctx.ellipse(x-rx*0.15,y-ry*0.3,rx*0.28,ry*0.14,0,0,Math.PI*2);
     ctx.fillStyle='rgba(255,255,255,0.10)';ctx.fill();
   }
 
-  // Random colour stripe — a band of cells with a vivid flat colour
   const HAS_STRIPE=Math.random()<0.45;
   const STRIPE_DIR=Math.random()<0.5?'row':'col';
   const STRIPE_IDX=STRIPE_DIR==='row'?Ri(Math.floor(ROWS*0.2),Math.floor(ROWS*0.8)):Ri(Math.floor(COLS*0.2),Math.floor(COLS*0.8));
   const STRIPE_COL=stripeColors[Ri(0,stripeColors.length-1)];
   const STRIPE_W=Ri(1,3);
 
-  // Lightning colour strikes — jagged diagonal bands of vivid colour
   const N_LIGHTNING=Ri(2,5);
   const lightningStrikes=[];
   for(let i=0;i<N_LIGHTNING;i++){
     lightningStrikes.push({
       col:stripeColors[Ri(0,stripeColors.length-1)],
-      // A diagonal "slash" defined by offset and angle
       offset:R(-0.3,1.3),      // where it crosses nx=0 line
       slope:R(0.4,2.2)*(Math.random()<0.5?1:-1), // dy/dx
       width:R(0.012,0.04),     // thin
@@ -3591,7 +3526,6 @@ function maximiseMusic(){
     });
   }
 
-  // Extra per-cell colour tinting — some cells get a vivid accent colour overlay
   const N_PATCHES=Ri(3,7);
   const colorPatches=[];
   for(let i=0;i<N_PATCHES;i++){
@@ -3605,12 +3539,10 @@ function maximiseMusic(){
 
   function inLightning(nx,ny){
     for(const l of lightningStrikes){
-      // Jagged: add small noise to the line
       const noisy=l.offset+l.slope*nx+Math.sin(nx*31+ny*17)*0.02;
       if(Math.abs(ny-noisy)<l.width) return l;
     }
-    return null;
-  }
+    return null;   }
 
   function patchTint(nx,ny){
     let r=0,g=0,b=0,a=0;
@@ -3624,19 +3556,16 @@ function maximiseMusic(){
         a+=tt*p.opacity;
       }
     }
-    return a>0?[r/a,g/a,b/a,Math.min(a,0.55)]:null;
-  }
+    return a>0?[r/a,g/a,b/a,Math.min(a,0.55)]:null;   }
 
   function drawDrill(cx,cy,col,row,h,nx,ny){
     const x=cx+isoX(col,row),y=cy+isoY(col,row,h);
     const [zr,zg,zb]=cellColor(nx,ny,1);
     const sa=strokeCol(0.5);
     const rx=S*0.78, ry=S*0.40;
-    // Floor ring
     ctx.beginPath();ctx.ellipse(x,y,rx,ry,0,0,Math.PI*2);
     ctx.fillStyle=`rgb(${Math.round(zr*0.22)},${Math.round(zg*0.22)},${Math.round(zb*0.22)})`;
     ctx.fill();ctx.strokeStyle=sa;ctx.lineWidth=SW_BASE*0.7;ctx.stroke();
-    // Depth layers — concentric rings getting smaller and darker
     for(let i=1;i<=4;i++){
       const t=i/4;
       const lrx=rx*(1-t*0.55), lry=ry*(1-t*0.55);
@@ -3646,15 +3575,12 @@ function maximiseMusic(){
       ctx.fillStyle=`rgb(${dark},${dark},${Math.round(dark*1.1)})`;ctx.fill();
       ctx.strokeStyle=`rgba(0,0,0,${0.3+t*0.25})`;ctx.lineWidth=SW_BASE*0.5;ctx.stroke();
     }
-    // Bright specular rim at top edge
     ctx.beginPath();ctx.ellipse(x-rx*0.18,y-ry*0.32,rx*0.22,ry*0.10,0,0,Math.PI*2);
     ctx.fillStyle='rgba(255,255,255,0.18)';ctx.fill();
-    // Inner glow at bottom
     ctx.beginPath();ctx.ellipse(x,y+S*0.82,rx*0.18,ry*0.10,0,0,Math.PI*2);
     ctx.fillStyle='rgba(255,255,255,0.07)';ctx.fill();
   }
 
-  // Comet — a single diagonal streak with a glowing tail
   const COMET_X1=R(0.0,0.4), COMET_Y1=R(0.0,0.35);
   const COMET_X2=COMET_X1+R(0.25,0.55), COMET_Y2=COMET_Y1+R(0.12,0.35);
   const COMET_COL=stripeColors[0];
@@ -3662,7 +3588,6 @@ function maximiseMusic(){
   function drawComet(){
     const x1=cv.width*COMET_X1, y1=cv.height*COMET_Y1;
     const x2=cv.width*COMET_X2, y2=cv.height*COMET_Y2;
-    // Tail — wide gradient fading to nothing
     const g=ctx.createLinearGradient(x1,y1,x2,y2);
     g.addColorStop(0,`rgba(${COMET_COL[0]},${COMET_COL[1]},${COMET_COL[2]},0)`);
     g.addColorStop(0.6,`rgba(${COMET_COL[0]},${COMET_COL[1]},${COMET_COL[2]},0.18)`);
@@ -3673,11 +3598,9 @@ function maximiseMusic(){
     ctx.shadowColor=`rgba(${COMET_COL[0]},${COMET_COL[1]},${COMET_COL[2]},0.6)`;
     ctx.shadowBlur=18;
     ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);ctx.stroke();
-    // Head — bright glowing dot
     ctx.shadowBlur=28;
     ctx.beginPath();ctx.arc(x2,y2,R(3,6),0,Math.PI*2);
     ctx.fillStyle='rgba(255,255,255,0.95)';ctx.fill();
-    // Tiny particle sparks near head
     for(let i=0;i<5;i++){
       const px=x2+R(-18,18),py=y2+R(-18,18);
       ctx.beginPath();ctx.arc(px,py,R(0.8,2),0,Math.PI*2);
@@ -3686,7 +3609,6 @@ function maximiseMusic(){
     ctx.restore();
   }
 
-  // Saturn-like rings around the globe — 2 elliptical rings
   function drawRings(){
     const cx2=cv.width*(0.5+OX),cy2=cv.height*(0.5+OY);
     const gcol=GLOBE_NX*COLS-COLS/2, grow=GLOBE_NY*ROWS-ROWS/2;
@@ -3695,7 +3617,6 @@ function maximiseMusic(){
     const gx=cx2+isoX(gcol,grow), gy=cy2+isoY(gcol,grow,gh)-GLOBE_R*1.1;
     const r=GLOBE_R;
     ctx.save();
-    // Outer ring
     ctx.beginPath();ctx.ellipse(gx,gy+r*0.18,r*1.65,r*0.32,0.18,0,Math.PI*2);
     const rg=ctx.createLinearGradient(gx-r*1.65,gy,gx+r*1.65,gy);
     rg.addColorStop(0,`rgba(${GA[0]+40},${GA[1]+60},${GA[2]+80},0)`);
@@ -3704,13 +3625,11 @@ function maximiseMusic(){
     rg.addColorStop(0.7,`rgba(${GA[0]+40},${GA[1]+60},${GA[2]+80},0.22)`);
     rg.addColorStop(1,`rgba(${GA[0]+40},${GA[1]+60},${GA[2]+80},0)`);
     ctx.strokeStyle=rg; ctx.lineWidth=r*0.09; ctx.stroke();
-    // Inner ring
     ctx.beginPath();ctx.ellipse(gx,gy+r*0.14,r*1.28,r*0.24,0.18,0,Math.PI*2);
     ctx.strokeStyle=`rgba(255,255,255,0.10)`; ctx.lineWidth=r*0.05; ctx.stroke();
     ctx.restore();
   }
 
-  // Globe constants — one per generation
   const GLOBE_NX=R(0.2,0.8), GLOBE_NY=R(0.2,0.8);
   const GA=[Ri(20,80),Ri(120,200),Ri(60,140)];
   const GB=[Ri(80,140),Ri(180,240),Ri(120,180)];
@@ -3723,10 +3642,8 @@ function maximiseMusic(){
     const gh=(wave/TAMP)*(H_MAX-H_MIN)/2+(H_MAX+H_MIN)/2;
     const gx=cx2+isoX(gcol,grow), gy=cy2+isoY(gcol,grow,gh)-GLOBE_R*1.1;
     const r=GLOBE_R;
-    // Shadow
     ctx.beginPath();ctx.ellipse(gx,gy+r*1.0,r*0.82,r*0.20,0,0,Math.PI*2);
     ctx.fillStyle='rgba(0,0,0,0.10)';ctx.fill();
-    // Blue ocean base
     const grd=ctx.createRadialGradient(gx-r*0.28,gy-r*0.28,r*0.05,gx,gy,r);
     grd.addColorStop(0,'rgb(100,180,255)');
     grd.addColorStop(0.5,'rgb(30,110,200)');
@@ -3734,32 +3651,26 @@ function maximiseMusic(){
     ctx.beginPath();ctx.arc(gx,gy,r,0,Math.PI*2);
     ctx.fillStyle=grd;ctx.fill();
     ctx.strokeStyle='rgba(255,255,255,0.15)';ctx.lineWidth=1.2;ctx.stroke();
-    // Land + polar caps clipped to sphere
     ctx.save();ctx.beginPath();ctx.arc(gx,gy,r,0,Math.PI*2);ctx.clip();
-    // Green land masses
     for(let i=0;i<Ri(4,7);i++){
       const lx=gx+R(-r*0.6,r*0.6),ly=gy+R(-r*0.45,r*0.45),lr=R(r*0.10,r*0.24);
       ctx.beginPath();ctx.ellipse(lx,ly,lr,lr*R(0.5,1.0),R(0,Math.PI),0,Math.PI*2);
       ctx.fillStyle=`rgba(${Ri(40,90)},${Ri(130,175)},${Ri(40,80)},0.88)`;ctx.fill();
     }
-    // North polar cap — white ellipse at top of sphere
     const capR=r*R(0.22,0.34);
     ctx.beginPath();ctx.ellipse(gx,gy-r*0.72,capR,capR*0.42,0,0,Math.PI*2);
     const capGrd=ctx.createRadialGradient(gx,gy-r*0.72,0,gx,gy-r*0.72,capR);
     capGrd.addColorStop(0,'rgba(255,255,255,0.95)');
     capGrd.addColorStop(1,'rgba(220,240,255,0)');
     ctx.fillStyle=capGrd;ctx.fill();
-    // South polar cap
     ctx.beginPath();ctx.ellipse(gx,gy+r*0.72,capR*0.8,capR*0.35,0,0,Math.PI*2);
     const capGrd2=ctx.createRadialGradient(gx,gy+r*0.72,0,gx,gy+r*0.72,capR*0.8);
     capGrd2.addColorStop(0,'rgba(255,255,255,0.90)');
     capGrd2.addColorStop(1,'rgba(220,240,255,0)');
     ctx.fillStyle=capGrd2;ctx.fill();
     ctx.restore();
-    // Specular
     ctx.beginPath();ctx.ellipse(gx-r*0.30,gy-r*0.32,r*0.20,r*0.13,-0.5,0,Math.PI*2);
     ctx.fillStyle='rgba(255,255,255,0.32)';ctx.fill();
-    // Atmosphere
     const atm=ctx.createRadialGradient(gx,gy,r*0.9,gx,gy,r*1.1);
     atm.addColorStop(0,'rgba(120,210,255,0)');
     atm.addColorStop(1,'rgba(120,210,255,0.13)');
@@ -3775,7 +3686,6 @@ function maximiseMusic(){
       const nx=col/COLS,ny=row/ROWS;
       let wave=0;for(const w of W)wave+=Math.sin(nx*Math.PI*2*w.fx+ny*Math.PI*2*w.fy+w.ph)*w.amp;
       const h=(wave/TAMP)*(H_MAX-H_MIN)/2+(H_MAX+H_MIN)/2,sc=cellScale[row]?.[col]??1;
-      // Colour stripe overlay
       const inStripe=HAS_STRIPE&&(STRIPE_DIR==='row'?(row>=STRIPE_IDX&&row<STRIPE_IDX+STRIPE_W):(col>=STRIPE_IDX&&col<STRIPE_IDX+STRIPE_W));
       if(tp==='hole')drawHole(cx2,cy2,col-COLS/2,row-ROWS/2,h,nx,ny);
       else if(tp==='roundhole')drawRoundHole(cx2,cy2,col-COLS/2,row-ROWS/2,h,nx,ny);
@@ -3786,13 +3696,11 @@ function maximiseMusic(){
       else if(tp==='diamond')drawDiamond(cx2,cy2,col-COLS/2,row-ROWS/2,h,sc,nx,ny);
       else if(tp==='thin')drawThin(cx2,cy2,col-COLS/2,row-ROWS/2,h,nx,ny);
       else drawCube(cx2,cy2,col-COLS/2,row-ROWS/2,h,sc,nx,ny,cellPuffy[row]?.[col]);
-      // Stripe tint
       if(inStripe&&tp!=='void'&&tp!=='hole'&&tp!=='roundhole'){
         const hw2=S*sc*0.866,hh2=S*sc*0.5,x2=cx2+isoX(col-COLS/2,row-ROWS/2),y2=cy2+isoY(col-COLS/2,row-ROWS/2,h);
         ctx.beginPath();ctx.moveTo(x2,y2);ctx.lineTo(x2+hw2,y2+hh2);ctx.lineTo(x2,y2+hh2*2);ctx.lineTo(x2-hw2,y2+hh2);ctx.closePath();
         ctx.fillStyle=`rgba(${STRIPE_COL[0]},${STRIPE_COL[1]},${STRIPE_COL[2]},0.28)`;ctx.fill();
       }
-      // Lightning strike overlay
       if(tp!=='void'){
         const lh=inLightning(nx,ny);
         if(lh){
@@ -3800,7 +3708,6 @@ function maximiseMusic(){
           ctx.beginPath();ctx.moveTo(x2,y2);ctx.lineTo(x2+hw2,y2+hh2);ctx.lineTo(x2,y2+hh2*2);ctx.lineTo(x2-hw2,y2+hh2);ctx.closePath();
           ctx.fillStyle=`rgba(${lh.col[0]},${lh.col[1]},${lh.col[2]},${lh.opacity})`;ctx.fill();
         }
-        // Colour patch tint
         const pt=patchTint(nx,ny);
         if(pt){
           const hw2=S*sc*0.866,hh2=S*sc*0.5,x2=cx2+isoX(col-COLS/2,row-ROWS/2),y2=cy2+isoY(col-COLS/2,row-ROWS/2,h);
@@ -3815,12 +3722,10 @@ function maximiseMusic(){
   }
   render();
   window.addEventListener('resize',render);
-  // expose canvas for save wallpaper
   window._wallpaperCanvas=cv;
 })();
 </script>
 
-<!-- ── CLAYROUND APP WINDOW ── -->
 <div id="clay-window">
   <div id="clay-titlebar">
     <div class="pw-dot close" onclick="closeClay()"></div>
@@ -3829,7 +3734,6 @@ function maximiseMusic(){
     <span style="position:absolute;left:50%;transform:translateX(-50%);font-size:13px;font-weight:600;color:rgba(0,0,0,0.65);pointer-events:none;">Clayround</span>
   </div>
 
-  <!-- Loading screen -->
   <div id="clay-loader">
     <div class="clay-loader-rule"></div>
     <div id="clay-loader-icon-wrap"><img src="clay.png" alt="Clayround"></div>
@@ -3876,15 +3780,11 @@ function maximiseMusic(){
       </div>
     </div>
 
-    <!-- 3D Viewport -->
     <div id="clay-viewport">
       <iframe id="clay-iframe" style="width:100%;height:100%;border:none;display:block;" allowfullscreen></iframe>
     </div>
-
-    <!-- Resize handle -->
     <div id="clay-panel-resize"></div>
 
-    <!-- Right properties panel -->
     <div id="clay-props">
       <div class="clay-no-sel" id="clay-no-sel">Select an object<br>to see properties</div>
       <div id="clay-props-content" style="display:none">
@@ -3933,7 +3833,6 @@ function maximiseMusic(){
 </div>
 <div id="translate-overlay"></div>
 
-<!-- WIFI DROPDOWN -->
 <div class="status-dropdown" id="dd-wifi">
   <div class="sd-header">Wi-Fi</div>
   <div class="sd-body" style="align-items:center;gap:10px;">
@@ -3947,7 +3846,6 @@ function maximiseMusic(){
   </div>
 </div>
 
-<!-- BATTERY DROPDOWN -->
 <div class="status-dropdown" id="dd-battery">
   <div class="sd-header">Session Time</div>
   <div class="sd-body" style="align-items:center;justify-content:center;">
@@ -3970,7 +3868,6 @@ function maximiseMusic(){
   setInterval(updateSessionTimer, 1000);
   updateSessionTimer();
 
-  // Static wifi bars — arc shape, full signal
   const wbIds = ['wb0','wb1','wb2','wb3'];
   const wbFull = [3, 5, 8, 11];
   wbIds.forEach((id,i) => {
@@ -3978,7 +3875,6 @@ function maximiseMusic(){
     if(el){ el.style.height = wbFull[i] + 'px'; el.style.opacity = '1'; }
   });
 
-  // Dropdown 4 bars — arc shape, bar 4 always tallest, signal animates as group
   const sdBarIds = ['sdwb0','sdwb1','sdwb2','sdwb3'];
   const sdBarFullH = [10, 20, 30, 40];
   const sdBarThresh = [0.0, 0.35, 0.60, 0.85];
@@ -4024,7 +3920,6 @@ function maximiseMusic(){
 </script>
 
 <script>
-// ── WIDGET CONTEXT MENU ──
 (function(){
   const menu = document.getElementById('widget-ctx-menu');
   let targetWidget = null;
@@ -4057,7 +3952,6 @@ function maximiseMusic(){
     targetWidget = null;
   }
 
-  // Right-click on widget
   document.getElementById('widget-grid').addEventListener('contextmenu', e => {
     const widget = e.target.closest('.widget');
     if(!widget) return;
@@ -4065,7 +3959,6 @@ function maximiseMusic(){
     openCtx(e.clientX, e.clientY, widget);
   });
 
-  // Double-tap on touch
   let lastTap = 0, lastTapEl = null;
   document.getElementById('widget-grid').addEventListener('touchend', e => {
     const widget = e.target.closest('.widget');
@@ -4080,16 +3973,13 @@ function maximiseMusic(){
     }
   });
 
-  // Remove action
   document.getElementById('wctx-remove').addEventListener('click', () => {
     if(!targetWidget) return;
     const widgetId = targetWidget.id;
     const widgetEl = targetWidget;
-    // Remove from DEFS and elMap immediately so limit check works right away
     const idx = window._DEFS.findIndex(d => d.id === widgetId);
     if(idx !== -1) window._DEFS.splice(idx, 1);
     delete window._elMap[widgetId];
-    // Animate out then remove from DOM
     widgetEl.style.transition = 'opacity 0.45s ease, transform 0.45s ease';
     widgetEl.style.opacity = '0';
     widgetEl.style.transform = 'scale(0.8)';
@@ -4097,7 +3987,6 @@ function maximiseMusic(){
     closeCtx();
   });
 
-  // Resize clock/weather handler
   document.getElementById('wctx-resize').addEventListener('click', () => {
     if(!targetWidget) return;
     const def = window._DEFS && window._DEFS.find(d=>d.id===targetWidget.id);
@@ -4109,14 +3998,12 @@ function maximiseMusic(){
     if(el){
       el.style.transition = 'left 0.32s cubic-bezier(0.34,1.2,0.64,1), top 0.32s cubic-bezier(0.34,1.2,0.64,1), width 0.32s cubic-bezier(0.34,1.2,0.64,1)';
       el.style.width = (def.cw * m.cellW + (def.cw-1)*GAP) + 'px';
-      // Clock font scale
       if(def.type==='clock'){
         const timeEl=el.querySelector('#clock-time'), dateEl=el.querySelector('#clock-date');
         const newW=def.cw*m.cellW+(def.cw-1)*GAP;
         if(timeEl) timeEl.style.fontSize=Math.min(52,Math.max(18,newW*0.28))+'px';
         if(dateEl) dateEl.style.fontSize=Math.min(13,Math.max(9,newW*0.065))+'px';
       }
-
       if(def.type==='weather'){
         const iconEl=el.querySelector('#weather-icon');
         if(iconEl) iconEl.style.display=def.cw===1?'none':'';
@@ -4146,7 +4033,6 @@ function maximiseMusic(){
         const conditions={0:'Clear',1:'Mainly Clear',2:'Partly Cloudy',3:'Overcast',45:'Foggy',51:'Drizzle',61:'Rain',71:'Snow',80:'Showers',95:'Thunderstorm'};
         const ic = icons[wcode]||'🌡';
         const cn = conditions[Math.floor(wcode/10)*10] || conditions[wcode] || 'Unknown';
-        // Reverse geocode city name
         const gr = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json`);
         const gd = await gr.json();
         const city = gd.address?.city||gd.address?.town||gd.address?.village||'Here';
@@ -4158,7 +4044,6 @@ function maximiseMusic(){
     }, ()=>{ if(cityEl) cityEl.textContent='Denied'; });
   });
 
-  // Close on outside click
   document.addEventListener('click', e => {
     if(!e.target.closest('#widget-ctx-menu')) closeCtx();
   });
@@ -4169,12 +4054,10 @@ function maximiseMusic(){
 </script>
 
 <script>
-// ── CLAYROUND APP ──
 (function(){
   let clayOpen=false,clayMax=false,clayMinned=false,clayBuilt=false;
   const win=()=>document.getElementById('clay-window');
 
-  // ── WINDOW MANAGEMENT ──
   window.openClay=function(){
     clayOpen=true; clayMinned=false; clayMax=false;
     document.getElementById('dock-clay').classList.add('app-open');
@@ -4217,7 +4100,6 @@ function maximiseMusic(){
     setTimeout(()=>resizeClayCanvas(),350);
   };
 
-  // Draggable titlebar
   (function(){
     const tb=document.getElementById('clay-titlebar');
     const MENU_H=24,DOCK_H=78;
@@ -4229,7 +4111,6 @@ function maximiseMusic(){
     window.addEventListener('mouseup',()=>{ drag=false; raf=null; });
   })();
 
-  // Panel resize
   (function(){
     const handle=document.getElementById('clay-panel-resize');
     const panel=document.getElementById('clay-props');
@@ -4239,7 +4120,6 @@ function maximiseMusic(){
     window.addEventListener('mouseup',()=>{ rsz=false; });
   })();
 
-  // ── LOADING SCREEN ──
   function runClayLoader(){
     const fill=document.getElementById('clay-loader-fill');
     const loader=document.getElementById('clay-loader');
@@ -4259,7 +4139,6 @@ function maximiseMusic(){
     },130);
   }
 
-  // ── 3D ENGINE ──
   let scene={objects:[],selected:null};
   let camera={ theta:0.6, phi:0.52, radius:14, target:[0,0.2,0], fov:52 };
   let clayTool='select';
@@ -4271,7 +4150,6 @@ function maximiseMusic(){
     slate:'#8a9aaa', sand:'#c8a882', charcoal:'#5a5a62'
   };
 
-  // ── THREE.JS ENGINE via iframe ──
   function initClayEngine(){
     const iframe = document.getElementById('clay-iframe');
     const dark = document.body.classList.contains('dark-mode');
@@ -4296,12 +4174,10 @@ function maximiseMusic(){
   const cam=new THREE.PerspectiveCamera(50,W/H,0.1,200);
   cam.position.set(7,8,11); cam.lookAt(0,0.5,0);
 
-  // Grid
   const grid=new THREE.GridHelper(14,14,0x999988,0xbbbbaa);
   grid.material.opacity=0.55; grid.material.transparent=true;
   scene.add(grid);
 
-  // Ground
   const ground=new THREE.Mesh(
     new THREE.PlaneGeometry(30,30),
     new THREE.MeshStandardMaterial({color:${dark?'0x1e1e20':'0xe8e3da'},roughness:1,metalness:0})
@@ -4309,7 +4185,6 @@ function maximiseMusic(){
   ground.rotation.x=-Math.PI/2; ground.receiveShadow=true;
   scene.add(ground);
 
-  // Lights
   scene.add(new THREE.AmbientLight(0xfff5e6,${dark?0.55:0.80}));
   const sun=new THREE.DirectionalLight(0xfff8f0,${dark?0.55:0.65});
   sun.position.set(6,12,8); sun.castShadow=true;
@@ -4334,7 +4209,6 @@ function maximiseMusic(){
   let selected=null;
   let outlineMesh=null;
 
-  // Orbit
   let theta=0.55, phi=0.55, radius=14;
   const target=new THREE.Vector3(0,0.5,0);
   function updateCam(){
@@ -4351,7 +4225,6 @@ function maximiseMusic(){
   renderer.domElement.addEventListener('mousedown',e=>{
     down=true; mid=e.button!==0; lx=e.clientX; ly=e.clientY;
     if(e.button===0){
-      // pick
       const rect=renderer.domElement.getBoundingClientRect();
       const ndc=new THREE.Vector2(((e.clientX-rect.left)/rect.width)*2-1,-((e.clientY-rect.top)/rect.height)*2+1);
       const ray=new THREE.Raycaster(); ray.setFromCamera(ndc,cam);
@@ -4382,7 +4255,6 @@ function maximiseMusic(){
     updateCam();
   });
   renderer.domElement.addEventListener('wheel',e=>{radius=Math.max(2,Math.min(40,radius+e.deltaY*0.02));updateCam();e.preventDefault();},{passive:false});
-  // pinch zoom
   let lp=null;
   renderer.domElement.addEventListener('touchstart',e=>{if(e.touches.length===2)lp=Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY);},{passive:true});
   renderer.domElement.addEventListener('touchmove',e=>{if(e.touches.length===2&&lp){const d=Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY);radius=Math.max(2,Math.min(40,radius-(d-lp)*0.05));lp=d;updateCam();e.preventDefault();}},{passive:false});
@@ -4394,7 +4266,6 @@ function maximiseMusic(){
     cam.aspect=window.innerWidth/window.innerHeight; cam.updateProjectionMatrix();
   });
 
-  // Listen for commands from parent
   window.addEventListener('message',e=>{
     const d=e.data;
     if(!d) return;
@@ -4422,7 +4293,6 @@ function maximiseMusic(){
 
     iframe.srcdoc = srcdoc;
 
-    // Listen for messages from iframe
     window.addEventListener('message', e=>{
       if(!e.data) return;
       if(e.data.type==='claySelect'){
@@ -4435,7 +4305,6 @@ function maximiseMusic(){
       }
     });
 
-    // Expose controls
     window._clayIframe=iframe;
     window._clayDarkSync=function(){
       iframe.contentWindow&&iframe.contentWindow.postMessage({type:'darkMode',dark:document.body.classList.contains('dark-mode')},'*');
@@ -4458,7 +4327,6 @@ function maximiseMusic(){
     document.getElementById('cprop-verts').textContent=obj.type==='sphere'?'~2000':'48';
   }
 
-  // ── SUN CONTROLS ──
   (function(){
     const wheel=document.getElementById('clay-sun-wheel');
     const dot=document.getElementById('clay-sun-dot');
@@ -4473,7 +4341,6 @@ function maximiseMusic(){
       iframe.contentWindow.postMessage({type:'setSun',azimuth:sunAzimuth,elevation:sunElevation,intensity:slider.value/100},'*');
     }
 
-    // Wheel interaction
     function pickFromEvent(e){
       const rect=wheel.getBoundingClientRect();
       const cx=rect.left+rect.width/2, cy=rect.top+rect.height/2;
@@ -4501,7 +4368,6 @@ function maximiseMusic(){
     slider.addEventListener('input',sendSun);
   })();
 
-  // ── TOOLS & ACTIONS ──
   window.setClayTool=function(tool,el){
     clayTool=tool;
     document.querySelectorAll('.clay-tool').forEach(t=>t.classList.remove('active'));
@@ -4542,7 +4408,6 @@ function maximiseMusic(){
   };
 
   window.resetClayCamera=function(){
-    // Reset handled inside initClayEngine scope via closure
   };
 
   function updateStatusObjs(){
