@@ -1800,11 +1800,11 @@ function dockBounce(el){el.classList.remove('bounce');void el.offsetWidth;el.cla
   function gridMetrics(){
     const deskW=window.innerWidth-PAD*2;
     const deskH=window.innerHeight-MENU_H-DOCK_H;
-    const cellW=Math.min(110, Math.floor((deskW - GAP*(COLS-1))/COLS));
+    const cellW=Math.floor((deskW - GAP*(COLS-1))/COLS);
     const cellH=cellW;
     const gridW=COLS*cellW+(COLS-1)*GAP;
     const gridW2=COLS*cellW+(COLS-1)*GAP;
-    const gridX=Math.floor((window.innerWidth-gridW2)/2);
+    const gridX=Math.max(PAD, Math.floor((window.innerWidth-gridW2)/2));
     const gridY=PAD;
     const maxRows=Math.floor((deskH-PAD*2+GAP)/(cellH+GAP));
     return {cellW,cellH,gridW,gridX,gridY,maxRows};
