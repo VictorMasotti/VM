@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Victor (Masotti)</title>
+<title>Victor (Masotti) 360</title>
 <link rel="icon" type="image/png" href="south.png">
 
 <style>
@@ -3042,8 +3042,15 @@ function maximiseMusic(){
   const MENU_H=26, DOCK_H=78;
 
   function fm(){ return window._gridMetrics ? window._gridMetrics() : null; }
-  function toX(col){ const m=fm(); return m ? m.gridX + col*(m.cellW+8) : col*88; }
-  function toY(row){ const m=fm(); return m ? m.gridY + row*(m.cellH+8) : row*88; }
+  function _fsz(){ const m=fm(); return m ? Math.round(m.cellW*0.67) : 54; }
+  function _fgap(){ return Math.round(8*0.67); }
+  function toX(col){
+    const m=fm(); if(!m) return col*88;
+    const sz=_fsz(), gap=_fgap(), total=window.COLS||10;
+    const fromRight=total-1-col;
+    return window.innerWidth - 14 - sz - fromRight*(sz+gap);
+  }
+  function toY(row){ const m=fm(); if(!m) return row*88; return m.gridY + row*(_fsz()+_fgap()); }
   function cols(){ const m=fm(); return m ? window.COLS : 10; }
   function rows(){ const m=fm(); return m ? m.maxRows : 6; }
   function clampC(c){ return Math.max(0,Math.min(cols()-1,c)); }
@@ -3218,8 +3225,8 @@ function maximiseMusic(){
     if(!drag) return;
     if(drag.moved){
       const dx=e.clientX-drag.startX, dy=e.clientY-drag.startY;
-      const _cw=cellW()+8;
-      const dc=Math.round(dx/_cw), dr=Math.round(dy/(_cw));
+      const _cw=_fsz()+_fgap();
+      const dc=Math.round(dx/_cw), dr=Math.round(dy/_cw);
       drag.snapshots.forEach(s=>{
         const fd=folders.find(f=>f.id===s.id); if(!fd) return;
         fd.col=clampC(s.startCol+dc);
@@ -3284,7 +3291,7 @@ function maximiseMusic(){
     if(touchDrag.moved){
       const t=e.changedTouches[0];
       const dx=t.clientX-touchDrag.startX, dy=t.clientY-touchDrag.startY;
-      const _cw2=cellW()+8;
+      const _cw2=_fsz()+_fgap();
       const dc=Math.round(dx/_cw2), dr=Math.round(dy/_cw2);
       touchDrag.snapshots.forEach(s=>{
         const fd=folders.find(f=>f.id===s.id); if(!fd) return;
