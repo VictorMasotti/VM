@@ -353,6 +353,13 @@ body.dark-mode .dock-dot { background:rgba(255,255,255,0.75); }
 .pw-dot.maxb  { background:radial-gradient(circle at 35% 30%,#7aff8a,#1eb830); }
 .pw-title { position:absolute; left:50%; transform:translateX(-50%); font-size:13px; font-weight:600; color:rgba(0,0,0,0.68); pointer-events:none; }
 .pw-body { display:flex; flex:1; overflow:hidden; }
+.pw-col-dot {
+  width:20px; height:20px; border-radius:50%; cursor:pointer;
+  flex-shrink:0; transition:transform 0.15s, box-shadow 0.15s;
+  box-shadow:0 1px 4px rgba(0,0,0,0.18);
+}
+.pw-col-dot:hover { transform:scale(1.18); }
+.pw-col-dot.active { transform:scale(1.22); box-shadow:0 0 0 2.5px #007aff,0 1px 6px rgba(0,0,0,0.25); }
 .pw-sidebar { width:180px; flex-shrink:0; background:#e8e8ed; border-right:1px solid rgba(0,0,0,0.08); display:flex; flex-direction:column; padding:12px 0; overflow-y:auto; }
 .pw-sidebar-section { font-size:10px; font-weight:700; color:rgba(0,0,0,0.38); text-transform:uppercase; letter-spacing:0.08em; padding:6px 14px 4px; }
 .pw-sidebar-item { display:flex; align-items:center; gap:8px; padding:6px 14px; font-size:13px; color:rgba(0,0,0,0.70); border-radius:6px; margin:0 6px; transition:background 0.12s; }
@@ -362,12 +369,16 @@ body.dark-mode .dock-dot { background:rgba(255,255,255,0.75); }
 .pw-main { flex:1; overflow-y:auto; padding:16px; background:#f5f5f7; }
 .pw-year-label { font-size:22px; font-weight:700; color:#1a1a1a; margin-bottom:10px; }
 .pw-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(140px,1fr)); gap:3px; margin-bottom:20px; }
-.pw-thumb { aspect-ratio:1; border-radius:4px; overflow:hidden; position:relative; background:#2c2c2e; }
-.pw-thumb:hover { box-shadow:inset 0 0 0 2px rgba(0,122,255,0.5); z-index:2; }
+.pw-thumb { aspect-ratio:1; border-radius:4px; overflow:hidden; position:relative; background:#d8d8dc; }
+body.dark-mode .pw-thumb { background:#2c2c2e; }
+.pw-thumb.pw-hovered { box-shadow:inset 0 0 0 2px rgba(0,122,255,0.5); z-index:2; }
 .pw-thumb img { width:100%; height:100%; object-fit:cover; display:block; }
-.pw-thumb .pw-overlay { position:absolute; inset:0; background:linear-gradient(to top,rgba(0,0,0,0.5) 0%,transparent 50%); opacity:0; }
-.pw-thumb:hover .pw-overlay { opacity:1; }
-.pw-toolbar { height:40px; flex-shrink:0; background:#ececf0; border-bottom:1px solid rgba(0,0,0,0.08); display:flex; align-items:center; padding:0 16px; gap:10px; }
+.pw-thumb .pw-overlay { position:absolute; inset:0; background:linear-gradient(to top,rgba(0,0,0,0.5) 0%,transparent 50%); opacity:0; transition:opacity 0.15s; }
+.pw-thumb.pw-hovered .pw-overlay { opacity:1; }
+.pw-toolbar { height:40px; flex-shrink:0; transition:height 0.3s ease, opacity 0.3s ease;
+}
+.pw-toolbar.hidden { height:0!important; opacity:0; overflow:hidden; padding:0!important; pointer-events:none; }
+.pw-toolbar { background:#ececf0; border-bottom:1px solid rgba(0,0,0,0.08); display:flex; align-items:center; padding:0 16px; gap:10px; }
 .pw-toolbar-btn { font-size:11px; color:rgba(0,0,0,0.55); background:rgba(0,0,0,0.06); border:1px solid rgba(0,0,0,0.10); border-radius:6px; padding:3px 10px; transition:background 0.1s,color 0.1s; }
 .pw-toolbar-btn:hover { background:rgba(0,0,0,0.11); color:#000; }
 .pw-toolbar-btn.active { background:#007aff; color:white; border-color:transparent; }
@@ -642,6 +653,35 @@ body.dark-mode .dock-label { background: rgba(18,18,22,0.92); }
 body.dark-mode #photos-window { background:#1c1c1e; box-shadow:0 32px 90px rgba(0,0,0,0.6),0 0 0 1px rgba(255,255,255,0.09); }
 body.dark-mode .pw-titlebar { background:linear-gradient(180deg,#3c3c3e,#2c2c2e)!important; border-bottom-color:rgba(0,0,0,0.4)!important; }
 body.dark-mode .pw-title { color:rgba(255,255,255,0.82)!important; }
+body.dark-mode .pw-col-dot {
+  width:20px; height:20px; border-radius:50%; cursor:pointer;
+  flex-shrink:0; transition:transform 0.15s, box-shadow 0.15s;
+  box-shadow:0 1px 4px rgba(0,0,0,0.18);
+}
+.pw-col-dot:hover { transform:scale(1.18); }
+.pw-col-dot.active { transform:scale(1.22); box-shadow:0 0 0 2.5px #007aff,0 1px 6px rgba(0,0,0,0.25); }
+.pw-sidebar { transition:width 0.35s cubic-bezier(0.34,1.1,0.64,1), opacity 0.3s ease; }
+.pw-sidebar.hidden { width:0!important; opacity:0; overflow:hidden; pointer-events:none; }
+#pw-sidebar-track {
+  position:relative; width:38px; height:14px; border-radius:7px;
+  background:#aaa; border:1px solid rgba(0,0,0,0.15);
+  box-shadow:inset 0 1px 2px rgba(0,0,0,0.12);
+  cursor:pointer; transition:background 0.3s; flex-shrink:0;
+}
+body.dark-mode #pw-sidebar-track { background:#555; border-color:rgba(255,255,255,0.1); }
+#pw-sidebar-knob {
+  position:absolute; top:1px; left:1px;
+  width:12px; height:12px; border-radius:50%;
+  background:radial-gradient(circle at 35% 30%, rgba(255,255,255,0.9), #e0dcd6);
+  border:1px solid rgba(0,0,0,0.15);
+  box-shadow:0 1px 4px rgba(0,0,0,0.22);
+  transition:transform 0.3s cubic-bezier(0.34,1.2,0.64,1);
+}
+#pw-sidebar-track[data-state="1"] #pw-sidebar-knob { transform:translateX(12px); }
+#pw-sidebar-track[data-state="2"] #pw-sidebar-knob { transform:translateX(24px); }
+#pw-sidebar-track[data-state="2"] { background:#444; }
+body.dark-mode #pw-sidebar-track[data-state="2"] { background:#888; }
+
 body.dark-mode .pw-sidebar { background:#2c2c2e!important; border-right-color:rgba(255,255,255,0.06)!important; }
 body.dark-mode .pw-sidebar-section { color:rgba(255,255,255,0.32)!important; }
 body.dark-mode .pw-sidebar-item { color:rgba(255,255,255,0.72)!important; }
@@ -1209,6 +1249,138 @@ body.dark-mode #fashion-title-label { color:rgba(255,255,255,0.80); }
 #fashion-dock-dot { position:absolute; bottom:-5px; left:50%; transform:translateX(-50%); width:3px; height:3px; border-radius:50%; background:rgba(0,0,0,0.4); opacity:0; transition:opacity 0.3s; }
 #dock-fashion.app-open #fashion-dock-dot { opacity:1; }
 
+
+#video-window {
+  position:fixed; left:50%; top:50%;
+  width:min(1000px,92vw); height:min(660px,86vh);
+  transform:translate(-50%,-50%) scale(0.05);
+  background:#f2f0ed; border-radius:14px;
+  box-shadow:0 32px 90px rgba(0,0,0,0.35),0 0 0 1px rgba(0,0,0,0.10);
+  display:flex; flex-direction:column;
+  opacity:0; pointer-events:none; z-index:900;
+  transition:opacity 0.22s ease,transform 0.38s cubic-bezier(0.34,1.28,0.64,1);
+  overflow:hidden;
+}
+body.dark-mode #video-window { background:#0f0f0f; box-shadow:0 32px 90px rgba(0,0,0,0.6),0 0 0 1px rgba(255,255,255,0.08); }
+#video-window.open { opacity:1; pointer-events:all; transform:translate(-50%,-50%) scale(1); }
+#video-window.maximised { left:0!important; top:26px!important; width:100%!important; height:calc(100vh - 26px - 78px)!important; transform:none!important; border-radius:0; }
+#video-window.minimising { animation:video-min 0.38s cubic-bezier(0.4,0,1,1) forwards; }
+@keyframes video-min { to { transform:translate(var(--vid-tx),var(--vid-ty)) scale(0.08); opacity:0; } }
+#video-titlebar {
+  display:flex; align-items:center;
+  padding:11px 14px 10px; flex-shrink:0;
+  background:rgba(235,232,226,0.98);
+  border-bottom:1px solid rgba(0,0,0,0.09);
+  transition:background 0.3s,border-color 0.3s;
+}
+body.dark-mode #video-titlebar { background:rgba(18,18,18,0.97); border-bottom-color:rgba(255,255,255,0.07); }
+#video-body { display:flex; flex:1; overflow:hidden; min-height:0; }
+#video-main { flex:1; display:flex; flex-direction:column; overflow:hidden; background:#1a1a1a; transition:background 0.3s; }
+#video-player-area {
+  flex:1; display:flex; align-items:center; justify-content:center;
+  background:#1a1a1a; position:relative; overflow:hidden; transition:background 0.3s;
+}
+body:not(.dark-mode) #video-player-area { background:#3a3a3a; }
+#video-placeholder {
+  display:flex; flex-direction:column; align-items:center; justify-content:center; gap:16px;
+  color:rgba(255,255,255,0.35); text-align:center;
+}
+#video-placeholder .vid-big-icon { font-size:56px; opacity:0.4; }
+#video-placeholder .vid-title { font-size:15px; font-weight:500; color:rgba(255,255,255,0.3); }
+#video-placeholder .vid-sub { font-size:12px; color:rgba(255,255,255,0.18); }
+#video-controls {
+  padding:12px 16px; background:rgba(225,222,216,0.98);
+  border-top:1px solid rgba(0,0,0,0.08);
+  display:flex; flex-direction:column; gap:8px; flex-shrink:0;
+  transition:background 0.3s;
+}
+body.dark-mode #video-controls { background:rgba(18,18,18,0.98); border-top-color:rgba(255,255,255,0.06); }
+#video-progress-wrap { position:relative; height:4px; background:rgba(0,0,0,0.12); border-radius:2px; cursor:pointer; }
+body.dark-mode #video-progress-wrap { background:rgba(255,255,255,0.12); }
+#video-progress-fill { height:100%; width:0%; background:#333; border-radius:2px; transition:width 0.1s linear; }
+body.dark-mode #video-progress-fill { background:#fff; }
+#video-progress-wrap:hover #video-progress-fill { background:#e44; }
+#video-btns { display:flex; align-items:center; gap:14px; }
+#video-btns button { background:none; border:none; color:rgba(0,0,0,0.55); font-size:16px; cursor:pointer; padding:4px; border-radius:6px; transition:color 0.15s,background 0.15s; line-height:1; }
+#video-btns button:hover { color:#000; background:rgba(0,0,0,0.07); }
+body.dark-mode #video-btns button { color:rgba(255,255,255,0.7); }
+body.dark-mode #video-btns button:hover { color:#fff; background:rgba(255,255,255,0.08); }
+#video-time { font-size:12px; color:rgba(0,0,0,0.4); font-variant-numeric:tabular-nums; margin-left:4px; }
+body.dark-mode #video-time { color:rgba(255,255,255,0.4); }
+#video-vol { -webkit-appearance:none; appearance:none; width:72px; height:3px; border-radius:2px; background:rgba(0,0,0,0.15); outline:none; cursor:pointer; margin-left:auto; }
+body.dark-mode #video-vol { background:rgba(255,255,255,0.2); }
+#video-vol::-webkit-slider-thumb { -webkit-appearance:none; width:12px; height:12px; border-radius:50%; background:#444; }
+body.dark-mode #video-vol::-webkit-slider-thumb { background:#fff; }
+#video-sidebar {
+  width:220px; flex-shrink:0; background:#e8e5e0;
+  border-left:1px solid rgba(0,0,0,0.08);
+  display:flex; flex-direction:column; overflow:hidden;
+  transition:width 0.35s cubic-bezier(0.34,1.1,0.64,1), opacity 0.3s ease, background 0.3s;
+}
+body.dark-mode #video-sidebar { background:#161616; border-left-color:rgba(255,255,255,0.06); }
+#video-sidebar.hidden { width:0; opacity:0; overflow:hidden; pointer-events:none; }
+#video-title-label { color:rgba(0,0,0,0.55); transition:color 0.3s; }
+body.dark-mode #video-title-label { color:rgba(255,255,255,0.70); }
+#vid-sidebar-lbl { transition:color 0.3s; }
+body.dark-mode #vid-sidebar-lbl { color:rgba(255,255,255,0.35) !important; }
+#vid-sidebar-toggle { display:flex; align-items:center; gap:6px; padding:0; margin-left:auto; }
+#vid-sidebar-track {
+  position:relative; width:30px; height:14px; border-radius:7px;
+  background:#aaa; border:1px solid rgba(0,0,0,0.15);
+  box-shadow:inset 0 1px 2px rgba(0,0,0,0.12);
+  cursor:pointer; transition:background 0.3s;
+  flex-shrink:0;
+}
+body.dark-mode #vid-sidebar-track { background:#555; border-color:rgba(255,255,255,0.1); }
+#vid-sidebar-track.on { background:#555; }
+body.dark-mode #vid-sidebar-track.on { background:#888; }
+#vid-sidebar-knob {
+  position:absolute; top:1px; left:1px;
+  width:12px; height:12px; border-radius:50%;
+  background:radial-gradient(circle at 35% 30%, rgba(255,255,255,0.9), #e0dcd6);
+  border:1px solid rgba(0,0,0,0.15);
+  box-shadow:0 1px 4px rgba(0,0,0,0.22);
+  transition:transform 0.3s cubic-bezier(0.34,1.2,0.64,1);
+}
+#vid-sidebar-track.on #vid-sidebar-knob { transform:translateX(16px); }
+#video-sidebar-title { font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.07em; color:rgba(0,0,0,0.35); padding:12px 14px 8px; border-bottom:1px solid rgba(0,0,0,0.07); white-space:nowrap; }
+body.dark-mode #vid-sidebar-toggle { display:flex; align-items:center; gap:6px; padding:0; margin-left:auto; }
+#vid-sidebar-track {
+  position:relative; width:30px; height:14px; border-radius:7px;
+  background:#aaa; border:1px solid rgba(0,0,0,0.15);
+  box-shadow:inset 0 1px 2px rgba(0,0,0,0.12);
+  cursor:pointer; transition:background 0.3s;
+  flex-shrink:0;
+}
+body.dark-mode #vid-sidebar-track { background:#555; border-color:rgba(255,255,255,0.1); }
+#vid-sidebar-track.on { background:#555; }
+body.dark-mode #vid-sidebar-track.on { background:#888; }
+#vid-sidebar-knob {
+  position:absolute; top:1px; left:1px;
+  width:12px; height:12px; border-radius:50%;
+  background:radial-gradient(circle at 35% 30%, rgba(255,255,255,0.9), #e0dcd6);
+  border:1px solid rgba(0,0,0,0.15);
+  box-shadow:0 1px 4px rgba(0,0,0,0.22);
+  transition:transform 0.3s cubic-bezier(0.34,1.2,0.64,1);
+}
+#vid-sidebar-track.on #vid-sidebar-knob { transform:translateX(16px); }
+#video-sidebar-title { color:rgba(255,255,255,0.3); border-bottom-color:rgba(255,255,255,0.05); }
+.video-thumb {
+  display:flex; align-items:center; gap:10px; padding:10px 12px;
+  border-bottom:1px solid rgba(0,0,0,0.06); cursor:pointer;
+  transition:background 0.15s;
+}
+body.dark-mode .video-thumb { border-bottom-color:rgba(255,255,255,0.04); }
+.video-thumb:hover { background:rgba(0,0,0,0.06); }
+body.dark-mode .video-thumb:hover { background:rgba(255,255,255,0.06); }
+.video-thumb-img { width:54px; height:34px; border-radius:4px; background:rgba(0,0,0,0.10); flex-shrink:0; display:flex; align-items:center; justify-content:center; font-size:16px; }
+body.dark-mode .video-thumb-img { background:rgba(255,255,255,0.08); }
+.video-thumb-info { flex:1; min-width:0; }
+.video-thumb-name { font-size:12px; font-weight:500; color:rgba(0,0,0,0.65); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+body.dark-mode .video-thumb-name { color:rgba(255,255,255,0.65); }
+.video-thumb-dur { font-size:10px; color:rgba(0,0,0,0.35); margin-top:2px; }
+body.dark-mode .video-thumb-dur { color:rgba(255,255,255,0.28); }
+
 /* ── CLAYROUND APP ── */
 #clay-window {
   position:fixed; left:50%; top:50%;
@@ -1695,7 +1867,7 @@ body.dark-mode #clay-statusbar { background:#1e1e20; border-top-color:rgba(255,2
     <div class="dock-icon" id="dock-music" onclick="openMusic();dockBounce(this)" style="background:none;padding:0;border-radius:12px"><img src="appe.png" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:12px;display:block;"><div class="dock-dot"></div><div class="dock-label">Music Player</div></div>
     <div class="dock-icon" id="dock-notes-app" onclick="openNotepad();dockBounce(this)" style="background:none;padding:0;border-radius:12px"><img src="nota.png" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:12px;display:block;"><div class="dock-dot"></div><div class="dock-label">Notes</div></div>
     <div class="dock-icon" id="dock-fashion" onclick="openFashion();dockBounce(this)" style="background:none;padding:0;border-radius:12px;"><img src="fash.png" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:12px;display:block;pointer-events:none;"><div class="dock-dot"></div><div class="dock-label">Fashion Lookbook</div></div>
-    <div class="dock-icon" onclick="dockBounce(this)" style="background:linear-gradient(145deg,#ff6b35,#f7c59f);">🎬<div class="dock-label">Vista</div></div>
+    <div class="dock-icon" id="dock-video" onclick="openVideo();dockBounce(this)" style="background:none;padding:0;border-radius:12px;"><img src="vidyo.png" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:12px;display:block;pointer-events:none;"><div class="dock-dot"></div><div class="dock-label">Video Player</div></div>
     <div class="dock-icon" onclick="dockBounce(this)" style="background:linear-gradient(145deg,#6c63ff,#a78bfa);">🪐<div class="dock-label">Orbit</div></div>
     <div class="dock-icon" id="dock-clay" onclick="openClay();dockBounce(this)" style="background:none;padding:0;border-radius:12px;"><img src="clay.png" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:12px;display:block;pointer-events:none;"><div class="dock-dot"></div><div class="dock-label">Clayround</div></div>
     <div class="dock-icon" onclick="dockBounce(this)" style="background:linear-gradient(145deg,#ff3cac,#784ba0);">🎵<div class="dock-label">Echo</div></div>
@@ -1798,6 +1970,9 @@ body.dark-mode #clay-statusbar { background:#1e1e20; border-top-color:rgba(255,2
     <div class="pw-dot min"   onclick="minimisePhotos()"></div>
     <div class="pw-dot maxb"  onclick="maximisePhotos()"></div>
     <span class="pw-title">Gallery</span>
+    <div onclick="pwToggleSidebar()" title="Toggle Sidebar" style="position:absolute;right:14px;display:flex;align-items:center;cursor:pointer;">
+      <div id="pw-sidebar-track" data-state="0"><div id="pw-sidebar-knob"></div></div>
+    </div>
   </div>
   <div class="pw-toolbar">
     <div class="pw-toolbar-btn active">Years</div>
@@ -1821,6 +1996,19 @@ body.dark-mode #clay-statusbar { background:#1e1e20; border-top-color:rgba(255,2
       <div class="pw-sidebar-section" style="margin-top:10px">Media Types</div>
       <div class="pw-sidebar-item"><span class="si-icon">🎞️</span> Live Photos</div>
       <div class="pw-sidebar-item"><span class="si-icon">🐌</span> Slo-mo</div>
+      <div class="pw-sidebar-section" style="margin-top:10px">Filter by Colour</div>
+      <div style="display:flex;flex-wrap:wrap;gap:7px;padding:6px 14px 10px;">
+        <div class="pw-col-dot" data-color="all" title="All" style="background:linear-gradient(135deg,#f00,#0f0,#00f);"></div>
+        <div class="pw-col-dot" data-color="red" title="Red" style="background:#e03c3c;"></div>
+        <div class="pw-col-dot" data-color="orange" title="Orange" style="background:#e07a3c;"></div>
+        <div class="pw-col-dot" data-color="yellow" title="Yellow" style="background:#d4b800;"></div>
+        <div class="pw-col-dot" data-color="green" title="Green" style="background:#3a9e5a;"></div>
+        <div class="pw-col-dot" data-color="blue" title="Blue" style="background:#2e6fd4;"></div>
+        <div class="pw-col-dot" data-color="purple" title="Purple" style="background:#8a3ec4;"></div>
+        <div class="pw-col-dot" data-color="pink" title="Pink" style="background:#d44a8a;"></div>
+        <div class="pw-col-dot" data-color="white" title="Light" style="background:#ddd;border:1px solid rgba(0,0,0,0.15);"></div>
+        <div class="pw-col-dot" data-color="black" title="Dark" style="background:#222;"></div>
+      </div>
     </div>
     <div class="pw-main" id="pw-main"></div>
   </div>
@@ -1889,13 +2077,24 @@ updateClock();setInterval(updateClock,1000);
   dock.addEventListener('mouseleave',()=>{
     if(rafId){cancelAnimationFrame(rafId);rafId=null;}
     icons.forEach(icon=>{
-      icon.style.transition='transform 0.38s cubic-bezier(0.34,1.1,0.64,1), font-size 0.38s ease, margin 0.38s ease';
+      icon.style.transition='transform 0.46s cubic-bezier(0.34,1.1,0.64,1), font-size 0.46s ease, margin 0.46s ease';
       icon.style.transform=''; icon.style.fontSize=''; icon.style.marginLeft=''; icon.style.marginRight='';
-      setTimeout(()=>{ icon.style.transition=''; },400);
+      setTimeout(()=>{ icon.style.transition=''; },480);
     });
   });
 })();
 
+function pwToggleSidebar(){
+  const sb=document.querySelector('#photos-window .pw-sidebar');
+  const tb=document.querySelector('#photos-window .pw-toolbar');
+  const track=document.getElementById('pw-sidebar-track');
+  let state=parseInt(track.dataset.state||'0');
+  state=(state+1)%3;
+  track.dataset.state=state;
+  if(state===0){ sb.classList.remove('hidden'); tb.classList.remove('hidden'); }
+  else if(state===1){ sb.classList.add('hidden'); tb.classList.remove('hidden'); }
+  else{ sb.classList.add('hidden'); tb.classList.add('hidden'); }
+}
 function dockBounce(el){el.classList.remove('bounce');void el.offsetWidth;el.classList.add('bounce');el.addEventListener('animationend',()=>el.classList.remove('bounce'),{once:true});}
 
 (function(){
@@ -2360,6 +2559,8 @@ function applyDarkMode(on){
   _darkMode=on;
   document.body.classList.toggle('dark-mode', on);
   if(window._clayDarkSync) window._clayDarkSync();
+  const vw=document.getElementById('video-window');
+  if(vw){ vw.style.background=on?'#0f0f0f':'#f2f0ed'; }
   const fvp=document.getElementById('fashion-viewport');
   if(fvp) fvp.style.background=on?'#1a1814':'#FDFFE9';
   const fw=document.getElementById('fashion-window');
@@ -2609,6 +2810,93 @@ function npDownloadPDF(){
   handle.addEventListener('mousedown',e=>{rsz=true;sx=e.clientX;sw=sb.offsetWidth;e.preventDefault();});
   window.addEventListener('mousemove',e=>{if(!rsz)return;sb.style.width=Math.max(100,Math.min(320,sw+e.clientX-sx))+'px';});
   window.addEventListener('mouseup',()=>{rsz=false;});
+
+  // Lightweight hover delegation
+  let _lastHovered=null;
+  document.getElementById('photos-window').addEventListener('mouseover',e=>{
+    const thumb=e.target.closest('.pw-thumb');
+    if(thumb===_lastHovered) return;
+    if(_lastHovered) _lastHovered.classList.remove('pw-hovered');
+    _lastHovered=thumb;
+    if(thumb) thumb.classList.add('pw-hovered');
+  },{passive:true});
+  document.getElementById('photos-window').addEventListener('mouseleave',()=>{
+    if(_lastHovered){ _lastHovered.classList.remove('pw-hovered'); _lastHovered=null; }
+  },{passive:true});
+
+  let _activeColour='all';
+  const _hueCache=new Map();
+
+  function rgbToHueName(r,g,b){
+    const max=Math.max(r,g,b),min=Math.min(r,g,b),delta=max-min;
+    const brightness=(r+g+b)/3;
+    if(delta<18){ return brightness>200?'white':'black'; }
+    let h=0;
+    if(max===r) h=((g-b)/delta%6+6)%6;
+    else if(max===g) h=(b-r)/delta+2;
+    else h=(r-g)/delta+4;
+    h*=60;
+    if(h<20||h>=340) return 'red';
+    if(h<45) return 'orange';
+    if(h<70) return 'yellow';
+    if(h<160) return 'green';
+    if(h<250) return 'blue';
+    if(h<290) return 'purple';
+    return 'pink';
+  }
+
+  function sampleImgHue(img){
+    // Use a small offscreen canvas — works for same-origin images
+    try{
+      const c=document.createElement('canvas');
+      c.width=8; c.height=8;
+      const ctx=c.getContext('2d');
+      ctx.drawImage(img,0,0,8,8);
+      const d=ctx.getImageData(0,0,8,8).data;
+      let r=0,g=0,b=0,cnt=0;
+      for(let i=0;i<d.length;i+=4){
+        if(d[i+3]<128) continue; // skip transparent
+        r+=d[i]; g+=d[i+1]; b+=d[i+2]; cnt++;
+      }
+      if(!cnt) return 'all';
+      return rgbToHueName(r/cnt,g/cnt,b/cnt);
+    }catch(e){ return 'all'; }
+  }
+
+  function buildHueCache(){
+    document.querySelectorAll('.pw-thumb img').forEach(img=>{
+      if(_hueCache.has(img.src)) return;
+      const doSample=()=>{ _hueCache.set(img.src, sampleImgHue(img)); };
+      if(img.complete && img.naturalWidth>0) doSample();
+      else img.addEventListener('load', doSample, {once:true,passive:true});
+    });
+  }
+
+  function applyColourFilter(){
+    const thumbs=document.querySelectorAll('.pw-thumb');
+    thumbs.forEach(t=>{
+      if(_activeColour==='all'){ t.style.display=''; return; }
+      const img=t.querySelector('img');
+      if(!img){ t.style.display='none'; return; }
+      const hue=_hueCache.get(img.src);
+      if(!hue){ t.style.display=''; return; } // not sampled yet, show
+      t.style.display=(hue===_activeColour)?'':'none';
+    });
+  }
+
+  // Build cache once gallery loads
+  setTimeout(buildHueCache, 800);
+
+  document.querySelectorAll('.pw-col-dot').forEach(dot=>{
+    dot.addEventListener('click',()=>{
+      document.querySelectorAll('.pw-col-dot').forEach(d=>d.classList.remove('active'));
+      dot.classList.add('active');
+      _activeColour=dot.dataset.color;
+      buildHueCache();
+      setTimeout(applyColourFilter, 50);
+    });
+  });
+  document.querySelector('.pw-col-dot[data-color="all"]')?.classList.add('active');
 })();
 document.addEventListener('input',e=>{
   if(e.target.id==='notepad-editor') npNotes[npActive].content=e.target.innerHTML;
@@ -3769,6 +4057,58 @@ function maximiseMusic(){
 </script>
 
 <!-- ── CLAYROUND APP WINDOW ── -->
+<div id="video-window">
+  <div id="video-titlebar">
+    <div style="display:flex;gap:8px;position:absolute;left:14px;">
+      <span class="pw-dot" style="background:#ff5f57" onclick="closeVideo()"></span>
+      <span class="pw-dot" style="background:#febc2e" onclick="minimiseVideo()"></span>
+      <span class="pw-dot" style="background:#28c840" onclick="maximiseVideo()"></span>
+    </div>
+    <span id="video-title-label" style="width:100%;text-align:center;font-size:13px;font-weight:600;pointer-events:none;">Video Player</span>
+    <div id="vid-sidebar-toggle" onclick="vidToggleSidebar()" title="Toggle Playlist" style="position:absolute;right:14px;display:flex;align-items:center;gap:5px;cursor:pointer;">
+      <div id="vid-sidebar-track"><div id="vid-sidebar-knob"></div></div>
+    </div>
+  </div>
+  <div id="video-body">
+    <div id="video-main">
+      <div id="video-player-area">
+        <div id="video-placeholder">
+          <div class="vid-big-icon">▶</div>
+          <div class="vid-title">No video selected</div>
+          <div class="vid-sub">Select a video from the playlist or add a Vimeo / YouTube link</div>
+        </div>
+        <video id="video-el" style="display:none;width:100%;height:100%;object-fit:contain;" controls></video>
+      </div>
+      <div id="video-controls">
+        <div id="video-progress-wrap" onclick="vidSeek(event)">
+          <div id="video-progress-fill"></div>
+        </div>
+        <div id="video-btns">
+          <button onclick="vidPrev()" title="Previous">⏮</button>
+          <button id="vid-play-btn" onclick="vidToggle()" title="Play">▶</button>
+          <button onclick="vidNext()" title="Next">⏭</button>
+          <span id="video-time" class="video-time">0:00 / 0:00</span>
+          <input id="video-vol" type="range" min="0" max="1" step="0.01" value="1" oninput="vidVol(this.value)" title="Volume">
+        </div>
+      </div>
+    </div>
+    <div id="video-sidebar" class="hidden">
+      <div id="video-sidebar-title">Up Next</div>
+      <div class="video-thumb" onclick="vidLoadUrl('https://player.vimeo.com/video/76979871')">
+        <div class="video-thumb-img">🎬</div>
+        <div class="video-thumb-info"><div class="video-thumb-name">Vimeo Sample</div><div class="video-thumb-dur">Add your link</div></div>
+      </div>
+      <div class="video-thumb" onclick="vidLoadUrl('')">
+        <div class="video-thumb-img">📹</div>
+        <div class="video-thumb-info"><div class="video-thumb-name">Your Video Here</div><div class="video-thumb-dur">Paste URL below</div></div>
+      </div>
+      <div style="padding:10px 12px;margin-top:auto;border-top:1px solid rgba(255,255,255,0.05);">
+        <input id="vid-url-input" type="text" placeholder="Paste video URL…" style="width:100%;box-sizing:border-box;background:rgba(0,0,0,0.06);border:1px solid rgba(0,0,0,0.12);border-radius:6px;padding:6px 8px;font-size:11px;color:rgba(0,0,0,0.65);outline:none;">
+        <button onclick="vidLoadUrl(document.getElementById('vid-url-input').value)" style="margin-top:6px;width:100%;padding:5px;font-size:11px;border-radius:6px;border:none;background:rgba(0,0,0,0.10);color:rgba(0,0,0,0.6);cursor:pointer;transition:background 0.15s;">Load</button>
+      </div>
+    </div>
+  </div>
+</div>
 <div id="fashion-window">
   <div id="fashion-titlebar">
     <div style="display:flex;gap:8px;position:absolute;left:14px;">
@@ -4713,6 +5053,107 @@ function maximiseMusic(){
     function start(ex,ey){ const w=win(),r=w.getBoundingClientRect(); ox=ex-r.left; oy=ey-r.top; w.style.transition='none'; w.style.transform='none'; w.style.left=r.left+'px'; w.style.top=r.top+'px'; }
     function move(ex,ey){ if(!drag||raf) return; raf=requestAnimationFrame(()=>{ raf=null; const w=win(); w.style.left=Math.max(0,Math.min(window.innerWidth-w.offsetWidth,ex-ox))+'px'; w.style.top=Math.max(MENU_H,Math.min(window.innerHeight-DOCK_H-36,ey-oy))+'px'; }); }
     tb.addEventListener('mousedown',e=>{ if(fashMax||e.target.classList.contains('pw-dot')) return; drag=true; start(e.clientX,e.clientY); e.preventDefault(); });
+    window.addEventListener('mousemove',e=>move(e.clientX,e.clientY));
+    window.addEventListener('mouseup',()=>{ drag=false; raf=null; });
+  })();
+})();
+
+(function(){
+  let vidOpen=false,vidMinned=false,vidMax=false;
+  const win=()=>document.getElementById('video-window');
+  const vel=()=>document.getElementById('video-el');
+  const placeholder=()=>document.getElementById('video-placeholder');
+
+  // Playback helpers
+  window.vidToggleSidebar=function(){
+    const sb=document.getElementById('video-sidebar');
+    const track=document.getElementById('vid-sidebar-track');
+    const showing=!sb.classList.contains('hidden');
+    if(showing){ sb.classList.add('hidden'); track.classList.remove('on'); }
+    else{ sb.classList.remove('hidden'); track.classList.add('on'); }
+  };
+  window.vidToggle=function(){
+    const v=vel(); if(!v||v.style.display==='none') return;
+    v.paused?v.play():v.pause();
+    document.getElementById('vid-play-btn').textContent=v.paused?'▶':'⏸';
+  };
+  window.vidVol=function(val){ const v=vel(); if(v) v.volume=val; };
+  window.vidSeek=function(e){
+    const v=vel(); if(!v||v.style.display==='none') return;
+    const r=e.currentTarget.getBoundingClientRect();
+    v.currentTime=(e.clientX-r.left)/r.width*v.duration;
+  };
+  window.vidPrev=function(){};
+  window.vidNext=function(){};
+  window.vidLoadUrl=function(url){
+    if(!url) return;
+    const v=vel();
+    v.src=url; v.style.display='block';
+    placeholder().style.display='none';
+    v.play().catch(()=>{});
+    document.getElementById('vid-play-btn').textContent='⏸';
+  };
+
+  // Progress update
+  setInterval(()=>{
+    const v=vel(); if(!v||v.style.display==='none'||!v.duration) return;
+    const pct=v.currentTime/v.duration*100;
+    document.getElementById('video-progress-fill').style.width=pct+'%';
+    const fmt=s=>Math.floor(s/60)+':'+(Math.floor(s%60)+'').padStart(2,'0');
+    document.getElementById('video-time').textContent=fmt(v.currentTime)+' / '+fmt(v.duration);
+    if(v.paused) document.getElementById('vid-play-btn').textContent='▶';
+    else document.getElementById('vid-play-btn').textContent='⏸';
+  },250);
+
+  window.openVideo=function(){
+    vidOpen=true; vidMinned=false; vidMax=false;
+    document.getElementById('dock-video').classList.add('app-open');
+    const w=win();
+    w.style.cssText=''; w.style.left='50%'; w.style.top='50%';
+    w.style.background=document.body.classList.contains('dark-mode')?'#0f0f0f':'#f2f0ed';
+    w.style.transition='none'; w.style.opacity='0';
+    w.style.transform='translate(-50%,-50%) scale(0.05)';
+    w.classList.remove('minimising','maximised','open');
+    bringToFront(w);
+    requestAnimationFrame(()=>requestAnimationFrame(()=>{
+      w.style.transition='opacity 0.22s ease,transform 0.38s cubic-bezier(0.34,1.28,0.64,1)';
+      w.style.opacity='1'; w.style.transform='translate(-50%,-50%) scale(1)';
+      w.style.pointerEvents='all'; w.classList.add('open');
+    }));
+  };
+  window.closeVideo=function(){
+    if(!vidOpen) return;
+    document.getElementById('dock-video').classList.remove('app-open');
+    const v=vel(); if(v){ v.pause(); }
+    const w=win();
+    w.style.transition='opacity 0.3s ease,transform 0.3s ease';
+    w.style.opacity='0'; w.style.transform='translate(-50%,-50%) scale(0.88) translateY(8px)';
+    w.style.pointerEvents='none';
+    setTimeout(()=>{ w.classList.remove('open','maximised'); w.style.cssText=''; vidOpen=false; },320);
+  };
+  window.minimiseVideo=function(){
+    if(!vidOpen) return;
+    const w=win();
+    if(vidMinned){ vidMinned=false; w.classList.remove('minimising'); w.style.cssText=''; w.style.left='50%'; w.style.top='50%'; w.style.transform='translate(-50%,-50%) scale(0.88) translateY(8px)'; requestAnimationFrame(()=>requestAnimationFrame(()=>w.classList.add('open'))); return; }
+    const icon=document.getElementById('dock-video'),ir=icon.getBoundingClientRect(),wr=w.getBoundingClientRect();
+    w.style.setProperty('--vid-tx',(ir.left+ir.width/2-wr.left-wr.width/2)+'px');
+    w.style.setProperty('--vid-ty',(ir.top+ir.height/2-wr.top-wr.height/2)+'px');
+    w.classList.remove('open','maximised'); w.classList.add('minimising'); vidMinned=true; vidMax=false;
+  };
+  window.maximiseVideo=function(){
+    if(!vidOpen) return;
+    const w=win(); vidMax=!vidMax;
+    if(vidMax){ w.classList.add('maximised'); w.classList.remove('minimising'); }
+    else{ w.classList.remove('maximised'); w.style.left='50%'; w.style.top='50%'; w.style.width=''; w.style.height=''; w.style.transform=''; requestAnimationFrame(()=>requestAnimationFrame(()=>w.classList.add('open'))); }
+  };
+
+  (function(){
+    const tb=document.getElementById('video-titlebar');
+    const MENU_H=24,DOCK_H=78;
+    let drag=false,ox=0,oy=0,raf=null;
+    function start(ex,ey){ const w=win(),r=w.getBoundingClientRect(); ox=ex-r.left; oy=ey-r.top; w.style.transition='none'; w.style.transform='none'; w.style.left=r.left+'px'; w.style.top=r.top+'px'; }
+    function move(ex,ey){ if(!drag||raf) return; raf=requestAnimationFrame(()=>{ raf=null; const w=win(); w.style.left=Math.max(0,Math.min(window.innerWidth-w.offsetWidth,ex-ox))+'px'; w.style.top=Math.max(MENU_H,Math.min(window.innerHeight-DOCK_H-36,ey-oy))+'px'; }); }
+    tb.addEventListener('mousedown',e=>{ if(vidMax||e.target.classList.contains('pw-dot')) return; drag=true; start(e.clientX,e.clientY); e.preventDefault(); });
     window.addEventListener('mousemove',e=>move(e.clientX,e.clientY));
     window.addEventListener('mouseup',()=>{ drag=false; raf=null; });
   })();
