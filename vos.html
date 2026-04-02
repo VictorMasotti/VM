@@ -1984,19 +1984,7 @@ body.dark-mode #clay-statusbar { background:#1e1e20; border-top-color:rgba(255,2
   </div>
   <div class="pw-body">
     <div class="pw-sidebar">
-      <div class="pw-sidebar-section">Library</div>
-      <div class="pw-sidebar-item active"><span class="si-icon">🖼️</span> Photos</div>
-      <div class="pw-sidebar-item"><span class="si-icon">📅</span> Memories</div>
-      <div class="pw-sidebar-item"><span class="si-icon">⭐</span> Favourites</div>
-      <div class="pw-sidebar-item"><span class="si-icon">🌍</span> Map</div>
-      <div class="pw-sidebar-section" style="margin-top:10px">Albums</div>
-      <div class="pw-sidebar-item"><span class="si-icon">📷</span> Recents</div>
-      <div class="pw-sidebar-item"><span class="si-icon">🎬</span> Videos</div>
-      <div class="pw-sidebar-item"><span class="si-icon">🤳</span> Selfies</div>
-      <div class="pw-sidebar-section" style="margin-top:10px">Media Types</div>
-      <div class="pw-sidebar-item"><span class="si-icon">🎞️</span> Live Photos</div>
-      <div class="pw-sidebar-item"><span class="si-icon">🐌</span> Slo-mo</div>
-      <div class="pw-sidebar-section" style="margin-top:10px">Filter by Colour</div>
+      <div class="pw-sidebar-section">Colour</div>
       <div style="display:flex;flex-wrap:wrap;gap:7px;padding:6px 14px 10px;">
         <div class="pw-col-dot" data-color="all" title="All" style="background:linear-gradient(135deg,#f00,#0f0,#00f);"></div>
         <div class="pw-col-dot" data-color="red" title="Red" style="background:#e03c3c;"></div>
@@ -2009,6 +1997,19 @@ body.dark-mode #clay-statusbar { background:#1e1e20; border-top-color:rgba(255,2
         <div class="pw-col-dot" data-color="white" title="Light" style="background:#ddd;border:1px solid rgba(0,0,0,0.15);"></div>
         <div class="pw-col-dot" data-color="black" title="Dark" style="background:#222;"></div>
       </div>
+      <div class="pw-sidebar-section">Library</div>
+      <div class="pw-sidebar-item active"><span class="si-icon">🖼️</span> Photos</div>
+      <div class="pw-sidebar-item"><span class="si-icon">📅</span> Memories</div>
+      <div class="pw-sidebar-item"><span class="si-icon">⭐</span> Favourites</div>
+      <div class="pw-sidebar-item"><span class="si-icon">🌍</span> Map</div>
+      <div class="pw-sidebar-section" style="margin-top:10px">Albums</div>
+      <div class="pw-sidebar-item"><span class="si-icon">📷</span> Recents</div>
+      <div class="pw-sidebar-item"><span class="si-icon">🎬</span> Videos</div>
+      <div class="pw-sidebar-item"><span class="si-icon">🤳</span> Selfies</div>
+      <div class="pw-sidebar-section" style="margin-top:10px">Media Types</div>
+      <div class="pw-sidebar-item"><span class="si-icon">🎞️</span> Live Photos</div>
+      <div class="pw-sidebar-item"><span class="si-icon">🐌</span> Slo-mo</div>
+
     </div>
     <div class="pw-main" id="pw-main"></div>
   </div>
@@ -2476,7 +2477,7 @@ function wmuToggle(artEl,e){
   document.addEventListener('click',e=>{
     const thumb=e.target.closest('.pw-thumb');if(!thumb)return;
     const main=thumb.closest('#pw-main');if(!main)return;
-    const imgs=[...main.querySelectorAll('.pw-thumb img')].map(i=>i.src);
+    const imgs=[...main.querySelectorAll('.pw-thumb img')].map(i=>i.src||i.dataset.src);
     const idx=[...main.querySelectorAll('.pw-thumb')].indexOf(thumb);
     openLB(imgs,idx);
   });
@@ -2811,17 +2812,24 @@ function npDownloadPDF(){
   window.addEventListener('mousemove',e=>{if(!rsz)return;sb.style.width=Math.max(100,Math.min(320,sw+e.clientX-sx))+'px';});
   window.addEventListener('mouseup',()=>{rsz=false;});
 
-  // Lightweight hover delegation
-  let _lastHovered=null;
-  document.getElementById('photos-window').addEventListener('mouseover',e=>{
-    const thumb=e.target.closest('.pw-thumb');
-    if(thumb===_lastHovered) return;
-    if(_lastHovered) _lastHovered.classList.remove('pw-hovered');
-    _lastHovered=thumb;
-    if(thumb) thumb.classList.add('pw-hovered');
+  // Zero-lag hover — pointermove throttled via RAF, elementFromPoint avoids event bubbling overhead
+  let _lastHovered=null, _hoverRaf=null;
+  const _pw=document.getElementById('photos-window');
+  const _main=document.getElementById('pw-main');
+  _main.addEventListener('pointermove',e=>{
+    if(_hoverRaf) return;
+    _hoverRaf=requestAnimationFrame(()=>{
+      _hoverRaf=null;
+      const el=document.elementFromPoint(e.clientX,e.clientY);
+      const thumb=el?el.closest('.pw-thumb'):null;
+      if(thumb===_lastHovered) return;
+      if(_lastHovered) _lastHovered.classList.remove('pw-hovered');
+      _lastHovered=thumb;
+      if(thumb) thumb.classList.add('pw-hovered');
+    });
   },{passive:true});
-  document.getElementById('photos-window').addEventListener('mouseleave',()=>{
-    if(_lastHovered){ _lastHovered.classList.remove('pw-hovered'); _lastHovered=null; }
+  _main.addEventListener('pointerleave',()=>{
+    if(_lastHovered){_lastHovered.classList.remove('pw-hovered');_lastHovered=null;}
   },{passive:true});
 
   let _activeColour='all';
@@ -2973,7 +2981,30 @@ function buildPhotoGrid(){
   const main=document.getElementById('pw-main');main.innerHTML='';
   const lbl=document.createElement('div');lbl.className='pw-year-label';lbl.textContent='2026';main.appendChild(lbl);
   const grid=document.createElement('div');grid.className='pw-grid';
-  images.forEach(src=>{const t=document.createElement('div');t.className='pw-thumb';t.innerHTML=`<img src="${src}" loading="lazy" alt=""/><div class="pw-overlay"></div>`;grid.appendChild(t);});
+
+  // IntersectionObserver — only decode images when they scroll into view
+  const obs=new IntersectionObserver((entries)=>{
+    entries.forEach(entry=>{
+      if(!entry.isIntersecting) return;
+      const img=entry.target.querySelector('img[data-src]');
+      if(!img) return;
+      // Load at thumbnail size hint — browser fetches but decodes small
+      img.src=img.dataset.src;
+      img.removeAttribute('data-src');
+      // Decode async so it never blocks the main thread
+      img.decode().catch(()=>{});
+      obs.unobserve(entry.target);
+    });
+  },{rootMargin:'200px'});
+
+  images.forEach(src=>{
+    const t=document.createElement('div');
+    t.className='pw-thumb';
+    // Use data-src for lazy, tiny placeholder bg while loading
+    t.innerHTML=`<img data-src="${src}" alt="" style="opacity:0;transition:opacity 0.3s;" onload="this.style.opacity=1" width="140" height="140"/><div class="pw-overlay"></div>`;
+    grid.appendChild(t);
+    obs.observe(t);
+  });
   main.appendChild(grid);
 }
 function runCloseAnimation(fromRect,iconRect,onDone){
