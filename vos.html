@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Victor (Masotti) 360</title>
+<title>Victor (Masotti)</title>
 <link rel="icon" type="image/png" href="south.png">
 
 <style>
@@ -298,10 +298,9 @@ body {
 }
 .dock-icon:hover .dock-label { opacity:1; }
 .dock-separator { width:1px; height:32px; background:rgba(0,0,0,0.12); margin:0 2px; align-self:center; }
-.dock-dot { position:absolute; bottom:-5px; left:50%; transform:translateX(-50%); width:3px; height:3px; border-radius:50%; background:rgba(0,0,0,0.4); opacity:0; transition:opacity 0.3s ease; }
+.dock-dot { position:absolute; bottom:-6px; left:50%; transform:translateX(-50%); width:4px; height:4px; border-radius:50%; background:#555; opacity:0; transition:opacity 0.35s ease; }
 .dock-icon.app-open .dock-dot { opacity:1; }
-#dock-music.app-open .dock-dot { background: rgba(255,255,255,0.85); }
-body.dark-mode .dock-dot { background: rgba(255,255,255,0.6); }
+body.dark-mode .dock-dot { background:rgba(255,255,255,0.75); }
 .icon-finder   { background:linear-gradient(145deg,#5ac8fa,#007aff); }
 .icon-safari   { background:linear-gradient(145deg,#34aadc,#007aff); }
 .icon-messages { background:linear-gradient(145deg,#4cd964,#30b94d); }
@@ -1889,7 +1888,11 @@ updateClock();setInterval(updateClock,1000);
   });
   dock.addEventListener('mouseleave',()=>{
     if(rafId){cancelAnimationFrame(rafId);rafId=null;}
-    icons.forEach(icon=>{icon.style.transform='';icon.style.fontSize='';icon.style.marginLeft='';icon.style.marginRight='';});
+    icons.forEach(icon=>{
+      icon.style.transition='transform 0.38s cubic-bezier(0.34,1.1,0.64,1), font-size 0.38s ease, margin 0.38s ease';
+      icon.style.transform=''; icon.style.fontSize=''; icon.style.marginLeft=''; icon.style.marginRight='';
+      setTimeout(()=>{ icon.style.transition=''; },400);
+    });
   });
 })();
 
