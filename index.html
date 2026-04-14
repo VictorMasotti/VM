@@ -411,18 +411,20 @@
   document.addEventListener('mouseenter',()=>{dot.style.opacity='1';});
 })();
 
+let clockIs24=false;
 function updateClock(){
   const now=new Date();
   const h=now.getHours(),m=now.getMinutes();
   const h12=(h%12)||12,ampm=h>=12?'PM':'AM';
-  const hh=String(h12).padStart(2,'0'),mm=String(m).padStart(2,'0');
+  const mm=String(m).padStart(2,'0');
+  const timeStr=clockIs24?`${String(h).padStart(2,'0')}:${mm}`:`${String(h12).padStart(2,'0')}:${mm}`;
   const days=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
   const months=['January','February','March','April','May','June','July','August','September','October','November','December'];
   const sd=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'],sm2=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
   const ct=document.getElementById('clock-time'),cd=document.getElementById('clock-date'),mt=document.getElementById('menubar-time');
-  if(ct) ct.textContent=`${hh}:${mm}`;
+  if(ct) ct.textContent=timeStr;
   if(cd) cd.textContent=`${days[now.getDay()]}, ${months[now.getMonth()]} ${now.getDate()}`;
-  if(mt) mt.textContent=`${sd[now.getDay()]} ${sm2[now.getMonth()]} ${now.getDate()}  ${hh}:${mm} ${ampm}`;
+  if(mt) mt.textContent=`${sd[now.getDay()]} ${sm2[now.getMonth()]} ${now.getDate()}  ${timeStr}`;
 }
 updateClock();setInterval(updateClock,1000);
 
@@ -2805,6 +2807,7 @@ function maximiseMusic(){
   <div class="wctx-item" id="wctx-resize" style="display:none;color:#1a1a1a;">⬌ Resize</div>
   <div class="wctx-item" id="wctx-locate" style="display:none;color:#1a1a1a;">Use My Location</div>
   <div class="wctx-item" id="wctx-fashstop" style="display:none;color:#1a1a1a;">Pause Slideshow</div>
+  <div class="wctx-item" id="wctx-clockfmt" style="display:none;color:#1a1a1a;">Switch to 24h</div>
   <div class="wctx-item danger" id="wctx-remove">🗑 Remove Widget</div>
 </div>
 <div id="translate-overlay"></div>
@@ -2914,6 +2917,11 @@ function maximiseMusic(){
       resizeEl.style.display='none';
     }
     if(locateEl) locateEl.style.display = isWeather ? 'flex' : 'none';
+    const clockFmtEl = document.getElementById('wctx-clockfmt');
+    if(clockFmtEl){
+      clockFmtEl.style.display = isClock ? 'flex' : 'none';
+      if(isClock) clockFmtEl.textContent = clockIs24 ? 'Switch to PM Format' : 'Switch to AM Format';
+    }
     const fashStopEl = document.getElementById('wctx-fashstop');
     if(fashStopEl){
       fashStopEl.style.display = isFashionw ? 'flex' : 'none';
@@ -2957,6 +2965,12 @@ function maximiseMusic(){
     }
   });
 
+  document.getElementById('wctx-clockfmt').addEventListener('mousedown',e=>{
+    e.stopPropagation();
+    clockIs24=!clockIs24;
+    updateClock();
+    closeCtx();
+  });
   document.getElementById('wctx-remove').addEventListener('click', () => {
     if(!targetWidget) return;
     const widgetId = targetWidget.id;
@@ -3759,7 +3773,6 @@ function maximiseMusic(){
     if(vidMax){ w.classList.add('maximised'); w.classList.remove('minimising'); }
     else{ w.classList.remove('maximised'); w.style.left='50%'; w.style.top='50%'; w.style.width=''; w.style.height=''; w.style.transform=''; requestAnimationFrame(()=>requestAnimationFrame(()=>w.classList.add('open'))); }
   };
-
   (function(){
     const tb=document.getElementById('video-titlebar');
     const MENU_H=24,DOCK_H=78;
@@ -3771,7 +3784,6 @@ function maximiseMusic(){
     window.addEventListener('mouseup',()=>{ drag=false; raf=null; });
   })();
 })();
-
   (function(){
     const _fimgs=['globe.png','tee001.jpg','chrome.png','maxi.jpg','blue2.jpg','lvm.jpg','lvmm.jpg','yellow.png','converse.jpg','g1.png','g3.png','aj1.jpg','graphic1.png','graphic2.png','s1.jpg','s11.jpg','vm5.png','vm1.png','vm6.png','vm7.png','vm3.png','vm8.png','vm2.png','vm4.png'];
     setInterval(()=>{
@@ -3786,6 +3798,5 @@ function maximiseMusic(){
     },10000);
   })();
 </script>
-
 </body>
 </html>
