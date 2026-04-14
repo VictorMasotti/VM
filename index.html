@@ -3235,6 +3235,7 @@ function maximiseMusic(){
     window.addEventListener('mouseup',()=>{ rsz=false; });
   })();
 
+  const _clayNames={};  // persists names across the whole session
   function runClayLoader(){
     const fill=document.getElementById('clay-loader-fill');
     const loader=document.getElementById('clay-loader');
@@ -3630,7 +3631,6 @@ function maximiseMusic(){
 
     iframe.srcdoc = srcdoc;
 
-    const _clayNames={};  // persists names across selections
     window.addEventListener('message', e=>{
       if(!e.data) return;
       if(e.data.type==='claySelect'){
