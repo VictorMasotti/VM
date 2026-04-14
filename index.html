@@ -3274,7 +3274,6 @@ function maximiseMusic(){
 
     const srcdoc = `<!DOCTYPE html><html><head><style>*{margin:0;padding:0;}body{overflow:hidden;background:${bg};}canvas{cursor:crosshair;}</style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"><\/script>
-<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/exporters/OBJExporter.js"><\/script>
 </head><body>
 <script>
 (function(){
@@ -3618,6 +3617,49 @@ function maximiseMusic(){
       sun.position.set(Math.sin(az)*Math.cos(el2)*r, Math.sin(el2)*r, Math.cos(az)*Math.cos(el2)*r);
       sun.intensity=inten*1.2;
     }
+    if(d.type==='exportOBJ'){
+      // Self-contained OBJ export — no CDN needed
+      let out='# Clayround OBJ Export\n';
+      let vOffset=1;
+      meshes.forEach((mesh,mi)=>{
+        mesh.updateMatrixWorld(true);
+        const geo=mesh.geometry;
+        const pos=geo.attributes.position;
+        const norm=geo.attributes.normal;
+        const idx=geo.index;
+        const name=mesh.name||('object_'+mi);
+        out+='o '+name+'\n';
+        // vertices
+        for(let i=0;i<pos.count;i++){
+          const v=new THREE.Vector3(pos.getX(i),pos.getY(i),pos.getZ(i)).applyMatrix4(mesh.matrixWorld);
+          out+='v '+v.x.toFixed(6)+' '+v.y.toFixed(6)+' '+v.z.toFixed(6)+'\n';
+        }
+        // normals
+        if(norm){
+          const nm=new THREE.Matrix3().getNormalMatrix(mesh.matrixWorld);
+          for(let i=0;i<norm.count;i++){
+            const n=new THREE.Vector3(norm.getX(i),norm.getY(i),norm.getZ(i)).applyMatrix3(nm).normalize();
+            out+='vn '+n.x.toFixed(6)+' '+n.y.toFixed(6)+' '+n.z.toFixed(6)+'\n';
+          }
+        }
+        // faces
+        out+='g '+name+'\n';
+        if(idx){
+          for(let i=0;i<idx.count;i+=3){
+            const a=idx.getX(i)+vOffset,b=idx.getX(i+1)+vOffset,c=idx.getX(i+2)+vOffset;
+            if(norm) out+='f '+a+'//'+a+' '+b+'//'+b+' '+c+'//'+c+'\n';
+            else out+='f '+a+' '+b+' '+c+'\n';
+          }
+        } else {
+          for(let i=0;i<pos.count;i+=3){
+            const a=i+vOffset,b=i+1+vOffset,c=i+2+vOffset;
+            out+='f '+a+' '+b+' '+c+'\n';
+          }
+        }
+        vOffset+=pos.count;
+      });
+      window.parent.postMessage({type:'clayOBJData',data:out},'*');
+    }
   });
 
   function animate(){requestAnimationFrame(animate);if(selected)selected.updateMatrixWorld(true);syncOutline();renderer.render(scene,cam);}
@@ -3668,12 +3710,18 @@ function maximiseMusic(){
         const a=document.createElement('a');
         a.href=URL.createObjectURL(blob);
         a.download='clayround_scene.obj';
-        a.click();URL.revokeObjectURL(a.href);
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(a.href);
         const btn=document.getElementById('clay-export-btn');
         if(btn){
           btn.innerHTML='<svg width="10" height="10" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M2 6l3 3 5-5"/></svg> Done!';
           btn.style.opacity='1';btn.style.color='#34c759';
-          setTimeout(()=>{btn.innerHTML='<svg width="10" height="10" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M6 1v7M3.5 5.5L6 8l2.5-2.5"/><line x1="1.5" y1="10.5" x2="10.5" y2="10.5"/></svg> Export';btn.style.color='';btn.style.opacity='';},2500);
+          setTimeout(()=>{
+            btn.innerHTML='<svg width="10" height="10" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M6 1v7M3.5 5.5L6 8l2.5-2.5"/><line x1="1.5" y1="10.5" x2="10.5" y2="10.5"/></svg> Export';
+            btn.style.color='';btn.style.opacity='1';
+          },2500);
         }
       }
     });
