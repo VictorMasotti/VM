@@ -2768,9 +2768,9 @@ function maximiseMusic(){
         <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3"><path d="M2 8 Q5 3 8 8 Q11 13 14 8"/><path d="M2 5 Q5 2 8 5 Q11 8 14 5" opacity="0.5"/><path d="M2 11 Q5 9 8 11 Q11 13 14 11" opacity="0.5"/></svg>
         <div class="clay-tool-tip">Warp (W)</div>
       </div>
-      <div class="clay-tool" id="clay-tool-paint" onclick="setClayTool('paint',this)" ondblclick="togglePaintPopup(event)">
+      <div class="clay-tool" id="clay-tool-paint" onclick="if(this.classList.contains('active')){togglePaintPopup(event);}else{setClayTool('paint',this);}">
         <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3"><circle cx="5" cy="11" r="3"/><path d="M5 8 L11 2" stroke-width="1.6" stroke-linecap="round"/><path d="M10 1 L15 6" stroke-width="1.6" stroke-linecap="round"/></svg>
-        <div class="clay-tool-tip">Paint (P) · double-tap for brushes</div>
+        <div class="clay-tool-tip">Paint (P) · tap again for brushes</div>
       </div>
       <div class="clay-tool-sep"></div>
       <div class="clay-tool" onclick="clayModify('inflate')">
@@ -2784,6 +2784,10 @@ function maximiseMusic(){
       <div class="clay-tool" onclick="clayModify('flatten')">
         <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3"><ellipse cx="8" cy="10" rx="6" ry="2.5"/><path d="M2 7h12" stroke-width="1"/></svg>
         <div class="clay-tool-tip">Flatten</div>
+      </div>
+      <div class="clay-tool" onclick="clayModify('smooth')">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3"><path d="M2 10 Q5 4 8 6 Q11 8 14 5"/><path d="M2 12 Q5 7 8 9 Q11 11 14 8" opacity="0.5"/></svg>
+        <div class="clay-tool-tip">Smooth</div>
       </div>
       <div class="clay-tool-sep"></div>
       <div class="clay-tool" id="clay-tool-orbit" onclick="setClayTool('orbit',this)">
@@ -2867,6 +2871,27 @@ function maximiseMusic(){
           <div style="position:relative;width:26px;height:26px;border-radius:50%;overflow:hidden;border:2px solid rgba(0,0,0,0.18);box-shadow:0 1px 4px rgba(0,0,0,0.15);flex-shrink:0;cursor:pointer;" onclick="this.querySelector('input').click()">
             <input type="color" id="cprop-color" value="#c8a882" onchange="setSelectedColor(this.value)"
               style="position:absolute;inset:-4px;width:calc(100% + 8px);height:calc(100% + 8px);border:none;padding:0;cursor:pointer;opacity:1;">
+          </div>
+        </div>
+        <div class="clay-prop-row" style="flex-direction:column;align-items:flex-start;gap:6px;padding:7px 12px;">
+          <span class="clay-prop-label">Gradient</span>
+          <div style="display:flex;align-items:center;gap:6px;width:100%;">
+            <div style="position:relative;width:22px;height:22px;border-radius:50%;overflow:hidden;border:1.5px solid rgba(0,0,0,0.18);cursor:pointer;flex-shrink:0;" onclick="this.querySelector('input').click()">
+              <input type="color" id="cprop-grad-a" value="#c8a882" style="position:absolute;inset:-4px;width:calc(100% + 8px);height:calc(100% + 8px);border:none;padding:0;">
+            </div>
+            <div style="flex:1;height:12px;border-radius:6px;border:1px solid rgba(0,0,0,0.12);" id="cprop-grad-preview"></div>
+            <div style="position:relative;width:22px;height:22px;border-radius:50%;overflow:hidden;border:1.5px solid rgba(0,0,0,0.18);cursor:pointer;flex-shrink:0;" onclick="this.querySelector('input').click()">
+              <input type="color" id="cprop-grad-b" value="#5a8a9f" style="position:absolute;inset:-4px;width:calc(100% + 8px);height:calc(100% + 8px);border:none;padding:0;">
+            </div>
+          </div>
+          <div style="display:flex;gap:4px;width:100%;">
+            <select id="cprop-grad-dir" style="flex:1;font-size:10px;padding:3px 4px;border-radius:5px;border:1px solid rgba(0,0,0,0.12);background:rgba(0,0,0,0.05);color:rgba(0,0,0,0.7);font-family:-apple-system,sans-serif;">
+              <option value="y">Top → Bottom</option>
+              <option value="x">Left → Right</option>
+              <option value="z">Front → Back</option>
+              <option value="r">Centre → Edge</option>
+            </select>
+            <button onclick="applyGradient()" style="font-size:10px;font-weight:600;padding:3px 8px;border-radius:5px;border:1px solid rgba(0,0,0,0.12);background:rgba(0,0,0,0.05);color:rgba(0,0,0,0.6);cursor:pointer;font-family:-apple-system,sans-serif;">Apply</button>
           </div>
         </div>
         <div class="clay-prop-row" style="flex-direction:column;align-items:flex-start;gap:6px;padding:8px 12px;">
@@ -3466,7 +3491,38 @@ function maximiseMusic(){
       const hits2=ray2.intersectObject(selected);
       if(hits2.length){
         const hitPt2=hits2[0].point;
-        const geo2=selected.geometry,pos2=geo2.attributes.position;
+        let geo2=selected.geometry,pos2=geo2.attributes.position;
+        // If object has too few faces for smooth painting, subdivide it once first
+        if(!selected._paintReady){
+          selected._paintReady=true;
+          const gi=geo2.index;
+          if(gi&&geo2.attributes.position.count<800){
+            const op=geo2.attributes.position;
+            const verts=[];
+            for(let i=0;i<gi.count;i+=3){
+              const a=gi.getX(i),b2=gi.getX(i+1),c2=gi.getX(i+2);
+              const ax=op.getX(a),ay=op.getY(a),az=op.getZ(a);
+              const bx=op.getX(b2),by=op.getY(b2),bz=op.getZ(b2);
+              const cx=op.getX(c2),cy=op.getY(c2),cz=op.getZ(c2);
+              const mx=(ax+bx)/2,my=(ay+by)/2,mz=(az+bz)/2;
+              const nx=(bx+cx)/2,ny=(by+cy)/2,nz=(bz+cz)/2;
+              const ox=(cx+ax)/2,oy=(cy+ay)/2,oz=(cz+az)/2;
+              verts.push(ax,ay,az,mx,my,mz,ox,oy,oz);
+              verts.push(mx,my,mz,bx,by,bz,nx,ny,nz);
+              verts.push(ox,oy,oz,nx,ny,nz,cx,cy,cz);
+              verts.push(mx,my,mz,nx,ny,nz,ox,oy,oz);
+            }
+            const ng=new THREE.BufferGeometry();
+            ng.setAttribute('position',new THREE.Float32BufferAttribute(verts,3));
+            ng.computeVertexNormals();
+            selected.geometry.dispose();
+            selected.geometry=ng;
+            if(outlineMesh)outlineMesh.geometry=ng;
+            // Re-alias after subdivision
+            geo2=selected.geometry;
+            pos2=geo2.attributes.position;
+          }
+        }
         if(!geo2.attributes.color){
           // Seed vertex colors from the current material color — preserves the base look
           const base=selected.material.color;
@@ -3482,36 +3538,37 @@ function maximiseMusic(){
         const col2=geo2.attributes.color;
         const pc=paintColor,psize=paintBrushSize,pstr=paintStrength,pbrush=paintBrushType;
         const idx2=geo2.index;
-        const hitFaceIdx=hits2[0].faceIndex;
-        const queue=[hitFaceIdx];const visitedFaces=new Set([hitFaceIdx]);
-        while(queue.length){
-          const fi=queue.shift();
+        const faceCount=idx2?idx2.count/3:pos2.count/3;
+        // Paint ONLY faces whose centroid is within brush radius - pure spatial test, no sequential spreading
+        for(let fi=0;fi<faceCount;fi++){
           const a=idx2?idx2.getX(fi*3):fi*3,b=idx2?idx2.getX(fi*3+1):fi*3+1,c=idx2?idx2.getX(fi*3+2):fi*3+2;
-          const fc=new THREE.Vector3((pos2.getX(a)+pos2.getX(b)+pos2.getX(c))/3,(pos2.getY(a)+pos2.getY(b)+pos2.getY(c))/3,(pos2.getZ(a)+pos2.getZ(b)+pos2.getZ(c))/3).applyMatrix4(selected.matrixWorld);
+          const fc=new THREE.Vector3(
+            (pos2.getX(a)+pos2.getX(b)+pos2.getX(c))/3,
+            (pos2.getY(a)+pos2.getY(b)+pos2.getY(c))/3,
+            (pos2.getZ(a)+pos2.getZ(b)+pos2.getZ(c))/3
+          ).applyMatrix4(selected.matrixWorld);
           const fd=fc.distanceTo(hitPt2);
-          if(fd>psize*1.5)continue;
+          if(fd>psize)continue;
           let faceFalloff;
-          if(pbrush==='hard')faceFalloff=fd<psize?pstr:0;
-          else if(pbrush==='spray')faceFalloff=Math.random()<pstr&&fd<psize?Math.random()*pstr:0;
-          else if(pbrush==='flat')faceFalloff=fd<psize?pstr:0;
-          else if(pbrush==='erase')faceFalloff=Math.pow(Math.max(0,1-fd/psize),1.8)*pstr*-1;
-          else faceFalloff=Math.pow(Math.max(0,1-fd/psize),1.8)*pstr;
-          [a,b,c].forEach(vi=>{
-            if(pbrush==='erase'){
-              const ef=Math.min(1,Math.abs(faceFalloff));
-              const bc=selected._paintBaseColor||{r:1,g:1,b:1};
+          if(pbrush==='hard')faceFalloff=pstr;
+          else if(pbrush==='spray')faceFalloff=Math.random()<0.5?pstr:0;
+          else if(pbrush==='flat')faceFalloff=pstr;
+          else if(pbrush==='erase')faceFalloff=-pstr;
+          else faceFalloff=Math.pow(1-fd/psize,1.5)*pstr;
+          if(pbrush==='erase'){
+            const ef=Math.min(1,Math.abs(faceFalloff));
+            const bc=selected._paintBaseColor||{r:1,g:1,b:1};
+            [a,b,c].forEach(vi=>{
               col2.setX(vi,col2.getX(vi)+(bc.r-col2.getX(vi))*ef);
               col2.setY(vi,col2.getY(vi)+(bc.g-col2.getY(vi))*ef);
               col2.setZ(vi,col2.getZ(vi)+(bc.b-col2.getZ(vi))*ef);
-            } else if(faceFalloff>0){
+            });
+          } else if(faceFalloff>0){
+            [a,b,c].forEach(vi=>{
               col2.setX(vi,col2.getX(vi)*(1-faceFalloff)+pc.r*faceFalloff);
               col2.setY(vi,col2.getY(vi)*(1-faceFalloff)+pc.g*faceFalloff);
               col2.setZ(vi,col2.getZ(vi)*(1-faceFalloff)+pc.b*faceFalloff);
-            }
-          });
-          if(visitedFaces.size<200&&fd<psize){
-            const fc2=idx2?idx2.count/3:pos2.count/3;
-            for(let nf=Math.max(0,fi-40);nf<Math.min(fc2,fi+40);nf++){if(!visitedFaces.has(nf)){visitedFaces.add(nf);queue.push(nf);}}
+            });
           }
         }
         col2.needsUpdate=true;
@@ -3609,6 +3666,70 @@ function maximiseMusic(){
       m2.position.set(selected.position.x+0.8,selected.position.y,selected.position.z+0.8);
       m2.rotation.copy(selected.rotation); m2.scale.copy(selected.scale);
       m2.castShadow=true; m2.receiveShadow=true; scene.add(m2); meshes.push(m2);
+    }
+    if(d.type==='modifySelected'&&selected){
+      const pos=selected.geometry.attributes.position;
+      if(d.mod==='smooth'){
+        const idx=selected.geometry.index;
+        if(idx){
+          const sums=new Float32Array(pos.count*3);
+          const counts=new Uint16Array(pos.count);
+          for(let i=0;i<idx.count;i+=3){
+            const a=idx.getX(i),b2=idx.getX(i+1),c2=idx.getX(i+2);
+            [[a,b2],[a,c2],[b2,a],[b2,c2],[c2,a],[c2,b2]].forEach(([f,t])=>{
+              sums[f*3]+=pos.getX(t);sums[f*3+1]+=pos.getY(t);sums[f*3+2]+=pos.getZ(t);counts[f]++;
+            });
+          }
+          for(let i=0;i<pos.count;i++){
+            if(!counts[i])continue;
+            const ox=pos.getX(i),oy=pos.getY(i),oz=pos.getZ(i);
+            const origLen=Math.sqrt(ox*ox+oy*oy+oz*oz);
+            const nx=ox*0.7+sums[i*3]/counts[i]*0.3;
+            const ny=oy*0.7+sums[i*3+1]/counts[i]*0.3;
+            const nz=oz*0.7+sums[i*3+2]/counts[i]*0.3;
+            // Preserve volume: rescale back to original distance from centre
+            const newLen=Math.sqrt(nx*nx+ny*ny+nz*nz)||1;
+            const scale=origLen/newLen;
+            pos.setXYZ(i,nx*scale,ny*scale,nz*scale);
+          }
+        }
+      } else {
+        for(let i=0;i<pos.count;i++){
+          const v=new THREE.Vector3(pos.getX(i),pos.getY(i),pos.getZ(i));
+          const n=v.clone().normalize();
+          if(d.mod==='inflate')v.addScaledVector(n,0.02);
+          else if(d.mod==='deflate')v.addScaledVector(n,-0.02);
+          else if(d.mod==='flatten')v.y*=0.98;
+          pos.setXYZ(i,v.x,v.y,v.z);
+        }
+      }
+      selected.geometry.attributes.position.needsUpdate=true;
+      selected.geometry.computeVertexNormals();
+    }
+    if(d.type==='applyGradient'){
+      if(selected){
+        const geo=selected.geometry,pos=geo.attributes.position;
+        const ca=new THREE.Color(d.colorA),cb=new THREE.Color(d.colorB);
+        // Get bounding box to normalise positions
+        geo.computeBoundingBox();const bb=geo.boundingBox;
+        const cols=new Float32Array(pos.count*3);
+        for(let i=0;i<pos.count;i++){
+          const x=pos.getX(i),y=pos.getY(i),z=pos.getZ(i);
+          let t;
+          if(d.dir==='y') t=(y-bb.min.y)/(bb.max.y-bb.min.y||1);
+          else if(d.dir==='x') t=(x-bb.min.x)/(bb.max.x-bb.min.x||1);
+          else if(d.dir==='z') t=(z-bb.min.z)/(bb.max.z-bb.min.z||1);
+          else{const cx=(bb.min.x+bb.max.x)/2,cy=(bb.min.y+bb.max.y)/2,cz=(bb.min.z+bb.max.z)/2;const maxR=Math.sqrt(Math.pow(bb.max.x-cx,2)+Math.pow(bb.max.y-cy,2)+Math.pow(bb.max.z-cz,2))||1;t=Math.min(1,Math.sqrt(Math.pow(x-cx,2)+Math.pow(y-cy,2)+Math.pow(z-cz,2))/maxR);}
+          t=Math.max(0,Math.min(1,t));
+          cols[i*3]=ca.r*(1-t)+cb.r*t;
+          cols[i*3+1]=ca.g*(1-t)+cb.g*t;
+          cols[i*3+2]=ca.b*(1-t)+cb.b*t;
+        }
+        geo.setAttribute('color',new THREE.BufferAttribute(cols,3));
+        selected._paintBaseColor={r:ca.r,g:ca.g,b:ca.b};
+        selected.material.vertexColors=true;
+        selected.material.needsUpdate=true;
+      }
     }
     if(d.type==='toggleGrid'){grid.visible=!grid.visible;}
     if(d.type==='darkMode'){renderer.setClearColor(d.dark?0x18181a:0xf0ede8);ground.material.color.set(d.dark?0x1e1e20:0xe8e3da);}
@@ -3893,9 +4014,32 @@ function maximiseMusic(){
     scene.selected=null; updatePropsPanel(); updateStatusObjs();
   };
 
-  window.setSelectedColor=function(hex){
+  function updateGradientPreview(){
+    const a=document.getElementById('cprop-grad-a');
+    const b=document.getElementById('cprop-grad-b');
+    const prev=document.getElementById('cprop-grad-preview');
+    if(a&&b&&prev) prev.style.background='linear-gradient(to right,'+a.value+','+b.value+')';
+  }
+  // Wire colour pickers to live-update preview
+  document.addEventListener('input',function(e){
+    if(e.target.id==='cprop-grad-a'||e.target.id==='cprop-grad-b') updateGradientPreview();
+  });
+
+  window.applyGradient=function(){
+    const a=document.getElementById('cprop-grad-a');
+    const b=document.getElementById('cprop-grad-b');
+    const dir=document.getElementById('cprop-grad-dir');
+    if(!a||!b||!dir) return;
+    const iframe=document.getElementById('clay-iframe');
+    if(iframe&&iframe.contentWindow) iframe.contentWindow.postMessage({
+      type:'applyGradient',colorA:a.value,colorB:b.value,dir:dir.value
+    },'*');
+  };
+
+    window.setSelectedColor=function(hex){
     const iframe=document.getElementById('clay-iframe');
     if(iframe&&iframe.contentWindow) iframe.contentWindow.postMessage({type:'setColor',color:hex},'*');
+    updateGradientPreview();
     const obj=scene.objects.find(o=>o.id===scene.selected);
     if(obj) obj.color=hex;
   };
