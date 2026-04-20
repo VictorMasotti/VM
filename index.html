@@ -233,7 +233,7 @@
     <div class="dock-icon" id="dock-notes-app" onclick="openNotepad();dockBounce(this)" style="background:none;padding:0;border-radius:12px"><img src="nota.png" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:12px;display:block;"><div class="dock-dot"></div><div class="dock-label">Notes</div></div>
     <div class="dock-icon" id="dock-fashion" onclick="openFashion();dockBounce(this)" style="background:none;padding:0;border-radius:12px;"><img src="fash.png" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:12px;display:block;pointer-events:none;"><div class="dock-dot"></div><div class="dock-label">Fashion Lookbook</div></div>
     <div class="dock-icon" id="dock-video" onclick="openVideo();dockBounce(this)" style="background:none;padding:0;border-radius:12px;"><img src="vidyo.png" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:12px;display:block;pointer-events:none;"><div class="dock-dot"></div><div class="dock-label">Video Player</div></div>
-    <div class="dock-icon" onclick="dockBounce(this)" style="background:linear-gradient(145deg,#6c63ff,#a78bfa);">🪐<div class="dock-label">Orbit</div></div>
+    <div class="dock-icon" id="dock-nom" onclick="openNom();dockBounce(this)" style="background:none;padding:0;border-radius:12px;"><img src="nom.png" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:12px;display:block;pointer-events:none;"><div class="dock-dot"></div><div class="dock-label">Globe Around yeaaahhh!</div></div>
     <div class="dock-icon" id="dock-clay" onclick="openClay();dockBounce(this)" style="background:none;padding:0;border-radius:12px;"><img src="clay.png" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:12px;display:block;pointer-events:none;"><div class="dock-dot"></div><div class="dock-label">Clayround</div></div>
     <div class="dock-icon" onclick="dockBounce(this)" style="background:linear-gradient(145deg,#ff3cac,#784ba0);">🎵<div class="dock-label">Echo</div></div>
     <div class="dock-icon" onclick="dockBounce(this)" style="background:linear-gradient(145deg,#f7971e,#ffd200);">⚡<div class="dock-label">Bolt</div></div>
@@ -4405,6 +4405,786 @@ function maximiseMusic(){
     },10000);
   })();
 </script>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     NOM / ORBIT SPHERE APP — self-contained block
+     Glossy WebGL globe. Buttons & text separately anchored in 3D
+     so they curve along the sphere surface as it spins.
+═══════════════════════════════════════════════════════════════ -->
+<style>
+#nom-window{position:fixed;left:50%;top:50%;width:600px;height:600px;max-width:92vw;max-height:92vh;aspect-ratio:1/1;z-index:500;pointer-events:none;opacity:0;transform:translate(-50%,-50%) scale(0.4);filter:blur(8px);transition:opacity 0.45s cubic-bezier(0.4,0,0.2,1),transform 0.55s cubic-bezier(0.34,1.28,0.64,1),filter 0.45s ease,width 0.35s cubic-bezier(0.4,0,0.2,1),height 0.35s cubic-bezier(0.4,0,0.2,1);user-select:none;background:transparent;perspective:1200px;perspective-origin:50% 50%;}
+#nom-window.open{opacity:1;pointer-events:all;transform:translate(-50%,-50%) scale(1);filter:blur(0);}
+#nom-window.maximised{width:min(92vh,92vw)!important;height:min(92vh,92vw)!important;}
+#nom-window.minimising{opacity:0!important;transform:translate(var(--nom-tx),var(--nom-ty)) scale(0.04)!important;filter:blur(4px)!important;transition:opacity 0.35s ease,transform 0.42s cubic-bezier(0.4,0,0.6,1),filter 0.35s ease!important;}
+
+#nom-canvas{position:absolute;inset:0;width:100%;height:100%;cursor:grab;display:block;touch-action:none;}
+#nom-canvas.dragging{cursor:grabbing;}
+
+/* soft natural daylight highlights — kept subtle since grass is matte */
+#nom-glare-main{position:absolute;top:6%;left:14%;width:44%;height:36%;border-radius:50%;background:radial-gradient(ellipse at 38% 38%,rgba(255,255,240,0.40) 0%,rgba(240,250,220,0.18) 35%,transparent 70%);filter:blur(5px);pointer-events:none;z-index:25;mix-blend-mode:screen;}
+#nom-glare-hot{position:absolute;top:11%;left:23%;width:10%;height:8%;border-radius:50%;background:radial-gradient(ellipse at center,rgba(255,255,240,0.55) 0%,rgba(255,255,220,0.22) 45%,transparent 80%);filter:blur(2px);pointer-events:none;z-index:26;mix-blend-mode:screen;}
+#nom-glare-sec{position:absolute;top:66%;left:56%;width:16%;height:10%;border-radius:50%;background:radial-gradient(ellipse at center,rgba(200,230,170,0.22) 0%,transparent 72%);filter:blur(4px);pointer-events:none;z-index:25;mix-blend-mode:screen;}
+#nom-glare-rim{position:absolute;inset:5%;border-radius:50%;pointer-events:none;background:radial-gradient(circle at 84% 48%,transparent 58%,rgba(200,230,170,0.22) 74%,transparent 88%);mix-blend-mode:screen;z-index:24;}
+#nom-glare-bottom{position:absolute;bottom:11%;left:36%;width:28%;height:9%;border-radius:50%;background:radial-gradient(ellipse at center,rgba(60,90,40,0.25) 0%,transparent 72%);filter:blur(4px);pointer-events:none;z-index:24;mix-blend-mode:screen;}
+
+/* ─── TITLEBAR PILL — one long grey pill holding all 3 dots ───
+   Stuck to one 3D anchor on the sphere. When the globe spins, this whole
+   pill rotates with the sphere's surface (slides + tilts + fades behind). */
+#nom-titlebar{position:absolute;left:0;top:0;height:26px;display:flex;align-items:center;gap:8px;padding:0 10px;background:linear-gradient(180deg,#f0ede8 0%,#e6e2dc 100%);border:1px solid rgba(0,0,0,0.10);border-radius:6px;box-shadow:0 4px 14px rgba(0,0,0,0.30),inset 0 1px 0 rgba(255,255,255,0.7);z-index:40;pointer-events:all;will-change:transform,opacity;transform-origin:center;}
+body.dark-mode #nom-titlebar{background:linear-gradient(180deg,#3c3c3e,#2c2c2e);border-color:rgba(0,0,0,0.4);box-shadow:0 4px 14px rgba(0,0,0,0.55),inset 0 1px 0 rgba(255,255,255,0.08);}
+
+/* the 3 dots inside the pill — standard .pw-dot styling */
+.nom-dot{width:12px;height:12px;border-radius:50%;flex-shrink:0;cursor:pointer;box-shadow:inset 0 1px 0 rgba(255,255,255,0.3),0 1px 2px rgba(0,0,0,0.4);transition:filter 0.1s,transform 0.1s;}
+.nom-dot:hover{filter:brightness(1.25);transform:scale(1.1);}
+.nom-dot:active{filter:brightness(0.8);transform:scale(0.9);}
+.nom-dot.close{background:radial-gradient(circle at 35% 30%,#ff8a80,#dd1e3a);}
+.nom-dot.min{background:radial-gradient(circle at 35% 30%,#ffdd7a,#dda500);}
+.nom-dot.max{background:radial-gradient(circle at 35% 30%,#7aff8a,#1eb830);}
+
+/* ─── TEXT CHARS — black letters with solid white outline so they pop ─── */
+.nom-char{position:absolute;left:0;top:0;font-family:-apple-system,'Helvetica Neue',sans-serif;font-size:17px;font-weight:900;letter-spacing:0;color:#000000;text-shadow:-1.5px -1.5px 0 #fff,1.5px -1.5px 0 #fff,-1.5px 1.5px 0 #fff,1.5px 1.5px 0 #fff,-2px 0 0 #fff,2px 0 0 #fff,0 -2px 0 #fff,0 2px 0 #fff,0 0 6px rgba(255,255,255,0.9);line-height:1;white-space:pre;z-index:30;pointer-events:none;will-change:transform,opacity;transform-origin:center;-webkit-text-stroke:0.3px #000;}
+
+#nom-hint{position:absolute;bottom:22px;left:50%;transform:translateX(-50%);font-size:10px;letter-spacing:0.18em;color:rgba(255,255,255,0.55);text-shadow:0 1px 4px rgba(0,0,0,0.6);pointer-events:none;text-transform:uppercase;font-weight:600;opacity:0;transition:opacity 0.5s ease;z-index:30;}
+
+/* curved zoom slider sitting along the bottom of the globe */
+#nom-zoom-wrap{position:absolute;left:50%;bottom:10%;transform:translateX(-50%);width:72%;height:60px;pointer-events:none;z-index:38;}
+#nom-zoom-svg{width:100%;height:100%;overflow:visible;pointer-events:none;}
+#nom-zoom-track{fill:none;stroke:rgba(255,255,255,0.35);stroke-width:6;stroke-linecap:round;filter:drop-shadow(0 2px 3px rgba(0,0,0,0.4));}
+#nom-zoom-fill{fill:none;stroke:rgba(255,255,255,0.85);stroke-width:6;stroke-linecap:round;}
+#nom-zoom-knob{fill:#fff;stroke:rgba(0,0,0,0.25);stroke-width:1;filter:drop-shadow(0 2px 4px rgba(0,0,0,0.5));cursor:grab;pointer-events:all;}
+#nom-zoom-knob:active{cursor:grabbing;}
+#nom-zoom-hit{fill:transparent;pointer-events:all;cursor:pointer;}
+#nom-hint.show{opacity:1;}
+</style>
+
+<div id="nom-window">
+  <canvas id="nom-canvas"></canvas>
+  <div id="nom-glare-rim"></div>
+  <div id="nom-glare-bottom"></div>
+  <div id="nom-glare-sec"></div>
+  <div id="nom-glare-main"></div>
+  <div id="nom-glare-hot"></div>
+
+  <!-- single grey pill holding 3 dots — 3D-anchored and tilted each frame -->
+  <div id="nom-titlebar">
+    <div class="nom-dot close" onclick="closeNom(event)" title="Close"></div>
+    <div class="nom-dot min"   onclick="minimiseNom(event)" title="Minimise"></div>
+    <div class="nom-dot max"   onclick="maximiseNom(event)" title="Maximise"></div>
+  </div>
+
+  <!-- text characters spawned by JS into this host -->
+  <div id="nom-chars-host"></div>
+
+  <div id="nom-hint">drag sphere to spin</div>
+
+  <!-- curved zoom slider along bottom of globe -->
+  <div id="nom-zoom-wrap">
+    <svg id="nom-zoom-svg" viewBox="0 0 400 60" preserveAspectRatio="none">
+      <!-- a bow/smile curve: quadratic from (20,10) to (380,10) sagging to y=50 in middle -->
+      <path id="nom-zoom-track" d="M 20 10 Q 200 70 380 10" />
+      <path id="nom-zoom-fill"  d="M 20 10 Q 200 70 380 10" stroke-dasharray="1000" stroke-dashoffset="500" pathLength="1000" />
+      <path id="nom-zoom-hit"   d="M 20 10 Q 200 70 380 10" stroke="transparent" stroke-width="30" fill="none" />
+      <circle id="nom-zoom-knob" cx="200" cy="40" r="9" />
+    </svg>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+(function(){
+  let nomOpen=false, nomMax=false, nomMinned=false;
+  let editing=false;
+  let scene, camera, renderer, globeGroup, animId;
+  let rotX = 0.2, rotY = 0.4;
+  let targetX = 0.2, targetY = 0.4;
+  let dragging = false, lastX=0, lastY=0;
+  let zoomT = 0.5;         // slider position 0..1 (middle = default size)
+  let targetScale = 1.0;   // globeGroup scale target
+  let currentScale = 1.0;
+
+  const SPHERE_R = 1.5;
+  const ANCHOR_R = 1.55;
+
+  // 3D anchors
+  let   titleAnchor   = null;   // single anchor for the whole titlebar pill
+  let   charAnchors   = [];     // one per text character
+  let   currentText   = 'Yeah im working on something just give it another refresh pull';
+
+  const $ = id => document.getElementById(id);
+  const win = () => $('nom-window');
+  const canvas = () => $('nom-canvas');
+  const hint = () => $('nom-hint');
+
+  function initScene(){
+    if(scene) return;
+    const c = canvas();
+    const w = c.clientWidth || 600, h = c.clientHeight || 600;
+
+    scene  = new THREE.Scene();
+    camera = new THREE.PerspectiveCamera(38, w/h, 0.1, 100);
+    camera.position.z = 5.2;
+
+    renderer = new THREE.WebGLRenderer({canvas: c, antialias: true, alpha: true});
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.setSize(w, h, false);
+    renderer.setClearColor(0x000000, 0);
+
+    globeGroup = new THREE.Group();
+    scene.add(globeGroup);
+
+    // ─── GRASSY GREEN SPHERE ──
+    // Base surface: camouflage-style green texture with random darker/lighter
+    // patches. Then we'll stud the surface with thousands of short grass
+    // blades that spike outward from the core (children of the sphere so
+    // they rotate with it).
+
+    const texCanvas = document.createElement('canvas');
+    texCanvas.width = 1024; texCanvas.height = 512;
+    const tx = texCanvas.getContext('2d');
+    // brighter mossy base — not so dark
+    tx.fillStyle = '#5a8a3a';
+    tx.fillRect(0, 0, 1024, 512);
+    // wider range of greens — lean toward bright/vibrant, no near-blacks
+    const camoGreens = [
+      '#3d6a1f', '#4a7a28', '#5a8a3a', '#68a038',
+      '#78b840', '#88c848', '#98d458', '#a8e068',
+      '#5e9030', '#708c2a', '#809e30', '#92b038',
+      '#6ba8c2', // occasional pond-blue flash for variation
+      '#caa030'  // very rare earthy tan for depth
+    ];
+
+    // ─── BIG SPLATTER SHAPES (not circles) ──
+    // Each splatter is an irregular polygon with jittered radii around its
+    // centre — gives a wet "ink splash" silhouette instead of a disc.
+    function drawSplatter(cx, cy, avgR, fillStyle){
+      const spikes = 14 + ((Math.random() * 16) | 0);  // 14-30 vertices
+      tx.beginPath();
+      for(let k = 0; k <= spikes; k++){
+        const ang = (k / spikes) * Math.PI * 2;
+        // radius jitters hard — creates jagged organic outline
+        const rJit = avgR * (0.55 + Math.random() * 0.9);
+        const px = cx + Math.cos(ang) * rJit;
+        const py = cy + Math.sin(ang) * rJit;
+        if(k === 0) tx.moveTo(px, py);
+        else tx.lineTo(px, py);
+      }
+      tx.closePath();
+      tx.fillStyle = fillStyle;
+      tx.fill();
+    }
+
+    // BIG splatters — much larger than before, irregular
+    for(let i = 0; i < 28; i++){
+      const cx = Math.random() * 1024;
+      const cy = Math.random() * 512;
+      const avgR = 90 + Math.random() * 180;          // up to 270px radius!
+      const col = camoGreens[(Math.random() * camoGreens.length) | 0];
+      // slight blur via alpha-layered shape for soft organic edges
+      tx.globalAlpha = 0.85;
+      drawSplatter(cx, cy, avgR, col);
+      tx.globalAlpha = 1;
+      // satellite splats around it — asymmetrical clusters
+      const sats = 3 + ((Math.random() * 5) | 0);
+      for(let s = 0; s < sats; s++){
+        const ang = Math.random() * Math.PI * 2;
+        const dist = avgR * (0.6 + Math.random() * 1.1);
+        const sx = cx + Math.cos(ang) * dist;
+        const sy = cy + Math.sin(ang) * dist;
+        const sr = avgR * (0.18 + Math.random() * 0.45);
+        tx.globalAlpha = 0.8;
+        drawSplatter(sx, sy, sr, col);
+        tx.globalAlpha = 1;
+      }
+    }
+
+    // medium splatters for variation
+    for(let i = 0; i < 45; i++){
+      const cx = Math.random() * 1024;
+      const cy = Math.random() * 512;
+      const avgR = 30 + Math.random() * 70;
+      const col = camoGreens[(Math.random() * camoGreens.length) | 0];
+      tx.globalAlpha = 0.75;
+      drawSplatter(cx, cy, avgR, col);
+      tx.globalAlpha = 1;
+    }
+
+    // tiny splatters for fine detail
+    for(let i = 0; i < 120; i++){
+      const cx = Math.random() * 1024;
+      const cy = Math.random() * 512;
+      const avgR = 6 + Math.random() * 16;
+      const col = camoGreens[(Math.random() * camoGreens.length) | 0];
+      tx.globalAlpha = 0.7;
+      drawSplatter(cx, cy, avgR, col);
+      tx.globalAlpha = 1;
+    }
+
+    // fine speckle for grain
+    for(let i = 0; i < 2200; i++){
+      const x = Math.random() * 1024;
+      const y = Math.random() * 512;
+      tx.fillStyle = Math.random() > 0.5 ? 'rgba(40,60,24,0.25)' : 'rgba(190,220,150,0.30)';
+      tx.beginPath();
+      tx.arc(x, y, 0.8 + Math.random() * 2.2, 0, Math.PI * 2);
+      tx.fill();
+    }
+
+    const grassTex = new THREE.CanvasTexture(texCanvas);
+    grassTex.wrapS = THREE.RepeatWrapping;
+    grassTex.wrapT = THREE.ClampToEdgeWrapping;
+
+    const sphereMat = new THREE.MeshStandardMaterial({
+      map: grassTex,
+      metalness: 0.0,
+      roughness: 0.9,
+      color: 0xffffff
+    });
+    const sphereMesh = new THREE.Mesh(new THREE.SphereGeometry(SPHERE_R, 128, 128), sphereMat);
+    globeGroup.add(sphereMesh);
+
+    // ─── GRASS BLADES — fine, dense brush strokes in green zones ──
+    // Performance plan: 12k blades is ~2.3x more than before, but each blade
+    // is 4-sided and open-ended (no top/bottom caps) — so triangle count per
+    // blade drops from ~18 to ~8. Net GPU cost stays similar while visual
+    // density more than doubles. InstancedMesh keeps it one draw call.
+    const BLADE_COUNT = 12000;
+    // Thinner radii (0.014 → 0.020) than before, but kept safely above the
+    // sub-pixel render threshold so blades still show colour, not muddy black.
+    const bladeGeo = new THREE.CylinderGeometry(0.014, 0.020, 1, 4, 1, true);
+    bladeGeo.translate(0, 0.5, 0);
+    const bladeMat = new THREE.MeshLambertMaterial({
+      color: 0xffffff,
+      emissive: 0x0a1805,
+      side: THREE.DoubleSide  // open cylinder needs double-sided to stay visible
+    });
+    const blades = new THREE.InstancedMesh(bladeGeo, bladeMat, BLADE_COUNT);
+    blades.instanceMatrix.setUsage(THREE.StaticDrawUsage);
+
+    // ─── BIOME ZONES — palette + height band together ──
+    // Each biome describes BOTH a green palette AND a height range. Blades
+    // assigned to a forest zone will be tall and dark-green; meadow blades
+    // short and bright; taiga medium and cool-sage. Heights cluster per
+    // region instead of being random everywhere → you see recognisable
+    // "forest" areas vs "grassland" areas on the sphere.
+    const biomes = [
+      // [palette, minH, maxH, minW, maxW]
+      { pal: [0x2c6010, 0x3a7818, 0x4a8a28],            h:[0.11, 0.18], w:[0.8, 1.2] },  // deep forest — tallest, dark
+      { pal: [0x3c9018, 0x4ea820, 0x5ec030],            h:[0.09, 0.15], w:[0.85,1.15]},  // pine forest — tall
+      { pal: [0x5ea050, 0x6cb058, 0x4a8a40, 0x7cc068],  h:[0.07, 0.12], w:[0.9, 1.2] },  // taiga — medium, sage-cool
+      { pal: [0x6ed824, 0x82e830, 0x58c418, 0x72d028],  h:[0.06, 0.10], w:[0.85,1.15]},  // vibrant spring meadow
+      { pal: [0x98e048, 0xa8f058, 0x88d038, 0xb0e858],  h:[0.04, 0.08], w:[0.9, 1.2] },  // bright grassland — short
+      { pal: [0xc0e860, 0xd0f070, 0xb0d850, 0xd8f878],  h:[0.03, 0.06], w:[0.95,1.25]},  // sun-bleached plain — shortest
+      { pal: [0x7bc42a, 0x8cd838, 0x68b820, 0x9ad840],  h:[0.08, 0.13], w:[0.85,1.15]},  // rolling meadow — medium
+      { pal: [0x5cc844, 0x6cd854, 0x4cb830, 0x7ce860],  h:[0.09, 0.14], w:[0.9, 1.2] }   // lush new growth — tall-ish
+    ];
+    const NUM_ZONES = 22;
+    const zones = [];
+    for(let z = 0; z < NUM_ZONES; z++){
+      const uu = Math.random(), vv = Math.random();
+      const zt = 2 * Math.PI * uu;
+      const zp = Math.acos(2 * vv - 1);
+      zones.push({
+        centre: new THREE.Vector3(Math.sin(zp)*Math.cos(zt), Math.cos(zp), Math.sin(zp)*Math.sin(zt)),
+        biome: biomes[z % biomes.length]
+      });
+    }
+
+    const dummy = new THREE.Object3D();
+    const col = new THREE.Color();
+    const bladeDir = new THREE.Vector3();
+
+    for(let i = 0; i < BLADE_COUNT; i++){
+      const u = Math.random(), v = Math.random();
+      const theta = 2 * Math.PI * u;
+      const phi   = Math.acos(2 * v - 1);
+      const x = Math.sin(phi) * Math.cos(theta);
+      const y = Math.cos(phi);
+      const z = Math.sin(phi) * Math.sin(theta);
+      bladeDir.set(x, y, z);
+      const pos = bladeDir.clone().multiplyScalar(SPHERE_R);
+
+      // find closest biome zone
+      let bestBiome = zones[0].biome, bestDot = -2;
+      for(let zi = 0; zi < zones.length; zi++){
+        const d = bladeDir.dot(zones[zi].centre);
+        if(d > bestDot){ bestDot = d; bestBiome = zones[zi].biome; }
+      }
+      // height + width come from the biome, with some per-blade jitter
+      const height = bestBiome.h[0] + Math.random() * (bestBiome.h[1] - bestBiome.h[0]);
+      const width  = bestBiome.w[0] + Math.random() * (bestBiome.w[1] - bestBiome.w[0]);
+
+      dummy.position.copy(pos);
+      dummy.lookAt(pos.clone().multiplyScalar(2));
+      dummy.rotateX(Math.PI / 2);
+      dummy.rotateX((Math.random() - 0.5) * 0.5);
+      dummy.rotateZ((Math.random() - 0.5) * 0.5);
+      dummy.scale.set(width, height, width);
+      dummy.updateMatrix();
+      blades.setMatrixAt(i, dummy.matrix);
+
+      // colour from biome palette
+      const pal = bestBiome.pal;
+      col.setHex(pal[(Math.random() * pal.length) | 0]);
+      blades.setColorAt(i, col);
+    }
+    blades.instanceMatrix.needsUpdate = true;
+    if(blades.instanceColor) blades.instanceColor.needsUpdate = true;
+    sphereMesh.add(blades);
+
+    // ─── RANDOM TREES — scattered landmarks across the sphere ──
+    // Each tree is a brown trunk cylinder + a conical green canopy. Trees
+    // are children of the sphere so they rotate with it.
+    const TREE_COUNT = 22;
+    const trunkMat = new THREE.MeshLambertMaterial({ color: 0x5a3a1e, emissive: 0x1a0f06 });
+    const canopyPalette = [
+      0x2e6818, 0x3a7a1a, 0x4a8a28, 0x2a5a14,
+      0x3c7020, 0x52982a, 0x68b030, 0x2e5a14
+    ];
+
+    const treeDir = new THREE.Vector3();
+    const treeUp  = new THREE.Vector3();
+    const treeQuat = new THREE.Quaternion();
+    const upY = new THREE.Vector3(0, 1, 0);
+
+    for(let t = 0; t < TREE_COUNT; t++){
+      // random point on sphere
+      const u = Math.random(), v = Math.random();
+      const theta = 2 * Math.PI * u;
+      const phi   = Math.acos(2 * v - 1);
+      treeDir.set(
+        Math.sin(phi) * Math.cos(theta),
+        Math.cos(phi),
+        Math.sin(phi) * Math.sin(theta)
+      );
+
+      // per-tree size variety — small & chunky so trees read as trees,
+      // not as long thin spikes poking out of the sphere
+      const trunkHeight = 0.06 + Math.random() * 0.06;   // 0.06..0.12 (was 0.12..0.24)
+      const trunkRadius = 0.022 + Math.random() * 0.015; // thicker trunk (was ~0.018..0.030)
+      const canopyRadius = 0.09 + Math.random() * 0.06;  // 0.09..0.15 — wider base
+      const canopyHeight = 0.10 + Math.random() * 0.10;  // 0.10..0.20 (was 0.18..0.32)
+
+      // orient so the tree's +Y axis points outward along the surface normal
+      treeQuat.setFromUnitVectors(upY, treeDir);
+
+      // build a small group for this tree — trunk + canopy as one unit
+      const treeGroup = new THREE.Group();
+
+      // trunk — base at 0, top at trunkHeight (along local +Y)
+      const trunkGeo = new THREE.CylinderGeometry(trunkRadius * 0.8, trunkRadius, trunkHeight, 5, 1);
+      const trunk = new THREE.Mesh(trunkGeo, trunkMat);
+      trunk.position.y = trunkHeight / 2;
+      treeGroup.add(trunk);
+
+      // canopy — cone sitting on top of trunk
+      const canopyMat = new THREE.MeshLambertMaterial({
+        color: canopyPalette[(Math.random() * canopyPalette.length) | 0],
+        emissive: 0x0a1805
+      });
+      const canopyGeo = new THREE.ConeGeometry(canopyRadius, canopyHeight, 7, 1);
+      const canopy = new THREE.Mesh(canopyGeo, canopyMat);
+      canopy.position.y = trunkHeight + canopyHeight / 2;
+      treeGroup.add(canopy);
+
+      // place + orient the whole tree on the sphere surface
+      treeGroup.position.copy(treeDir.clone().multiplyScalar(SPHERE_R));
+      treeGroup.quaternion.copy(treeQuat);
+
+      sphereMesh.add(treeGroup);
+    }
+
+    // wireframe lat/long — very faint, almost invisible (grass does the work now)
+    const lineMat       = new THREE.LineBasicMaterial({color:0xa8d868, transparent:true, opacity:0.08});
+    const lineMatBright = new THREE.LineBasicMaterial({color:0xc8e880, transparent:true, opacity:0.15});
+    const LAT_COUNT = 9;
+    for(let i = 1; i < LAT_COUNT; i++){
+      const lat = (i / LAT_COUNT) * Math.PI - Math.PI/2;
+      const y = Math.sin(lat) * SPHERE_R, r = Math.cos(lat) * SPHERE_R;
+      const pts = []; const SEG = 96;
+      for(let j = 0; j <= SEG; j++){ const a = (j/SEG)*Math.PI*2; pts.push(new THREE.Vector3(Math.cos(a)*r, y, Math.sin(a)*r)); }
+      const isEq = (i === Math.floor(LAT_COUNT/2));
+      globeGroup.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts), isEq ? lineMatBright : lineMat));
+    }
+    const LONG_COUNT = 12;
+    for(let k = 0; k < LONG_COUNT; k++){
+      const ang = (k / LONG_COUNT) * Math.PI * 2;
+      const pts = []; const SEG = 64;
+      for(let j = 0; j <= SEG; j++){
+        const t = (j / SEG) * Math.PI - Math.PI/2;
+        const y = Math.sin(t) * SPHERE_R, r = Math.cos(t) * SPHERE_R;
+        pts.push(new THREE.Vector3(Math.cos(ang)*r, y, Math.sin(ang)*r));
+      }
+      globeGroup.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts), lineMat));
+    }
+
+    // subtle outdoor green-tinted outer glow
+    globeGroup.add(new THREE.Mesh(new THREE.SphereGeometry(1.66, 48, 48), new THREE.MeshBasicMaterial({color:0x88c068, transparent:true, opacity:0.08, side:THREE.BackSide})));
+
+    // ─── TITLEBAR ANCHOR — single point on the sphere where the pill sits ─
+    const TITLE_LAT = THREE.MathUtils.degToRad(22);
+    titleAnchor = new THREE.Object3D();
+    titleAnchor.position.set(0, Math.sin(TITLE_LAT) * ANCHOR_R, Math.cos(TITLE_LAT) * ANCHOR_R);
+    globeGroup.add(titleAnchor);
+
+    // lighting — bright natural daylight for grass
+    scene.add(new THREE.AmbientLight(0xbcd8a8, 0.55));
+    const sun = new THREE.DirectionalLight(0xffffff, 1.6); sun.position.set(-4, 5, 5); scene.add(sun);
+    const rim = new THREE.DirectionalLight(0x88c068, 0.55); rim.position.set(3, -1, -3); scene.add(rim);
+
+    rebuildTextAnchors();
+    window.addEventListener('resize', onResize);
+    animate();
+  }
+
+  function onResize(){
+    if(!renderer) return;
+    const c = canvas();
+    const w = c.clientWidth, h = c.clientHeight;
+    if(w === 0 || h === 0) return;
+    camera.aspect = w/h;
+    camera.updateProjectionMatrix();
+    renderer.setSize(w, h, false);
+  }
+
+  // build per-character 3D anchors — below the buttons, curving across equator
+  function rebuildTextAnchors(){
+    if(!globeGroup) return;
+    charAnchors.forEach(a => { if(a.obj3d) globeGroup.remove(a.obj3d); if(a.el) a.el.remove(); });
+    charAnchors = [];
+    const host = $('nom-chars-host');
+    if(!host) return;
+
+    // one row only — no wrapping
+    const MAX_ROW = 200;
+    let rows = [currentText, ''];
+    if(currentText.length > MAX_ROW){
+      let cut = currentText.lastIndexOf(' ', MAX_ROW);
+      if(cut < MAX_ROW * 0.5) cut = MAX_ROW;
+      rows[0] = currentText.slice(0, cut).trimEnd();
+      rows[1] = currentText.slice(cut).trimStart();
+      if(rows[1].length > MAX_ROW) rows[1] = rows[1].slice(0, MAX_ROW-1) + '…';
+    }
+
+    const ARC_PER_CHAR = 2.1; // fits ~132° arc for 63 chars, breathing room
+    // single row on equator
+    const ROW_LAT_DEG = [0, 0];
+
+    rows.forEach((text, rowIdx) => {
+      if(!text) return;
+      const lat = THREE.MathUtils.degToRad(ROW_LAT_DEG[rowIdx]);
+      const y = Math.sin(lat) * ANCHOR_R;
+      const r = Math.cos(lat) * ANCHOR_R;
+      const n = text.length;
+      const totalArc = (n - 1) * ARC_PER_CHAR;
+      const startLng = -totalArc / 2;
+      for(let k = 0; k < n; k++){
+        const lng = THREE.MathUtils.degToRad(startLng + k * ARC_PER_CHAR);
+        const obj3d = new THREE.Object3D();
+        obj3d.position.set(Math.sin(lng)*r, y, Math.cos(lng)*r);
+        globeGroup.add(obj3d);
+        const el = document.createElement('span');
+        el.className = 'nom-char';
+        el.textContent = text[k];
+        host.appendChild(el);
+        charAnchors.push({obj3d, el});
+      }
+    });
+  }
+
+  // ─── project anchor → screen coords + facing ───
+  const _w = new THREE.Vector3(), _p = new THREE.Vector3();
+  function projectAnchor(anchor){
+    if(!anchor) return null;
+    anchor.getWorldPosition(_w);
+    _p.copy(_w).project(camera);
+    const c = canvas();
+    const cw = c.clientWidth, ch = c.clientHeight;
+    const px = ( _p.x * 0.5 + 0.5) * cw;
+    const py = (-_p.y * 0.5 + 0.5) * ch;
+    const anchorDir = _w.clone().normalize();
+    const toCam = camera.position.clone().sub(_w).normalize();
+    const facing = anchorDir.dot(toCam);
+    return { x: px, y: py, facing };
+  }
+
+  function placeAtAnchor(el, anchor, baseScale){
+    const p = projectAnchor(anchor);
+    if(!p){ el.style.opacity = 0; return; }
+    const vis = Math.max(0, Math.min(1, (p.facing + 0.08) / 0.45));
+    const depthScale = 0.70 + 0.30 * Math.max(0, p.facing);
+    const s = (baseScale || 1) * depthScale;
+    const w = el.offsetWidth, h = el.offsetHeight;
+    el.style.opacity = vis;
+    el.style.pointerEvents = vis < 0.4 ? 'none' : '';
+    el.style.transform = `translate(${p.x - w/2}px, ${p.y - h/2}px) scale(${s})`;
+  }
+
+  function updateOverlay(){
+    if(!globeGroup) return;
+
+    // ─── TITLEBAR PILL — projected + warped to sit curved on the surface ──
+    const bar = $('nom-titlebar');
+    if(bar && titleAnchor){
+      titleAnchor.getWorldPosition(_w);
+      _p.copy(_w).project(camera);
+      const c = canvas();
+      const cw = c.clientWidth, ch = c.clientHeight;
+      const px = ( _p.x * 0.5 + 0.5) * cw;
+      const py = (-_p.y * 0.5 + 0.5) * ch;
+
+      // surface normal in camera space → tilt angles + curve hints
+      const normWorld = _w.clone().normalize();
+      const camQuat = camera.quaternion.clone().invert();
+      const nCam = normWorld.clone().applyQuaternion(camQuat);
+      const facing = nCam.z;
+      const tiltY  = Math.atan2(nCam.x,  nCam.z); // yaw lean (left/right curvature)
+      const tiltX  = Math.atan2(-nCam.y, nCam.z); // pitch lean (top/bottom curvature)
+
+      const vis   = Math.max(0, Math.min(1, (facing + 0.05) / 0.45));
+      const scale = 0.85 + 0.15 * Math.max(0, facing);
+
+      // foreshortening: tilt's cosine squeezes the pill in the tilt direction,
+      // exactly like a flat label would compress if it were glued to a sphere.
+      // sx shrinks when tilted left/right, sy shrinks when tipped up/down.
+      const sx = Math.cos(tiltY);
+      const sy = Math.cos(tiltX);
+      // skew gives the pill an "off-axis" lean so corners diverge — that's the
+      // hallmark of a curved surface decal, not a flat tilted rect.
+      const skewX = (tiltY * 180 / Math.PI) * 0.22;
+      const skewY = (tiltX * 180 / Math.PI) * 0.22;
+
+      const bw = bar.offsetWidth, bh = bar.offsetHeight;
+      bar.style.opacity = vis;
+      bar.style.pointerEvents = vis < 0.35 ? 'none' : 'all';
+      // translate to screen, foreshorten via scale, then skew — no more CSS
+      // rotateX/Y because those just tilt the flat rect. Scale+skew together
+      // fakes the curve convincingly in 2D.
+      bar.style.transform =
+        `translate(${px - bw/2}px, ${py - bh/2}px) ` +
+        `scale(${scale * sx}, ${scale * sy}) ` +
+        `skew(${skewX}deg, ${skewY}deg)`;
+    }
+
+    // ─── TEXT CHARACTERS — each still on its own anchor (upright, no tilt) ──
+    for(let i = 0; i < charAnchors.length; i++){
+      placeAtAnchor(charAnchors[i].el, charAnchors[i].obj3d, 1);
+    }
+  }
+
+  function animate(){
+    animId = requestAnimationFrame(animate);
+    rotX += (targetX - rotX) * 0.14;
+    rotY += (targetY - rotY) * 0.14;
+    currentScale = targetScale;
+    if(globeGroup){
+      globeGroup.rotation.x = rotX; globeGroup.rotation.y = rotY;
+      // don't scale the 3D object — instead resize the window itself, so
+      // the globe fills a larger canvas without being clipped to a square
+      globeGroup.scale.setScalar(1);
+    }
+    // resize window based on targetScale, clamped by top menubar + bottom dock
+    const w = win();
+    if(w && !nomMinned && !w.classList.contains('maximised')){
+      const MENUBAR_H = 26, DOCK_H = 78, MARGIN = 10;
+      const maxH = window.innerHeight - MENUBAR_H - DOCK_H - MARGIN * 2;
+      const maxW = window.innerWidth - MARGIN * 2;
+      const cap = Math.min(maxH, maxW);
+      // base size 600px at scale 1.0, clamped to cap
+      const desired = Math.min(600 * currentScale, cap);
+      // also enforce a sensible minimum
+      const size = Math.max(260, desired);
+      w.style.width  = size + 'px';
+      w.style.height = size + 'px';
+    }
+    if(renderer) onResize();
+    if(renderer) renderer.render(scene, camera);
+    updateOverlay();
+  }
+
+  // ─── window controls ──
+  window.openNom = function(){
+    if(nomOpen && !nomMinned) return;
+    const w = win();
+    if(nomMinned){
+      nomMinned = false;
+      w.classList.remove('minimising');
+      w.style.cssText = '';
+      requestAnimationFrame(()=>requestAnimationFrame(()=>w.classList.add('open')));
+      requestAnimationFrame(onResize);
+      return;
+    }
+    nomOpen = true;
+    requestAnimationFrame(()=>requestAnimationFrame(()=>{
+      w.classList.add('open');
+      setTimeout(()=>{ initScene(); onResize(); }, 60);
+    }));
+    targetX = 0.2; targetY = 0.4; rotX = 0.2; rotY = 0.4;
+    setTimeout(()=>{ const h=hint(); if(h) h.classList.add('show'); }, 600);
+    setTimeout(()=>{ const h=hint(); if(h) h.classList.remove('show'); }, 4500);
+  };
+
+  window.closeNom = function(e){
+    if(e){ e.stopPropagation(); e.preventDefault(); }
+    if(!nomOpen) return;
+    const w = win();
+    const icon = $('dock-nom');
+    if(icon){
+      const ir = icon.getBoundingClientRect(), wr = w.getBoundingClientRect();
+      w.style.setProperty('--nom-tx', (ir.left + ir.width/2 - wr.left - wr.width/2) + 'px');
+      w.style.setProperty('--nom-ty', (ir.top + ir.height/2 - wr.top - wr.height/2) + 'px');
+    }
+    w.classList.remove('open','maximised');
+    w.classList.add('minimising');
+    setTimeout(()=>{
+      w.classList.remove('minimising');
+      w.style.cssText = '';
+      nomOpen = false; nomMax = false; nomMinned = false;
+    }, 440);
+  };
+
+  window.minimiseNom = function(e){
+    if(e){ e.stopPropagation(); e.preventDefault(); }
+    if(!nomOpen) return;
+    const w = win();
+    if(nomMinned){
+      nomMinned = false;
+      w.classList.remove('minimising');
+      w.style.cssText = '';
+      requestAnimationFrame(()=>requestAnimationFrame(()=>w.classList.add('open')));
+      requestAnimationFrame(onResize);
+      return;
+    }
+    const icon = $('dock-nom');
+    if(icon){
+      const ir = icon.getBoundingClientRect(), wr = w.getBoundingClientRect();
+      w.style.setProperty('--nom-tx', (ir.left + ir.width/2 - wr.left - wr.width/2) + 'px');
+      w.style.setProperty('--nom-ty', (ir.top + ir.height/2 - wr.top - wr.height/2) + 'px');
+    }
+    w.classList.remove('open');
+    w.classList.add('minimising');
+    nomMinned = true;
+  };
+
+  window.maximiseNom = function(e){
+    if(e){ e.stopPropagation(); e.preventDefault(); }
+    if(!nomOpen) return;
+    const w = win();
+    nomMax = !nomMax;
+    if(nomMax) w.classList.add('maximised');
+    else w.classList.remove('maximised');
+    setTimeout(onResize, 380);
+  };
+
+  // drag-to-spin on the canvas
+  (function(){
+    const c = canvas();
+    if(!c) return;
+    function down(ex, ey){
+      if(editing) return false;
+      dragging = true;
+      lastX = ex; lastY = ey;
+      c.classList.add('dragging');
+      return true;
+    }
+    function move(ex, ey){
+      if(!dragging) return;
+      const dx = ex - lastX, dy = ey - lastY;
+      lastX = ex; lastY = ey;
+      targetY += dx * 0.009;
+      targetX += dy * 0.009;
+      // no clamp — free 360° spin on both axes
+    }
+    function up(){
+      if(!dragging) return;
+      dragging = false;
+      c.classList.remove('dragging');
+    }
+    c.addEventListener('mousedown', e => { if(down(e.clientX, e.clientY)) e.preventDefault(); });
+    window.addEventListener('mousemove', e => move(e.clientX, e.clientY));
+    window.addEventListener('mouseup', up);
+    c.addEventListener('touchstart', e => { const t = e.touches[0]; if(down(t.clientX, t.clientY)) e.preventDefault(); }, {passive:false});
+    window.addEventListener('touchmove', e => { const t = e.touches[0]; if(t) move(t.clientX, t.clientY); }, {passive:true});
+    window.addEventListener('touchend', up);
+    window.addEventListener('touchcancel', up);
+  })();
+
+  // ─── ZOOM SLIDER ──
+  // curved bow at the bottom of the sphere; drag the knob or click along
+  // the bow to set zoom. Slider t ∈ [0,1] maps to scale [0.55, 1.6].
+  (function(){
+    const svg  = $('nom-zoom-svg');
+    const knob = $('nom-zoom-knob');
+    const hit  = $('nom-zoom-hit');
+    const fill = $('nom-zoom-fill');
+    if(!svg || !knob) return;
+
+    // quadratic bezier evaluator matching path M 20 10 Q 200 70 380 10
+    // classic bezier: P(t) = (1-t)^2 P0 + 2(1-t)t P1 + t^2 P2
+    function pointAt(t){
+      const u = 1 - t;
+      const x = u*u*20 + 2*u*t*200 + t*t*380;
+      const y = u*u*10 + 2*u*t*70  + t*t*10;
+      return { x, y };
+    }
+
+    function setKnob(t){
+      t = Math.max(0, Math.min(1, t));
+      zoomT = t;
+      const p = pointAt(t);
+      knob.setAttribute('cx', p.x);
+      knob.setAttribute('cy', p.y);
+      // fill dashoffset — 1000 is full path length; reveal portion up to t
+      if(fill) fill.setAttribute('stroke-dashoffset', String(1000 - t * 1000));
+      // scale mapping: left end 0.55, right end 1.6, default mid ~1.0
+      targetScale = 0.55 + t * (1.6 - 0.55);
+    }
+    setKnob(0.5);
+
+    // convert a mouse/touch x in viewport to the nearest t on the curve.
+    // approximate by sampling the curve in viewBox space; the SVG
+    // preserveAspectRatio=none means x maps linearly to viewBox x.
+    function screenToT(clientX, clientY){
+      const rect = svg.getBoundingClientRect();
+      const vx = ( (clientX - rect.left) / rect.width ) * 400;
+      const vy = ( (clientY - rect.top)  / rect.height) * 60;
+      // find nearest t by scanning
+      let bestT = 0, bestD = Infinity;
+      for(let i = 0; i <= 60; i++){
+        const t = i / 60;
+        const p = pointAt(t);
+        const d = (p.x - vx)**2 + (p.y - vy)**2;
+        if(d < bestD){ bestD = d; bestT = t; }
+      }
+      return bestT;
+    }
+
+    let dragging = false;
+    function start(e){
+      dragging = true;
+      const t = (e.touches ? e.touches[0] : e);
+      setKnob(screenToT(t.clientX, t.clientY));
+      e.preventDefault(); e.stopPropagation();
+    }
+    function move(e){
+      if(!dragging) return;
+      const t = (e.touches ? e.touches[0] : e);
+      setKnob(screenToT(t.clientX, t.clientY));
+    }
+    function end(){ dragging = false; }
+
+    knob.addEventListener('mousedown', start);
+    hit.addEventListener('mousedown', start);
+    window.addEventListener('mousemove', move);
+    window.addEventListener('mouseup', end);
+    knob.addEventListener('touchstart', start, {passive:false});
+    hit.addEventListener('touchstart', start, {passive:false});
+    window.addEventListener('touchmove', move, {passive:false});
+    window.addEventListener('touchend', end);
+  })();
+
+})();
+</script>
+<!-- ═══════════════════ END NOM / ORBIT SPHERE APP ═══════════════════ -->
 
 </body>
 </html>
