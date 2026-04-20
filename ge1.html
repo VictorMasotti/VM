@@ -4975,12 +4975,28 @@ body.dark-mode #nom-titlebar{background:linear-gradient(180deg,#3c3c3e,#2c2c2e);
     animId = requestAnimationFrame(animate);
     rotX += (targetX - rotX) * 0.14;
     rotY += (targetY - rotY) * 0.14;
-    currentScale += (targetScale - currentScale) * 0.15;
+    currentScale = targetScale;
     if(globeGroup){
-      globeGroup.rotation.x = rotX;
-      globeGroup.rotation.y = rotY;
-      globeGroup.scale.setScalar(currentScale);
+      globeGroup.rotation.x = rotX; globeGroup.rotation.y = rotY;
+      // don't scale the 3D object — instead resize the window itself, so
+      // the globe fills a larger canvas without being clipped to a square
+      globeGroup.scale.setScalar(1);
     }
+    // resize window based on targetScale, clamped by top menubar + bottom dock
+    const w = win();
+    if(w && !nomMinned && !w.classList.contains('maximised')){
+      const MENUBAR_H = 26, DOCK_H = 78, MARGIN = 10;
+      const maxH = window.innerHeight - MENUBAR_H - DOCK_H - MARGIN * 2;
+      const maxW = window.innerWidth - MARGIN * 2;
+      const cap = Math.min(maxH, maxW);
+      // base size 600px at scale 1.0, clamped to cap
+      const desired = Math.min(600 * currentScale, cap);
+      // also enforce a sensible minimum
+      const size = Math.max(260, desired);
+      w.style.width  = size + 'px';
+      w.style.height = size + 'px';
+    }
+    if(renderer) onResize();
     if(renderer) renderer.render(scene, camera);
     updateOverlay();
   }
@@ -5168,7 +5184,6 @@ body.dark-mode #nom-titlebar{background:linear-gradient(180deg,#3c3c3e,#2c2c2e);
 
 })();
 </script>
-<!-- ═══════════════════ END NOM / ORBIT SPHERE APP ═══════════════════ -->
 
 </body>
 </html>
