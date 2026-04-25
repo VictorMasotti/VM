@@ -1801,7 +1801,7 @@ let animRAF=null;
 function resizeAnimCanvas(){animCanvas.width=window.innerWidth;animCanvas.height=window.innerHeight;}
 resizeAnimCanvas();window.addEventListener('resize',resizeAnimCanvas);
 let photosOpen=false,photosMax=false,photosMinned=false;
-const images=["27a.jpg","27b.jpg","27c.jpg","27d.jpg","27e.jpg","27f.jpg","27g.jpg","27h.jpg","27i.jpg","27j.jpg","27k.jpg","27l.jpg","27m.jpg","27n.jpg","27o.jpg","27p.jpg","27q.jpg","27r.jpg","27s.jpg","27t.jpg","27u.jpg","27v.jpg","27w.jpg","cak.jpg","cal.jpg","cam.jpg","can.jpg","cek.jpg","cel.jpg","cem.jpg","cen.jpg","cil.jpg","cim.jpg","cin.jpg","col.jpg","com.jpg","cul.jpg","cum.jpg","cun.jpg"];
+const images=["YY1.jpg","YY2.jpg","YY3.jpg","YY4.jpg","YY5.jpg","YY6.jpg","YY7.jpg","YY8.jpg","YY9.jpg","YY10.jpg","YY11.jpg","YY12.jpg","YY13.jpg","27a.jpg","27b.jpg","27c.jpg","27d.jpg","27e.jpg","27f.jpg","27g.jpg","27h.jpg","27i.jpg","27j.jpg","27k.jpg","27l.jpg","27m.jpg","27n.jpg","27o.jpg","27p.jpg","27q.jpg","27r.jpg","27s.jpg","27t.jpg","27u.jpg","27v.jpg","27w.jpg","cak.jpg","cal.jpg","cam.jpg","can.jpg","cek.jpg","cel.jpg","cem.jpg","cen.jpg","cil.jpg","cim.jpg","cin.jpg","col.jpg","com.jpg","cul.jpg","cum.jpg","cun.jpg"];
 const favPhotos = new Set();
 const recentPhotos = [];
 function markRecent(src){
@@ -5139,8 +5139,8 @@ body.dark-mode #nom-titlebar{background:linear-gradient(180deg,#3c3c3e,#2c2c2e);
     const blades = new THREE.InstancedMesh(bladeGeo, bladeMat, BLADE_COUNT);
     blades.instanceMatrix.setUsage(THREE.StaticDrawUsage);
     const biomes = [
-      { pal: [0x2c6010, 0x3a7818, 0x4a8a28],            h:[0.11, 0.18], w:[0.8, 1.2] },  // deep forest — tallest, dark
-      { pal: [0x3c9018, 0x4ea820, 0x5ec030],            h:[0.09, 0.15], w:[0.85,1.15]},  // pine forest — tall
+      { pal: [0x2c6010, 0x3a7818, 0x4a8a28],            h:[0.11, 0.18], w:[0.8, 1.2] }, 
+      { pal: [0x3c9018, 0x4ea820, 0x5ec030],            h:[0.09, 0.15], w:[0.85,1.15]},  
       { pal: [0x5ea050, 0x6cb058, 0x4a8a40, 0x7cc068],  h:[0.07, 0.12], w:[0.9, 1.2] },  // taiga — medium, sage-cool
       { pal: [0x6ed824, 0x82e830, 0x58c418, 0x72d028],  h:[0.06, 0.10], w:[0.85,1.15]},  // vibrant spring meadow
       { pal: [0x98e048, 0xa8f058, 0x88d038, 0xb0e858],  h:[0.04, 0.08], w:[0.9, 1.2] },  // bright grassland — short
@@ -5261,6 +5261,42 @@ body.dark-mode #nom-titlebar{background:linear-gradient(180deg,#3c3c3e,#2c2c2e);
     titleAnchor = new THREE.Object3D();
     titleAnchor.position.set(0, Math.sin(TITLE_LAT) * ANCHOR_R, Math.cos(TITLE_LAT) * ANCHOR_R);
     globeGroup.add(titleAnchor);
+    // happy sticker — a real 3D textured plane glued to the sphere surface,
+    // oriented along the surface normal so it tilts/curves as the ball rotates.
+    {
+      const HAPPY_LAT = THREE.MathUtils.degToRad(-15);
+      const HAPPY_LON = THREE.MathUtils.degToRad(35);
+      // sit a hair above the surface (so it doesn't z-fight with grass / camo)
+      const STICK_R = 1.62;
+      const pos = new THREE.Vector3(
+        Math.cos(HAPPY_LAT) * Math.sin(HAPPY_LON) * STICK_R,
+        Math.sin(HAPPY_LAT) * STICK_R,
+        Math.cos(HAPPY_LAT) * Math.cos(HAPPY_LON) * STICK_R
+      );
+      const happyTex = new THREE.TextureLoader().load('happy.png');
+      happyTex.colorSpace = THREE.SRGBColorSpace || happyTex.colorSpace;
+      const happyMat = new THREE.MeshBasicMaterial({
+        map: happyTex,
+        transparent: true,
+        side: THREE.DoubleSide,
+        alphaTest: 0.05,
+      });
+      // ~0.55 world units across — visibly stuck on like a basketball decal
+      const happyGeom = new THREE.PlaneGeometry(0.55, 0.55);
+      const happyPlane = new THREE.Mesh(happyGeom, happyMat);
+      happyPlane.position.copy(pos);
+      // orient: plane's +Z (its forward) faces outward along the surface normal
+      const normal = pos.clone().normalize();
+      const up = new THREE.Vector3(0, 1, 0);
+      // build a quaternion that rotates +Z to the normal
+      happyPlane.quaternion.setFromUnitVectors(new THREE.Vector3(0, 0, 1), normal);
+      // give it a little playful tilt around the normal
+      const twist = new THREE.Quaternion().setFromAxisAngle(normal, THREE.MathUtils.degToRad(-8));
+      happyPlane.quaternion.premultiply(twist);
+      // small offset to lift slightly above terrain so grass doesn't poke through
+      happyPlane.renderOrder = 2;
+      globeGroup.add(happyPlane);
+    }
     scene.add(new THREE.AmbientLight(0xbcd8a8, 0.55));
     const sun = new THREE.DirectionalLight(0xffffff, 1.6); sun.position.set(-4, 5, 5); scene.add(sun);
     const rim = new THREE.DirectionalLight(0x88c068, 0.55); rim.position.set(3, -1, -3); scene.add(rim);
@@ -5475,15 +5511,13 @@ body.dark-mode #nom-titlebar{background:linear-gradient(180deg,#3c3c3e,#2c2c2e);
       dragging = true;
       lastX = ex; lastY = ey;
       c.classList.add('dragging');
-      return true;
-    }
+      return true;     }
     function move(ex, ey){
       if(!dragging) return;
       const dx = ex - lastX, dy = ey - lastY;
       lastX = ex; lastY = ey;
       targetY += dx * 0.009;
-      targetX += dy * 0.009;
-    }
+      targetX += dy * 0.009;     } 
     function up(){
       if(!dragging) return;
       dragging = false;
@@ -5528,8 +5562,7 @@ body.dark-mode #nom-titlebar{background:linear-gradient(180deg,#3c3c3e,#2c2c2e);
         const t = i / 60;
         const p = pointAt(t);
         const d = (p.x - vx)**2 + (p.y - vy)**2;
-        if(d < bestD){ bestD = d; bestT = t; }
-      }
+        if(d < bestD){ bestD = d; bestT = t; }       }
       return bestT;
     }
     let dragging = false;
@@ -5537,13 +5570,11 @@ body.dark-mode #nom-titlebar{background:linear-gradient(180deg,#3c3c3e,#2c2c2e);
       dragging = true;
       const t = (e.touches ? e.touches[0] : e);
       setKnob(screenToT(t.clientX, t.clientY));
-      e.preventDefault(); e.stopPropagation();
-    }
+      e.preventDefault(); e.stopPropagation();     }
     function move(e){
       if(!dragging) return;
       const t = (e.touches ? e.touches[0] : e);
-      setKnob(screenToT(t.clientX, t.clientY));
-    }
+      setKnob(screenToT(t.clientX, t.clientY));     }
     function end(){ dragging = false; }
     knob.addEventListener('mousedown', start);
     hit.addEventListener('mousedown', start);
@@ -5552,7 +5583,7 @@ body.dark-mode #nom-titlebar{background:linear-gradient(180deg,#3c3c3e,#2c2c2e);
     knob.addEventListener('touchstart', start, {passive:false});
     hit.addEventListener('touchstart', start, {passive:false});
     window.addEventListener('touchmove', move, {passive:false});
-    window.addEventListener('touchend', end);   })(); })();
-</script>
+    window.addEventListener('touchend', end);
+  })(); })(); </script>
 </body>
 </html>
