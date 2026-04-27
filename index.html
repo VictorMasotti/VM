@@ -234,7 +234,7 @@
     <div class="dock-icon" id="dock-video" onclick="openVideo();dockBounce(this)" style="background:none;padding:0;border-radius:12px;"><img src="vidyo.png" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:12px;display:block;pointer-events:none;"><div class="dock-dot"></div><div class="dock-label">Video Player</div></div>
     <div class="dock-icon" id="dock-nom" onclick="openNom();dockBounce(this)" style="background:none;padding:0;border-radius:12px;"><img src="nom.png" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:12px;display:block;pointer-events:none;"><div class="dock-dot"></div><div class="dock-label">Globe Around yeaaahhh!</div></div>
     <div class="dock-icon" id="dock-clay" onclick="openClay();dockBounce(this)" style="background:none;padding:0;border-radius:12px;"><img src="clay.png" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:12px;display:block;pointer-events:none;"><div class="dock-dot"></div><div class="dock-label">Clayround</div></div>
-    <div class="dock-icon" onclick="dockBounce(this)" style="background:linear-gradient(145deg,#ff3cac,#784ba0);">🎵<div class="dock-label">Echo</div></div>
+    <div class="dock-icon" id="dock-volum" onclick="openVolum();dockBounce(this)" style="background:none;padding:0;border-radius:12px;"><img src="volum.png" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:12px;display:block;pointer-events:none;"><div class="dock-dot"></div><div class="dock-label">Volum</div></div>
     <div class="dock-icon" onclick="dockBounce(this)" style="background:linear-gradient(145deg,#f7971e,#ffd200);">⚡<div class="dock-label">Bolt</div></div>
     <div class="dock-icon icon-messages" onclick="dockBounce(this)">💬<div class="dock-label">Messages</div></div>
     <div class="dock-icon icon-mail" onclick="dockBounce(this)">✉️<div class="dock-label">Mail</div></div>
@@ -3838,6 +3838,794 @@ function maximiseMusic(){
     <span style="margin-left:auto;opacity:0.6">Scroll to zoom · Drag to orbit · Mid-drag to pan</span>
   </div>
 </div>
+<style>
+#volum-window{position:fixed;left:50%;top:50%;width:1040px;height:700px;max-width:96vw;max-height:92vh;background:#f4ecd8;border-radius:14px;box-shadow:0 32px 90px rgba(56,38,18,0.32),0 0 0 1px rgba(0,0,0,0.10);display:flex;flex-direction:column;z-index:500;overflow:hidden;pointer-events:none;user-select:none;opacity:0;transform:translate(-50%,-50%) scale(0.88) translateY(8px);transition:opacity 0.3s cubic-bezier(0.4,0,0.2,1),transform 0.3s cubic-bezier(0.34,1.2,0.64,1);}
+#volum-window.open{opacity:1;pointer-events:all;transform:translate(-50%,-50%) scale(1) translateY(0);}
+#volum-window.maximised{left:0!important;top:24px!important;width:100vw!important;height:calc(100vh - 24px - 54px)!important;transform:none!important;border-radius:0!important;max-width:100vw!important;max-height:100vh!important;transition:left 0.35s cubic-bezier(0.4,0,0.2,1),top 0.35s cubic-bezier(0.4,0,0.2,1),width 0.35s cubic-bezier(0.4,0,0.2,1),height 0.35s cubic-bezier(0.4,0,0.2,1),border-radius 0.35s ease!important;}
+#volum-window.minimising{opacity:0!important;transform:translate(var(--volum-tx),var(--volum-ty)) scale(0.03)!important;transition:opacity 0.35s ease,transform 0.38s ease!important;}
+body.dark-mode #volum-window{background:#1f1a14;box-shadow:0 32px 90px rgba(0,0,0,0.7),0 0 0 1px rgba(255,255,255,0.06);}
+#volum-titlebar{height:38px;flex-shrink:0;background:linear-gradient(180deg,#5a3820 0%,#3a220c 100%);border-bottom:2px solid #2a1808;display:flex;align-items:center;padding:0 12px;gap:8px;position:relative;box-shadow:inset 0 1px 0 rgba(255,220,180,0.18),inset 0 -1px 0 rgba(0,0,0,0.45);}
+#volum-titlebar .pw-dot{box-shadow:inset 0 1px 0 rgba(255,255,255,0.4),0 1px 2px rgba(0,0,0,0.55);}
+#volum-titlebar span.vt-title{position:absolute;left:50%;transform:translateX(-50%);font-family:'Cormorant Garamond',Georgia,serif;font-size:15px;font-weight:400;font-style:italic;letter-spacing:0.18em;color:#e8d4a8;text-transform:uppercase;pointer-events:none;text-shadow:0 1px 2px rgba(0,0,0,0.6);}
+.vt-export{margin-left:auto;display:flex;align-items:center;gap:5px;padding:3px 11px;border-radius:20px;border:1px solid rgba(232,212,168,0.35);background:rgba(255,240,210,0.12);font-size:11px;font-weight:600;color:#e8d4a8;letter-spacing:0.04em;cursor:pointer;font-family:-apple-system,sans-serif;transition:background 0.3s ease,color 0.3s ease,border-color 0.3s ease;}
+.vt-export:hover{background:#c89048;color:#1a0c04;border-color:#c89048;}
+#volum-app-body{flex:1;display:flex;overflow:hidden;min-height:0;position:relative;background:#3a2a1c;}
+body.dark-mode #volum-app-body{background:#0a0604;}
+#volum-toolbar{width:54px;flex-shrink:0;background:linear-gradient(180deg,#382010,#1c0c04);border-right:2px solid #1a0c04;display:flex;flex-direction:column;align-items:center;padding:10px 0;gap:6px;box-shadow:inset -3px 0 8px rgba(0,0,0,0.4);}
+.volum-tool{width:40px;height:40px;border-radius:8px;display:flex;align-items:center;justify-content:center;color:#c8a868;cursor:pointer;transition:background 0.12s,color 0.12s,transform 0.08s;position:relative;font-size:18px;background:transparent;border:1px solid transparent;}
+.volum-tool:hover{background:rgba(232,212,168,0.10);color:#f0d8a8;}
+.volum-tool.active{background:rgba(232,212,168,0.18);color:#fae0b8;border-color:rgba(232,212,168,0.30);box-shadow:inset 0 1px 0 rgba(255,240,210,0.2),0 2px 6px rgba(0,0,0,0.4);}
+.volum-tool:active{transform:scale(0.92);}
+.volum-tool-tip{position:absolute;left:50px;top:50%;transform:translateY(-50%);background:#1c0c04;color:#f0d8a8;font-size:11px;font-weight:500;padding:4px 9px;border-radius:5px;white-space:nowrap;pointer-events:none;opacity:0;transition:opacity 0.12s;z-index:30;border:1px solid rgba(232,212,168,0.18);font-family:'Cormorant Garamond',serif;letter-spacing:0.06em;}
+.volum-tool:hover .volum-tool-tip{opacity:1;}
+.volum-tool-sep{width:30px;height:1px;background:rgba(232,212,168,0.18);margin:4px 0;}
+#volum-canvas-wrap{flex:1;position:relative;overflow:hidden;min-width:0;background:radial-gradient(ellipse at 50% 30%,#5c4028 0%,#2a1808 70%,#180a04 100%);cursor:grab;}
+body.dark-mode #volum-canvas-wrap{background:radial-gradient(ellipse at 50% 30%,#2a1c10 0%,#0a0604 70%,#000 100%);}
+#volum-canvas-wrap:active{cursor:grabbing;}
+#volum-canvas{display:block;width:100%;height:100%;}
+#volum-side{width:230px;flex-shrink:0;background:linear-gradient(180deg,#382010 0%,#1c0c04 100%);border-left:2px solid #1a0c04;display:flex;flex-direction:column;overflow:hidden;box-shadow:inset 3px 0 8px rgba(0,0,0,0.4);}
+.volum-side-head{padding:14px 14px 8px;font-family:'Cormorant Garamond',Georgia,serif;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.16em;color:#c8a868;border-bottom:1px solid rgba(232,212,168,0.18);}
+.volum-side-list{flex:1;overflow-y:auto;padding:6px 0;}
+.volum-page{padding:11px 14px;border-bottom:1px solid rgba(232,212,168,0.10);cursor:pointer;transition:background 0.12s;display:flex;flex-direction:column;gap:2px;position:relative;}
+.volum-page:hover{background:rgba(232,212,168,0.06);}
+.volum-page.active{background:rgba(232,212,168,0.13);border-left:3px solid #c89048;padding-left:11px;}
+.volum-page-name{font-size:13px;font-weight:600;color:#fae0b8;font-family:'Cormorant Garamond',Georgia,serif;letter-spacing:0.04em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.volum-page-sub{font-size:10px;color:rgba(232,212,168,0.5);font-style:italic;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.volum-page-del{position:absolute;right:10px;top:50%;transform:translateY(-50%);width:18px;height:18px;border-radius:50%;background:rgba(0,0,0,0.4);color:#c89048;display:none;align-items:center;justify-content:center;font-size:11px;line-height:1;border:1px solid rgba(232,212,168,0.25);}
+.volum-page:hover .volum-page-del{display:flex;}
+.volum-page-del:hover{background:#c84838;color:#fff;border-color:#c84838;}
+.volum-side-foot{padding:10px 14px 14px;border-top:1px solid rgba(232,212,168,0.18);}
+#volum-newbtn{width:100%;padding:10px;background:linear-gradient(180deg,#c89048,#a06820);border:1px solid #5a3010;border-radius:6px;color:#1a0c04;font-family:'Cormorant Garamond',Georgia,serif;font-size:13px;font-weight:700;letter-spacing:0.10em;text-transform:uppercase;cursor:pointer;box-shadow:inset 0 1px 0 rgba(255,240,210,0.4),0 3px 6px rgba(0,0,0,0.4);transition:filter 0.12s,transform 0.08s;}
+#volum-newbtn:hover{filter:brightness(1.10);}
+#volum-newbtn:active{transform:scale(0.97);}
+#volum-input-overlay{position:absolute;left:0;right:0;bottom:0;background:linear-gradient(180deg,rgba(58,32,16,0.0),rgba(28,12,4,0.96) 30%);padding:60px 30px 24px;display:flex;flex-direction:column;gap:10px;pointer-events:none;opacity:0;transition:opacity 0.3s ease;z-index:5;}
+#volum-input-overlay.show{pointer-events:all;opacity:1;}
+#volum-input-row{display:flex;gap:10px;align-items:flex-end;background:rgba(36,20,8,0.92);border:1px solid rgba(232,212,168,0.30);border-radius:10px;padding:10px;box-shadow:0 8px 24px rgba(0,0,0,0.55);}
+#volum-input{flex:1;min-height:40px;max-height:110px;background:transparent;border:none;outline:none;color:#fae0b8;font-family:'Cormorant Garamond',Georgia,serif;font-size:16px;line-height:1.45;resize:none;font-style:italic;}
+#volum-input::placeholder{color:rgba(232,212,168,0.40);font-style:italic;}
+.volum-add-btn{width:38px;height:38px;border-radius:50%;background:linear-gradient(180deg,#c89048,#7a4818);border:1px solid #2a1808;color:#1a0c04;font-size:16px;line-height:1;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;box-shadow:inset 0 1px 0 rgba(255,240,210,0.45),0 3px 8px rgba(0,0,0,0.5);transition:filter 0.12s,transform 0.08s;font-weight:700;}
+.volum-add-btn:hover{filter:brightness(1.10);}
+.volum-add-btn:active{transform:scale(0.92);}
+#volum-style-row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;font-family:'Cormorant Garamond',Georgia,serif;font-size:10px;color:#c8a868;letter-spacing:0.10em;text-transform:uppercase;}
+.volum-style-pill{padding:4px 10px;border-radius:14px;border:1px solid rgba(232,212,168,0.30);background:rgba(36,20,8,0.7);color:#c8a868;cursor:pointer;font-size:10px;letter-spacing:0.06em;transition:background 0.12s,color 0.12s,border-color 0.12s;}
+.volum-style-pill.active{background:#c89048;color:#1a0c04;border-color:#c89048;}
+.volum-style-pill:hover{background:rgba(200,144,72,0.20);}
+.volum-color-pill{width:22px;height:22px;border-radius:50%;border:2px solid rgba(232,212,168,0.40);cursor:pointer;flex-shrink:0;box-shadow:inset 0 0 0 1px rgba(0,0,0,0.3);transition:transform 0.12s;}
+.volum-color-pill.active{border-color:#fae0b8;transform:scale(1.18);box-shadow:0 0 0 2px rgba(250,224,184,0.50),inset 0 0 0 1px rgba(0,0,0,0.4);}
+.volum-color-pill:hover{transform:scale(1.10);}
+#volum-loader{position:absolute;inset:0;z-index:20;background:radial-gradient(ellipse at 50% 30%,#5c4028 0%,#2a1808 70%,#180a04 100%);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;transition:opacity 0.6s ease;font-family:'Cormorant Garamond',Georgia,serif;}
+#volum-loader.done{opacity:0;pointer-events:none;}
+#volum-loader-title{font-size:36px;font-weight:300;letter-spacing:0.34em;color:#c8a868;text-transform:uppercase;background:linear-gradient(90deg,#7a5828,#fae0b8,#7a5828);background-size:200% auto;-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;animation:vol-shimmer 3s linear infinite;}
+@keyframes vol-shimmer{0%{background-position:0% center}100%{background-position:200% center}}
+#volum-loader-sub{font-size:13px;font-style:italic;color:#9a8050;letter-spacing:0.20em;text-transform:lowercase;}
+#volum-loader-bar{width:160px;height:1px;background:rgba(232,212,168,0.20);margin-top:14px;overflow:hidden;}
+#volum-loader-fill{height:100%;width:0%;background:linear-gradient(90deg,transparent,#c89048,#fae0b8,#c89048,transparent);transition:width 0.35s ease;}
+#volum-statusbar{height:24px;flex-shrink:0;background:linear-gradient(180deg,#2a1808,#180a04);border-top:1px solid #100604;display:flex;align-items:center;padding:0 14px;gap:14px;font-family:'Cormorant Garamond',Georgia,serif;font-size:10px;color:rgba(232,212,168,0.55);font-style:italic;letter-spacing:0.10em;}
+#volum-statusbar .vs-spacer{flex:1;}
+#volum-empty{position:absolute;left:50%;top:46%;transform:translate(-50%,-50%);text-align:center;color:#c8a868;font-family:'Cormorant Garamond',Georgia,serif;pointer-events:none;opacity:0.85;}
+#volum-empty .ve-title{font-size:30px;font-weight:300;letter-spacing:0.30em;text-transform:uppercase;}
+#volum-empty .ve-sub{font-size:13px;font-style:italic;letter-spacing:0.16em;margin-top:6px;color:#9a8050;}
+#volum-dock-dot{position:absolute;bottom:-5px;left:50%;transform:translateX(-50%);width:3px;height:3px;border-radius:50%;background:rgba(0,0,0,0.4);opacity:0;transition:opacity 0.3s;}
+#dock-volum.app-open #volum-dock-dot{opacity:1;}
+</style>
+<div id="volum-window">
+  <div id="volum-titlebar">
+    <div class="pw-dot close" onclick="closeVolum()"></div>
+    <div class="pw-dot min"   onclick="minimiseVolum()"></div>
+    <div class="pw-dot maxb"  onclick="maximiseVolum()"></div>
+    <span class="vt-title">Volum</span>
+    <button class="vt-export" onclick="volumExportPage()" title="Export current page as PNG">
+      <svg width="10" height="10" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M6 1v7M3.5 5.5L6 8l2.5-2.5"/><line x1="1.5" y1="10.5" x2="10.5" y2="10.5"/></svg>
+      Export
+    </button>
+  </div>
+  <div id="volum-app-body">
+    <div id="volum-toolbar">
+      <div class="volum-tool active" id="vtool-write" onclick="volumSetTool('write')" title="Write">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 4l6 6L8 22H2v-6L14 4z"/><path d="M13 5l6 6"/></svg>
+        <span class="volum-tool-tip">Write</span>
+      </div>
+      <div class="volum-tool" id="vtool-orbit" onclick="volumSetTool('orbit')" title="Orbit">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><ellipse cx="12" cy="12" rx="9" ry="3.5"/><path d="M12 3v18"/></svg>
+        <span class="volum-tool-tip">Orbit View</span>
+      </div>
+      <div class="volum-tool" id="vtool-fly" onclick="volumSetTool('fly')" title="Fly Through">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12 L22 4 L18 12 L22 20 Z"/><path d="M2 12 L18 12"/></svg>
+        <span class="volum-tool-tip">Fly Through</span>
+      </div>
+      <div class="volum-tool-sep"></div>
+      <div class="volum-tool" id="vtool-clear" onclick="volumClearPage()" title="Clear page">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><path d="M5 6l1 14a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2l1-14"/></svg>
+        <span class="volum-tool-tip">Clear page</span>
+      </div>
+      <div class="volum-tool" id="vtool-shuffle" onclick="volumShuffleColors()" title="Shuffle palette">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M16 3h5v5"/><path d="M21 3l-7 7"/><path d="M3 21l7-7"/><path d="M16 21h5v-5"/><path d="M3 8V3h5"/><path d="M3 3l7 7"/></svg>
+        <span class="volum-tool-tip">Shuffle palette</span>
+      </div>
+    </div>
+    <div id="volum-canvas-wrap">
+      <canvas id="volum-canvas"></canvas>
+      <div id="volum-empty"><div class="ve-title">Volum</div><div class="ve-sub">A notebook in three dimensions</div></div>
+      <div id="volum-input-overlay" class="show">
+        <div id="volum-style-row">
+          <span style="margin-right:4px;">Type</span>
+          <div class="volum-style-pill active" data-vol-style="serif" onclick="volumSetStyle('serif')">Serif</div>
+          <div class="volum-style-pill" data-vol-style="sans" onclick="volumSetStyle('sans')">Sans</div>
+          <div class="volum-style-pill" data-vol-style="mono" onclick="volumSetStyle('mono')">Mono</div>
+          <div class="volum-style-pill" data-vol-style="display" onclick="volumSetStyle('display')">Display</div>
+          <span style="margin-left:8px;margin-right:4px;">Hue</span>
+          <div class="volum-color-pill active" data-vol-color="#c89048" style="background:#c89048;" onclick="volumSetColor('#c89048')"></div>
+          <div class="volum-color-pill" data-vol-color="#e8a850" style="background:#e8a850;" onclick="volumSetColor('#e8a850')"></div>
+          <div class="volum-color-pill" data-vol-color="#a83820" style="background:#a83820;" onclick="volumSetColor('#a83820')"></div>
+          <div class="volum-color-pill" data-vol-color="#5a8868" style="background:#5a8868;" onclick="volumSetColor('#5a8868')"></div>
+          <div class="volum-color-pill" data-vol-color="#3a5878" style="background:#3a5878;" onclick="volumSetColor('#3a5878')"></div>
+          <div class="volum-color-pill" data-vol-color="#883858" style="background:#883858;" onclick="volumSetColor('#883858')"></div>
+          <div class="volum-color-pill" data-vol-color="#fae0b8" style="background:#fae0b8;" onclick="volumSetColor('#fae0b8')"></div>
+          <div class="volum-color-pill" data-vol-color="#1a0c04" style="background:#1a0c04;" onclick="volumSetColor('#1a0c04')"></div>
+        </div>
+        <div id="volum-input-row">
+          <textarea id="volum-input" placeholder="Write something — press Enter to land it on the page (Shift+Enter for newline)" rows="1"></textarea>
+          <button class="volum-add-btn" onclick="volumAddCurrent()" title="Add to page">↵</button>
+        </div>
+      </div>
+      <div id="volum-loader">
+        <div id="volum-loader-title">Volum</div>
+        <div id="volum-loader-sub">opening the notebook…</div>
+        <div id="volum-loader-bar"><div id="volum-loader-fill"></div></div>
+      </div>
+    </div>
+    <div id="volum-side">
+      <div class="volum-side-head">Pages</div>
+      <div class="volum-side-list" id="volum-page-list"></div>
+      <div class="volum-side-foot">
+        <button id="volum-newbtn" onclick="volumNewPage()">+ New Page</button>
+      </div>
+    </div>
+  </div>
+  <div id="volum-statusbar">
+    <span id="volum-status-page">Page 1</span>
+    <span id="volum-status-count">0 entries</span>
+    <span class="vs-spacer"></span>
+    <span style="opacity:0.6">Drag to orbit · Scroll to zoom · Type & press Enter</span>
+  </div>
+</div>
+<script>
+(function(){
+  // ============ VOLUM STATE ============
+  let volumOpen=false, volumMax=false, volumMinned=false, volumBuilt=false;
+  const win=()=>document.getElementById('volum-window');
+
+  // Pages: each page has {id, name, entries:[ {text, font, color, x,y,rot, depth, size} ]}
+  let pages = [
+    {id:'p1', name:'First Page', entries:[]}
+  ];
+  let activePageId = 'p1';
+  let pageCounter = 1;
+
+  let currentStyle = 'serif';
+  let currentColor = '#c89048';
+  let currentTool = 'write';
+
+  // 3D camera state
+  let camOrbitX = -0.55;  // pitch (looking down at notebook)
+  let camOrbitY = 0.0;    // yaw
+  let camDist = 540;
+  let camTargetY = 0;
+  let camPanX = 0, camPanZ = 0;
+
+  // Anim state
+  let lastEntryT = 0;
+
+  // ============ OPEN/CLOSE/MIN/MAX ============
+  window.openVolum = function(){
+    volumOpen=true; volumMinned=false; volumMax=false;
+    document.getElementById('dock-volum').classList.add('app-open');
+    const w=win();
+    w.style.cssText=''; w.style.left='50%'; w.style.top='50%';
+    w.style.transition='none'; w.style.opacity='0';
+    w.style.transform='translate(-50%,-50%) scale(0.05)';
+    w.classList.remove('minimising','maximised','open');
+    if(typeof bringToFront==='function') bringToFront(w);
+    requestAnimationFrame(()=>requestAnimationFrame(()=>{
+      w.style.transition='opacity 0.22s ease,transform 0.38s cubic-bezier(0.34,1.28,0.64,1)';
+      w.style.opacity='1'; w.style.transform='translate(-50%,-50%) scale(1)';
+      w.style.pointerEvents='all'; w.classList.add('open');
+      if(!volumBuilt){ volumBuilt=true; runVolumLoader(); }
+      setTimeout(resizeVolumCanvas, 50);
+    }));
+  };
+  window.closeVolum = function(){
+    if(!volumOpen) return;
+    document.getElementById('dock-volum').classList.remove('app-open');
+    const w=win();
+    w.style.transition='opacity 0.3s ease,transform 0.3s ease';
+    w.style.opacity='0'; w.style.transform='translate(-50%,-50%) scale(0.88) translateY(8px)';
+    w.style.pointerEvents='none';
+    setTimeout(()=>{ w.classList.remove('open','maximised'); w.style.cssText=''; volumOpen=false; },320);
+  };
+  window.minimiseVolum = function(){
+    if(!volumOpen) return;
+    const w=win();
+    if(volumMinned){ volumMinned=false; w.classList.remove('minimising'); w.style.cssText=''; w.style.left='50%'; w.style.top='50%'; w.style.transform='translate(-50%,-50%) scale(0.88) translateY(8px)'; requestAnimationFrame(()=>requestAnimationFrame(()=>w.classList.add('open'))); return; }
+    const icon=document.getElementById('dock-volum'), ir=icon.getBoundingClientRect(), wr=w.getBoundingClientRect();
+    w.style.setProperty('--volum-tx',(ir.left+ir.width/2-wr.left-wr.width/2)+'px');
+    w.style.setProperty('--volum-ty',(ir.top+ir.height/2-wr.top-wr.height/2)+'px');
+    w.classList.remove('open','maximised'); w.classList.add('minimising'); volumMinned=true; volumMax=false;
+  };
+  window.maximiseVolum = function(){
+    if(!volumOpen) return;
+    const w=win(); volumMax=!volumMax;
+    if(volumMax){ w.classList.add('maximised'); w.classList.remove('minimising'); }
+    else{ w.classList.remove('maximised'); w.style.left='50%'; w.style.top='50%'; w.style.width=''; w.style.height=''; w.style.transform=''; requestAnimationFrame(()=>requestAnimationFrame(()=>w.classList.add('open'))); }
+    setTimeout(resizeVolumCanvas, 350);
+  };
+
+  // ============ TITLEBAR DRAG ============
+  (function(){
+    const tb=document.getElementById('volum-titlebar');
+    const MENU_H=24,DOCK_H=78;
+    let drag=false,ox=0,oy=0,raf=null;
+    function start(ex,ey){ const w=win(),r=w.getBoundingClientRect(); ox=ex-r.left; oy=ey-r.top; w.style.transition='none'; w.style.transform='none'; w.style.left=r.left+'px'; w.style.top=r.top+'px'; }
+    function move(ex,ey){ if(!drag||raf) return; raf=requestAnimationFrame(()=>{ raf=null; const w=win(); w.style.left=Math.max(0,Math.min(window.innerWidth-w.offsetWidth,ex-ox))+'px'; w.style.top=Math.max(MENU_H,Math.min(window.innerHeight-DOCK_H-36,ey-oy))+'px'; }); }
+    tb.addEventListener('mousedown',e=>{ if(volumMax||e.target.closest('.pw-dot')||e.target.closest('.vt-export')) return; drag=true; start(e.clientX,e.clientY); e.preventDefault(); });
+    window.addEventListener('mousemove',e=>move(e.clientX,e.clientY));
+    window.addEventListener('mouseup',()=>{ drag=false; raf=null; });
+  })();
+
+  // ============ LOADER ============
+  function runVolumLoader(){
+    const fill=document.getElementById('volum-loader-fill');
+    const loader=document.getElementById('volum-loader');
+    const subEl=document.getElementById('volum-loader-sub');
+    const phrases = ['opening the notebook','sharpening the pencil','warming the press','aligning the gutter','setting the type'];
+    let pct=0;
+    const iv=setInterval(()=>{
+      pct+=Math.random()*16+5;
+      if(pct>=100){
+        pct=100; fill.style.width='100%';
+        if(subEl) subEl.textContent='ready';
+        clearInterval(iv);
+        setTimeout(()=>{ loader.classList.add('done'); initVolumEngine(); },500);
+      } else {
+        fill.style.width=pct+'%';
+        if(subEl && Math.random()<0.4) subEl.textContent=phrases[Math.floor(Math.random()*phrases.length)]+'…';
+      }
+    },200);
+  }
+
+  // ============ INITIALIZE ENGINE ============
+  let canvas, ctx;
+  function initVolumEngine(){
+    canvas = document.getElementById('volum-canvas');
+    ctx = canvas.getContext('2d');
+    resizeVolumCanvas();
+    setupInput();
+    setupCanvasInteraction();
+    refreshPageList();
+    updateStatus();
+    requestAnimationFrame(volumLoop);
+  }
+
+  function resizeVolumCanvas(){
+    if(!canvas) return;
+    const dpr=window.devicePixelRatio||1;
+    const r=document.getElementById('volum-canvas-wrap').getBoundingClientRect();
+    canvas.width=r.width*dpr; canvas.height=r.height*dpr;
+    canvas.style.width=r.width+'px'; canvas.style.height=r.height+'px';
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+  }
+  window.addEventListener('resize',()=>{ if(volumBuilt) resizeVolumCanvas(); });
+
+  // ============ INPUT HANDLING ============
+  function setupInput(){
+    const ta = document.getElementById('volum-input');
+    ta.addEventListener('keydown', e=>{
+      if(e.key==='Enter' && !e.shiftKey){
+        e.preventDefault();
+        volumAddCurrent();
+      }
+    });
+    ta.addEventListener('input', ()=>{
+      ta.style.height='auto';
+      ta.style.height=Math.min(110, ta.scrollHeight)+'px';
+    });
+  }
+
+  window.volumAddCurrent = function(){
+    const ta = document.getElementById('volum-input');
+    const txt = ta.value.trim();
+    if(!txt) return;
+    const page = pages.find(p=>p.id===activePageId);
+    if(!page) return;
+    // Place at random-ish position so entries fan out across the surface
+    const rangeX = 280, rangeZ = 200;
+    const x = (Math.random()-0.5)*rangeX;
+    const z = (Math.random()-0.5)*rangeZ;
+    const rot = (Math.random()-0.5)*0.32;
+    const depth = 8 + Math.random()*22;
+    const size = txt.length > 28 ? 18 : (txt.length > 14 ? 22 : 28);
+    page.entries.push({
+      text: txt,
+      font: currentStyle,
+      color: currentColor,
+      x, y: 0, z, rot, depth, size,
+      bornAt: performance.now()
+    });
+    ta.value=''; ta.style.height='auto';
+    lastEntryT = performance.now();
+    refreshPageList();
+    updateStatus();
+  };
+
+  window.volumSetStyle = function(st){
+    currentStyle = st;
+    document.querySelectorAll('.volum-style-pill').forEach(p=>p.classList.toggle('active', p.dataset.volStyle===st));
+  };
+  window.volumSetColor = function(c){
+    currentColor = c;
+    document.querySelectorAll('.volum-color-pill').forEach(p=>p.classList.toggle('active', p.dataset.volColor===c));
+  };
+  window.volumSetTool = function(t){
+    currentTool = t;
+    document.querySelectorAll('.volum-tool').forEach(el=>el.classList.remove('active'));
+    const map={write:'vtool-write',orbit:'vtool-orbit',fly:'vtool-fly'};
+    if(map[t]) document.getElementById(map[t]).classList.add('active');
+    const ov = document.getElementById('volum-input-overlay');
+    if(t==='write') ov.classList.add('show'); else ov.classList.remove('show');
+  };
+  window.volumClearPage = function(){
+    const page = pages.find(p=>p.id===activePageId);
+    if(!page) return;
+    if(page.entries.length===0) return;
+    if(!confirm('Clear all entries on this page?')) return;
+    page.entries = [];
+    refreshPageList(); updateStatus();
+  };
+  window.volumShuffleColors = function(){
+    const page = pages.find(p=>p.id===activePageId);
+    if(!page) return;
+    const palette = ['#c89048','#e8a850','#a83820','#5a8868','#3a5878','#883858','#fae0b8','#1a0c04'];
+    page.entries.forEach(e=>{ e.color = palette[Math.floor(Math.random()*palette.length)]; });
+  };
+
+  window.volumNewPage = function(){
+    pageCounter++;
+    const id = 'p'+pageCounter;
+    const name = 'Page '+pageCounter;
+    pages.push({id, name, entries:[]});
+    activePageId = id;
+    // Reset camera a touch for the new page
+    camOrbitY = 0; camPanX=0; camPanZ=0;
+    refreshPageList(); updateStatus();
+  };
+
+  window.volumDeletePage = function(id, ev){
+    if(ev){ ev.stopPropagation(); }
+    if(pages.length<=1){ alert('Need at least one page.'); return; }
+    if(!confirm('Delete this page?')) return;
+    const idx = pages.findIndex(p=>p.id===id);
+    if(idx<0) return;
+    pages.splice(idx,1);
+    if(activePageId===id){ activePageId = pages[Math.min(idx, pages.length-1)].id; }
+    refreshPageList(); updateStatus();
+  };
+
+  window.volumSelectPage = function(id){
+    activePageId = id;
+    camOrbitY = 0; camPanX=0; camPanZ=0;
+    refreshPageList(); updateStatus();
+  };
+
+  function refreshPageList(){
+    const list = document.getElementById('volum-page-list');
+    list.innerHTML='';
+    pages.forEach(p=>{
+      const it = document.createElement('div');
+      it.className = 'volum-page'+(p.id===activePageId?' active':'');
+      it.onclick = ()=>volumSelectPage(p.id);
+      const last = p.entries.length>0 ? p.entries[p.entries.length-1].text : '— empty —';
+      it.innerHTML = `
+        <div class="volum-page-name">${escHtml(p.name)}</div>
+        <div class="volum-page-sub">${p.entries.length} entries · ${escHtml(last.slice(0,28))}${last.length>28?'…':''}</div>
+        <div class="volum-page-del" onclick="volumDeletePage('${p.id}',event)">×</div>
+      `;
+      list.appendChild(it);
+    });
+  }
+
+  function updateStatus(){
+    const page = pages.find(p=>p.id===activePageId);
+    document.getElementById('volum-status-page').textContent = page ? page.name : '—';
+    document.getElementById('volum-status-count').textContent = page ? (page.entries.length+' entries') : '';
+    const empty = document.getElementById('volum-empty');
+    empty.style.display = (page && page.entries.length===0) ? '' : 'none';
+  }
+
+  function escHtml(s){ return String(s).replace(/[&<>"']/g, m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
+
+  // ============ CANVAS INTERACTION (orbit/zoom/pan) ============
+  function setupCanvasInteraction(){
+    const wrap = document.getElementById('volum-canvas-wrap');
+    let drag=false, mid=false, lastX=0, lastY=0;
+    wrap.addEventListener('mousedown', e=>{
+      // Don't orbit if user clicks input overlay
+      if(e.target.closest('#volum-input-overlay')) return;
+      drag = true;
+      mid = (e.button===1) || e.shiftKey;
+      lastX=e.clientX; lastY=e.clientY;
+      wrap.style.cursor='grabbing';
+      e.preventDefault();
+    });
+    window.addEventListener('mousemove', e=>{
+      if(!drag) return;
+      const dx = e.clientX-lastX, dy=e.clientY-lastY;
+      lastX=e.clientX; lastY=e.clientY;
+      if(mid){
+        camPanX -= dx*0.7;
+        camPanZ -= dy*0.7;
+      } else {
+        camOrbitY += dx*0.005;
+        camOrbitX += dy*0.005;
+        camOrbitX = Math.max(-1.4, Math.min(0.2, camOrbitX));
+      }
+    });
+    window.addEventListener('mouseup', ()=>{ drag=false; wrap.style.cursor='grab'; });
+    wrap.addEventListener('wheel', e=>{
+      e.preventDefault();
+      camDist *= (1 + e.deltaY*0.0012);
+      camDist = Math.max(220, Math.min(1400, camDist));
+    }, {passive:false});
+  }
+
+  // ============ 3D PROJECTION (homemade — no three.js) ============
+  // Coord system: x right, y up, z back (away from camera into the page surface)
+  function project(x,y,z, cam){
+    // translate by camera target
+    let ox=x-cam.tx, oy=y-cam.ty, oz=z-cam.tz;
+    // rotate by -orbitY around Y axis
+    const cy=Math.cos(-cam.oy), sy=Math.sin(-cam.oy);
+    const x1 = cy*ox + sy*oz;
+    const z1 = -sy*ox + cy*oz;
+    // rotate by -orbitX around X axis
+    const cx=Math.cos(-cam.ox), sx=Math.sin(-cam.ox);
+    const y2 = cx*oy - sx*z1;
+    const z2 = sx*oy + cx*z1;
+    // translate by distance along Z
+    const zc = z2 + cam.dist;
+    if(zc<=1) return null;
+    // perspective project
+    const f = cam.f;
+    return { x: f*x1/zc + cam.cx, y: -f*y2/zc + cam.cy, depth: zc, scale: f/zc };
+  }
+
+  function fontFamily(style){
+    switch(style){
+      case 'serif': return "'Cormorant Garamond',Georgia,serif";
+      case 'sans': return "-apple-system,'Helvetica Neue',sans-serif";
+      case 'mono': return "'Courier New',monospace";
+      case 'display': return "'Cormorant Garamond',Georgia,serif";
+      default: return "'Cormorant Garamond',Georgia,serif";
+    }
+  }
+  function fontWeight(style){ return style==='display'?'700':(style==='sans'?'500':'400'); }
+  function fontStyle(style){ return style==='display'?'italic':'normal'; }
+
+  // ============ RENDER LOOP ============
+  function volumLoop(){
+    if(!volumOpen){ requestAnimationFrame(volumLoop); return; }
+    render();
+    requestAnimationFrame(volumLoop);
+  }
+
+  function render(){
+    if(!ctx) return;
+    const r = canvas.getBoundingClientRect();
+    const W = r.width, H = r.height;
+    // Background gradient (already on the wrap div, but draw a subtle gradient on canvas too to layer)
+    ctx.clearRect(0,0,W,H);
+
+    // Camera
+    const cam = {
+      tx: camPanX, ty: 0, tz: camPanZ,
+      ox: camOrbitX, oy: camOrbitY,
+      dist: camDist,
+      f: Math.min(W,H)*0.95,
+      cx: W/2, cy: H*0.50
+    };
+
+    // Fly mode: gentle auto-orbit
+    if(currentTool==='fly'){ camOrbitY += 0.0035; }
+
+    // Draw the notebook PAGE plane (a horizontal rectangle at y=0)
+    const pageW = 480, pageD = 360;
+    drawNotebookPage(cam, pageW, pageD);
+
+    // Draw entries as 3D extruded text blocks rising from the page
+    const page = pages.find(p=>p.id===activePageId);
+    if(page){
+      // Sort entries back-to-front (for painter's algorithm) using projected depth
+      const entries = page.entries.map(e=>{
+        const p = project(e.x, e.depth, e.z, cam);
+        return {e, proj: p, depth: p ? p.depth : Infinity};
+      }).filter(o=>o.proj);
+      entries.sort((a,b)=> b.depth - a.depth);
+      for(const o of entries){
+        drawEntry(cam, o.e);
+      }
+    }
+  }
+
+  function drawNotebookPage(cam, w, d){
+    const half_w = w/2, half_d = d/2;
+    // Page corners on plane y=0
+    const corners = [
+      {x:-half_w, y:0, z:-half_d},
+      {x: half_w, y:0, z:-half_d},
+      {x: half_w, y:0, z: half_d},
+      {x:-half_w, y:0, z: half_d}
+    ];
+    const proj = corners.map(c=>project(c.x,c.y,c.z,cam));
+    if(proj.some(p=>!p)) return;
+
+    // Page shadow (offset slightly)
+    ctx.save();
+    ctx.beginPath();
+    ctx.moveTo(proj[0].x+8, proj[0].y+18);
+    ctx.lineTo(proj[1].x+8, proj[1].y+18);
+    ctx.lineTo(proj[2].x+8, proj[2].y+18);
+    ctx.lineTo(proj[3].x+8, proj[3].y+18);
+    ctx.closePath();
+    ctx.fillStyle='rgba(0,0,0,0.45)';
+    ctx.filter='blur(14px)';
+    ctx.fill();
+    ctx.restore();
+
+    // Page back side (slightly darker; gives sub-page depth)
+    ctx.save();
+    ctx.beginPath();
+    ctx.moveTo(proj[0].x, proj[0].y+6);
+    ctx.lineTo(proj[1].x, proj[1].y+6);
+    ctx.lineTo(proj[2].x, proj[2].y+6);
+    ctx.lineTo(proj[3].x, proj[3].y+6);
+    ctx.closePath();
+    ctx.fillStyle='#3a2418';
+    ctx.fill();
+    ctx.restore();
+
+    // Page top (paper colour)
+    ctx.save();
+    ctx.beginPath();
+    ctx.moveTo(proj[0].x, proj[0].y);
+    ctx.lineTo(proj[1].x, proj[1].y);
+    ctx.lineTo(proj[2].x, proj[2].y);
+    ctx.lineTo(proj[3].x, proj[3].y);
+    ctx.closePath();
+    // Gradient paper fill
+    const gx0 = (proj[0].x+proj[3].x)/2, gy0=(proj[0].y+proj[3].y)/2;
+    const gx1 = (proj[1].x+proj[2].x)/2, gy1=(proj[1].y+proj[2].y)/2;
+    const gp = ctx.createLinearGradient(gx0,gy0,gx1,gy1);
+    gp.addColorStop(0,'#fae8c8');
+    gp.addColorStop(0.5,'#f4ecd8');
+    gp.addColorStop(1,'#e8d8b8');
+    ctx.fillStyle=gp;
+    ctx.fill();
+    ctx.strokeStyle='rgba(80,50,20,0.55)';
+    ctx.lineWidth=1.5;
+    ctx.stroke();
+    ctx.restore();
+
+    // Notebook ruled lines (drawn in page plane, projected)
+    const lineCount=14;
+    ctx.save();
+    ctx.lineWidth=1;
+    for(let i=1;i<lineCount;i++){
+      const t = i/lineCount;
+      const z0 = -half_d + t*d;
+      const a = project(-half_w+18, 0, z0, cam);
+      const b = project( half_w-18, 0, z0, cam);
+      if(!a||!b) continue;
+      ctx.strokeStyle='rgba(120,80,50,0.18)';
+      ctx.beginPath();
+      ctx.moveTo(a.x, a.y);
+      ctx.lineTo(b.x, b.y);
+      ctx.stroke();
+    }
+    // Margin (red vertical line near left edge)
+    const m1 = project(-half_w+30, 0, -half_d, cam);
+    const m2 = project(-half_w+30, 0,  half_d, cam);
+    if(m1 && m2){
+      ctx.strokeStyle='rgba(180,80,60,0.40)';
+      ctx.lineWidth=1.2;
+      ctx.beginPath(); ctx.moveTo(m1.x,m1.y); ctx.lineTo(m2.x,m2.y); ctx.stroke();
+    }
+    // Holes on left edge
+    const holeY = 0.001;
+    for(let i=0;i<3;i++){
+      const t = (i+1)/4;
+      const z = -half_d + t*d;
+      const c = project(-half_w+12, holeY, z, cam);
+      if(!c) continue;
+      ctx.beginPath();
+      ctx.arc(c.x,c.y, Math.max(2.5, 5*c.scale), 0, Math.PI*2);
+      ctx.fillStyle='#1a0c04';
+      ctx.fill();
+      ctx.strokeStyle='rgba(80,50,20,0.6)';
+      ctx.lineWidth=1;
+      ctx.stroke();
+    }
+    ctx.restore();
+  }
+
+  // Extruded 3D text block: render the text on a vertical billboard rising 'depth' units above the page
+  function drawEntry(cam, e){
+    // Animation: scale-up on birth
+    const age = performance.now() - (e.bornAt||0);
+    const animScale = age < 600 ? Math.min(1, 0.3 + age/600*0.7) : 1;
+    const animFloat = age < 1200 ? (1-Math.min(1,age/1200))*8 : 0;
+
+    const baseY = 0;
+    const topY  = e.depth * animScale;
+
+    // Compute text width/height in pseudo-3D units. We'll measure with canvas at a fixed pixel scale, then scale to 3D.
+    // Use a base font px = e.size, get width
+    ctx.save();
+    ctx.font = `${fontStyle(e.font)} ${fontWeight(e.font)} ${e.size}px ${fontFamily(e.font)}`;
+    const tw = ctx.measureText(e.text).width;
+    ctx.restore();
+    // In 3D units, treat 1px = 0.7 unit
+    const w3 = tw*0.7, h3 = e.size*0.95;
+
+    // Billboard center on page
+    const cx3 = e.x, cz3 = e.z;
+    const sinR = Math.sin(e.rot), cosR = Math.cos(e.rot);
+    // Local axis (rotated about Y) for text width direction
+    const axX = cosR, axZ = -sinR;
+
+    // 4 corners of front face (top edge to bottom edge of letterform), and 4 corners of back face (depth-pushed)
+    const halfW = w3/2;
+    const front = [
+      {x: cx3-axX*halfW, y: topY+animFloat,        z: cz3-axZ*halfW},
+      {x: cx3+axX*halfW, y: topY+animFloat,        z: cz3+axZ*halfW},
+      {x: cx3+axX*halfW, y: baseY+animFloat,       z: cz3+axZ*halfW},
+      {x: cx3-axX*halfW, y: baseY+animFloat,       z: cz3-axZ*halfW}
+    ];
+    // Block thickness (a little thicker than the text height for that chunky 3D feel)
+    const thick = Math.max(8, e.size*0.4);
+    // Back-face corners pushed in -Z (or perpendicular to text orientation)
+    // Use perpendicular axis
+    const pX = -axZ, pZ = axX;
+    const back = front.map(p=>({x:p.x+pX*thick, y:p.y, z:p.z+pZ*thick}));
+
+    const fp = front.map(p=>project(p.x,p.y,p.z,cam));
+    const bp = back.map(p=>project(p.x,p.y,p.z,cam));
+    if(fp.some(x=>!x) || bp.some(x=>!x)) return;
+
+    const col = e.color;
+    const sideCol = darken(col, 0.55);
+    const topCol = lighten(col, 0.30);
+    const stroke = darken(col, 0.30);
+
+    // Draw side faces (only the visible ones based on perpendicular projection; simple painter approach)
+    // Right side (front[1]->back[1]->back[2]->front[2])
+    fillQuad(fp[1],bp[1],bp[2],fp[2], sideCol, stroke);
+    // Left side (front[0]->back[0]->back[3]->front[3])
+    fillQuad(fp[0],bp[0],bp[3],fp[3], darken(col,0.65), stroke);
+    // Top side (front[0]->back[0]->back[1]->front[1])
+    fillQuad(fp[0],bp[0],bp[1],fp[1], topCol, stroke);
+    // Bottom side
+    fillQuad(fp[3],bp[3],bp[2],fp[2], darken(col,0.7), stroke);
+
+    // Front face: render the text using an offscreen canvas, then warp into the projected quad
+    drawTextBillboard(fp[0], fp[1], fp[2], fp[3], e, col, stroke);
+
+    ctx.restore && ctx.restore(); // safety
+  }
+
+  function fillQuad(a,b,c,d, fill, stroke){
+    ctx.beginPath();
+    ctx.moveTo(a.x,a.y); ctx.lineTo(b.x,b.y); ctx.lineTo(c.x,c.y); ctx.lineTo(d.x,d.y); ctx.closePath();
+    ctx.fillStyle=fill; ctx.fill();
+    if(stroke){ ctx.strokeStyle=stroke; ctx.lineWidth=0.8; ctx.stroke(); }
+  }
+
+  // For the front-face text, render to an offscreen canvas at full text resolution, then draw into the projected quad
+  // using a simple bilinear-ish triangle warp (split the quad into 2 triangles and use canvas affine transforms)
+  const _texCv = document.createElement('canvas');
+  const _texCtx = _texCv.getContext('2d');
+  function drawTextBillboard(p0,p1,p2,p3, e, col, stroke){
+    // Prepare the text texture
+    const padX = 14, padY = 8;
+    const fontSpec = `${fontStyle(e.font)} ${fontWeight(e.font)} ${e.size*2}px ${fontFamily(e.font)}`;
+    _texCtx.font = fontSpec;
+    const tw = _texCtx.measureText(e.text).width;
+    const th = e.size*2.2;
+    _texCv.width = Math.ceil(tw + padX*2);
+    _texCv.height = Math.ceil(th + padY*2);
+    _texCtx.clearRect(0,0,_texCv.width,_texCv.height);
+    // Background (subtle paper-toned plate)
+    _texCtx.fillStyle='rgba(248,232,200,0.0)';
+    _texCtx.fillRect(0,0,_texCv.width,_texCv.height);
+    // Underline highlight
+    _texCtx.fillStyle = lighten(col, 0.40);
+    _texCtx.fillRect(0, _texCv.height-Math.max(2,e.size*0.10), _texCv.width, Math.max(2,e.size*0.10));
+    // Text
+    _texCtx.font = fontSpec;
+    _texCtx.fillStyle = col;
+    _texCtx.textBaseline='alphabetic';
+    _texCtx.fillText(e.text, padX, _texCv.height - padY - Math.max(0, e.size*0.10));
+    // A subtle ink shadow under the glyphs
+    _texCtx.globalCompositeOperation='source-atop';
+    _texCtx.fillStyle = darken(col, 0.50);
+    _texCtx.fillRect(0,0,_texCv.width,_texCv.height*0.5);
+    _texCtx.globalCompositeOperation='source-over';
+
+    // Now warp the texture canvas into the projected quad p0(top-left)->p1(top-right)->p2(bot-right)->p3(bot-left)
+    drawWarpedImage(_texCv, p0, p1, p2, p3);
+
+    // Outline the front face for a printed feel
+    ctx.beginPath();
+    ctx.moveTo(p0.x,p0.y); ctx.lineTo(p1.x,p1.y); ctx.lineTo(p2.x,p2.y); ctx.lineTo(p3.x,p3.y); ctx.closePath();
+    ctx.strokeStyle=stroke;
+    ctx.lineWidth=1.2;
+    ctx.stroke();
+  }
+
+  // Warp a 2D image (rectangle) into a quad by splitting into 2 triangles and using canvas transforms.
+  function drawWarpedImage(img, p0, p1, p2, p3){
+    const w = img.width, h = img.height;
+    // Triangle 1: (0,0)(w,0)(0,h) -> p0 p1 p3
+    drawTextureTri(img, 0,0, w,0, 0,h, p0, p1, p3);
+    // Triangle 2: (w,0)(w,h)(0,h) -> p1 p2 p3
+    drawTextureTri(img, w,0, w,h, 0,h, p1, p2, p3);
+  }
+  function drawTextureTri(img, sx0,sy0, sx1,sy1, sx2,sy2, dst0, dst1, dst2){
+    ctx.save();
+    ctx.beginPath();
+    ctx.moveTo(dst0.x,dst0.y);
+    ctx.lineTo(dst1.x,dst1.y);
+    ctx.lineTo(dst2.x,dst2.y);
+    ctx.closePath();
+    ctx.clip();
+    // Solve affine transform: M*(sx,sy,1)' = (dx,dy)'
+    // M = [a c e; b d f]
+    const x0=sx0,y0=sy0,x1=sx1,y1=sy1,x2=sx2,y2=sy2;
+    const u0=dst0.x,v0=dst0.y,u1=dst1.x,v1=dst1.y,u2=dst2.x,v2=dst2.y;
+    const det = x0*(y1-y2)+x1*(y2-y0)+x2*(y0-y1);
+    if(Math.abs(det)<1e-6){ ctx.restore(); return; }
+    const a = (u0*(y1-y2)+u1*(y2-y0)+u2*(y0-y1))/det;
+    const c = (x0*(u1-u2)+x1*(u2-u0)+x2*(u0-u1))/det;
+    const e = (x0*(y1*u2-y2*u1) + x1*(y2*u0-y0*u2) + x2*(y0*u1-y1*u0))/det;
+    const b = (v0*(y1-y2)+v1*(y2-y0)+v2*(y0-y1))/det;
+    const d = (x0*(v1-v2)+x1*(v2-v0)+x2*(v0-v1))/det;
+    const f = (x0*(y1*v2-y2*v1) + x1*(y2*v0-y0*v2) + x2*(y0*v1-y1*v0))/det;
+    ctx.transform(a,b,c,d,e,f);
+    ctx.drawImage(img,0,0);
+    ctx.restore();
+  }
+
+  // Color helpers
+  function darken(hex,f){
+    if(hex.startsWith('rgb')) return hex;
+    const r=parseInt(hex.slice(1,3),16),g=parseInt(hex.slice(3,5),16),b=parseInt(hex.slice(5,7),16);
+    return 'rgb('+Math.round(r*f)+','+Math.round(g*f)+','+Math.round(b*f)+')';
+  }
+  function lighten(hex,f){
+    if(hex.startsWith('rgb')) return hex;
+    const r=parseInt(hex.slice(1,3),16),g=parseInt(hex.slice(3,5),16),b=parseInt(hex.slice(5,7),16);
+    return 'rgb('+Math.round(r+(255-r)*f)+','+Math.round(g+(255-g)*f)+','+Math.round(b+(255-b)*f)+')';
+  }
+
+  // ============ EXPORT ============
+  window.volumExportPage = function(){
+    if(!canvas) return;
+    const a = document.createElement('a');
+    a.href = canvas.toDataURL('image/png');
+    const page = pages.find(p=>p.id===activePageId);
+    a.download = (page ? page.name.replace(/\s+/g,'_') : 'volum') + '.png';
+    a.click();
+  };
+})();
+</script>
 <div id="frost-overlay"></div>
 <div id="cw-overlay"></div>
 <div id="widget-ctx-menu">
