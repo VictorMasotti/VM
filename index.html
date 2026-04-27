@@ -2458,11 +2458,11 @@ window._spawnPhotoWidget=spawnPhotoWidget;
 let _winZ=502;
 function bringToFront(winEl){_winZ++;winEl.style.zIndex=_winZ;}
 document.addEventListener('mousedown',e=>{
-  const win=e.target.closest('#photos-window,#music-window,#notepad-window,#trash-window,#settings-wrap,#settings-window,#folders-window');
+  const win=e.target.closest('#photos-window,#music-window,#notepad-window,#trash-window,#settings-wrap,#settings-window,#folders-window,#clay-window,#volum-window');
   if(win) bringToFront(win);
 },true);
 document.addEventListener('touchstart',e=>{
-  const win=e.target.closest('#photos-window,#music-window,#notepad-window,#trash-window,#settings-wrap,#settings-window,#folders-window');
+  const win=e.target.closest('#photos-window,#music-window,#notepad-window,#trash-window,#settings-wrap,#settings-window,#folders-window,#clay-window,#volum-window');
   if(win) bringToFront(win);
 },true);
 function openPhotos(){
@@ -3419,7 +3419,7 @@ function maximiseMusic(){
       sessionStorage.setItem('_wallpaperState', JSON.stringify(st));
     } catch(e){}
   }
-  let _wrz;window.addEventListener('resize',()=>{clearTimeout(_wrz);_wrz=setTimeout(()=>{_saveWallpaperState();location.reload();},220);});
+  let _wrz;window.addEventListener('resize',()=>{clearTimeout(_wrz);_wrz=setTimeout(()=>{try{render();}catch(e){}},120);});
   window._wallpaperCanvas=cv;
   window._wallpaperPalette=PAL;
   window._regenerateWallpaper=function(){
@@ -4271,6 +4271,7 @@ body.dark-mode #volum-canvas-wrap{background:radial-gradient(ellipse at 50% 30%,
     });
     window.addEventListener('mouseup', ()=>{ drag=false; wrap.style.cursor='grab'; });
     wrap.addEventListener('wheel', e=>{
+      if(e.target.closest('#volum-input-overlay')) return;
       e.preventDefault();
       camDist *= (1 + e.deltaY*0.0012);
       camDist = Math.max(220, Math.min(1400, camDist));
