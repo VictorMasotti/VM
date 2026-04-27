@@ -349,6 +349,14 @@ body.dark-mode #fld-sidebar-toggle svg{color:rgba(255,255,255,0.55)!important;}
 .fld-main-sub{font-size:12px;color:rgba(0,0,0,0.45);margin-bottom:14px;}
 .fld-empty-main{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;color:rgba(0,0,0,0.4);gap:10px;}
 .fld-empty-main img{width:90px;height:90px;object-fit:contain;opacity:0.6;filter:saturate(1.18) contrast(1.06) drop-shadow(0 4px 10px rgba(0,0,0,0.15));}
+.fld-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:14px;margin-top:6px;}
+.fld-tile{display:flex;flex-direction:column;align-items:center;gap:6px;padding:8px;border-radius:10px;cursor:pointer;transition:background 0.12s;}
+.fld-tile:hover{background:rgba(0,0,0,0.05);}
+.fld-tile img{width:100%;aspect-ratio:1/1;object-fit:cover;border-radius:8px;background:#fff;box-shadow:0 2px 8px rgba(0,0,0,0.12);}
+.fld-tile-name{font-size:11px;color:rgba(0,0,0,0.65);text-align:center;word-break:break-all;line-height:1.3;}
+body.dark-mode .fld-tile:hover{background:rgba(255,255,255,0.06);}
+body.dark-mode .fld-tile img{background:#2a2a2c;box-shadow:0 2px 8px rgba(0,0,0,0.4);}
+body.dark-mode .fld-tile-name{color:rgba(255,255,255,0.65);}
 .fld-empty-main .fld-em-label{font-size:14px;font-weight:500;}
 .fld-empty-main .fld-em-sub{font-size:11px;color:rgba(0,0,0,0.32);}
 body.dark-mode #folders-window{background:#1c1c1e;box-shadow:0 24px 70px rgba(0,0,0,0.6),0 0 0 1px rgba(255,255,255,0.08);}
@@ -2231,7 +2239,13 @@ function renderFolderMain(){
     host.innerHTML='<div class="fld-empty-main"><img src="folder.png" alt=""><div class="fld-em-label">No folder selected</div><div class="fld-em-sub">Add a folder on the desktop to see it here.</div></div>';
     return;
   }
-  host.innerHTML=`<div class="fld-main-title"><img src="${f.img||'folder.png'}" alt=""><span>${f.name||'Untitled'}</span></div><div class="fld-main-sub">Folder · 0 items</div><div class="fld-empty-main"><img src="${f.img||'folder.png'}" alt=""><div class="fld-em-label">This folder is empty</div><div class="fld-em-sub">Drag files in to get started.</div></div>`;
+  const files=f.files||[];
+  if(files.length===0){
+    host.innerHTML=`<div class="fld-main-title"><img src="${f.img||'folder.png'}" alt=""><span>${f.name||'Untitled'}</span></div><div class="fld-main-sub">Folder · 0 items</div><div class="fld-empty-main"><img src="${f.img||'folder.png'}" alt=""><div class="fld-em-label">This folder is empty</div><div class="fld-em-sub">Drag files in to get started.</div></div>`;
+    return;
+  }
+  const grid=files.map(src=>`<div class="fld-tile"><img src="${src}" alt="" loading="lazy"><div class="fld-tile-name">${src}</div></div>`).join('');
+  host.innerHTML=`<div class="fld-main-title"><img src="${f.img||'folder.png'}" alt=""><span>${f.name||'Untitled'}</span></div><div class="fld-main-sub">Folder · ${files.length} item${files.length===1?'':'s'}</div><div class="fld-grid">${grid}</div>`;
 }
 function openFolders(folderId){
   const win=document.getElementById('folders-window');
@@ -2612,7 +2626,7 @@ function maximiseMusic(){
     const c=cols();
     return [
       {id:'f1', name:'Work',    img:'folder.png', col:c-2, row:0},
-      {id:'f2', name:'Music',   img:'folder.png', col:c-1, row:0},
+      {id:'f2', name:'LEGO Renders',   img:'folder.png', col:c-1, row:0, files:['NoodleCart1.png','juma.png','sky.png','neon.png','bird.png','ssd.png','mobile.png','screeeen.png','fishing.png','haunted.png']},
       {id:'f3', name:'Notes',   img:'folder.png', col:c-2, row:1},
       {id:'f4', name:'Archive', img:'folder.png', col:c-1, row:1},
       {id:'f5', name:'Trash',   img:'folder.png', col:c-2, row:2},
@@ -5723,13 +5737,11 @@ body.dark-mode #nom-titlebar{background:linear-gradient(180deg,#3c3c3e,#2c2c2e);
       dragging = true;
       const t = (e.touches ? e.touches[0] : e);
       setKnob(screenToT(t.clientX, t.clientY));
-      e.preventDefault(); e.stopPropagation();
-    }
+      e.preventDefault(); e.stopPropagation();     }
     function move(e){
       if(!dragging) return;
       const t = (e.touches ? e.touches[0] : e);
-      setKnob(screenToT(t.clientX, t.clientY));
-    }
+      setKnob(screenToT(t.clientX, t.clientY));     }
     function end(){ dragging = false; }
     knob.addEventListener('mousedown', start);
     hit.addEventListener('mousedown', start);
