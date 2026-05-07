@@ -7140,416 +7140,309 @@ window.springLaunch=function(id){
 (function(){
 let built=false;
 const CSS=`
-#calc-win{
-  position:fixed;left:0;bottom:0;
-  width:300px;
-  background:rgba(232,229,224,0.97);
-  backdrop-filter:blur(40px) saturate(1.8);-webkit-backdrop-filter:blur(40px) saturate(1.8);
+#cw{
+  position:fixed;width:280px;
+  background:rgba(232,229,224,0.96);
+  backdrop-filter:blur(40px);-webkit-backdrop-filter:blur(40px);
   border:1px solid rgba(255,255,255,0.75);
-  border-radius:12px;
-  box-shadow:0 32px 80px rgba(0,0,0,0.22),0 8px 20px rgba(0,0,0,0.10),
-             0 2px 4px rgba(0,0,0,0.06),inset 0 1px 0 rgba(255,255,255,0.95);
+  border-radius:10px;
+  box-shadow:0 24px 60px rgba(0,0,0,0.18),inset 0 1px 0 rgba(255,255,255,0.9);
   z-index:520;overflow:hidden;
   opacity:0;pointer-events:none;
-  transition:opacity 0.28s ease,box-shadow 0.2s ease;
-  font-family:-apple-system,sans-serif;
-  user-select:none;
+  transition:opacity 0.28s ease;
+  font-family:-apple-system,sans-serif;user-select:none;
 }
-body.dark-mode #calc-win{
-  background:rgba(26,26,28,0.97);
-  border-color:rgba(255,255,255,0.10);
-  box-shadow:0 32px 80px rgba(0,0,0,0.65),0 8px 20px rgba(0,0,0,0.4),
-             inset 0 1px 0 rgba(255,255,255,0.07);
+#cw.open{opacity:1;pointer-events:all;}
+#cw-tb{
+  height:38px;display:flex;align-items:center;padding:0 10px;gap:6px;
+  background:rgba(220,217,212,0.9);border-bottom:1px solid rgba(0,0,0,0.07);
+  cursor:grab;position:relative;flex-shrink:0;
 }
-#calc-win.open{opacity:1;pointer-events:all;}
-#calc-win.dragging{
-  box-shadow:0 48px 100px rgba(0,0,0,0.32),0 12px 30px rgba(0,0,0,0.16),
-             inset 0 1px 0 rgba(255,255,255,0.95);
-  transition:box-shadow 0.15s ease;
-}
-body.dark-mode #calc-win.dragging{
-  box-shadow:0 48px 100px rgba(0,0,0,0.8),0 12px 30px rgba(0,0,0,0.5),
-             inset 0 1px 0 rgba(255,255,255,0.07);
-}
-#calc-titlebar{
-  height:40px;display:flex;align-items:center;padding:0 14px;gap:7px;
-  background:linear-gradient(180deg,rgba(228,225,220,0.95),rgba(218,215,210,0.9));
-  border-bottom:1px solid rgba(0,0,0,0.07);
-  flex-shrink:0;cursor:grab;position:relative;
-}
-#calc-titlebar:active{cursor:grabbing;}
-body.dark-mode #calc-titlebar{
-  background:linear-gradient(180deg,rgba(44,44,46,0.95),rgba(36,36,38,0.9));
-  border-bottom-color:rgba(255,255,255,0.05);
-}
-#calc-titlebar span{
+#cw-tb:active{cursor:grabbing;}
+#cw-tb-title{
   position:absolute;left:50%;transform:translateX(-50%);
-  font-size:12px;font-weight:600;letter-spacing:0.02em;
-  color:rgba(0,0,0,0.45);pointer-events:none;
+  font-size:12px;font-weight:600;color:rgba(0,0,0,0.42);pointer-events:none;
 }
-body.dark-mode #calc-titlebar span{color:rgba(255,255,255,0.35);}
-#calc-display{
-  padding:16px 20px 10px;text-align:right;
-  background:linear-gradient(180deg,rgba(215,212,207,0.7),rgba(225,222,217,0.5));
-  border-bottom:1px solid rgba(0,0,0,0.05);
-  position:relative;overflow:hidden;
+#cw-sci-btn{
+  margin-left:auto;padding:0 7px;height:18px;border-radius:4px;
+  background:rgba(0,0,0,0.07);cursor:pointer;
+  font-size:10px;font-weight:600;color:rgba(0,0,0,0.45);
+  display:flex;align-items:center;transition:background 0.12s,color 0.12s;
+  flex-shrink:0;
 }
-#calc-display::after{
-  content:'';position:absolute;inset:0;
-  background:linear-gradient(135deg,rgba(255,255,255,0.18) 0%,transparent 60%);
-  pointer-events:none;
+#cw-sci-btn:hover{background:rgba(0,0,0,0.13);}
+#cw-sci-btn.on{color:rgba(0,122,255,0.9);background:rgba(0,122,255,0.10);}
+#cw-display{
+  padding:10px 14px 6px;text-align:right;
+  background:rgba(212,209,204,0.5);border-bottom:1px solid rgba(0,0,0,0.05);
 }
-body.dark-mode #calc-display{
-  background:linear-gradient(180deg,rgba(18,18,20,0.8),rgba(24,24,26,0.6));
-  border-bottom-color:rgba(255,255,255,0.04);
+#cw-expr{font-size:11px;color:rgba(0,0,0,0.3);min-height:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+#cw-num{font-size:40px;font-weight:200;letter-spacing:-1.5px;color:#1a1a1a;line-height:1.1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+#cw-body{display:flex;}
+#cw-sci{
+  width:0;overflow:hidden;flex-shrink:0;
+  transition:width 0.36s cubic-bezier(0.34,1.1,0.64,1);
+  border-right:1px solid rgba(0,0,0,0.06);
 }
-#calc-expr{
-  font-size:12px;color:rgba(0,0,0,0.30);min-height:18px;
-  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
-  text-align:right;letter-spacing:0.01em;
-}
-body.dark-mode #calc-expr{color:rgba(255,255,255,0.22);}
-#calc-num{
-  font-size:44px;font-weight:200;letter-spacing:-2px;
-  color:#1a1a1a;line-height:1.1;
-  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
-  text-align:right;margin-top:2px;
-}
-body.dark-mode #calc-num{color:#f5f5f7;}
-#calc-grid{
-  display:grid;grid-template-columns:repeat(4,1fr);
-  gap:1px;background:rgba(0,0,0,0.07);
-}
-body.dark-mode #calc-grid{background:rgba(255,255,255,0.04);}
-.cb{
-  display:flex;align-items:center;justify-content:center;
-  height:64px;font-size:20px;font-weight:400;
-  background:rgba(232,229,224,0.95);
-  color:#1a1a1a;cursor:pointer;
-  transition:background 0.06s,transform 0.06s;
-  position:relative;letter-spacing:-0.01em;
-}
-body.dark-mode .cb{background:rgba(46,46,48,0.95);color:#f5f5f7;}
-.cb:hover{background:rgba(218,215,210,1);}
-body.dark-mode .cb:hover{background:rgba(60,60,62,1);}
-.cb:active{background:rgba(198,195,190,1);transform:scale(0.92);}
-body.dark-mode .cb:active{background:rgba(76,76,78,1);}
-.cb.op{
-  color:#fff;font-weight:400;font-size:22px;
-  background:rgba(0,122,255,0.88);
-  text-shadow:0 1px 2px rgba(0,0,80,0.2);
-}
-body.dark-mode .cb.op{background:rgba(10,132,255,0.88);}
+#cw.sci #cw-sci{width:224px;}
+#cw-sci-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:rgba(0,0,0,0.05);width:224px;}
+.sc{height:58px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500;
+  background:rgba(208,205,200,0.95);color:rgba(0,0,0,0.58);cursor:pointer;
+  transition:background 0.06s,transform 0.06s;}
+.sc:hover{background:rgba(192,189,184,1);}
+.sc:active{transform:scale(0.92);background:rgba(176,173,168,1);}
+#cw-std{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:rgba(0,0,0,0.06);flex:1;}
+.cb{height:58px;display:flex;align-items:center;justify-content:center;font-size:18px;
+  background:rgba(232,229,224,0.95);color:#1a1a1a;cursor:pointer;
+  transition:background 0.06s,transform 0.06s;}
+.cb:hover{background:rgba(214,211,206,1);}
+.cb:active{transform:scale(0.92);background:rgba(196,193,188,1);}
+.cb.fn{background:rgba(208,205,200,0.95);font-size:14px;font-weight:500;color:rgba(0,0,0,0.58);}
+.cb.fn:hover{background:rgba(192,189,184,1);}
+.cb.op{background:rgba(0,122,255,0.88);color:white;font-size:20px;}
 .cb.op:hover{background:rgba(0,122,255,1);}
-body.dark-mode .cb.op:hover{background:rgba(10,132,255,1);}
-.cb.op:active{background:rgba(0,100,220,1);transform:scale(0.92);}
-.cb.fn{
-  background:rgba(210,207,202,0.95);
-  font-size:15px;font-weight:500;color:rgba(0,0,0,0.58);
-}
-body.dark-mode .cb.fn{background:rgba(60,60,62,0.95);color:rgba(255,255,255,0.5);}
-.cb.fn:hover{background:rgba(196,193,188,1);}
-body.dark-mode .cb.fn:hover{background:rgba(74,74,76,1);}
-.cb.fn:active{background:rgba(180,177,172,1);transform:scale(0.92);}
-body.dark-mode .cb.fn:active{background:rgba(80,80,82,1);}
-.cb.eq{
-  background:linear-gradient(180deg,rgba(0,135,255,0.95),rgba(0,105,220,0.95));
-  color:white;font-weight:400;font-size:22px;
-  box-shadow:inset 0 1px 0 rgba(255,255,255,0.25),inset 0 -1px 0 rgba(0,0,0,0.15);
-}
+.cb.op:active{background:rgba(0,100,210,1);}
+.cb.eq{background:linear-gradient(180deg,rgba(0,135,255,0.95),rgba(0,105,220,0.95));color:white;font-size:20px;}
 .cb.eq:hover{background:linear-gradient(180deg,rgba(0,145,255,1),rgba(0,115,230,1));}
-.cb.eq:active{background:rgba(0,100,210,1);transform:scale(0.92);}
-.cb.zero{grid-column:span 2;justify-content:flex-start;padding-left:24px;}
+.cb.eq:active{background:rgba(0,100,210,1);}
+.cb.z2{grid-column:span 2;justify-content:flex-start;padding-left:20px;}
 `;
 function build(){
   if(built)return;built=true;
-  const s=document.createElement('style');s.id='calc-css';s.textContent=CSS;
-  document.head.appendChild(s);
-  const el=document.createElement('div');el.id='calc-win';
+  const st=document.createElement('style');st.id='cw-css';st.textContent=CSS;document.head.appendChild(st);
+  const el=document.createElement('div');el.id='cw';
   el.innerHTML=`
-    <div id="calc-titlebar">
+    <div id="cw-tb">
       <div class="pw-dot close" onclick="window.closeCalc()"></div>
       <div class="pw-dot min"   onclick="window.closeCalc()"></div>
       <div class="pw-dot maxb"></div>
-      <span>Calculator</span>
-    <div id="calc-theme-btn" title="Theme" style="margin-left:auto;width:18px;height:18px;border-radius:50%;background:conic-gradient(red,yellow,lime,cyan,blue,magenta,red);cursor:pointer;flex-shrink:0;box-shadow:0 1px 3px rgba(0,0,0,0.25);transition:transform 0.15s;" onclick="toggleCalcTheme(event)"></div>
+      <span id="cw-tb-title">Calculator</span>
+      <div style="display:flex;align-items:center;gap:6px;margin-left:auto;flex-shrink:0;">
+        <span style="font-size:10px;color:rgba(0,0,0,0.38);font-weight:500;">sci</span>
+        <div id="cw-sci-track" onclick="toggleSci()" style="position:relative;width:30px;height:14px;border-radius:7px;background:#aaa;border:1px solid rgba(0,0,0,0.15);box-shadow:inset 0 1px 2px rgba(0,0,0,0.12);cursor:pointer;transition:background 0.3s;flex-shrink:0;"><div id="cw-sci-knob" style="position:absolute;top:1px;left:1px;width:12px;height:12px;border-radius:50%;background:radial-gradient(circle at 35% 30%,rgba(255,255,255,0.9),#e0dcd6);border:1px solid rgba(0,0,0,0.15);box-shadow:0 1px 4px rgba(0,0,0,0.22);transition:transform 0.3s cubic-bezier(0.34,1.2,0.64,1);"></div></div>
+        <div id="cw-color-btn" onclick="toggleCalcColor(event)" title="Theme" style="width:16px;height:16px;border-radius:50%;background:conic-gradient(red,yellow,lime,cyan,blue,magenta,red);cursor:pointer;flex-shrink:0;box-shadow:0 1px 3px rgba(0,0,0,0.25);margin-left:2px;"></div>
+      </div>
     </div>
-    <!-- color wheel popup -->
-    <div id="calc-theme-pop" style="display:none;position:absolute;top:44px;right:8px;z-index:100;background:rgba(242,240,237,0.96);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border:1px solid rgba(0,0,0,0.11);border-radius:12px;box-shadow:0 8px 28px rgba(0,0,0,0.16),0 2px 6px rgba(0,0,0,0.08);padding:12px;width:168px;">
+    <!-- colour wheel popup -->
+    <div id="cw-color-pop" style="display:none;position:absolute;top:42px;right:8px;z-index:100;background:rgba(242,240,237,0.97);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border:1px solid rgba(0,0,0,0.11);border-radius:10px;box-shadow:0 8px 28px rgba(0,0,0,0.16);padding:12px;width:160px;">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
         <span style="font-size:10px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:rgba(0,0,0,0.38);">Colour</span>
-        <div id="calc-reset-btn" style="font-size:10px;font-weight:600;color:rgba(0,0,0,0.4);cursor:pointer;padding:2px 6px;border-radius:4px;background:rgba(0,0,0,0.06);transition:background 0.1s;" onmouseenter="this.style.background='rgba(0,0,0,0.11)'" onmouseleave="this.style.background='rgba(0,0,0,0.06)'" onclick="resetCalcTheme()">Reset</div>
+        <div onclick="resetCalcColor()" style="font-size:10px;font-weight:600;color:rgba(0,0,0,0.4);cursor:pointer;padding:2px 7px;border-radius:4px;background:rgba(0,0,0,0.07);transition:background 0.1s;" onmouseenter="this.style.background='rgba(0,0,0,0.12)'" onmouseleave="this.style.background='rgba(0,0,0,0.07)'">Reset</div>
       </div>
       <div style="position:relative;width:120px;height:120px;margin:0 auto 10px;">
-        <canvas id="calc-wheel" width="120" height="120" style="border-radius:50%;display:block;cursor:crosshair;"></canvas>
-        <div id="calc-wheel-dot" style="position:absolute;width:10px;height:10px;border-radius:50%;border:2px solid white;box-shadow:0 1px 4px rgba(0,0,0,0.4);transform:translate(-50%,-50%);pointer-events:none;top:50%;left:50%;"></div>
+        <canvas id="cw-wheel" width="120" height="120" style="border-radius:50%;display:block;cursor:crosshair;"></canvas>
+        <div id="cw-wheel-dot" style="position:absolute;width:10px;height:10px;border-radius:50%;border:2px solid white;box-shadow:0 1px 4px rgba(0,0,0,0.4);transform:translate(-50%,-50%);pointer-events:none;top:50%;left:50%;"></div>
       </div>
       <div style="display:flex;align-items:center;gap:6px;">
         <span style="font-size:10px;color:rgba(0,0,0,0.38);font-weight:500;">Light</span>
-        <input type="range" id="calc-bright" min="0" max="100" value="85" style="flex:1;height:3px;border-radius:2px;accent-color:#555;cursor:pointer;">
+        <input type="range" id="cw-bright" min="0" max="100" value="85" style="flex:1;height:3px;border-radius:2px;accent-color:#555;cursor:pointer;">
         <span style="font-size:10px;color:rgba(0,0,0,0.38);font-weight:500;">Dark</span>
       </div>
     </div>
-    <div id="calc-display">
-      <div id="calc-expr"></div>
-      <div id="calc-num">0</div>
+    <div id="cw-display">
+      <div id="cw-expr"></div>
+      <div id="cw-num">0</div>
     </div>
-    <div id="calc-grid">
-      <div class="cb fn" data-v="AC">AC</div>
-      <div class="cb fn" data-v="+/-">+/-</div>
-      <div class="cb fn" data-v="%">%</div>
-      <div class="cb op" data-v="÷">÷</div>
-      <div class="cb" data-v="7">7</div>
-      <div class="cb" data-v="8">8</div>
-      <div class="cb" data-v="9">9</div>
-      <div class="cb op" data-v="×">×</div>
-      <div class="cb" data-v="4">4</div>
-      <div class="cb" data-v="5">5</div>
-      <div class="cb" data-v="6">6</div>
-      <div class="cb op" data-v="−">−</div>
-      <div class="cb" data-v="1">1</div>
-      <div class="cb" data-v="2">2</div>
-      <div class="cb" data-v="3">3</div>
-      <div class="cb op" data-v="+">+</div>
-      <div class="cb zero" data-v="0">0</div>
-      <div class="cb" data-v=".">.</div>
-      <div class="cb eq" data-v="=">=</div>
+    <div id="cw-body">
+      <div id="cw-sci"><div id="cw-sci-grid">
+        <div class="sc" data-s="sin">sin</div><div class="sc" data-s="cos">cos</div><div class="sc" data-s="tan">tan</div><div class="sc" data-s="π">π</div>
+        <div class="sc" data-s="asin">sin⁻¹</div><div class="sc" data-s="acos">cos⁻¹</div><div class="sc" data-s="atan">tan⁻¹</div><div class="sc" data-s="e">e</div>
+        <div class="sc" data-s="sq">x²</div><div class="sc" data-s="cb">x³</div><div class="sc" data-s="sqrt">√</div><div class="sc" data-s="inv">1/x</div>
+        <div class="sc" data-s="ln">ln</div><div class="sc" data-s="log">log</div><div class="sc" data-s="10x">10ˣ</div><div class="sc" data-s="ex">eˣ</div>
+        <div class="sc" data-s="abs">|x|</div><div class="sc" data-s="fact">n!</div><div class="sc" data-s="rand">Rand</div><div class="sc" data-s="pow">yˣ</div>
+      </div></div>
+      <div id="cw-std">
+        <div class="cb fn" data-v="AC">AC</div><div class="cb fn" data-v="+/-">+/-</div><div class="cb fn" data-v="%">%</div><div class="cb op" data-v="÷">÷</div>
+        <div class="cb" data-v="7">7</div><div class="cb" data-v="8">8</div><div class="cb" data-v="9">9</div><div class="cb op" data-v="×">×</div>
+        <div class="cb" data-v="4">4</div><div class="cb" data-v="5">5</div><div class="cb" data-v="6">6</div><div class="cb op" data-v="−">−</div>
+        <div class="cb" data-v="1">1</div><div class="cb" data-v="2">2</div><div class="cb" data-v="3">3</div><div class="cb op" data-v="+">+</div>
+        <div class="cb z2" data-v="0">0</div><div class="cb" data-v=".">.</div><div class="cb eq" data-v="=">=</div>
+      </div>
     </div>`;
   document.body.appendChild(el);
-  /* ── logic ── */
-  /* ── logic ── */
-  const numEl=document.getElementById('calc-num');
-  const exEl =document.getElementById('calc-expr');
-  let expr='', hint='', op=null, prev=null, justEq=false;
-  function fmt(n){
-    const s=parseFloat(n.toPrecision(10)).toString();
-    return s.length>10?parseFloat(n.toPrecision(8)).toString():s;
+
+  /* ── state ── */
+  const numEl=el.querySelector('#cw-num'),exEl=el.querySelector('#cw-expr');
+  let expr='',hint='',op=null,justEq=false;
+  function fmt(n){const s=parseFloat(n.toPrecision(10)).toString();return s.length>10?parseFloat(n.toPrecision(8)).toString():s;}
+  function upd(){
+    numEl.textContent=expr||'0';exEl.textContent=hint;
+    const l=(expr||'0').length;
+    numEl.style.fontSize=l>16?'18px':l>12?'24px':l>8?'32px':'40px';
   }
-  function update(){
-    numEl.textContent=expr||'0';
-    exEl.textContent=hint;
-    const len=(expr||'0').length;
-    numEl.style.fontSize=len>16?'18px':len>12?'24px':len>8?'32px':'44px';
-  }
-  function calcOp(a,o,b){
-    if(o==='+')return a+b;
-    if(o==='−')return a-b;
-    if(o==='×')return a*b;
-    if(o==='÷')return b===0?0:a/b;
-  }
-  // returns the last number token in expr
-  function lastNum(){
-    const parts=expr.trim().split(/\s/);
-    return parts[parts.length-1];
-  }
-  document.getElementById('calc-grid').addEventListener('click',e=>{
-    const v=e.target.closest('.cb')?.dataset.v;
-    if(!v)return;
-    if(v==='AC'){
-      expr='';hint='';op=null;prev=null;justEq=false;
-    }
-    else if(v==='+/-'){
-      const ln=lastNum();
-      const n=parseFloat(ln);
-      if(!isNaN(n)) expr=expr.slice(0,expr.lastIndexOf(ln))+fmt(-n);
-    }
-    else if(v==='%'){
-      const ln=lastNum();
-      const n=parseFloat(ln);
-      if(!isNaN(n)) expr=expr.slice(0,expr.lastIndexOf(ln))+fmt(n/100);
-    }
+  function calcOp(a,o,b){if(o==='+')return a+b;if(o==='−')return a-b;if(o==='×')return a*b;if(o==='÷')return b?a/b:0;}
+  function lastN(){const p=expr.trim().split(/\s/);return p[p.length-1]||'0';}
+
+  el.querySelector('#cw-std').addEventListener('click',e=>{
+    const v=e.target.closest('.cb')?.dataset.v;if(!v)return;
+    if(v==='AC'){expr='';hint='';op=null;justEq=false;}
+    else if(v==='+/-'){const n=parseFloat(lastN());if(!isNaN(n)){const i=expr.lastIndexOf(lastN());expr=expr.slice(0,i)+fmt(-n);}}
+    else if(v==='%'){const n=parseFloat(lastN());if(!isNaN(n)){const i=expr.lastIndexOf(lastN());expr=expr.slice(0,i)+fmt(n/100);}}
     else if(['÷','×','−','+'].includes(v)){
-      if(justEq){
-        // start fresh chain from previous result
-        expr=hint.replace(/\s*=\s*$/,'')||expr;
-        // actually use the result number
-        expr=numEl.textContent+' '+v+' ';
-        hint='';op=v;prev=parseFloat(numEl.textContent);justEq=false;
-      } else if(op&&expr.endsWith(' ')){
-        // replace last operator
-        expr=expr.slice(0,expr.lastIndexOf(op)-1)+' '+v+' ';
-        op=v;
-      } else {
-        // compute running total if we have a full expression
-        const parts=expr.trim().split(/\s([\+\−\×\÷])\s/);
-        if(parts.length===3&&!isNaN(parts[0])&&!isNaN(parts[2])){
-          const res=fmt(calcOp(parseFloat(parts[0]),parts[1],parseFloat(parts[2])));
-          prev=parseFloat(res);
-          expr=res+' '+v+' ';
-        } else {
-          prev=parseFloat(lastNum())||0;
-          expr=(expr||'0')+' '+v+' ';
-        }
+      if(justEq){expr=numEl.textContent+' '+v+' ';hint='';op=v;justEq=false;}
+      else if(op&&expr.endsWith(' ')){expr=expr.slice(0,-3)+' '+v+' ';op=v;}
+      else{
+        const p=expr.trim().split(/\s([\+\−\×\÷])\s/);
+        if(p.length===3&&!isNaN(p[0])&&!isNaN(p[2])){const r=fmt(calcOp(parseFloat(p[0]),p[1],parseFloat(p[2])));expr=r+' '+v+' ';}
+        else expr=(expr||'0')+' '+v+' ';
         op=v;
       }
     }
     else if(v==='='){
-      const parts=expr.trim().split(/\s([\+\−\×\÷])\s/);
-      if(parts.length===3&&!isNaN(parts[0])&&!isNaN(parts[2])){
-        const res=fmt(calcOp(parseFloat(parts[0]),parts[1],parseFloat(parts[2])));
-        hint=expr.trim()+' =';
-        expr=res;
-        op=null;prev=null;justEq=true;
-      }
+      const p=expr.trim().split(/\s([\+\−\×\÷])\s/);
+      if(p.length===3&&!isNaN(p[0])&&!isNaN(p[2])){hint=expr.trim()+' =';expr=fmt(calcOp(parseFloat(p[0]),p[1],parseFloat(p[2])));op=null;justEq=true;}
     }
-    else if(v==='.'){
-      if(justEq){expr='0.';hint='';justEq=false;}
-      else if(!lastNum().includes('.')) expr+='.';
-    }
+    else if(v==='.'){if(justEq){expr='0.';hint='';justEq=false;}else if(!lastN().includes('.'))expr+='.';}
     else{
-      // digit
       if(justEq){expr=v;hint='';justEq=false;}
-      else if(expr===''||expr==='0') expr=v;
-      else if(expr.endsWith(' ')) expr+=v;
-      else if(expr.length<20) expr+=v;
+      else if(expr===''||expr==='0')expr=v;
+      else if(expr.endsWith(' '))expr+=v;
+      else if(expr.length<20)expr+=v;
     }
-    update();
+    upd();
   });
-  /* ── colour wheel ── */
-  const DEFAULT_BG='rgba(232,229,224,0.97)';
-  const DEFAULT_OP='rgba(0,122,255,0.88)';
-  const DEFAULT_EQ='linear-gradient(180deg,rgba(0,135,255,0.95),rgba(0,105,220,0.95))';
-  function applyCalcTheme(bg,op,eq){
-    el.style.background=bg;
-    document.querySelectorAll('.cb.op').forEach(b=>b.style.background=op);
-    document.querySelectorAll('.cb.eq').forEach(b=>b.style.background=eq);
-    document.getElementById('calc-theme-pop').style.display='none';
-  }
-  window.resetCalcTheme=function(){
-    applyCalcTheme(DEFAULT_BG,DEFAULT_OP,DEFAULT_EQ);
+
+  /* sci buttons */
+  el.querySelector('#cw-sci-grid').addEventListener('click',e=>{
+    const s=e.target.closest('.sc')?.dataset.s;if(!s)return;
+    const cur=parseFloat(lastN())||0,deg=cur,rad=deg*Math.PI/180;
+    let r;
+    if(s==='sin')r=fmt(Math.sin(rad));else if(s==='cos')r=fmt(Math.cos(rad));
+    else if(s==='tan')r=fmt(Math.tan(rad));else if(s==='asin')r=fmt(Math.asin(cur)*180/Math.PI);
+    else if(s==='acos')r=fmt(Math.acos(cur)*180/Math.PI);else if(s==='atan')r=fmt(Math.atan(cur)*180/Math.PI);
+    else if(s==='π')r=fmt(Math.PI);else if(s==='e')r=fmt(Math.E);
+    else if(s==='sq')r=fmt(cur*cur);else if(s==='cb')r=fmt(cur*cur*cur);
+    else if(s==='sqrt')r=fmt(Math.sqrt(cur));else if(s==='inv')r=fmt(1/cur);
+    else if(s==='ln')r=fmt(Math.log(cur));else if(s==='log')r=fmt(Math.log10(cur));
+    else if(s==='10x')r=fmt(Math.pow(10,cur));else if(s==='ex')r=fmt(Math.exp(cur));
+    else if(s==='abs')r=fmt(Math.abs(cur));
+    else if(s==='fact'){let f=1;for(let i=2;i<=Math.round(cur);i++)f*=i;r=fmt(f);}
+    else if(s==='rand')r=fmt(Math.random());
+    else if(s==='pow'){expr=(expr||'0')+' ^ ';op='^';upd();return;}
+    if(r!==undefined){hint=expr?expr+' =':'';expr=r;justEq=true;upd();}
+  });
+
+  /* sci toggle */
+  let sciOn=false;
+  window.toggleSci=function(){
+    sciOn=!sciOn;
+    const track=el.querySelector('#cw-sci-track');
+    const knob=el.querySelector('#cw-sci-knob');
+    if(sciOn){
+      el.style.transition='width 0.36s cubic-bezier(0.34,1.1,0.64,1),left 0.36s cubic-bezier(0.34,1.1,0.64,1)';
+      el.classList.add('sci');
+      el.style.width='504px';
+      if(track) track.style.background='#555';
+      if(knob) knob.style.transform='translateX(16px)';
+      const l=parseFloat(el.style.left)||el.getBoundingClientRect().left;
+      el.style.left=Math.max(8,l-112)+'px';
+    } else {
+      el.style.transition='width 0.36s cubic-bezier(0.34,1.1,0.64,1),left 0.36s cubic-bezier(0.34,1.1,0.64,1)';
+      el.classList.remove('sci');
+      el.style.width='280px';
+      if(track) track.style.background='#aaa';
+      if(knob) knob.style.transform='translateX(0)';
+      const l=parseFloat(el.style.left)||el.getBoundingClientRect().left;
+      el.style.left=Math.min(window.innerWidth-288,l+112)+'px';
+    }
   };
-  function drawWheel(canvas){
-    const ctx=canvas.getContext('2d');
-    const cx=canvas.width/2,cy=canvas.height/2,r=cx;
-    for(let angle=0;angle<360;angle++){
-      const rad=angle*Math.PI/180;
-      const g=ctx.createLinearGradient(cx,cy,cx+r*Math.cos(rad),cy+r*Math.sin(rad));
-      g.addColorStop(0,'white');
-      g.addColorStop(1,`hsl(${angle},100%,50%)`);
-      ctx.beginPath();ctx.moveTo(cx,cy);
-      ctx.arc(cx,cy,r,rad,rad+Math.PI/90);
-      ctx.closePath();ctx.fillStyle=g;ctx.fill();
-    }
-  }
-  function getWheelColor(canvas,px,py){
-    const ctx=canvas.getContext('2d');
-    const d=ctx.getImageData(px,py,1,1).data;
-    return [d[0],d[1],d[2]];
-  }
-  function buildWheel(){
-    const wheel=document.getElementById('calc-wheel');
-    if(!wheel||wheel._drawn)return;
-    wheel._drawn=true;
-    drawWheel(wheel);
-    const dot=document.getElementById('calc-wheel-dot');
-    const bright=document.getElementById('calc-bright');
-    function applyColor(px,py){
-      const [r,g,b]=getWheelColor(wheel,px,py);
-      const bv=bright?parseInt(bright.value)/100:0.85;
-      const alpha=0.97;
-      const dr=Math.round(r+(255-r)*(1-bv));
-      const dg=Math.round(g+(255-g)*(1-bv));
-      const db=Math.round(b+(255-b)*(1-bv));
-      const bg=`rgba(${dr},${dg},${db},${alpha})`;
-      const or=Math.round(r*0.5*bv);
-      const og=Math.round(g*0.5*bv);
-      const ob=Math.round(b*0.5*bv+120*(1-bv));
-      const op=`rgba(${or},${og},${ob+60},0.88)`;
-      const eq=`linear-gradient(180deg,rgba(${or},${og},${ob+80},0.95),rgba(${Math.round(or*0.8)},${Math.round(og*0.8)},${Math.round((ob+60)*0.8)},0.95))`;
-      el.style.background=bg;
-      document.querySelectorAll('.cb.op').forEach(b=>b.style.background=op);
-      document.querySelectorAll('.cb.eq').forEach(b=>b.style.background=eq);
-      dot.style.left=px+'px';dot.style.top=py+'px';
-    }
-    let down=false;
-    wheel.addEventListener('mousedown',e=>{down=true;const r=wheel.getBoundingClientRect();applyColor(e.clientX-r.left,e.clientY-r.top);e.stopPropagation();});
-    window.addEventListener('mousemove',e=>{if(!down)return;const r=wheel.getBoundingClientRect();const x=Math.max(0,Math.min(119,e.clientX-r.left)),y=Math.max(0,Math.min(119,e.clientY-r.top));applyColor(x,y);});
-    window.addEventListener('mouseup',()=>{down=false;});
-    if(bright) bright.oninput=()=>{const d=document.getElementById('calc-wheel-dot');if(d._lastPx!=null)applyColor(d._lastPx,d._lastPy);};
-    // store last position
-    const origApply=applyColor;
-    function applyColorTracked(px,py){dot._lastPx=px;dot._lastPy=py;origApply(px,py);}
-    wheel.addEventListener('mousedown',e=>{const r=wheel.getBoundingClientRect();applyColorTracked(e.clientX-r.left,e.clientY-r.top);},{capture:true});
-  }
-  window.toggleCalcTheme=function(e){
+
+  /* colour wheel */
+  window.toggleCalcColor=function(e){
     e.stopPropagation();
-    const pop=document.getElementById('calc-theme-pop');
+    const pop=document.getElementById('cw-color-pop');
     const showing=pop.style.display==='none';
     pop.style.display=showing?'block':'none';
-    if(showing) buildWheel();
+    if(showing) buildCWWheel();
+  };
+  function buildCWWheel(){
+    const wh=document.getElementById('cw-wheel');
+    if(!wh||wh._drawn)return;
+    wh._drawn=true;
+    const ctx2=wh.getContext('2d');
+    const cx2=60,cy2=60,r2=60;
+    for(let a=0;a<360;a++){
+      const rad2=a*Math.PI/180;
+      const g=ctx2.createLinearGradient(cx2,cy2,cx2+r2*Math.cos(rad2),cy2+r2*Math.sin(rad2));
+      g.addColorStop(0,'white');g.addColorStop(1,`hsl(${a},100%,50%)`);
+      ctx2.beginPath();ctx2.moveTo(cx2,cy2);ctx2.arc(cx2,cy2,r2,rad2,rad2+Math.PI/90);ctx2.closePath();ctx2.fillStyle=g;ctx2.fill();
+    }
+    const dot=document.getElementById('cw-wheel-dot');
+    const bright=document.getElementById('cw-bright');
+    let lx=60,ly=60;
+    function applyColor(px,py){
+      lx=px;ly=py;
+      const d=ctx2.getImageData(px,py,1,1).data;
+      const rv=d[0],gv=d[1],bv2=d[2];
+      const br=bright?parseInt(bright.value)/100:0.85;
+      const dr=Math.round(rv+(255-rv)*(1-br)),dg=Math.round(gv+(255-gv)*(1-br)),db=Math.round(bv2+(255-bv2)*(1-br));
+      el.style.background=`rgba(${dr},${dg},${db},0.97)`;
+      const or=Math.round(rv*0.35),og=Math.round(gv*0.35),ob=Math.round(bv2*0.5+60);
+      el.querySelectorAll('.cb.op').forEach(b=>b.style.background=`rgba(${or},${og},${ob},0.88)`);
+      el.querySelectorAll('.cb.eq').forEach(b=>b.style.background=`linear-gradient(180deg,rgba(${or},${og},${ob+20},0.95),rgba(${Math.round(or*0.8)},${Math.round(og*0.8)},${Math.round(ob*0.8)},0.95))`);
+      dot.style.left=px+'px';dot.style.top=py+'px';
+    }
+    let wd=false;
+    wh.addEventListener('mousedown',e=>{wd=true;const r3=wh.getBoundingClientRect();applyColor(Math.max(0,Math.min(119,e.clientX-r3.left)),Math.max(0,Math.min(119,e.clientY-r3.top)));e.stopPropagation();});
+    window.addEventListener('mousemove',e=>{if(!wd)return;const r3=wh.getBoundingClientRect();applyColor(Math.max(0,Math.min(119,e.clientX-r3.left)),Math.max(0,Math.min(119,e.clientY-r3.top)));});
+    window.addEventListener('mouseup',()=>{wd=false;});
+    if(bright)bright.oninput=()=>applyColor(lx,ly);
+  }
+  window.resetCalcColor=function(){
+    el.style.background='rgba(232,229,224,0.97)';
+    el.querySelectorAll('.cb.op').forEach(b=>b.style.background='rgba(0,122,255,0.88)');
+    el.querySelectorAll('.cb.eq').forEach(b=>b.style.background='linear-gradient(180deg,rgba(0,135,255,0.95),rgba(0,105,220,0.95))');
+    document.getElementById('cw-color-pop').style.display='none';
   };
   document.addEventListener('click',e=>{
-    const pop=document.getElementById('calc-theme-pop');
-    if(pop&&!pop.contains(e.target)&&e.target.id!=='calc-theme-btn') pop.style.display='none';
+    const pop=document.getElementById('cw-color-pop');
+    if(pop&&!pop.contains(e.target)&&e.target.id!=='cw-color-btn')pop.style.display='none';
   });
-  const tb=document.getElementById('calc-titlebar');
-  let dragOn=false,ox=0,oy=0;
+  /* drag */
+  const tb=el.querySelector('#cw-tb');
+  let dOn=false,ox=0,oy=0;
   tb.addEventListener('mousedown',e=>{
-    if(e.target.classList.contains('pw-dot')||e.target.id==='calc-theme-btn')return;
+    if(e.target.classList.contains('pw-dot')||e.target.id==='cw-sci-track'||e.target.id==='cw-sci-knob'||e.target.id==='cw-color-btn')return;
     const r=el.getBoundingClientRect();
-    el.style.top=r.top+'px';
-    el.style.bottom='auto';
-    el.style.right='auto';
-    el.style.left=r.left+'px';
-    ox=e.clientX-r.left;
-    oy=e.clientY-r.top;
-    dragOn=true;
-    e.preventDefault();
+    el.style.transition='none';
+    el.style.top=r.top+'px';el.style.bottom='auto';el.style.left=r.left+'px';el.style.right='auto';
+    ox=e.clientX-r.left;oy=e.clientY-r.top;dOn=true;e.preventDefault();
   });
-  window.addEventListener('mousemove',e=>{
-    if(!dragOn)return;
-    el.style.left=(e.clientX-ox)+'px';
-    el.style.top=(e.clientY-oy)+'px';
-  });
-  window.addEventListener('mouseup',()=>{ dragOn=false; });
+  window.addEventListener('mousemove',e=>{if(!dOn)return;el.style.left=(e.clientX-ox)+'px';el.style.top=(e.clientY-oy)+'px';});
+  window.addEventListener('mouseup',()=>{if(!dOn)return;dOn=false;el.style.transition='opacity 0.28s ease';});
+
+  /* keyboard */
   window.addEventListener('keydown',e=>{
-    if(!document.getElementById('calc-win').classList.contains('open'))return;
-    const map={'0':'0','1':'1','2':'2','3':'3','4':'4','5':'5','6':'6','7':'7','8':'8','9':'9',
-      '.':'.','Enter':'=','=':'=','+':'+','-':'−','*':'×','/':'÷','Backspace':'AC','Escape':'AC','%':'%'};
-    const v=map[e.key];
-    if(v) document.querySelector(`[data-v="${v}"]`)?.click();
+    if(!el.classList.contains('open'))return;
+    const m={'0':'0','1':'1','2':'2','3':'3','4':'4','5':'5','6':'6','7':'7','8':'8','9':'9',
+      '.':'.','Enter':'=','=':'=','+':'+','-':'−','*':'×','/':'÷','Backspace':'AC','Escape':'AC'};
+    const v=m[e.key];if(v)el.querySelector(`[data-v="${v}"]`)?.click();
   });
 }
+
 window.openCalc=function(){
   build();
-  const el=document.getElementById('calc-win');
-  if(!el)return;
-  // position centered above the Spring dock button
+  const el=document.getElementById('cw');if(!el)return;
   const dock=document.getElementById('dock-spring');
   if(dock){
     const dr=dock.getBoundingClientRect();
-    const cw=300; // calc width
-    let left=dr.left+dr.width/2-cw/2;
-    left=Math.max(8,Math.min(left,window.innerWidth-cw-8));
-    el.style.left=left+'px';
-    el.style.right='auto';
-    el.style.top='auto';
+    let left=dr.left+dr.width/2-140;
+    left=Math.max(8,Math.min(left,window.innerWidth-288));
+    el.style.left=left+'px';el.style.right='auto';el.style.top='auto';
     el.style.bottom=(window.innerHeight-dr.top+48)+'px';
-    }
-  // force reflow then open
-  el.offsetHeight;
-  el.classList.add('open');
+  }
+  el.offsetHeight;el.classList.add('open');
 };
 window.closeCalc=function(){
-  const el=document.getElementById('calc-win');
-  if(!el)return;
-  // animate toward Spring dock button
+  const el=document.getElementById('cw');if(!el)return;
   const dock=document.getElementById('dock-spring');
   if(dock){
-    const dr=dock.getBoundingClientRect();
-    const wr=el.getBoundingClientRect();
-    const tx=dr.left+dr.width/2-(wr.left+wr.width/2);
-    const ty=dr.top+dr.height/2-(wr.top+wr.height/2);
-    el.style.transition='opacity 0.32s ease,transform 0.36s cubic-bezier(0.4,0,0.6,1)';
-    el.style.transform=`translate(${tx}px,${ty}px) scale(0.05)`;
-    el.style.opacity='0';
-    setTimeout(()=>{
-      el.classList.remove('open');
-      el.style.transition='';el.style.transform='';el.style.opacity='';
-    },380);
-  } else {
-    el.classList.remove('open');
-  }
+    const dr=dock.getBoundingClientRect(),wr=el.getBoundingClientRect();
+    const tx=dr.left+dr.width/2-(wr.left+wr.width/2),ty=dr.top+dr.height/2-(wr.top+wr.height/2);
+    el.style.transition='opacity 0.3s ease,transform 0.34s cubic-bezier(0.4,0,0.6,1)';
+    el.style.transform=`translate(${tx}px,${ty}px) scale(0.05)`;el.style.opacity='0';
+    setTimeout(()=>{el.classList.remove('open');el.style.cssText='';},360);
+  } else el.classList.remove('open');
 };
 })();
 </script>
