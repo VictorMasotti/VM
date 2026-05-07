@@ -6966,466 +6966,298 @@ body.dark-mode #nom-titlebar{background:linear-gradient(180deg,#3c3c3e,#2c2c2e);
 /* ═══════════════════════ GYARADOS TCG ═══════════════════════ */
 (function(){
 
-const PHOTOS = ['GyaradosA.jpg','GyaradosB.jpg','GyaradosC.jpg','GyaradosD.jpg','GyaradosE.jpg',
-                'GyaradosF.jpg','GyaradosG.jpg','GyaradosH.jpg','GyaradosI.jpg','GyaradosJ.jpg'];
+const PHOTOS=['GyaradosA.jpg','GyaradosB.jpg','GyaradosC.jpg','GyaradosD.jpg','GyaradosE.jpg',
+              'GyaradosF.jpg','GyaradosG.jpg','GyaradosH.jpg','GyaradosI.jpg','GyaradosJ.jpg'];
+const N=PHOTOS.length;
+let built=false,isOpen=false,raf=null,imgs=[];
 
-/* ── state ── */
-let built=false, open=false, raf=null;
-let imgs=[], cards=[], dragging=null, dragOX=0, dragOY=0;
-let flipping=-1, flipT=0, flipDir=1;
+/* ── 3D sphere rotation state ── */
+let rotX=0.4, rotY=0.0;           // current rotation angles
+let velX=0,   velY=0.004;         // spin velocity (auto-spin Y)
+let dragging=false, lastMX=0, lastMY=0;
 
-/* ── card layout: scattered on a table ── */
-function scatter(W,H){
-  const CW=Math.min(W,H)*0.18, CH=CW*1.415;
-  const cx=W/2, cy=H/2;
-  // hand-placed positions with personality — spread across table
-  const slots=[
-    {x:cx-W*0.30,y:cy-H*0.18,r:-18},{x:cx-W*0.10,y:cy-H*0.28,r: 5},
-    {x:cx+W*0.14,y:cy-H*0.22,r: 14},{x:cx+W*0.30,y:cy-H*0.08,r:-8},
-    {x:cx+W*0.22,y:cy+H*0.14,r: 22},{x:cx+W*0.04,y:cy+H*0.22,r:-3},
-    {x:cx-W*0.16,y:cy+H*0.20,r:-14},{x:cx-W*0.30,y:cy+H*0.08,r: 9},
-    {x:cx-W*0.06,y:cy+H*0.04,r: 2},{x:cx+W*0.12,y:cy-H*0.02,r:-6},
-  ];
-  return slots.map((s,i)=>({
-    i, x:s.x, y:s.y, r:s.r,
-    vx:0, vy:0, vr:0,
-    CW, CH,
-    z:i,
-    flipped:false,
-    flipP:0,   // 0=face up, 1=face down
-    hover:false,
-    lifted:false,
-  }));
-}
+/* ── selected card (flies out) ── */
+let selected=-1, selT=0;          // selT: 0=in sphere, 1=zoomed out
 
-/* ── CSS ── */
+/* ── card positions: fibonacci sphere ── */
+const POS = Array.from({length:N},(_,i)=>{
+  const phi   = Math.acos(1 - 2*(i+0.5)/N);
+  const theta = Math.PI*(1+Math.sqrt(5))*i;
+  return {
+    x: Math.sin(phi)*Math.cos(theta),
+    y: Math.cos(phi),
+    z: Math.sin(phi)*Math.sin(theta),
+  };
+});
+
 const CSS=`
-#gyr-win{
-  position:fixed;left:50%;top:50%;
-  width:min(1100px,96vw);height:min(720px,90vh);
-  transform:translate(-50%,-50%) scale(0.9);
-  opacity:0;pointer-events:none;
-  z-index:510;
-  border-radius:18px;
-  overflow:hidden;
-  transition:opacity 0.4s ease,transform 0.45s cubic-bezier(0.34,1.2,0.64,1);
-  display:flex;flex-direction:column;
-  /* felt table look */
-  background:
-    radial-gradient(ellipse at 40% 35%, #1a3a2a 0%, #0e2018 45%, #060e0c 100%);
-  box-shadow:0 40px 120px rgba(0,0,0,0.7),0 0 0 1px rgba(255,255,255,0.06),
-             inset 0 0 80px rgba(0,0,0,0.4);
+#gyr{position:fixed;inset:0;z-index:510;opacity:0;pointer-events:none;
+  background:transparent!important;transition:opacity 0.5s ease;}
+#gyr.open{opacity:1;pointer-events:all;}
+#gyr-c{position:absolute;inset:0;width:100%;height:100%;
+  background:transparent!important;display:block;}
+#gyr-dots{
+  position:absolute;
+  top:52px;
+  left:50%;
+  transform:translateX(-50%);
+  display:flex;gap:8px;z-index:20;
 }
-#gyr-win::before{
-  content:'';position:absolute;inset:0;border-radius:18px;
-  background:
-    repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(0,0,0,0.04) 3px,rgba(0,0,0,0.04) 4px),
-    repeating-linear-gradient(90deg,transparent,transparent 3px,rgba(0,0,0,0.04) 3px,rgba(0,0,0,0.04) 4px);
-  pointer-events:none;z-index:0;
+#gyr-hint{
+  position:absolute;bottom:22px;left:50%;transform:translateX(-50%);
+  font:500 10px/1 -apple-system,sans-serif;letter-spacing:0.2em;text-transform:uppercase;
+  color:rgba(255,255,255,0.22);pointer-events:none;
+  transition:opacity 1s ease;white-space:nowrap;
 }
-#gyr-win.open{opacity:1;pointer-events:all;transform:translate(-50%,-50%) scale(1);}
-#gyr-win.closing{opacity:0;transform:translate(-50%,-50%) scale(0.88);}
-
-#gyr-titlebar{
-  height:40px;flex-shrink:0;position:relative;z-index:10;
-  display:flex;align-items:center;padding:0 14px;
-  background:rgba(0,0,0,0.35);
-  border-bottom:1px solid rgba(255,255,255,0.06);
-  backdrop-filter:blur(8px);
-}
-#gyr-title-text{
-  position:absolute;left:50%;transform:translateX(-50%);
-  font-size:12px;font-weight:600;letter-spacing:0.22em;text-transform:uppercase;
-  color:rgba(255,255,255,0.35);pointer-events:none;
-  font-family:-apple-system,sans-serif;
-}
-
-#gyr-canvas{
-  flex:1;display:block;width:100%;
-  cursor:default;position:relative;z-index:1;
-}
-
-#gyr-info{
-  position:absolute;bottom:0;left:0;right:0;height:48px;z-index:10;
-  display:flex;align-items:center;justify-content:center;gap:24px;
-  pointer-events:none;
-}
-#gyr-card-name{
-  font-size:11px;letter-spacing:0.18em;text-transform:uppercase;
-  color:rgba(255,255,255,0);font-family:-apple-system,sans-serif;
-  transition:color 0.35s ease;font-weight:600;
-}
-#gyr-card-name.vis{color:rgba(255,255,255,0.55);}
-#gyr-hint2{
-  font-size:10px;letter-spacing:0.14em;
-  color:rgba(255,255,255,0.2);font-family:-apple-system,sans-serif;
-  transition:opacity 0.6s;
-}
-
-/* zoom overlay */
-#gyr-zoom{
-  position:absolute;inset:0;z-index:20;
-  display:flex;align-items:center;justify-content:center;
-  opacity:0;pointer-events:none;
-  background:rgba(0,8,4,0.0);
-  transition:opacity 0.35s ease,background 0.35s ease;
-  border-radius:18px;
-}
-#gyr-zoom.on{opacity:1;pointer-events:all;background:rgba(0,8,4,0.82);}
-#gyr-zoom img{
-  max-width:48vw;max-height:72vh;
-  border-radius:12px;object-fit:contain;
-  box-shadow:0 32px 80px rgba(0,0,0,0.9),0 0 0 1px rgba(255,255,255,0.1);
-  transform:scale(0.85) translateY(12px);
-  transition:transform 0.45s cubic-bezier(0.34,1.2,0.64,1);
-}
-#gyr-zoom.on img{transform:scale(1) translateY(0);}
-#gyr-zoom-x{
-  position:absolute;top:16px;right:16px;
-  width:32px;height:32px;border-radius:50%;
-  background:rgba(255,255,255,0.1);border:none;
-  color:rgba(255,255,255,0.7);font-size:16px;
-  display:flex;align-items:center;justify-content:center;
-  cursor:pointer;transition:background 0.15s;
-}
-#gyr-zoom-x:hover{background:rgba(255,255,255,0.2);}
 `;
 
 function injectCSS(){
-  if(document.getElementById('gyr-css')) return;
-  const s=document.createElement('style');
-  s.id='gyr-css';s.textContent=CSS;
+  if(document.getElementById('gyr-css'))return;
+  const s=document.createElement('style');s.id='gyr-css';s.textContent=CSS;
   document.head.appendChild(s);
 }
 
-/* ── build DOM ── */
-let WIN,CVS,CTX;
+let EL,CVS,CTX;
+
 function build(){
-  if(built)return;built=true;
-  injectCSS();
-  WIN=document.createElement('div');
-  WIN.id='gyr-win';
-  WIN.innerHTML=`
-    <div id="gyr-titlebar">
-      <div style="display:flex;gap:7px">
-        <div class="pw-dot close" id="gyr-close"></div>
-        <div class="pw-dot min"   id="gyr-min"></div>
-      </div>
-      <span id="gyr-title-text">Gyarados TCG</span>
+  if(built)return;built=true;injectCSS();
+  EL=document.createElement('div');EL.id='gyr';
+  EL.innerHTML=`
+    <canvas id="gyr-c"></canvas>
+    <div id="gyr-dots">
+      <div class="pw-dot close" id="gyr-x"></div>
+      <div class="pw-dot min"   id="gyr-m"></div>
+      <div class="pw-dot maxb"  id="gyr-g"></div>
     </div>
-    <canvas id="gyr-canvas"></canvas>
-    <div id="gyr-info">
-      <span id="gyr-card-name"></span>
-      <span id="gyr-hint2">drag · double-click to flip · click to inspect</span>
-    </div>
-    <div id="gyr-zoom">
-      <img id="gyr-zoom-img" src="" alt="">
-      <button id="gyr-zoom-x">✕</button>
-    </div>
-  `;
-  document.body.appendChild(WIN);
-  CVS=document.getElementById('gyr-canvas');
+    <div id="gyr-hint">drag to spin · click a card</div>`;
+  document.body.appendChild(EL);
+  CVS=document.getElementById('gyr-c');
   CTX=CVS.getContext('2d');
+  document.getElementById('gyr-x').onclick=closeGyr;
+  document.getElementById('gyr-m').onclick=closeGyr;
 
-  document.getElementById('gyr-close').onclick=closeGyr;
-  document.getElementById('gyr-min').onclick=closeGyr;
-  document.getElementById('gyr-zoom').onclick=e=>{
-    if(e.target===e.currentTarget||e.target.id==='gyr-zoom-x') closeZoom();
-  };
-
-  /* drag */
-  CVS.addEventListener('mousedown',onDown);
-  window.addEventListener('mousemove',onMove);
-  window.addEventListener('mouseup',onUp);
-  CVS.addEventListener('mousemove',onHover);
-
-  /* double-click to flip */
-  CVS.addEventListener('dblclick',e=>{
-    const c=pickCard(e);
-    if(c>=0) startFlip(c);
+  /* drag to rotate sphere */
+  CVS.addEventListener('mousedown',e=>{
+    if(selected>=0){deselect();return;}
+    dragging=true;lastMX=e.clientX;lastMY=e.clientY;
+    velX=0;velY=0;
   });
+  window.addEventListener('mousemove',e=>{
+    if(!dragging)return;
+    const dx=e.clientX-lastMX, dy=e.clientY-lastMY;
+    velY+=dx*0.004; velX+=dy*0.004;
+    lastMX=e.clientX; lastMY=e.clientY;
+  });
+  window.addEventListener('mouseup',()=>{dragging=false;});
 
-  /* click to inspect (only if not dragged) */
-  let didDrag=false;
-  CVS.addEventListener('mousedown',()=>{didDrag=false;});
-  window.addEventListener('mousemove',()=>{if(dragging!==null)didDrag=true;});
+  /* click card to zoom */
   CVS.addEventListener('click',e=>{
-    if(didDrag)return;
-    const c=pickCard(e);
-    if(c>=0){
-      const card=cards[c];
-      if(!card.flipped) openZoom(card.i);
+    if(dragging)return;
+    const hit=pickCard(e.clientX,e.clientY);
+    if(hit>=0&&selected<0){
+      selected=hit; selT=0;
+      // stop sphere spinning while card is out
+      velX*=0.1; velY*=0.1;
+    } else if(selected>=0){
+      deselect();
     }
   });
 
-  /* resize */
-  new ResizeObserver(()=>{
-    if(!open)return;
-    const W=CVS.offsetWidth,H=CVS.offsetHeight;
-    const placed=scatter(W,H);
-    cards.forEach((c,i)=>{c.CW=placed[i].CW;c.CH=placed[i].CH;});
-  }).observe(CVS);
+  /* esc to close zoom */
+  window.addEventListener('keydown',e=>{
+    if(e.key==='Escape'){ if(selected>=0) deselect(); else closeGyr(); }
+  });
 }
+
+function deselect(){ selected=-1; velY=0.003; }
 
 function loadImgs(){
   imgs=[];
-  PHOTOS.forEach((src,i)=>{
-    const img=new Image();
-    img.src=src;imgs[i]=img;
+  PHOTOS.forEach((src,i)=>{const img=new Image();img.src=src;imgs[i]=img;});
+}
+
+/* ── 3D math ── */
+function rotatePoint(p, rx, ry){
+  // rotate around Y axis then X axis
+  let {x,y,z}=p;
+  // Y axis
+  const cy=Math.cos(ry),sy=Math.sin(ry);
+  let nx=x*cy+z*sy, nz=-x*sy+z*cy;
+  x=nx; z=nz;
+  // X axis
+  const cx=Math.cos(rx),sx=Math.sin(rx);
+  let ny=y*cx-z*sx, nz2=y*sx+z*cx;
+  y=ny; z=nz2;
+  return {x,y,z};
+}
+
+/* ── pick card under cursor ── */
+const cardCache=[];
+function pickCard(mx,my){
+  let best=-1,bestZ=-999;
+  cardCache.forEach(({i,sx,sy,cw,ch,rot})=>{
+    const dx=mx-sx,dy=my-sy;
+    const c=Math.cos(-rot),s=Math.sin(-rot);
+    const lx=dx*c-dy*s, ly=dx*s+dy*c;
+    if(Math.abs(lx)<cw/2&&Math.abs(ly)<ch/2){
+      if(cardCache[i]&&cardCache[i].depth>bestZ){bestZ=cardCache[i].depth;best=i;}
+    }
   });
-}
-
-/* ── interaction ── */
-function pickCard(e){
-  const rect=CVS.getBoundingClientRect();
-  const mx=e.clientX-rect.left, my=e.clientY-rect.top;
-  // top z first
-  const sorted=[...cards].sort((a,b)=>b.z-a.z);
-  for(const c of sorted){
-    const dx=mx-c.x, dy=my-c.y;
-    const rad=-c.r*Math.PI/180;
-    const lx=dx*Math.cos(rad)-dy*Math.sin(rad);
-    const ly=dx*Math.sin(rad)+dy*Math.cos(rad);
-    if(Math.abs(lx)<c.CW/2&&Math.abs(ly)<c.CH/2) return c.i;
-  }
-  return -1;
-}
-
-let topZ=10;
-function onDown(e){
-  const c=pickCard(e);
-  if(c<0)return;
-  dragging=c;
-  const rect=CVS.getBoundingClientRect();
-  dragOX=e.clientX-rect.left-cards[c].x;
-  dragOY=e.clientY-rect.top -cards[c].y;
-  cards[c].z=++topZ;
-  cards[c].lifted=true;
-  cards[c].vx=0;cards[c].vy=0;
-}
-function onMove(e){
-  if(dragging===null)return;
-  const rect=CVS.getBoundingClientRect();
-  const nx=e.clientX-rect.left-dragOX;
-  const ny=e.clientY-rect.top-dragOY;
-  const c=cards[dragging];
-  c.vx=(nx-c.x)*0.6; c.vy=(ny-c.y)*0.6;
-  c.x=nx; c.y=ny;
-}
-function onUp(){
-  if(dragging===null)return;
-  cards[dragging].lifted=false;
-  // slight throw
-  cards[dragging].vr+=(Math.random()-0.5)*2;
-  dragging=null;
-}
-function onHover(e){
-  const rect=CVS.getBoundingClientRect();
-  const mx=e.clientX-rect.left,my=e.clientY-rect.top;
-  cards.forEach(c=>{
-    const dx=mx-c.x,dy=my-c.y;
-    const rad=-c.r*Math.PI/180;
-    const lx=dx*Math.cos(rad)-dy*Math.sin(rad);
-    const ly=dx*Math.sin(rad)+dy*Math.cos(rad);
-    c.hover=Math.abs(lx)<c.CW/2&&Math.abs(ly)<c.CH/2;
-  });
-  const anyHover=cards.some(c=>c.hover);
-  CVS.style.cursor=anyHover?(dragging!==null?'grabbing':'grab'):'default';
-}
-
-/* ── flip ── */
-function startFlip(i){
-  flipping=i; flipT=0; flipDir=cards[i].flipped?-1:1;
-  cards[i].z=++topZ;
-}
-
-/* ── zoom ── */
-function openZoom(i){
-  document.getElementById('gyr-zoom-img').src=PHOTOS[i];
-  document.getElementById('gyr-zoom').classList.add('on');
-}
-function closeZoom(){
-  document.getElementById('gyr-zoom').classList.remove('on');
+  return best;
 }
 
 /* ── draw ── */
-/* card back pattern */
-function drawCardBack(ctx,w,h){
-  ctx.fillStyle='#0a1628';
-  ctx.fillRect(-w/2,-h/2,w,h);
-  // scales pattern
-  const step=w*0.12;
-  ctx.strokeStyle='rgba(30,80,160,0.5)';
-  ctx.lineWidth=0.8;
-  for(let iy=-h/2;iy<h/2+step;iy+=step*0.7){
-    for(let ix=-w/2;ix<w/2+step;ix+=step){
-      const ox=(Math.floor((iy-(-h/2))/(step*0.7))%2)*step*0.5;
-      ctx.beginPath();
-      ctx.arc(ix+ox,iy,step*0.52,Math.PI,0);
-      ctx.stroke();
-    }
-  }
-  // center emblem
-  ctx.strokeStyle='rgba(80,140,255,0.4)';
-  ctx.lineWidth=1;
-  ctx.beginPath();ctx.arc(0,0,w*0.18,0,Math.PI*2);ctx.stroke();
-  ctx.beginPath();ctx.arc(0,0,w*0.28,0,Math.PI*2);ctx.stroke();
-  // pokéball line
-  ctx.beginPath();ctx.moveTo(-w*0.18,0);ctx.lineTo(w*0.18,0);ctx.stroke();
-  ctx.fillStyle='rgba(80,140,255,0.3)';
-  ctx.beginPath();ctx.arc(0,0,w*0.07,0,Math.PI*2);ctx.fill();
-}
-
-function drawCard(ctx,card){
-  const {x,y,r,CW:w,CH:h,hover,lifted,flipped,flipP,i}=card;
-  const img=imgs[i];
-  ctx.save();
-  ctx.translate(x,y);
-  ctx.rotate(r*Math.PI/180);
-
-  /* lift shadow */
-  if(lifted||hover){
-    ctx.shadowColor='rgba(0,0,0,0.7)';
-    ctx.shadowBlur=lifted?38:20;
-    ctx.shadowOffsetY=lifted?18:8;
-  }
-
-  /* flip: scaleX from 1→0→1 */
-  let scaleX=1;
-  if(flipping===i){
-    const half=flipP<0.5;
-    scaleX=half?(1-flipP*2):(flipP*2-1);
-  }
-  ctx.scale(scaleX,1);
-
-  /* card shape */
-  const rad=w*0.07;
-  ctx.beginPath();
-  rrPath(ctx,-w/2,-h/2,w,h,rad);
-  ctx.clip();
-  ctx.shadowBlur=0;
-
-  /* draw face or back */
-  const showBack=(flipping===i && flipP>=0.5)?!flipped:flipped;
-  if(showBack){
-    drawCardBack(ctx,w,h);
-  } else {
-    if(img&&img.complete&&img.naturalWidth>0){
-      const s=Math.max(w/img.naturalWidth,h/img.naturalHeight);
-      ctx.drawImage(img,-(img.naturalWidth*s)/2,-(img.naturalHeight*s)/2,
-                       img.naturalWidth*s,img.naturalHeight*s);
-    } else {
-      ctx.fillStyle='#0a1628';ctx.fillRect(-w/2,-h/2,w,h);
-    }
-    /* subtle holo shimmer */
-    const T=Date.now()/1000;
-    const shx=(Math.sin(T*0.8+i*1.1)*0.5+0.5);
-    const sh=ctx.createLinearGradient(-w/2,-h/2,w/2,h/2);
-    sh.addColorStop(0,'rgba(255,255,255,0)');
-    sh.addColorStop(Math.max(0,shx-0.12),'rgba(255,255,255,0)');
-    sh.addColorStop(shx,`rgba(255,255,255,${hover?0.18:0.07})`);
-    sh.addColorStop(Math.min(1,shx+0.12),'rgba(255,255,255,0)');
-    sh.addColorStop(1,'rgba(255,255,255,0)');
-    ctx.fillStyle=sh;ctx.fillRect(-w/2,-h/2,w,h);
-  }
-
-  /* hover ring */
-  if(hover&&!lifted){
-    ctx.strokeStyle='rgba(100,180,255,0.5)';
-    ctx.lineWidth=2;
-    rrPath(ctx,-w/2,-h/2,w,h,rad);
-    ctx.stroke();
-  }
-
-  ctx.restore();
-}
-
-function rrPath(c,x,y,w,h,r){
-  c.beginPath();
-  c.moveTo(x+r,y);c.lineTo(x+w-r,y);
-  c.arcTo(x+w,y,x+w,y+r,r);c.lineTo(x+w,y+h-r);
-  c.arcTo(x+w,y+h,x+w-r,y+h,r);c.lineTo(x+r,y+h);
-  c.arcTo(x,y+h,x,y+h-r,r);c.lineTo(x,y+r);
-  c.arcTo(x,y,x+r,y,r);c.closePath();
-}
-
-/* ambient felt shimmer */
-function drawTable(ctx,W,H){
-  /* felt texture vignette already in CSS, but add a moving light */
-  const T=Date.now()/3000;
-  const lx=W*0.5+Math.sin(T)*W*0.2;
-  const ly=H*0.4+Math.cos(T*0.7)*H*0.1;
-  const g=ctx.createRadialGradient(lx,ly,0,lx,ly,Math.max(W,H)*0.6);
-  g.addColorStop(0,'rgba(20,60,35,0.18)');
-  g.addColorStop(1,'rgba(0,0,0,0)');
-  ctx.fillStyle=g;ctx.fillRect(0,0,W,H);
-}
-
-function tick(){
-  if(!open){raf=null;return;}
+const T_ref={v:0};
+function frame(){
+  if(!isOpen){raf=null;return;}
   const dpr=devicePixelRatio||1;
-  const W=CVS.offsetWidth,H=CVS.offsetHeight;
+  const W=window.innerWidth,H=window.innerHeight;
   if(CVS.width!==W*dpr||CVS.height!==H*dpr){CVS.width=W*dpr;CVS.height=H*dpr;}
   CTX.clearRect(0,0,CVS.width,CVS.height);
   CTX.save();CTX.scale(dpr,dpr);
 
-  drawTable(CTX,W,H);
+  T_ref.v+=0.012;
 
-  /* physics */
-  cards.forEach(c=>{
-    if(dragging===c.i)return;
-    c.vx*=0.88;c.vy*=0.88;c.vr*=0.82;
-    c.x+=c.vx;c.y+=c.vy;c.r+=c.vr;
-    // gentle boundary bounce
-    const marg=c.CW*0.3;
-    if(c.x<marg){c.x=marg;c.vx*=-0.4;}
-    if(c.x>W-marg){c.x=W-marg;c.vx*=-0.4;}
-    if(c.y<marg){c.y=marg;c.vy*=-0.4;}
-    if(c.y>H-marg){c.y=H-marg;c.vy*=-0.4;}
+  /* advance sphere rotation */
+  if(!dragging&&selected<0){
+    rotX+=velX; rotY+=velY;
+    velX*=0.96; velY=velY*0.998+0.004*0.002; // tiny auto-spin
+  } else if(dragging){
+    rotX+=velX; rotY+=velY;
+    velX*=0.85; velY*=0.85;
+  }
+
+  /* advance selected card zoom */
+  if(selected>=0&&selT<1) selT=Math.min(1,selT+0.06);
+  if(selected<0&&selT>0)  selT=Math.max(0,selT-0.06);
+
+  const R=Math.min(W,H)*0.42; // sphere radius
+  const CX=W/2, CY=H/2;
+
+  /* project all cards */
+  const projected=POS.map((p,i)=>{
+    const rot=rotatePoint(p,rotX,rotY);
+    const depth=rot.z;                      // -1=back, +1=front
+    const perspective=1.6/(1.6-depth*0.5);  // perspective divide
+    const sx=CX+rot.x*R*perspective;
+    const sy=CY-rot.y*R*perspective;         // flip Y
+
+    // card face normal faces outward — dot with view dir gives visibility
+    const visible=depth>-0.35;
+
+    // card size scales with perspective
+    const CW=Math.min(W,H)*0.22*perspective;
+    const CH=CW*(2/3);
+
+    // card tilts to face camera — rotation based on sphere surface normal
+    const tiltAngle=Math.atan2(rot.x,rot.z)*0.35;
+
+    return {i,sx,sy,depth,perspective,CW,CH,visible,tiltAngle};
   });
 
-  /* flip animation */
-  if(flipping>=0){
-    flipT+=0.05;
-    cards[flipping].flipP=Math.min(1,flipT);
-    if(flipT>=1){
-      cards[flipping].flipped=!cards[flipping].flipped;
-      cards[flipping].flipP=0;
-      flipping=-1;flipT=0;
+  /* cache for hit testing */
+  cardCache.length=0;
+  projected.forEach(c=>{
+    cardCache[c.i]={i:c.i,sx:c.sx,sy:c.sy,cw:c.CW,ch:c.CH,rot:c.tiltAngle,depth:c.depth};
+  });
+
+  /* sort back to front */
+  projected.sort((a,b)=>a.depth-b.depth);
+
+  /* draw cards */
+  projected.forEach(({i,sx,sy,depth,perspective,CW,CH,visible,tiltAngle})=>{
+    if(!visible&&selected!==i) return; // cull backface
+
+    const img=imgs[i];
+    const isSelected=selected===i;
+    const t=isSelected?selT:0;
+
+    /* selected card flies to centre + scales up */
+    const tx=isSelected?lerp(sx,CX,easeOut(t)):sx;
+    const ty=isSelected?lerp(sy,CY,easeOut(t)):sy;
+    const scale=isSelected?lerp(1,Math.min(W,H)/(CW*1.5)*easeOut(t)*0.9,t):1;
+    const finalW=CW*scale, finalH=CH*scale;
+    const tilt=isSelected?tiltAngle*(1-t):tiltAngle;
+
+    /* opacity: fade back cards, full front cards */
+    const alpha=isSelected?1:Math.max(0,(depth+0.35)/1.35);
+
+    CTX.save();
+    CTX.globalAlpha=alpha;
+    CTX.translate(tx,ty);
+    CTX.rotate(tilt);
+
+    /* selected card shadow */
+    if(isSelected&&t>0.1){
+      CTX.shadowColor=`rgba(0,0,0,${t*0.6})`;
+      CTX.shadowBlur=60*t;
+      CTX.shadowOffsetY=20*t;
     }
-  }
 
-  /* draw sorted by z */
-  [...cards].sort((a,b)=>a.z-b.z).forEach(c=>drawCard(CTX,c));
+    const rad=Math.min(finalW,finalH)*0.07;
+    CTX.beginPath();
+    CTX.roundRect(-finalW/2,-finalH/2,finalW,finalH,rad);
+    CTX.clip();
+    CTX.shadowBlur=0;CTX.shadowColor='transparent';
 
-  /* name label */
-  const top=[...cards].sort((a,b)=>b.z-a.z).find(c=>c.hover&&!c.flipped);
-  const nm=document.getElementById('gyr-card-name');
-  if(nm){
-    if(top){nm.textContent='Gyarados — '+String.fromCharCode(65+top.i);nm.classList.add('vis');}
-    else nm.classList.remove('vis');
-  }
+    /* image */
+    if(img&&img.complete&&img.naturalWidth>0){
+      CTX.drawImage(img,-finalW/2,-finalH/2,finalW,finalH);
+    } else {
+      CTX.fillStyle='rgba(255,255,255,0.06)';
+      CTX.fillRect(-finalW/2,-finalH/2,finalW,finalH);
+    }
+
+    /* holographic foil shimmer */
+    const T=T_ref.v;
+    const sa=T*0.4+i*0.628+(isSelected?Math.sin(T)*1.2:0);
+    const g=CTX.createLinearGradient(
+      Math.cos(sa)*finalW,Math.sin(sa)*finalH,
+      -Math.cos(sa)*finalW,-Math.sin(sa)*finalH);
+    const shimAmt=isSelected?0.28+Math.sin(T*1.5)*0.12:0.10;
+    g.addColorStop(0,'rgba(255,255,255,0)');
+    g.addColorStop(0.38,'rgba(255,255,255,0)');
+    g.addColorStop(0.5,`rgba(255,255,255,${shimAmt})`);
+    g.addColorStop(0.62,'rgba(255,255,255,0)');
+    g.addColorStop(1,'rgba(255,255,255,0)');
+    CTX.fillStyle=g;CTX.fillRect(-finalW/2,-finalH/2,finalW,finalH);
+
+    /* selected: rainbow chromatic edge */
+    if(isSelected&&t>0.5){
+      const rim=CTX.createLinearGradient(-finalW/2,-finalH/2,finalW/2,finalH/2);
+      rim.addColorStop(0,`rgba(120,80,255,${(t-0.5)*0.4})`);
+      rim.addColorStop(0.33,`rgba(80,200,255,${(t-0.5)*0.3})`);
+      rim.addColorStop(0.66,`rgba(255,80,180,${(t-0.5)*0.3})`);
+      rim.addColorStop(1,`rgba(120,80,255,${(t-0.5)*0.4})`);
+      CTX.strokeStyle=rim;
+      CTX.lineWidth=2;
+      CTX.beginPath();CTX.roundRect(-finalW/2,-finalH/2,finalW,finalH,rad);CTX.stroke();
+    }
+
+    CTX.restore();
+  });
 
   CTX.restore();
-  raf=requestAnimationFrame(tick);
+  raf=requestAnimationFrame(frame);
 }
 
-/* ── open / close ── */
+function lerp(a,b,t){return a+(b-a)*t;}
+function easeOut(t){return 1-(1-t)*(1-t)*(1-t);}
+
 window.openGyarados=function(){
   build();loadImgs();
-  if(open)return;
-  open=true;
-  const W=CVS.offsetWidth||1000,H=CVS.offsetHeight||640;
-  cards=scatter(W||1000,H||640);
-  WIN.classList.add('open');
-  raf=requestAnimationFrame(tick);
+  if(isOpen)return;isOpen=true;
+  rotX=0.4;rotY=0;velX=0;velY=0.004;selected=-1;selT=0;
+  EL.classList.add('open');
+  const hint=document.getElementById('gyr-hint');
+  if(hint){hint.style.opacity='1';setTimeout(()=>hint.style.opacity='0',3000);}
+  raf=requestAnimationFrame(frame);
 };
 
 function closeGyr(){
-  if(!open)return;
-  open=false;raf=null;
-  WIN.classList.add('closing');
-  setTimeout(()=>{WIN.classList.remove('open','closing');},450);
+  if(!isOpen)return;isOpen=false;raf=null;
+  selected=-1;
+  EL.classList.remove('open');
 }
 
 window.springLaunch=function(id){
@@ -7434,6 +7266,7 @@ window.springLaunch=function(id){
 };
 
 })();
+
 </script>
 </body>
 </html>
