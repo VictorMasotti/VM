@@ -2477,6 +2477,126 @@ document.addEventListener('dblclick',e=>{
   }
 });
 window._refreshFoldersList=refreshFoldersList;
+
+/* ── Folder context menu + Trash bin ── */
+(function(){
+  var trashBin=[];
+  function init(){
+    var menu=document.getElementById('folder-ctx-menu');
+    if(!menu)return;
+    var target=null;
+
+    window.showFolderCtx=function(f,x,y){
+      target=f;
+      var mw=160,mh=112;
+      menu.style.left=Math.min(x,window.innerWidth-mw-8)+'px';
+      menu.style.top=Math.min(y,window.innerHeight-mh-8)+'px';
+      menu.style.opacity='1';
+      menu.style.pointerEvents='all';
+      menu.style.transform='scale(1) translateY(0)';
+    };
+
+    function closeCtx(){
+      menu.style.opacity='0';
+      menu.style.pointerEvents='none';
+      menu.style.transform='scale(0.92) translateY(-4px)';
+      target=null;
+    }
+
+    document.addEventListener('mousedown',function(e){
+      if(menu&&!menu.contains(e.target)) closeCtx();
+    });
+
+    document.getElementById('fctx-open').onclick=function(){
+      if(target) openFolders(target.id);
+      closeCtx();
+    };
+
+    document.getElementById('fctx-rename').onclick=function(){
+      if(!target)return;
+      var id=target.id; closeCtx();
+      setTimeout(function(){ if(window._startFolderRename) window._startFolderRename(id); },80);
+    };
+
+    document.getElementById('fctx-delete').onclick=function(){
+      if(!target)return;
+      var f=target; closeCtx();
+      // Save original position and push to trash
+      trashBin.push({id:f.id,name:f.name,img:f.img,col:f.col,row:f.row,files:f.files});
+      // Remove from folder list
+      var list=window._folderList||[];
+      var idx=list.findIndex(function(x){return x.id===f.id;});
+      if(idx>=0) list.splice(idx,1);
+      window._folderList=list;
+      // Animate out
+      var el=document.getElementById('di-'+f.id);
+      if(el){
+        el.style.transition='opacity 0.3s ease,transform 0.3s ease';
+        el.style.opacity='0'; el.style.transform='scale(0.6)';
+        setTimeout(function(){el.remove();},320);
+      }
+      if(typeof window._refreshFoldersList==='function') window._refreshFoldersList();
+      updateTrashView();
+    };
+
+    function updateTrashView(){
+      var body=document.getElementById('trash-body');
+      if(!body)return;
+      body.querySelectorAll('.trash-folder-item').forEach(function(x){x.remove();});
+      var emptyIcon=document.getElementById('trash-empty-icon');
+      var emptyLabel=document.getElementById('trash-empty-label');
+      if(trashBin.length===0){
+        if(emptyIcon)emptyIcon.style.display='';
+        if(emptyLabel)emptyLabel.style.display='';
+        body.style.alignItems='center';
+        body.style.justifyContent='center';
+        return;
+      }
+      if(emptyIcon)emptyIcon.style.display='none';
+      if(emptyLabel)emptyLabel.style.display='none';
+      body.style.alignItems='flex-start';
+      body.style.justifyContent='flex-start';
+      body.style.overflowY='auto';
+
+      trashBin.forEach(function(f,i){
+        var row=document.createElement('div');
+        row.className='trash-folder-item';
+        row.style.cssText='display:flex;align-items:center;gap:10px;padding:9px 16px;width:100%;box-sizing:border-box;border-bottom:1px solid rgba(0,0,0,0.06);transition:background 0.1s;';
+        row.onmouseenter=function(){row.style.background='rgba(0,0,0,0.04)';};
+        row.onmouseleave=function(){row.style.background='';};
+        var img=document.createElement('img');
+        img.src=f.img||'folder.png';
+        img.style.cssText='width:32px;height:32px;object-fit:contain;flex-shrink:0;';
+        var name=document.createElement('span');
+        name.style.cssText='flex:1;font-size:13px;font-family:-apple-system,sans-serif;color:inherit;';
+        name.textContent=f.name;
+        var btn=document.createElement('span');
+        btn.innerHTML='↩';
+        btn.style.cssText='width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;color:#007aff;background:rgba(0,122,255,0.10);cursor:pointer;flex-shrink:0;transition:background 0.12s;border:none;';
+        btn.onmouseenter=function(){btn.style.background='rgba(0,122,255,0.18)';};
+        btn.onmouseleave=function(){btn.style.background='rgba(0,122,255,0.10)';};
+        btn.onclick=function(ev){
+          ev.stopPropagation();
+          var restored={id:f.id,name:f.name,img:f.img,col:f.col,row:f.row,files:f.files};
+          var idx2=trashBin.indexOf(f);
+          if(idx2>=0) trashBin.splice(idx2,1);
+          var list=window._folderList||[];
+          if(!list.some(function(x){return x.id===restored.id;})) list.push(restored);
+          window._folderList=list;
+          if(typeof window._rebuildFolderIcon==='function') window._rebuildFolderIcon(restored);
+          if(typeof window._refreshFoldersList==='function') window._refreshFoldersList();
+          updateTrashView();
+        };
+        row.appendChild(img); row.appendChild(name); row.appendChild(btn);
+        body.appendChild(row);
+      });
+    }
+
+    window._updateTrashView=updateTrashView;
+  }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',init);
+  else init();
+})();
 // Update titlebar to current folder name
 function updateFoldersTitle(){
   const list=window._folderList||[];
@@ -2984,20 +3104,42 @@ function maximiseMusic(){
     el.appendChild(img); el.appendChild(lbl);
     container.appendChild(el);
     elMap[f.id]=el;
-    let lastClick=0;
     el.addEventListener('mousedown', ev=>{ ev._folderDown=true; });
-    el.addEventListener('click', ev=>{
-      const now=Date.now();
-      if(now-lastClick<400){ ev.stopPropagation(); startRename(el,f); }
-      lastClick=now;
-    });
-    let lastTap=0;
-    el.addEventListener('touchend', ev=>{
-      const now=Date.now();
-      if(now-lastTap<400){ ev.stopPropagation(); startRename(el,f); lastTap=0; return; }
-      lastTap=now;
-    },{passive:true});
+    el.addEventListener('dblclick', ev=>{ ev.stopPropagation(); openFolders(f.id); });
+    el.addEventListener('contextmenu', ev=>{ ev.preventDefault(); ev.stopPropagation(); showFolderCtx(f,ev.clientX,ev.clientY); });
+    let _lp=null;
+    el.addEventListener('touchstart',ev=>{ _lp=setTimeout(()=>{ _lp=null; const t=ev.touches[0]; showFolderCtx(f,t.clientX,t.clientY); },520); },{passive:true});
+    el.addEventListener('touchend',()=>{ clearTimeout(_lp);_lp=null; },{passive:true});
+    el.addEventListener('touchmove',()=>{ clearTimeout(_lp);_lp=null; },{passive:true});
   }
+  window._startFolderRename=function(id){
+    const f=folders.find(x=>x.id===id);
+    const el=document.getElementById('di-'+id);
+    if(f&&el)startRename(el,f);
+  };
+  window._rebuildFolderIcon=function(f){
+    const oldEl=document.getElementById('di-'+f.id);
+    if(oldEl) oldEl.remove();
+    if(!folders.some(x=>x.id===f.id)) folders.push(f);
+    // Use original col/row; find free slot only if occupied
+    const occupied=new Set(folders.filter(x=>x.id!==f.id).map(x=>x.col+','+x.row));
+    if(occupied.has(f.col+','+f.row)){
+      let placed=false;
+      outer: for(let r=0;r<12;r++) for(let cc=0;cc<8;cc++){
+        if(!occupied.has(cc+','+r)){f.col=cc;f.row=r;placed=true;break outer;}
+      }
+      if(!placed){f.col=0;f.row=0;}
+    }
+    makeIcon(f);
+    const newEl=document.getElementById('di-'+f.id);
+    if(newEl){
+      newEl.style.opacity='0'; newEl.style.transform='scale(0.7)';
+      requestAnimationFrame(()=>requestAnimationFrame(()=>{
+        newEl.style.transition='opacity 0.35s ease,transform 0.38s cubic-bezier(0.34,1.28,0.64,1)';
+        newEl.style.opacity='1'; newEl.style.transform='';
+      }));
+    }
+  };
   function startRename(el, f){
     const lbl=el.querySelector('.desk-icon-label');
     if(!lbl||lbl.contentEditable==='true') return;
@@ -4744,6 +4886,22 @@ body.dark-mode #volum-canvas-wrap{background:radial-gradient(ellipse at 50% 30%,
   <div class="wctx-item" id="wctx-calcw-expand" style="display:none;">⊞ Expand 4×2</div>
   <div class="wctx-item danger" id="wctx-remove">🗑 Remove Widget</div>
 </div>
+<div id="folder-ctx-menu" style="position:fixed;z-index:9300;background:rgba(242,240,237,0.97);backdrop-filter:blur(28px);-webkit-backdrop-filter:blur(28px);border:1px solid rgba(0,0,0,0.13);border-radius:10px;box-shadow:0 8px 32px rgba(0,0,0,0.18);overflow:hidden;min-width:148px;opacity:0;pointer-events:none;transform:scale(0.92) translateY(-4px);transform-origin:top left;transition:opacity 0.12s ease,transform 0.12s cubic-bezier(0.34,1.2,0.64,1);">
+  <div class="fctx-item" id="fctx-open">📂 Open</div>
+  <div class="fctx-item" id="fctx-rename">✏️ Rename</div>
+  <div class="fctx-item fctx-danger" id="fctx-delete">🗑 Move to Trash</div>
+</div>
+<style>
+.fctx-item{display:flex;align-items:center;gap:8px;padding:9px 14px;font-size:13px;color:#1a1a1a;border-bottom:1px solid rgba(0,0,0,0.06);cursor:pointer;font-family:-apple-system,sans-serif;transition:background 0.1s;}
+.fctx-item:last-child{border-bottom:none;}
+.fctx-item:hover{background:rgba(0,0,0,0.06);}
+.fctx-danger{color:#ff3b30;}
+.fctx-danger:hover{background:rgba(255,59,48,0.08);}
+body.dark-mode #folder-ctx-menu{background:rgba(20,20,24,0.98);border-color:rgba(255,255,255,0.12);}
+body.dark-mode .fctx-item{color:#f2f2f7;border-bottom-color:rgba(255,255,255,0.07);}
+body.dark-mode .fctx-item:hover{background:rgba(255,255,255,0.07);}
+body.dark-mode .fctx-danger{color:#ff453a;}
+</style>
 <div id="translate-overlay"></div>
 <div id="widget-fullscreen-overlay" onclick="closeWidgetFullscreen(event)">
   <div id="wfs-controls">
