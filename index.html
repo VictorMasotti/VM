@@ -4139,9 +4139,9 @@ function maximiseMusic(){
 #volum-window.maximised{left:0!important;top:24px!important;width:100vw!important;height:calc(100vh - 24px - 54px)!important;transform:none!important;border-radius:0!important;max-width:100vw!important;max-height:100vh!important;transition:left 0.35s cubic-bezier(0.4,0,0.2,1),top 0.35s cubic-bezier(0.4,0,0.2,1),width 0.35s cubic-bezier(0.4,0,0.2,1),height 0.35s cubic-bezier(0.4,0,0.2,1),border-radius 0.35s ease!important;}
 #volum-window.minimising{opacity:0!important;transform:translate(var(--volum-tx),var(--volum-ty)) scale(0.03)!important;transition:opacity 0.35s ease,transform 0.38s ease!important;}
 body.dark-mode #volum-window{background:#1f1a14;box-shadow:0 32px 90px rgba(0,0,0,0.7),0 0 0 1px rgba(255,255,255,0.06);}
-#volum-titlebar{height:40px;flex-shrink:0;background:linear-gradient(180deg,#f2ead8 0%,#e8ddc8 100%);border-bottom:2px solid #c8b090;display:flex;align-items:center;padding:0 12px;gap:8px;position:relative;}
+#volum-titlebar{height:40px;flex-shrink:0;background:rgba(235,232,228,0.95);border-bottom:1px solid rgba(0,0,0,0.08);display:flex;align-items:center;padding:0 12px;gap:8px;position:relative;}
 #volum-titlebar .pw-dot{box-shadow:inset 0 1px 0 rgba(255,255,255,0.4),0 1px 2px rgba(0,0,0,0.55);}
-#volum-titlebar span.vt-title{position:absolute;left:50%;transform:translateX(-50%);font-family:'Cormorant Garamond',Georgia,serif;font-size:14px;font-weight:400;font-style:italic;letter-spacing:0.22em;color:#4a3420;text-transform:uppercase;pointer-events:none;}
+#volum-titlebar span.vt-title{position:absolute;left:50%;transform:translateX(-50%);font-size:13px;font-weight:600;color:rgba(0,0,0,0.65);pointer-events:none;font-family:-apple-system,sans-serif;letter-spacing:normal;font-style:normal;text-transform:none;}
 .vt-export{margin-left:auto;display:flex;align-items:center;gap:5px;padding:3px 11px;border-radius:20px;border:1px solid rgba(232,212,168,0.35);background:rgba(255,240,210,0.12);font-size:11px;font-weight:600;color:#e8d4a8;letter-spacing:0.04em;cursor:pointer;font-family:-apple-system,sans-serif;transition:background 0.3s ease,color 0.3s ease,border-color 0.3s ease;}
 .vt-export:hover{background:#c89048;color:#1a0c04;border-color:#c89048;}
 #volum-app-body{flex:1;display:flex;overflow:hidden;min-height:0;position:relative;background:#3a2a1c;}
@@ -4212,34 +4212,115 @@ body.dark-mode #volum-canvas-wrap{background:radial-gradient(ellipse at 50% 30%,
   </div>
   <!-- Japanese loader -->
   <div id="vb-loader">
-    <div class="vbl-inner">
-      <div class="vbl-mon">家</div>
-      <div class="vbl-title">Blocco</div>
-      <div class="vbl-sub">三次元の文字</div>
-      <div class="vbl-bar-wrap"><div class="vbl-bar"></div></div>
-      <div class="vbl-brushlines">
-        <div class="vbl-brush"></div><div class="vbl-brush"></div><div class="vbl-brush"></div>
-      </div>
-    </div>
+    <svg id="vbl-art" viewBox="0 0 800 500" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice" style="position:absolute;inset:0;width:100%;height:100%;">
+      <defs>
+        <linearGradient id="vbl-bg" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#f9e4c8"/>
+          <stop offset="45%" stop-color="#f0c090"/>
+          <stop offset="80%" stop-color="#e09060"/>
+          <stop offset="100%" stop-color="#d07848"/>
+        </linearGradient>
+        <radialGradient id="vbl-sun-g" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stop-color="#fff8e0" stop-opacity="1"/>
+          <stop offset="50%" stop-color="#ffe8a0" stop-opacity="0.4"/>
+          <stop offset="100%" stop-color="#ffc060" stop-opacity="0"/>
+        </radialGradient>
+        <linearGradient id="vbl-ground" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#d4aa70"/>
+          <stop offset="100%" stop-color="#b88840"/>
+        </linearGradient>
+      </defs>
+
+      <!-- Sky fill -->
+      <rect width="800" height="500" fill="url(#vbl-bg)"/>
+
+      <!-- Sun glow -->
+      <ellipse cx="400" cy="258" rx="110" ry="80" fill="url(#vbl-sun-g)" opacity="0.9"/>
+
+      <!-- Sun disc -->
+      <circle cx="400" cy="262" r="46" fill="#fff6d0" opacity="0.96"/>
+      <!-- Ukiyo-e horizontal lines across sun -->
+      <line x1="348" y1="250" x2="452" y2="250" stroke="#e8a840" stroke-width="3" opacity="0.3"/>
+      <line x1="350" y1="260" x2="450" y2="260" stroke="#e8a840" stroke-width="2.5" opacity="0.28"/>
+      <line x1="350" y1="270" x2="450" y2="270" stroke="#e8a840" stroke-width="2" opacity="0.22"/>
+      <line x1="354" y1="280" x2="446" y2="280" stroke="#e8a840" stroke-width="2" opacity="0.18"/>
+
+      <!-- Sky ripple lines — classic Hokusai atmosphere -->
+      <path d="M0,80 Q200,72 400,80 Q600,88 800,78" fill="none" stroke="#e0a868" stroke-width="1.8" opacity="0.22"/>
+      <path d="M0,108 Q150,100 320,108 Q500,116 800,104" fill="none" stroke="#d89858" stroke-width="1.5" opacity="0.18"/>
+      <path d="M0,136 Q220,128 440,136 Q620,144 800,132" fill="none" stroke="#d09050" stroke-width="1.2" opacity="0.15"/>
+      <path d="M0,162 Q180,155 360,162 Q560,169 800,158" fill="none" stroke="#c88848" stroke-width="1" opacity="0.12"/>
+
+      <!-- Far mountain range — soft organic Hokusai curves -->
+      <path d="M0,310 Q60,268 130,262 Q190,256 240,276 Q285,294 330,265 Q370,238 420,252 Q465,265 510,248 Q558,230 610,250 Q660,268 720,245 Q760,232 800,248 L800,310 Z"
+            fill="#c07058" opacity="0.55"/>
+
+      <!-- Near mountain range — darker -->
+      <path d="M0,345 Q70,308 155,303 Q215,299 268,322 Q308,340 355,315 Q395,292 445,308 Q490,322 540,302 Q590,282 650,300 Q710,316 800,298 L800,345 Z"
+            fill="#a85840" opacity="0.75"/>
+
+      <!-- Ground plane -->
+      <rect x="0" y="340" width="800" height="160" fill="url(#vbl-ground)"/>
+
+      <!-- Ground texture — parallel horizontal lines -->
+      <g stroke="#a07838" stroke-width="1.2" opacity="0.3">
+        <line x1="0" y1="358" x2="800" y2="358"/>
+        <line x1="0" y1="374" x2="800" y2="374"/>
+        <line x1="0" y1="390" x2="800" y2="390"/>
+        <line x1="0" y1="408" x2="800" y2="408"/>
+        <line x1="0" y1="428" x2="800" y2="428"/>
+        <line x1="0" y1="450" x2="800" y2="450"/>
+        <line x1="0" y1="475" x2="800" y2="475"/>
+      </g>
+
+      <!-- Horizon line — subtle -->
+      <path d="M0,342 Q200,338 400,342 Q600,346 800,340" fill="none" stroke="#8a5a28" stroke-width="2" opacity="0.4"/>
+
+      <!-- Left edge colour band — dark pine green -->
+      <rect x="0" y="0" width="36" height="500" fill="#4a5a28" opacity="0.14"/>
+      <!-- Right edge colour band -->
+      <rect x="764" y="0" width="36" height="500" fill="#4a5a28" opacity="0.14"/>
+
+      <!-- BLOCCO label — bold, clean, lower right -->
+      <text x="762" y="448" text-anchor="end"
+            font-family="-apple-system,Helvetica Neue,Arial,sans-serif"
+            font-size="54" font-weight="700" letter-spacing="4"
+            fill="#2a1808" opacity="0.82">BLOCCO</text>
+
+      <!-- Japanese text below -->
+      <text x="762" y="482" text-anchor="end"
+            font-family="Georgia,serif"
+            font-size="18" font-style="italic" letter-spacing="6"
+            fill="#6a4020" opacity="0.65">三次元の文字</text>
+
+      <!-- Thin loading bar at very bottom -->
+      <rect x="36" y="494" width="728" height="3" rx="1.5" fill="rgba(160,100,40,0.18)"/>
+      <rect id="vbl-bar" x="36" y="494" width="0" height="3" rx="1.5" fill="#c87840"/>
+    </svg>
   </div>
-  <div id="volum-body">
+    <div id="volum-body">
     <div id="vb-sidebar">
       <!-- Ukiyo-e style panel -->
       <div class="vb-panel-title">文字 · BLOCCO</div>
 
       <div class="vb-label">Text</div>
-      <textarea id="vb-text" rows="2" placeholder="Type…">WAVE</textarea>
-      <button class="vb-btn vb-btn-accent" onclick="vbApply()">Apply ↵</button>
-
+      <textarea id="vb-text" rows="2" placeholder="Type…" oninput="vbApply()">WAVE</textarea>
       <div class="vb-divider"></div>
       <div class="vb-label">Font</div>
       <select id="vb-font">
-        <option value="helvetiker">Helvetiker</option>
-        <option value="optimer">Optimer</option>
-        <option value="gentilis">Gentilis</option>
-        <option value="droid/droid_sans">Droid Sans</option>
-        <option value="droid/droid_serif">Droid Serif</option>
+        <option value="Arial, sans-serif">Arial</option>
+        <option value="Georgia, serif" selected>Georgia</option>
+        <option value="'Palatino Linotype', Palatino, serif">Palatino</option>
+        <option value="'Times New Roman', serif">Times New Roman</option>
+        <option value="Impact, fantasy">Impact</option>
+        <option value="Verdana, sans-serif">Verdana</option>
+        <option value="Courier New, monospace">Courier New</option>
+        <option value="Trebuchet MS, sans-serif">Trebuchet</option>
       </select>
+      <div style="display:flex;gap:4px;align-items:center;">
+        <input type="text" id="vb-custom-font" placeholder="Google Font…" style="min-width:0;flex:1;background:rgba(255,255,255,0.55);border:1px solid rgba(160,120,60,0.4);border-radius:5px;color:#2a1a0e;padding:3px 5px;font-size:10px;font-family:inherit;box-sizing:border-box;">
+        <button style="flex-shrink:0;width:24px;height:24px;padding:0;border:1px solid rgba(160,120,60,0.4);border-radius:5px;background:rgba(255,255,255,0.5);color:#4a3010;cursor:pointer;font-size:13px;display:flex;align-items:center;justify-content:center;" onclick="vbLoadCustomFont()" title="Load Google Font">↺</button>
+      </div>
 
       <div class="vb-label">Size</div>
       <input type="range" id="vb-size" min="0.3" max="2.5" step="0.05" value="1.1">
@@ -4250,25 +4331,35 @@ body.dark-mode #volum-canvas-wrap{background:radial-gradient(ellipse at 50% 30%,
       <div class="vb-label">Letter Gap</div>
       <input type="range" id="vb-gap" min="-0.2" max="0.8" step="0.02" value="0.08">
 
-      <div class="vb-label">Letter Style</div>
+      <div class="vb-label">Weight</div>
       <select id="vb-style">
         <option value="bold">Bold</option>
         <option value="normal">Regular</option>
         <option value="italic">Italic</option>
         <option value="900">Black</option>
       </select>
+      <div class="vb-label">Letter Mode</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px;">
+        <button id="vb-mode-block" class="vb-btn vb-mode-btn vb-mode-active" onclick="vbSetMode('block')" title="3D extruded block">■ Block</button>
+        <button id="vb-mode-flat" class="vb-btn vb-mode-btn" onclick="vbSetMode('flat')" title="Flat plane, letter texture">▣ Flat</button>
+        <button id="vb-mode-circle" class="vb-btn vb-mode-btn" onclick="vbSetMode('circle')" title="Letter on circle disc">◉ Circle</button>
+        <button id="vb-mode-stamp" class="vb-btn vb-mode-btn" onclick="vbSetMode('stamp')" title="Embossed stamp shape">⬡ Stamp</button>
+      </div>
 
       <div class="vb-divider"></div>
       <div class="vb-label">Colour</div>
       <div class="vb-swatches" id="vb-color-swatches">
-        <div class="vbs" data-v="#2a1a0e" style="background:#2a1a0e;"></div>
+        <div class="vbs" data-v="#1a1208" style="background:#1a1208;"></div>
         <div class="vbs" data-v="#c0392b" style="background:#c0392b;"></div>
         <div class="vbs" data-v="#1a4a6e" style="background:#1a4a6e;"></div>
         <div class="vbs" data-v="#2e6b4a" style="background:#2e6b4a;"></div>
         <div class="vbs" data-v="#8b4513" style="background:#8b4513;"></div>
         <div class="vbs" data-v="#c8a050" style="background:#c8a050;"></div>
         <div class="vbs" data-v="#6a2070" style="background:#6a2070;"></div>
-        <input type="color" id="vb-ccolor" value="#2a1a0e" title="Custom">
+        <div class="vbs" data-v="#c0c0c0" style="background:#c0c0c0;"></div>
+        <div class="vbs" data-v="#f5edd8" style="background:#f5edd8;border:1px solid #bba;"></div>
+        <canvas id="vb-cwheel" width="22" height="22" style="width:100%;aspect-ratio:1;border-radius:50%;cursor:pointer;box-shadow:0 1px 3px rgba(0,0,0,0.25);" title="Custom colour" onclick="document.getElementById('vb-ccolor').click()"></canvas>
+        <input type="color" id="vb-ccolor" value="#2a1a0e" style="position:absolute;opacity:0;width:0;height:0;pointer-events:none;">
       </div>
 
       <div class="vb-label">Background</div>
@@ -4279,8 +4370,22 @@ body.dark-mode #volum-canvas-wrap{background:radial-gradient(ellipse at 50% 30%,
         <div class="vbs" data-v="#0d1a0d" style="background:#0d1a0d;"></div>
         <div class="vbs" data-v="#2a0a0a" style="background:#2a0a0a;"></div>
         <div class="vbs" data-v="#0d0d1a" style="background:#0d0d1a;"></div>
-        <input type="color" id="vb-bcolor" value="#f5edd8" title="Custom">
+        <div class="vbs" data-v="#111111" style="background:#111;"></div>
+        <div class="vbs" data-v="#ffffff" style="background:#fff;border:1px solid #ccc;"></div>
+        <div class="vbs" data-v="#3a1a00" style="background:#3a1a00;"></div>
+        <canvas id="vb-bwheel" width="22" height="22" style="width:100%;aspect-ratio:1;border-radius:50%;cursor:pointer;box-shadow:0 1px 3px rgba(0,0,0,0.25);" title="Custom background" onclick="document.getElementById('vb-bcolor').click()"></canvas>
+        <input type="color" id="vb-bcolor" value="#f5edd8" style="position:absolute;opacity:0;width:0;height:0;pointer-events:none;">
       </div>
+
+      <div class="vb-label">Material</div>
+      <select id="vb-mat">
+        <option value="standard">Standard</option>
+        <option value="metal">Metal</option>
+        <option value="glass">Glass</option>
+        <option value="clay">Clay</option>
+        <option value="neon">Neon Glow</option>
+        <option value="wood">Wood</option>
+      </select>
 
       <div class="vb-label">Metalness</div>
       <input type="range" id="vb-metal" min="0" max="1" step="0.05" value="0.3">
@@ -4323,11 +4428,41 @@ body.dark-mode #volum-canvas-wrap{background:radial-gradient(ellipse at 50% 30%,
         <button class="vb-btn" onclick="vbDeselectLetter()">Deselect</button>
       </div>
 
-      <button class="vb-btn vb-btn-save" onclick="vbSave()">💾 Save PNG</button>
+      <div style="display:flex;gap:4px;">
+        <button class="vb-btn vb-btn-save" style="flex:1;" onclick="vbSave()">💾 Save PNG</button>
+        <button id="vb-transp-btn" class="vb-btn" style="width:32px;padding:0;flex-shrink:0;font-size:10px;" onclick="vbToggleTransparent()" title="Toggle transparent background">◎</button>
+      </div>
+      <div id="vb-transp-hint" style="display:none;font-size:9px;color:rgba(160,57,43,0.8);text-align:center;">Transparent BG active</div>
       <div class="vb-hint-text">Double-click a letter to select · Drag to move · Orbit on empty</div>
     </div>
     <div id="vb-canvas-wrap">
       <canvas id="vb-canvas"></canvas>
+      <!-- 3D direction gizmo — appears on letter select -->
+      <div id="vb-gizmo" style="display:none;position:absolute;pointer-events:none;z-index:10;">
+        <svg width="80" height="80" viewBox="-40 -40 80 80" style="overflow:visible;">
+          <!-- Globe rings -->
+          <ellipse cx="0" cy="0" rx="28" ry="28" fill="none" stroke="rgba(255,255,255,0.18)" stroke-width="1"/>
+          <ellipse cx="0" cy="0" rx="28" ry="10" fill="none" stroke="rgba(255,255,255,0.12)" stroke-width="1"/>
+          <ellipse cx="0" cy="0" rx="10" ry="28" fill="none" stroke="rgba(255,255,255,0.12)" stroke-width="1"/>
+          <!-- X axis arrow (red) -->
+          <line x1="0" y1="0" x2="32" y2="0" stroke="#e74c3c" stroke-width="2" stroke-linecap="round"/>
+          <polygon points="32,0 26,-4 26,4" fill="#e74c3c"/>
+          <line x1="0" y1="0" x2="-32" y2="0" stroke="rgba(231,76,60,0.4)" stroke-width="1.5" stroke-linecap="round" stroke-dasharray="3,3"/>
+          <!-- Y axis arrow (green) -->
+          <line x1="0" y1="0" x2="0" y2="-32" stroke="#2ecc71" stroke-width="2" stroke-linecap="round"/>
+          <polygon points="0,-32 -4,-26 4,-26" fill="#2ecc71"/>
+          <line x1="0" y1="0" x2="0" y2="32" stroke="rgba(46,204,113,0.4)" stroke-width="1.5" stroke-linecap="round" stroke-dasharray="3,3"/>
+          <!-- Z axis arrow (blue, foreshortened) -->
+          <line x1="0" y1="0" x2="20" y2="20" stroke="#3498db" stroke-width="2" stroke-linecap="round"/>
+          <polygon points="20,20 12,18 18,12" fill="#3498db"/>
+          <!-- Axis labels -->
+          <text x="36" y="4" font-size="9" fill="#e74c3c" font-family="-apple-system,sans-serif" font-weight="600">X</text>
+          <text x="-4" y="-35" font-size="9" fill="#2ecc71" font-family="-apple-system,sans-serif" font-weight="600">Y</text>
+          <text x="22" y="28" font-size="9" fill="#3498db" font-family="-apple-system,sans-serif" font-weight="600">Z</text>
+          <!-- Centre dot -->
+          <circle cx="0" cy="0" r="3" fill="rgba(255,255,255,0.7)"/>
+        </svg>
+      </div>
     </div>
   </div>
 </div>
@@ -4338,10 +4473,13 @@ body.dark-mode #volum-canvas-wrap{background:radial-gradient(ellipse at 50% 30%,
   width:188px;flex-shrink:0;
   background:linear-gradient(180deg,#f0e6cc 0%,#e8dab8 100%);
   border-right:2px solid #c8aa78;
-  overflow-y:auto;padding:10px 10px 16px;
+  overflow-y:scroll;overflow-x:hidden;padding:10px 10px 16px;
   display:flex;flex-direction:column;gap:6px;
   font-family:-apple-system,sans-serif;
+  scrollbar-width:none;-webkit-overflow-scrolling:touch;
+  scroll-behavior:smooth;
 }
+#vb-sidebar::-webkit-scrollbar{display:none;}
 .vb-panel-title{
   font-family:'Cormorant Garamond',Georgia,serif;
   font-size:11px;font-weight:400;font-style:italic;
@@ -4374,12 +4512,14 @@ body.dark-mode #volum-canvas-wrap{background:radial-gradient(ellipse at 50% 30%,
 .vb-btn-accent:hover{background:rgba(192,57,43,0.22);}
 .vb-btn-save{background:rgba(26,74,110,0.12);color:#0e3060;border-color:rgba(26,74,110,0.3);margin-top:auto;}
 .vb-btn-save:hover{background:rgba(26,74,110,0.22);}
-.vb-swatches{display:flex;gap:5px;flex-wrap:wrap;align-items:center;}
-.vbs{width:22px;height:22px;border-radius:50%;cursor:pointer;border:2px solid transparent;flex-shrink:0;transition:transform 0.1s;box-shadow:0 1px 3px rgba(0,0,0,0.2);}
+.vb-swatches{display:grid;grid-template-columns:repeat(10,1fr);gap:3px;width:100%;}
+.vbs{width:100%;aspect-ratio:1;border-radius:50%;cursor:pointer;border:2px solid transparent;transition:transform 0.1s;box-shadow:0 1px 3px rgba(0,0,0,0.2);}
 .vbs:hover{transform:scale(1.15);}
 .vbs.on{border-color:#c0392b;box-shadow:0 0 0 2px rgba(192,57,43,0.4);}
 #vb-sidebar input[type=color]{width:22px;height:22px;padding:0;border-radius:50%;border:2px solid rgba(160,120,60,0.4);}
 .vb-hint-text{font-size:9px;color:rgba(100,70,30,0.5);text-align:center;line-height:1.4;margin-top:4px;}
+.vb-mode-btn{flex:1;font-size:10px;}
+.vb-mode-active{background:rgba(192,57,43,0.15)!important;color:#8a1a0e!important;border-color:rgba(192,57,43,0.4)!important;}
 #vb-canvas-wrap{flex:1;position:relative;overflow:hidden;background:#f5edd8;}
 #vb-canvas{display:block;width:100%;height:100%;}
 /* Woodblock print texture overlay on sidebar */
@@ -4389,176 +4529,221 @@ body.dark-mode #volum-canvas-wrap{background:radial-gradient(ellipse at 50% 30%,
 }
 #vb-sidebar{position:relative;}
 
-/* ── Japanese Blocco Loader ── */
-@keyframes vbl-sweep{0%{transform:translateX(-100%);}100%{transform:translateX(200%);}}
-@keyframes vbl-float{0%,100%{transform:translateY(0);}50%{transform:translateY(-6px);}}
-@keyframes vbl-brush{0%{width:0;opacity:0;}60%{opacity:1;}100%{width:100%;opacity:0.4;}}
-@keyframes vbl-fade-in{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:none;}}
-#vb-loader{
-  position:absolute;inset:0;z-index:20;display:flex;align-items:center;justify-content:center;
-  background:linear-gradient(160deg,#f5edd8 0%,#ede0c0 40%,#e0d0a8 100%);
-  transition:opacity 0.8s ease,transform 0.8s cubic-bezier(0.4,0,0.2,1);
-}
-#vb-loader.done{opacity:0;pointer-events:none;transform:scale(0.96);}
-.vbl-inner{
-  display:flex;flex-direction:column;align-items:center;gap:0;
-  animation:vbl-fade-in 0.6s ease forwards;
-}
-.vbl-mon{
-  font-family:'Cormorant Garamond',Georgia,serif;
-  font-size:72px;font-weight:300;color:#4a3020;line-height:1;
-  animation:vbl-float 3s ease-in-out infinite;
-  text-shadow:0 4px 16px rgba(74,48,32,0.18),0 1px 0 rgba(255,255,255,0.8);
-  margin-bottom:16px;
-}
-.vbl-title{
-  font-family:'Cormorant Garamond',Georgia,serif;
-  font-size:28px;font-weight:300;letter-spacing:0.35em;
-  color:#3a2010;text-transform:uppercase;
-  background:linear-gradient(90deg,#6a4020,#c87840,#6a4020);
-  background-size:200% auto;-webkit-background-clip:text;-webkit-text-fill-color:transparent;
-  background-clip:text;
-  animation:clay-shimmer 3s linear infinite;
-}
-.vbl-sub{
-  font-family:'Cormorant Garamond',Georgia,serif;
-  font-size:12px;font-weight:400;font-style:italic;
-  letter-spacing:0.18em;color:rgba(80,50,20,0.55);
-  margin-top:4px;margin-bottom:24px;
-}
-.vbl-bar-wrap{
-  width:140px;height:1px;background:rgba(120,80,30,0.2);
-  overflow:hidden;position:relative;border-radius:1px;
-}
-.vbl-bar{
-  height:100%;width:30%;
-  background:linear-gradient(90deg,transparent,#c87840,#8a4a18,#c87840,transparent);
-  animation:vbl-sweep 1.6s ease-in-out infinite;
-}
-.vbl-brushlines{
-  display:flex;flex-direction:column;gap:6px;margin-top:20px;width:100px;align-items:flex-start;
-}
-.vbl-brush{
-  height:1px;background:rgba(80,50,20,0.35);border-radius:1px;
-  animation:vbl-brush 2.4s ease-in-out infinite;
-}
-.vbl-brush:nth-child(1){animation-delay:0s;width:70%;}
-.vbl-brush:nth-child(2){animation-delay:0.4s;width:45%;}
-.vbl-brush:nth-child(3){animation-delay:0.8s;width:60%;}
+/* ── Hokusai Loader ── */
+#vb-loader{position:absolute;inset:0;z-index:20;overflow:hidden;transition:opacity 1.2s ease;}
+#vb-loader.done{opacity:0;pointer-events:none;}
+#vbl-art{position:absolute;inset:0;width:100%;height:100%;}
+@keyframes vbl-bar-anim{0%{x:36px;width:0}50%{x:36px;width:728px}100%{x:36px;width:0}}
+#vbl-bar{animation:vbl-bar-anim 1.8s ease-in-out infinite;}
+
+
+
+
+
+
+
+
+
+
+#vbl-svg line{animation:vbl-shimmer 3s ease-in-out infinite;}
 </style>
 <script>
 (function(){
   let open_=false,maxed=false;
-  let renderer,scene,camera,animId;
-  let letterMeshes=[];   // array of {mesh, baseX, baseY, char}
-  let selected=null;
-  let T=null;
-  let textColor='#2a1a0e', bgColor='#f5edd8';
+  let letterMeshes=[],selected=null;
+  let T=null,renderer,scene,camera,animId;
+  let textColor='#2a1a0e',bgColor='#f5edd8';
+  let letterMode='block',matPreset='standard',transparentBg=false;
   let orbitDrag=false,orbitLast=null,rotX_=0.05,rotY_=0;
   let dragLetter=null,dragStart=null,dragPos=null;
-  let t_=0;
+  let gizmoDragAxis=null,gizmoStartPos=null,gizmoStartMouse=null;
+  let t_=0,_applyTimer=null;
 
   const win=()=>document.getElementById('volum-window');
+  window.openVolum=function(){open_=true;win().classList.add('open');document.getElementById('dock-volum').classList.add('app-open');if(!T)setTimeout(initVB,80);else setTimeout(resizeVB,50);};
+  window.closeVolum=function(){open_=false;const w=win(),ic=document.getElementById('dock-volum');const ir=ic.getBoundingClientRect(),wr=w.getBoundingClientRect();w.style.setProperty('--volum-tx',(ir.left+ir.width/2-(wr.left+wr.width/2))+'px');w.style.setProperty('--volum-ty',(ir.top+ir.height/2-(wr.top+wr.height/2))+'px');w.classList.remove('open');ic.classList.remove('app-open');if(animId){cancelAnimationFrame(animId);animId=null;}};
+  window.minimiseVolum=function(){const w=win(),ic=document.getElementById('dock-volum');const ir=ic.getBoundingClientRect(),wr=w.getBoundingClientRect();w.style.setProperty('--volum-tx',(ir.left+ir.width/2-(wr.left+wr.width/2))+'px');w.style.setProperty('--volum-ty',(ir.top+ir.height/2-(wr.top+wr.height/2))+'px');w.classList.remove('open');w.classList.add('minimising');if(animId){cancelAnimationFrame(animId);animId=null;}setTimeout(()=>w.classList.remove('minimising'),500);};
+  window.maximiseVolum=function(){maxed=!maxed;win().classList.toggle('maximised',maxed);setTimeout(resizeVB,350);};
 
-  window.openVolum=function(){
-    open_=true; win().classList.add('open');
-    document.getElementById('dock-volum').classList.add('app-open');
-    if(!T) setTimeout(initVB,80); else setTimeout(resizeVB,50);
-  };
-  window.closeVolum=function(){
-    open_=false;
-    const w=win(),icon=document.getElementById('dock-volum');
-    const ir=icon.getBoundingClientRect(),wr=w.getBoundingClientRect();
-    w.style.setProperty('--volum-tx',(ir.left+ir.width/2-(wr.left+wr.width/2))+'px');
-    w.style.setProperty('--volum-ty',(ir.top+ir.height/2-(wr.top+wr.height/2))+'px');
-    w.classList.remove('open'); icon.classList.remove('app-open');
-    if(animId){cancelAnimationFrame(animId);animId=null;}
-  };
-  window.minimiseVolum=function(){
-    const w=win(),icon=document.getElementById('dock-volum');
-    const ir=icon.getBoundingClientRect(),wr=w.getBoundingClientRect();
-    w.style.setProperty('--volum-tx',(ir.left+ir.width/2-(wr.left+wr.width/2))+'px');
-    w.style.setProperty('--volum-ty',(ir.top+ir.height/2-(wr.top+wr.height/2))+'px');
-    w.classList.remove('open'); w.classList.add('minimising');
-    if(animId){cancelAnimationFrame(animId);animId=null;}
-    setTimeout(()=>w.classList.remove('minimising'),500);
-  };
-  window.maximiseVolum=function(){
-    maxed=!maxed; win().classList.toggle('maximised',maxed);
-    setTimeout(resizeVB,350);
-  };
-
-  function loadThree(cb){
-    if(window.THREE){T=window.THREE;cb();return;}
-    const s=document.createElement('script');
-    s.src='https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js';
-    s.onload=()=>{T=window.THREE;cb();}; document.head.appendChild(s);
-  }
-
-  function makeLetterTexture(ch,color,fontFamily,fontWeight){
-    const sz=512;
+  /* ── Letter texture on canvas (256px, no shadows, fast) ── */
+  const texCache={};
+  function makeLetterTex(ch,color,fontFamily,fontWeight){
+    const key=ch+'|'+color+'|'+fontFamily+'|'+fontWeight;
+    if(texCache[key])return texCache[key];
+    const sz=256;
     const cv=document.createElement('canvas');cv.width=sz;cv.height=sz;
     const ctx=cv.getContext('2d');
-    ctx.clearRect(0,0,sz,sz);
-    const weight=fontWeight||'bold';
-    const style=document.getElementById('vb-style')?document.getElementById('vb-style').value:'bold';
-    const fontStr=style==='italic'?`italic bold ${Math.round(sz*0.72)}px ${fontFamily}`
-                  :`${weight} ${Math.round(sz*0.72)}px ${fontFamily}`;
-    ctx.font=fontStr;
-    ctx.textAlign='center'; ctx.textBaseline='middle';
-    ctx.shadowColor='rgba(0,0,0,0.35)'; ctx.shadowBlur=24; ctx.shadowOffsetY=10;
+    const fi=fontWeight==='italic'?'italic':'normal';
+    const fw=fontWeight==='italic'?'bold':(fontWeight||'bold');
+    ctx.font=`${fi} ${fw} ${Math.round(sz*0.78)}px ${fontFamily||'Georgia, serif'}`;
+    ctx.textAlign='center';ctx.textBaseline='middle';
     ctx.fillStyle=color||'#2a1a0e';
-    ctx.fillText(ch,sz/2,sz/2+sz*0.04);
-    ctx.shadowColor='transparent';
-    // Sheen highlight
+    ctx.fillText(ch,sz/2,sz/2+sz*0.03);
+    // Simple highlight — no shadow (fast)
     ctx.globalCompositeOperation='lighter';
-    const grd=ctx.createLinearGradient(sz*0.25,sz*0.15,sz*0.75,sz*0.55);
-    grd.addColorStop(0,'rgba(255,255,255,0.32)');
-    grd.addColorStop(0.5,'rgba(255,255,255,0.08)');
-    grd.addColorStop(1,'rgba(255,255,255,0)');
-    ctx.fillStyle=grd; ctx.fillText(ch,sz/2,sz/2+sz*0.04);
-    return cv;
+    const g=ctx.createLinearGradient(sz*0.2,sz*0.1,sz*0.8,sz*0.6);
+    g.addColorStop(0,'rgba(255,255,255,0.25)');g.addColorStop(1,'rgba(255,255,255,0)');
+    ctx.fillStyle=g;ctx.fillText(ch,sz/2,sz/2+sz*0.03);
+    const tex=new T.CanvasTexture(cv);tex.needsUpdate=true;
+    texCache[key]=tex;
+    return tex;
   }
 
-  function buildLetterMesh(ch,color,font){
-    const cv2=makeLetterTexture(ch,color,font);
-    const tex=new T.CanvasTexture(cv2);
-    tex.needsUpdate=true;
-    const depth=parseFloat(document.getElementById('vb-depth').value)||0.18;
-    const size=parseFloat(document.getElementById('vb-size').value)||1.1;
-    // Use a BoxGeometry with the texture on front face — gives real 3D depth
-    const geo=new T.BoxGeometry(size,size,depth*size);
-    // Separate materials per face: textured front/back, plain sides
-    const sideColor=new T.Color(color).multiplyScalar(0.7);
-    const mats=[
-      new T.MeshStandardMaterial({color:sideColor,metalness:0.4,roughness:0.5}), // right
-      new T.MeshStandardMaterial({color:sideColor,metalness:0.4,roughness:0.5}), // left
-      new T.MeshStandardMaterial({color:new T.Color(color).multiplyScalar(0.9),metalness:0.4,roughness:0.5}), // top
-      new T.MeshStandardMaterial({color:new T.Color(color).multiplyScalar(0.6),metalness:0.4,roughness:0.5}), // bottom
-      new T.MeshStandardMaterial({map:tex,metalness:parseFloat(document.getElementById('vb-metal').value)||0.3,roughness:parseFloat(document.getElementById('vb-rough').value)||0.5}), // front
-      new T.MeshStandardMaterial({color:sideColor,metalness:0.4,roughness:0.5}), // back
-    ];
-    const mesh=new T.Mesh(geo,mats);
-    mesh.castShadow=true;
+  /* ── Material ── */
+  function makeMat(color,front){
+    const col=new T.Color(color);
+    const metal=parseFloat((document.getElementById('vb-metal')||{value:0.4}).value);
+    const rough=parseFloat((document.getElementById('vb-rough')||{value:0.3}).value);
+    if(front){
+      if(matPreset==='metal') return new T.MeshStandardMaterial({color:col,metalness:0.95,roughness:0.05});
+      if(matPreset==='clay')  return new T.MeshStandardMaterial({color:col,metalness:0,roughness:0.95});
+      if(matPreset==='neon')  return new T.MeshStandardMaterial({color:col,metalness:0.1,roughness:0.4,emissive:col,emissiveIntensity:0.7});
+      return new T.MeshStandardMaterial({color:col,metalness:metal,roughness:rough});
+    }
+    // Side face — slightly darker
+    const side=col.clone().multiplyScalar(0.65);
+    if(matPreset==='metal') return new T.MeshStandardMaterial({color:side,metalness:0.95,roughness:0.05});
+    if(matPreset==='clay')  return new T.MeshStandardMaterial({color:side,metalness:0,roughness:0.95});
+    if(matPreset==='neon')  return new T.MeshStandardMaterial({color:side,metalness:0.1,roughness:0.4,emissive:side,emissiveIntensity:0.4});
+    return new T.MeshStandardMaterial({color:side,metalness:metal,roughness:rough});
+  }
+
+  /* ── Letter → THREE.Shape via canvas alpha, simple & clean ── */
+  function letterToShape(ch, fontFamily, fontWeight, size){
+    // Render at decent resolution
+    const SZ=192;
+    const cv=document.createElement('canvas'); cv.width=SZ; cv.height=SZ;
+    const ctx=cv.getContext('2d');
+    const fi=fontWeight==='italic'?'italic':'normal';
+    const fw=(fontWeight==='italic'||fontWeight==='normal')?'bold':(fontWeight||'bold');
+    ctx.font=`${fi} ${fw} ${Math.round(SZ*0.76)}px ${fontFamily||'Georgia,serif'}`;
+    ctx.textAlign='center'; ctx.textBaseline='middle';
+    ctx.fillStyle='#fff';
+    ctx.fillText(ch, SZ/2, SZ/2 + SZ*0.03);
+
+    const px=ctx.getImageData(0,0,SZ,SZ).data;
+    const on=(x,y)=>x>=0&&x<SZ&&y>=0&&y<SZ&&px[(y*SZ+x)*4]>40;
+
+    // Scanline: for each row, collect ALL filled spans (handles counters)
+    // Each span becomes a separate sub-shape, combined with evenodd fill
+    // But THREE.Shape holes list is complex — instead just use outer silhouette
+    // Outer silhouette: for each col, find topmost and bottommost pixel
+    // Then for each row, find leftmost and rightmost — connect as single polygon
+
+    // Find bounding box
+    let minX=SZ,maxX=0,minY=SZ,maxY=0;
+    for(let y=0;y<SZ;y++) for(let x=0;x<SZ;x++){
+      if(on(x,y)){if(x<minX)minX=x;if(x>maxX)maxX=x;if(y<minY)minY=y;if(y>maxY)maxY=y;}
+    }
+    if(maxX<=minX||maxY<=minY)return null;
+
+    const W=maxX-minX, H=maxY-minY;
+    const STEPS=48; // points per half
+    const pts_top=[], pts_bot=[];
+
+    // For each X column, find topmost pixel → top silhouette
+    // For each X column, find bottommost pixel → bottom silhouette  
+    for(let i=0;i<=STEPS;i++){
+      const x=Math.round(minX + (W*i)/STEPS);
+      let top=-1, bot=-1;
+      for(let y=minY;y<=maxY;y++){if(on(x,y)){top=y;break;}}
+      for(let y=maxY;y>=minY;y--){if(on(x,y)){bot=y;break;}}
+      if(top>=0){pts_top.push([x,top]); pts_bot.push([x,bot]);}
+    }
+
+    if(pts_top.length<3)return null;
+
+    // Smooth: running average of 3
+    function smooth(arr){
+      return arr.map((p,i)=>{
+        const a=arr[Math.max(0,i-1)], b=arr[i], d=arr[Math.min(arr.length-1,i+1)];
+        return [(a[0]+b[0]+d[0])/3,(a[1]+b[1]+d[1])/3];
+      });
+    }
+    const top=smooth(smooth(pts_top));
+    const bot=smooth(smooth(pts_bot));
+
+    // Normalise to Three.js space: centre, Y flip, scale to size
+    const cx2=(minX+maxX)/2, cy2=(minY+maxY)/2;
+    const sc=size/Math.max(W,H)*0.88;
+    const nx=x=>(x-cx2)*sc;
+    const ny=y=>-(y-cy2)*sc;
+
+    const shape=new T.Shape();
+    shape.moveTo(nx(top[0][0]), ny(top[0][1]));
+    // Top edge left→right
+    for(let i=1;i<top.length;i++) shape.lineTo(nx(top[i][0]), ny(top[i][1]));
+    // Right side top→bottom
+    shape.lineTo(nx(bot[bot.length-1][0]), ny(bot[bot.length-1][1]));
+    // Bottom edge right→left
+    for(let i=bot.length-2;i>=0;i--) shape.lineTo(nx(bot[i][0]), ny(bot[i][1]));
+    shape.closePath();
+    return shape;
+  }
+
+  /* ── Build letter mesh — ExtrudeGeometry with proper letter silhouette ── */
+  function buildLetterMesh(ch,color,fontFamily,fontWeight){
+    const size=parseFloat((document.getElementById('vb-size')||{value:1.1}).value)||1.1;
+    const bevelVal=parseFloat((document.getElementById('vb-bevel')||{value:0.3}).value);
+    const bev=bevelVal*size*0.05;
+    const depth=parseFloat((document.getElementById('vb-depth')||{value:0.18}).value)*size;
+    const metal=parseFloat((document.getElementById('vb-metal')||{value:0.4}).value);
+    const rough=parseFloat((document.getElementById('vb-rough')||{value:0.3}).value);
+
+    const col=new T.Color(color);
+    let mat;
+    if(matPreset==='metal') mat=new T.MeshStandardMaterial({color:col,metalness:0.95,roughness:0.05});
+    else if(matPreset==='clay') mat=new T.MeshStandardMaterial({color:col,metalness:0,roughness:0.95});
+    else if(matPreset==='neon') mat=new T.MeshStandardMaterial({color:col,metalness:0.1,roughness:0.4,emissive:col,emissiveIntensity:0.7});
+    else mat=new T.MeshStandardMaterial({color:col,metalness:metal,roughness:rough});
+
+    const shape=letterToShape(ch,fontFamily,fontWeight,size);
+    if(!shape){
+      // Space or failed — invisible placeholder
+      const geo=new T.BoxGeometry(size*0.3,size*0.01,0.01);
+      return new T.Mesh(geo,new T.MeshStandardMaterial({visible:false}));
+    }
+
+    const geo=new T.ExtrudeGeometry(shape,{
+      depth,
+      bevelEnabled:bev>0.001,
+      bevelThickness:bev,
+      bevelSize:bev*0.6,
+      bevelSegments:4,
+      curveSegments:6
+    });
+    geo.computeVertexNormals();
+    // Centre on Z
+    geo.translate(0,0,-depth/2);
+
+    const mesh=new T.Mesh(geo,mat);
     return mesh;
   }
 
   function buildLetters(){
-    letterMeshes.forEach(l=>scene.remove(l.mesh));
-    letterMeshes=[];
-    selected=null; updateSelPanel();
-    const txt=document.getElementById('vb-text').value||'WAVE';
-    const font=document.getElementById('vb-font').value;
-    const fontMap={'helvetiker':'Helvetica, Arial, sans-serif','optimer':'Optima, Candara, sans-serif','gentilis':'Palatino, Georgia, serif','droid/droid_sans':'sans-serif','droid/droid_serif':'Georgia, serif'};
-    const fontFam=fontMap[font]||'Georgia, serif';
-    const size=parseFloat(document.getElementById('vb-size').value)||1.1;
+    // Dispose old
+    letterMeshes.forEach(l=>{
+      scene.remove(l.mesh);
+      l.mesh.geometry.dispose();
+      (Array.isArray(l.mesh.material)?l.mesh.material:[l.mesh.material]).forEach(m=>m&&m.dispose());
+    });
+    letterMeshes=[];selected=null;updateSelPanel();hideGizmo();
+    Object.keys(texCache).forEach(k=>delete texCache[k]); // clear cache on rebuild
+    if(!T||!scene)return;
+
+    const txt=(document.getElementById('vb-text')||{value:'WAVE'}).value||'WAVE';
+    const font=(document.getElementById('vb-font')||{value:'Georgia, serif'}).value;
+    const styleEl=document.getElementById('vb-style');
+    const wt=styleEl?styleEl.value:'bold';
+    const size=parseFloat((document.getElementById('vb-size')||{value:1.1}).value)||1.1;
+    const gap=size*parseFloat((document.getElementById('vb-gap')||{value:0.08}).value);
+
     const chars=[...txt].filter(ch=>ch!=='\n'&&ch!=='\r');
-    const gap=size*0.08;
     let xCursor=0;
     const meshData=[];
     chars.forEach(ch=>{
-      if(ch===' '){xCursor+=size*0.55;return;}
-      const mesh=buildLetterMesh(ch,textColor,fontFam);
+      if(ch===' '){xCursor+=size*0.45;return;}
+      const mesh=buildLetterMesh(ch,textColor,font,wt);
       mesh.position.x=xCursor+size/2;
       xCursor+=size+gap;
       meshData.push({mesh,ch});
@@ -4567,79 +4752,80 @@ body.dark-mode #volum-canvas-wrap{background:radial-gradient(ellipse at 50% 30%,
     meshData.forEach(({mesh,ch})=>{
       mesh.position.x-=totalW/2;
       scene.add(mesh);
-      letterMeshes.push({mesh,baseX:mesh.position.x,baseY:0,baseZ:0,char:ch,selected:false});
+      letterMeshes.push({mesh,baseX:mesh.position.x,baseY:0,char:ch,selected:false});
     });
   }
 
   function initVB(){
-    loadThree(()=>{
-      const wrap=document.getElementById('vb-canvas-wrap');
-      const cv=document.getElementById('vb-canvas');
-      const W=wrap.clientWidth, H=wrap.clientHeight;
+    if(!window.THREE){setTimeout(initVB,200);return;}
+    T=window.THREE;
+    const wrap=document.getElementById('vb-canvas-wrap');
+    const cv=document.getElementById('vb-canvas');
+    if(!wrap||!cv)return;
+    const W=wrap.clientWidth,H=wrap.clientHeight;
+    renderer=new T.WebGLRenderer({canvas:cv,antialias:true,preserveDrawingBuffer:true,alpha:true,powerPreference:'high-performance'});
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio,1.5));
+    renderer.setSize(W,H);
+    renderer.shadowMap.enabled=false;
+    renderer.toneMapping=T.ACESFilmicToneMapping;
+    renderer.toneMappingExposure=1.2;
+    scene=new T.Scene();
+    camera=new T.PerspectiveCamera(42,W/H,0.1,100);
+    camera.position.set(0,0,10);
 
-      renderer=new T.WebGLRenderer({canvas:cv,antialias:true,preserveDrawingBuffer:true,alpha:false});
-      renderer.setPixelRatio(Math.min(window.devicePixelRatio,2));
-      renderer.setSize(W,H);
-      renderer.shadowMap.enabled=true;
-      renderer.toneMapping=T.ACESFilmicToneMapping;
-      renderer.toneMappingExposure=1.2;
+    // Minimal lighting — fast
+    scene.add(new T.AmbientLight(0xfff8e8,0.7));
+    const key=new T.DirectionalLight(0xfffaec,1.8);key.position.set(5,10,8);scene.add(key);
+    const fill=new T.DirectionalLight(0xc8d8ff,0.5);fill.position.set(-6,-3,5);scene.add(fill);
+    const rim=new T.DirectionalLight(0xffe0b0,0.5);rim.position.set(0,2,-7);scene.add(rim);
 
-      scene=new T.Scene();
-      scene.background=new T.Color(bgColor);
-
-      camera=new T.PerspectiveCamera(45,W/H,0.1,200);
-      camera.position.set(0,0,12);
-
-      // Ukiyo-e lighting
-      scene.add(new T.AmbientLight(0xfff8e8,0.55));
-      const sun=new T.DirectionalLight(0xfffaec,2.2); sun.position.set(5,12,10); sun.castShadow=true; scene.add(sun);
-      const fill=new T.DirectionalLight(0xc8d8ff,0.5); fill.position.set(-8,-4,6); scene.add(fill);
-      const rim=new T.DirectionalLight(0xffe0a0,0.7); rim.position.set(0,2,-8); scene.add(rim);
-      const bot=new T.DirectionalLight(0xffd0a0,0.3); bot.position.set(0,-8,4); scene.add(bot);
-
-      buildLetters();
-      startLoop();
-      setTimeout(()=>{ const l=document.getElementById('vb-loader'); if(l)l.classList.add('done'); },500);
-      wireUI();
+    buildLetters();startLoop();
+    setTimeout(()=>{const l=document.getElementById('vb-loader');if(l)l.classList.add('done');},3000);
+    wireUI();
+    // Draw color wheels
+    ['vb-cwheel','vb-bwheel'].forEach(id=>{
+      const wc=document.getElementById(id);if(!wc)return;
+      const wctx=wc.getContext('2d');const cx=11,cy=11,r=11;
+      for(let a=0;a<360;a+=2){const rad=a*Math.PI/180;const g=wctx.createLinearGradient(cx,cy,cx+r*Math.cos(rad),cy+r*Math.sin(rad));g.addColorStop(0,'white');g.addColorStop(1,'hsl('+a+',100%,50%)');wctx.beginPath();wctx.moveTo(cx,cy);wctx.arc(cx,cy,r,rad,rad+Math.PI/45);wctx.closePath();wctx.fillStyle=g;wctx.fill();}
     });
   }
 
-  // ── Raycasting ──
   function hitTest(ex,ey){
-    const wrap=document.getElementById('vb-canvas-wrap');
-    const r=wrap.getBoundingClientRect();
+    if(!camera||!scene)return null;
+    const wrap=document.getElementById('vb-canvas-wrap');const r=wrap.getBoundingClientRect();
     const mouse=new T.Vector2(((ex-r.left)/r.width)*2-1,-((ey-r.top)/r.height)*2+1);
-    const ray=new T.Raycaster();
-    ray.setFromCamera(mouse,camera);
-    const meshes=letterMeshes.map(l=>l.mesh);
-    const hits=ray.intersectObjects(meshes,false);
+    const ray=new T.Raycaster();ray.setFromCamera(mouse,camera);
+    const hits=ray.intersectObjects(letterMeshes.map(l=>l.mesh),false);
     if(!hits.length)return null;
     return letterMeshes.find(l=>l.mesh===hits[0].object)||null;
   }
-
-  function screenToSceneXY(ex,ey){
-    const wrap=document.getElementById('vb-canvas-wrap');
-    const r=wrap.getBoundingClientRect();
-    const nx=((ex-r.left)/r.width)*2-1;
-    const ny=-((ey-r.top)/r.height)*2+1;
-    const v=new T.Vector3(nx,ny,0.5).unproject(camera);
-    const dir=v.sub(camera.position).normalize();
+  function screenToXY(ex,ey){
+    const wrap=document.getElementById('vb-canvas-wrap');const r=wrap.getBoundingClientRect();
+    const nx=((ex-r.left)/r.width)*2-1,ny=-((ey-r.top)/r.height)*2+1;
+    const v=new T.Vector3(nx,ny,0.5).unproject(camera);const dir=v.sub(camera.position).normalize();
     const t2=-camera.position.z/dir.z;
-    return {x:camera.position.x+dir.x*t2, y:camera.position.y+dir.y*t2};
+    return{x:camera.position.x+dir.x*t2,y:camera.position.y+dir.y*t2};
   }
 
   function wireUI(){
     const cv=document.getElementById('vb-canvas');
     cv.addEventListener('mousedown',e=>{
       const l=hitTest(e.clientX,e.clientY);
-      if(l){dragLetter=l;dragStart=screenToSceneXY(e.clientX,e.clientY);dragPos={x:l.mesh.position.x,y:l.mesh.position.y};}
+      if(l){dragLetter=l;dragStart=screenToXY(e.clientX,e.clientY);dragPos={x:l.mesh.position.x,y:l.mesh.position.y};}
       else{orbitDrag=true;orbitLast={x:e.clientX,y:e.clientY};}
     });
     window.addEventListener('mousemove',e=>{
-      if(dragLetter){
-        const wp=screenToSceneXY(e.clientX,e.clientY);
+      if(gizmoDragAxis&&selected&&gizmoStartPos){
+        const dx=e.clientX-gizmoStartMouse.x,dy=e.clientY-gizmoStartMouse.y,s=0.018;
+        if(gizmoDragAxis==='x')selected.mesh.position.x=gizmoStartPos.x+dx*s;
+        else if(gizmoDragAxis==='y')selected.mesh.position.y=gizmoStartPos.y-dy*s;
+        else if(gizmoDragAxis==='z')selected.mesh.position.z=gizmoStartPos.z-dy*s;
+        updateGizmoPos(selected);
+      } else if(dragLetter){
+        const wp=screenToXY(e.clientX,e.clientY);
         dragLetter.mesh.position.x=dragPos.x+(wp.x-dragStart.x);
         dragLetter.mesh.position.y=dragPos.y+(wp.y-dragStart.y);
+        updateGizmoPos(dragLetter);
       } else if(orbitDrag){
         rotY_+=(e.clientX-orbitLast.x)*0.007;
         rotX_+=(e.clientY-orbitLast.y)*0.007;
@@ -4647,167 +4833,91 @@ body.dark-mode #volum-canvas-wrap{background:radial-gradient(ellipse at 50% 30%,
         orbitLast={x:e.clientX,y:e.clientY};
       }
     });
-    window.addEventListener('mouseup',()=>{dragLetter=null;orbitDrag=false;});
+    window.addEventListener('mouseup',()=>{dragLetter=null;orbitDrag=false;gizmoDragAxis=null;});
     cv.addEventListener('wheel',e=>{camera.position.z=Math.max(3,Math.min(25,camera.position.z+e.deltaY*0.015));},{passive:true});
-    cv.addEventListener('dblclick',e=>{
-      const l=hitTest(e.clientX,e.clientY);
-      if(l) selectLetter(l); else deselectAll();
-    });
+    cv.addEventListener('dblclick',e=>{const l=hitTest(e.clientX,e.clientY);if(l)selectLetter(l);else deselectAll();});
 
-    // Colour swatches
-    document.querySelectorAll('#vb-color-swatches .vbs').forEach(s=>{
-      s.onclick=()=>{textColor=s.dataset.v;document.querySelectorAll('#vb-color-swatches .vbs').forEach(x=>x.classList.remove('on'));s.classList.add('on');updateAllColors();};
-    });
+    document.querySelectorAll('#vb-color-swatches .vbs').forEach(s=>{s.onclick=()=>{textColor=s.dataset.v;document.querySelectorAll('#vb-color-swatches .vbs').forEach(x=>x.classList.remove('on'));s.classList.add('on');updateAllColors();};});
     document.getElementById('vb-ccolor').oninput=e=>{textColor=e.target.value;updateAllColors();};
-    document.querySelectorAll('#vb-bg-swatches .vbs').forEach(s=>{
-      s.onclick=()=>{bgColor=s.dataset.v;document.querySelectorAll('#vb-bg-swatches .vbs').forEach(x=>x.classList.remove('on'));s.classList.add('on');applyBg();};
-    });
+    document.querySelectorAll('#vb-bg-swatches .vbs').forEach(s=>{s.onclick=()=>{bgColor=s.dataset.v;document.querySelectorAll('#vb-bg-swatches .vbs').forEach(x=>x.classList.remove('on'));s.classList.add('on');applyBg();};});
     document.getElementById('vb-bcolor').oninput=e=>{bgColor=e.target.value;applyBg();};
     document.querySelectorAll('#vb-color-swatches .vbs')[0]&&document.querySelectorAll('#vb-color-swatches .vbs')[0].classList.add('on');
     document.querySelectorAll('#vb-bg-swatches .vbs')[0]&&document.querySelectorAll('#vb-bg-swatches .vbs')[0].classList.add('on');
 
-    // Live sliders update material
-    ['vb-metal','vb-rough'].forEach(id=>{
-      const el=document.getElementById(id); if(el) el.oninput=updateAllMaterials;
-    });
-    // Selected letter controls
-    const sc=document.getElementById('vb-sel-color');
-    if(sc) sc.oninput=e=>{if(selected){recolorLetter(selected,e.target.value);}};
-    const ss=document.getElementById('vb-sel-scale');
-    if(ss) ss.oninput=e=>{if(selected){const v=parseFloat(e.target.value);selected.mesh.scale.set(v,v,v);}};
-    const sr=document.getElementById('vb-sel-roty');
-    if(sr) sr.oninput=e=>{if(selected)selected.mesh.rotation.y=parseFloat(e.target.value);};
-    const sx=document.getElementById('vb-sel-rotx');
-    if(sx) sx.oninput=e=>{if(selected)selected.mesh.rotation.x=parseFloat(e.target.value);};
+    ['vb-size','vb-depth','vb-gap','vb-metal','vb-rough','vb-bevel'].forEach(id=>{const el=document.getElementById(id);if(el)el.oninput=()=>buildLetters();});
+    const matEl=document.getElementById('vb-mat');if(matEl)matEl.onchange=e=>{matPreset=e.target.value;buildLetters();};
+    document.getElementById('vb-font').onchange=()=>buildLetters();
+    const styleEl=document.getElementById('vb-style');if(styleEl)styleEl.onchange=()=>buildLetters();
+
+    const sc=document.getElementById('vb-sel-color');if(sc)sc.oninput=e=>{if(selected){if(Array.isArray(selected.mesh.material))selected.mesh.material.forEach(m=>m&&m.color&&m.color.set(e.target.value));else if(selected.mesh.material.color)selected.mesh.material.color.set(e.target.value);}};
+    const ss=document.getElementById('vb-sel-scale');if(ss)ss.oninput=e=>{if(selected){const v=parseFloat(e.target.value);selected.mesh.scale.set(v,v,v);}};
+    const sr=document.getElementById('vb-sel-roty');if(sr)sr.oninput=e=>{if(selected)selected.mesh.rotation.y=parseFloat(e.target.value);};
+    const sx=document.getElementById('vb-sel-rotx');if(sx)sx.oninput=e=>{if(selected)selected.mesh.rotation.x=parseFloat(e.target.value);};
+    const sz2=document.getElementById('vb-sel-z');if(sz2)sz2.oninput=e=>{if(selected)selected.mesh.position.z=parseFloat(e.target.value);};
   }
 
-  function buildLetterMeshBevel(){
-    // Rebuild with current bevel intensity by rebuilding all letters
-    buildLetters();
-  }
-  function selectLetter(l){
-    deselectAll();
-    l.selected=true; selected=l;
-    // Highlight: brighten front face
-    if(l.mesh.material[4]) l.mesh.material[4].emissive=new T.Color(0x442200);
-    updateSelPanel();
-  }
-  function deselectAll(){
-    letterMeshes.forEach(l=>{l.selected=false;if(Array.isArray(l.mesh.material)&&l.mesh.material[4])l.mesh.material[4].emissive=new T.Color(0);});
-    selected=null; updateSelPanel();
-  }
+  function selectLetter(l){deselectAll();l.selected=true;selected=l;if(l.mesh.material[4]&&l.mesh.material[4].emissive)l.mesh.material[4].emissive.set(0x331100);updateSelPanel();showGizmo(l);}
+  function deselectAll(){letterMeshes.forEach(l=>{l.selected=false;if(l.mesh.material[4]&&l.mesh.material[4].emissive)l.mesh.material[4].emissive.set(0);});selected=null;updateSelPanel();hideGizmo();}
   window.vbDeselectLetter=deselectAll;
+  function updateSelPanel(){const p=document.getElementById('vb-sel-hint');if(p)p.style.display=selected?'flex':'none';}
+  function updateAllColors(){letterMeshes.forEach(l=>{if(l.selected)return;(Array.isArray(l.mesh.material)?l.mesh.material:[l.mesh.material]).forEach((m,i)=>{if(!m)return;if(i===4&&m.map){const t=makeLetterTex(l.char,textColor,(document.getElementById('vb-font')||{value:'Georgia, serif'}).value,(document.getElementById('vb-style')||{value:'bold'}).value);m.map=t;m.needsUpdate=true;}else if(m.color)m.color.set(new T.Color(textColor).multiplyScalar(0.65));});});}
+  function applyBg(){if(transparentBg){document.getElementById('vb-canvas-wrap').style.background='repeating-conic-gradient(#ccc 0% 25%,#fff 0% 50%) 0 0/16px 16px';if(scene)scene.background=null;if(renderer)renderer.setClearColor(0,0);}else{document.getElementById('vb-canvas-wrap').style.background=bgColor;if(scene&&T){scene.background=new T.Color(bgColor);}}}
 
-  function updateSelPanel(){
-    const p=document.getElementById('vb-sel-hint'); if(!p)return;
-    p.style.display=selected?'flex':'none';
-    if(selected&&selected.mesh.material[4]){
-      const hex='#'+selected.mesh.material[4].color.getHexString();
-      const sc=document.getElementById('vb-sel-color'); if(sc)sc.value=hex;
-      const ss=document.getElementById('vb-sel-scale'); if(ss)ss.value=selected.mesh.scale.x.toFixed(2);
-      const sr=document.getElementById('vb-sel-roty'); if(sr)sr.value=selected.mesh.rotation.y.toFixed(2);
-    }
+  // Gizmo
+  function showGizmo(l){
+    const g=document.getElementById('vb-gizmo');if(!g)return;
+    g.style.display='block';g.style.pointerEvents='all';updateGizmoPos(l);
+    const svg=g.querySelector('svg');if(svg._wired)return;svg._wired=true;
+    function axisDown(axis,e){e.stopPropagation();gizmoDragAxis=axis;gizmoStartMouse={x:e.clientX,y:e.clientY};if(selected)gizmoStartPos={x:selected.mesh.position.x,y:selected.mesh.position.y,z:selected.mesh.position.z};}
+    svg.querySelectorAll('[stroke="#e74c3c"],[fill="#e74c3c"]').forEach(el=>{el.style.pointerEvents='all';el.style.cursor='ew-resize';el.addEventListener('mousedown',e=>axisDown('x',e));});
+    svg.querySelectorAll('[stroke="#2ecc71"],[fill="#2ecc71"]').forEach(el=>{el.style.pointerEvents='all';el.style.cursor='ns-resize';el.addEventListener('mousedown',e=>axisDown('y',e));});
+    svg.querySelectorAll('[stroke="#3498db"],[fill="#3498db"]').forEach(el=>{el.style.pointerEvents='all';el.style.cursor='ns-resize';el.addEventListener('mousedown',e=>axisDown('z',e));});
   }
-  function recolorLetter(l,color){
-    if(!Array.isArray(l.mesh.material))return;
-    const side=new T.Color(color).multiplyScalar(0.7);
-    [0,1,2,3,5].forEach(i=>{if(l.mesh.material[i])l.mesh.material[i].color.set(side);});
-    // Rebuild front texture
-    const font=document.getElementById('vb-font').value;
-    const fontMap={'helvetiker':'Helvetica, Arial, sans-serif','optimer':'Optima, Candara, sans-serif','gentilis':'Palatino, Georgia, serif','droid/droid_sans':'sans-serif','droid/droid_serif':'Georgia, serif'};
-    const cv2=makeLetterTexture(l.char,color,fontMap[font]||'Georgia, serif');
-    const tex=new T.CanvasTexture(cv2); tex.needsUpdate=true;
-    if(l.mesh.material[4]){l.mesh.material[4].map=tex;l.mesh.material[4].needsUpdate=true;}
-  }
-  function updateAllColors(){
-    const font=document.getElementById('vb-font').value;
-    const fontMap={'helvetiker':'Helvetica, Arial, sans-serif','optimer':'Optima, Candara, sans-serif','gentilis':'Palatino, Georgia, serif','droid/droid_sans':'sans-serif','droid/droid_serif':'Georgia, serif'};
-    letterMeshes.forEach(l=>{if(!l.selected)recolorLetter(l,textColor);});
-  }
-  function updateAllMaterials(){
-    const metal=parseFloat(document.getElementById('vb-metal').value)||0.3;
-    const rough=parseFloat(document.getElementById('vb-rough').value)||0.5;
-    letterMeshes.forEach(l=>{
-      if(Array.isArray(l.mesh.material)) l.mesh.material.forEach(m=>{if(m){m.metalness=metal;m.roughness=rough;}});
-    });
-  }
-  function applyBg(){
-    document.getElementById('vb-canvas-wrap').style.background=bgColor;
-    if(scene) scene.background=new T.Color(bgColor);
+  function hideGizmo(){const g=document.getElementById('vb-gizmo');if(g){g.style.display='none';g.style.pointerEvents='none';}gizmoDragAxis=null;}
+  function updateGizmoPos(l){
+    if(!l||!camera||!renderer)return;
+    const g=document.getElementById('vb-gizmo');if(!g||g.style.display==='none')return;
+    const p=l.mesh.position.clone();p.project(camera);
+    const wrap=document.getElementById('vb-canvas-wrap');const r=wrap.getBoundingClientRect();
+    g.style.left=((p.x+1)/2*r.width-40)+'px';g.style.top=((-p.y+1)/2*r.height-40)+'px';
   }
 
   function startLoop(){
-    if(animId)cancelAnimationFrame(animId);
-    applyBg();
+    if(animId)cancelAnimationFrame(animId);applyBg();
     function loop(){
       animId=requestAnimationFrame(loop);
-      if(!renderer)return;
+      if(!renderer||!scene||!camera)return;
       t_+=0.016;
-      const eff=document.getElementById('vb-effect').value;
-      const spd=parseFloat(document.getElementById('vb-speed').value)||1;
+      const eff=(document.getElementById('vb-effect')||{value:'none'}).value;
+      const spd=parseFloat((document.getElementById('vb-speed')||{value:1}).value)||1;
       letterMeshes.forEach((l,i)=>{
         if(l.selected)return;
-        if(eff==='wave'){
-          l.mesh.position.y=(l.baseY||0)+Math.sin(t_*2*spd+i*0.7)*0.25;
-          l.mesh.rotation.z=Math.sin(t_*spd+i*0.5)*0.06;
-        } else if(eff==='float'){
-          l.mesh.position.y=(l.baseY||0)+Math.sin(t_*spd*0.8+i*0.4)*0.15;
-        } else if(eff==='spin'){
-          l.mesh.rotation.y+=0.04*spd;
-        } else if(eff==='pulse'){
-          const s=1+Math.sin(t_*3*spd+i*0.8)*0.12;
-          l.mesh.scale.setScalar(s);
-        } else if(eff==='cascade'){
-          l.mesh.position.y=(l.baseY||0)+Math.sin(t_*spd*1.5+i*1.2)*0.3;
-          l.mesh.rotation.y=Math.sin(t_*spd+i*0.8)*0.4;
-        } else if(eff==='tilt'){
-          l.mesh.rotation.x=Math.sin(t_*spd*1.2+i*0.6)*0.35;
-          l.mesh.rotation.z=Math.cos(t_*spd*0.8+i*0.4)*0.2;
-        } else {
-          l.mesh.position.y=l.baseY||0;
-          l.mesh.rotation.z=0;
-        }
+        if(eff==='wave'){l.mesh.position.y=(l.baseY||0)+Math.sin(t_*2*spd+i*0.7)*0.28;l.mesh.rotation.z=Math.sin(t_*spd+i*0.5)*0.07;}
+        else if(eff==='float'){l.mesh.position.y=(l.baseY||0)+Math.sin(t_*spd*0.8+i*0.4)*0.16;}
+        else if(eff==='spin'){l.mesh.rotation.y+=0.04*spd;}
+        else if(eff==='pulse'){const s=1+Math.sin(t_*3*spd+i*0.8)*0.13;l.mesh.scale.setScalar(s);}
+        else if(eff==='cascade'){l.mesh.position.y=(l.baseY||0)+Math.sin(t_*spd*1.5+i*1.2)*0.3;l.mesh.rotation.y=Math.sin(t_*spd+i*0.8)*0.4;}
+        else if(eff==='tilt'){l.mesh.rotation.x=Math.sin(t_*spd*1.2+i*0.6)*0.38;l.mesh.rotation.z=Math.cos(t_*spd*0.8+i*0.4)*0.2;}
+        else{l.mesh.position.y=l.baseY||0;l.mesh.rotation.z=0;}
       });
-      const tiltEl=document.getElementById('vb-tilt');
-      scene.rotation.y=rotY_;
-      scene.rotation.x=tiltEl?parseFloat(tiltEl.value)+rotX_:rotX_;
+      const tv=parseFloat((document.getElementById('vb-tilt')||{value:0.05}).value)||0.05;
+      scene.rotation.y=rotY_;scene.rotation.x=tv+rotX_;
       renderer.render(scene,camera);
+      if(selected)updateGizmoPos(selected);
     }
     loop();
   }
 
-  window.vbApply=function(){ buildLetters(); };
-  window.vbSave=function(){
-    if(!renderer||!scene||!camera)return;
-    // Force a clean render with preserveDrawingBuffer=true
-    renderer.render(scene,camera);
-    try{
-      renderer.domElement.toBlob(blob=>{
-        if(!blob)return;
-        const url=URL.createObjectURL(blob);
-        const a=document.createElement('a');
-        a.href=url; a.download='blocco-'+Date.now()+'.png';
-        document.body.appendChild(a); a.click();
-        setTimeout(()=>{URL.revokeObjectURL(url);a.remove();},1000);
-      },'image/png');
-    }catch(e){
-      // Fallback to dataURL
-      const url=renderer.domElement.toDataURL('image/png');
-      const a=document.createElement('a');a.href=url;a.download='blocco.png';
-      document.body.appendChild(a);a.click();a.remove();
-    }
-  };
-
-  function resizeVB(){
-    const wrap=document.getElementById('vb-canvas-wrap');
-    if(!wrap||!renderer)return;
-    const W=wrap.clientWidth,H=wrap.clientHeight;
-    renderer.setSize(W,H);
-    if(camera){camera.aspect=W/H;camera.updateProjectionMatrix();}
-  }
+  window.vbApply=function(){clearTimeout(_applyTimer);_applyTimer=setTimeout(buildLetters,300);};
+  window.vbSetMode=function(mode){letterMode=mode;['block','flat','circle','stamp'].forEach(m=>{const el=document.getElementById('vb-mode-'+m);if(el)el.classList.toggle('vb-mode-active',m===mode);});buildLetters();};
+  window.vbToggleTransparent=function(){transparentBg=!transparentBg;const btn=document.getElementById('vb-transp-btn');const hint=document.getElementById('vb-transp-hint');if(btn)btn.style.background=transparentBg?'rgba(192,57,43,0.15)':'';if(hint)hint.style.display=transparentBg?'block':'none';applyBg();};
+  window.vbLoadCustomFont=function(){const name=(document.getElementById('vb-custom-font').value||'').trim();if(!name)return;const link=document.createElement('link');link.rel='stylesheet';link.href='https://fonts.googleapis.com/css2?family='+encodeURIComponent(name).replace(/%20/g,'+')+'&display=swap';document.head.appendChild(link);const sel=document.getElementById('vb-font');const opt=document.createElement('option');opt.value="'"+name+"', sans-serif";opt.textContent=name;opt.selected=true;sel.appendChild(opt);setTimeout(buildLetters,800);};
+  window.vbSave=function(){if(!renderer||!scene||!camera)return;renderer.render(scene,camera);try{renderer.domElement.toBlob(blob=>{if(!blob)return;const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='blocco-'+Date.now()+'.png';document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(url);a.remove();},1000);},'image/png');}catch(e){const url=renderer.domElement.toDataURL('image/png');const a=document.createElement('a');a.href=url;a.download='blocco.png';document.body.appendChild(a);a.click();a.remove();}};
+  function resizeVB(){const wrap=document.getElementById('vb-canvas-wrap');if(!wrap||!renderer)return;const W=wrap.clientWidth,H=wrap.clientHeight;renderer.setSize(W,H);if(camera){camera.aspect=W/H;camera.updateProjectionMatrix();}}
   window.addEventListener('resize',resizeVB);
 })();
 </script>
+
 <div id="frost-overlay"></div>
 <div id="cw-overlay"></div>
 <div id="widget-ctx-menu">
