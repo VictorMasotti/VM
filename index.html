@@ -4134,14 +4134,14 @@ function maximiseMusic(){
   </div>
 </div>
 <style>
-#volum-window{position:fixed;left:50%;top:50%;width:1040px;height:700px;max-width:96vw;max-height:92vh;background:#f4ecd8;border-radius:14px;box-shadow:0 32px 90px rgba(56,38,18,0.32),0 0 0 1px rgba(0,0,0,0.10);display:flex;flex-direction:column;z-index:500;overflow:hidden;pointer-events:none;user-select:none;opacity:0;transform:translate(-50%,-50%) scale(0.88) translateY(8px);transition:opacity 0.3s cubic-bezier(0.4,0,0.2,1),transform 0.3s cubic-bezier(0.34,1.2,0.64,1);}
-#volum-window.open{opacity:1;pointer-events:all;transform:translate(-50%,-50%) scale(1) translateY(0);}
+#volum-window{position:fixed;left:50%;top:50%;width:1040px;height:700px;max-width:96vw;max-height:92vh;background:#f5edd8;border-radius:12px;box-shadow:0 32px 90px rgba(30,20,10,0.28),0 0 0 1px rgba(0,0,0,0.10);display:flex;flex-direction:column;z-index:500;overflow:hidden;pointer-events:none;user-select:none;opacity:0;transform:translate(-50%,-50%) scale(0.08) ;clip-path:inset(0 round 12px);transition:opacity 0.5s ease,transform 0.65s cubic-bezier(0.16,1,0.3,1),clip-path 0.65s cubic-bezier(0.16,1,0.3,1);}
+#volum-window.open{opacity:1;pointer-events:all;transform:translate(-50%,-50%) scale(1);}
 #volum-window.maximised{left:0!important;top:24px!important;width:100vw!important;height:calc(100vh - 24px - 54px)!important;transform:none!important;border-radius:0!important;max-width:100vw!important;max-height:100vh!important;transition:left 0.35s cubic-bezier(0.4,0,0.2,1),top 0.35s cubic-bezier(0.4,0,0.2,1),width 0.35s cubic-bezier(0.4,0,0.2,1),height 0.35s cubic-bezier(0.4,0,0.2,1),border-radius 0.35s ease!important;}
 #volum-window.minimising{opacity:0!important;transform:translate(var(--volum-tx),var(--volum-ty)) scale(0.03)!important;transition:opacity 0.35s ease,transform 0.38s ease!important;}
 body.dark-mode #volum-window{background:#1f1a14;box-shadow:0 32px 90px rgba(0,0,0,0.7),0 0 0 1px rgba(255,255,255,0.06);}
-#volum-titlebar{height:38px;flex-shrink:0;background:linear-gradient(180deg,#5a3820 0%,#3a220c 100%);border-bottom:2px solid #2a1808;display:flex;align-items:center;padding:0 12px;gap:8px;position:relative;box-shadow:inset 0 1px 0 rgba(255,220,180,0.18),inset 0 -1px 0 rgba(0,0,0,0.45);}
+#volum-titlebar{height:40px;flex-shrink:0;background:linear-gradient(180deg,#f2ead8 0%,#e8ddc8 100%);border-bottom:2px solid #c8b090;display:flex;align-items:center;padding:0 12px;gap:8px;position:relative;}
 #volum-titlebar .pw-dot{box-shadow:inset 0 1px 0 rgba(255,255,255,0.4),0 1px 2px rgba(0,0,0,0.55);}
-#volum-titlebar span.vt-title{position:absolute;left:50%;transform:translateX(-50%);font-family:'Cormorant Garamond',Georgia,serif;font-size:15px;font-weight:400;font-style:italic;letter-spacing:0.18em;color:#e8d4a8;text-transform:uppercase;pointer-events:none;text-shadow:0 1px 2px rgba(0,0,0,0.6);}
+#volum-titlebar span.vt-title{position:absolute;left:50%;transform:translateX(-50%);font-family:'Cormorant Garamond',Georgia,serif;font-size:14px;font-weight:400;font-style:italic;letter-spacing:0.22em;color:#4a3420;text-transform:uppercase;pointer-events:none;}
 .vt-export{margin-left:auto;display:flex;align-items:center;gap:5px;padding:3px 11px;border-radius:20px;border:1px solid rgba(232,212,168,0.35);background:rgba(255,240,210,0.12);font-size:11px;font-weight:600;color:#e8d4a8;letter-spacing:0.04em;cursor:pointer;font-family:-apple-system,sans-serif;transition:background 0.3s ease,color 0.3s ease,border-color 0.3s ease;}
 .vt-export:hover{background:#c89048;color:#1a0c04;border-color:#c89048;}
 #volum-app-body{flex:1;display:flex;overflow:hidden;min-height:0;position:relative;background:#3a2a1c;}
@@ -4209,668 +4209,603 @@ body.dark-mode #volum-canvas-wrap{background:radial-gradient(ellipse at 50% 30%,
     <div class="pw-dot min"   onclick="minimiseVolum()"></div>
     <div class="pw-dot maxb"  onclick="maximiseVolum()"></div>
     <span class="vt-title">Blocco</span>
-    <button class="vt-export" onclick="volumExportPage()" title="Export current page as PNG">
-      <svg width="10" height="10" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M6 1v7M3.5 5.5L6 8l2.5-2.5"/><line x1="1.5" y1="10.5" x2="10.5" y2="10.5"/></svg>
-      Export
-    </button>
   </div>
-  <div id="volum-app-body">
-    <div id="volum-toolbar">
-      <div class="volum-tool active" id="vtool-write" onclick="volumSetTool('write')" title="Write">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 4l6 6L8 22H2v-6L14 4z"/><path d="M13 5l6 6"/></svg>
-        <span class="volum-tool-tip">Write</span>
-      </div>
-      <div class="volum-tool" id="vtool-orbit" onclick="volumSetTool('orbit')" title="Orbit">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><ellipse cx="12" cy="12" rx="9" ry="3.5"/><path d="M12 3v18"/></svg>
-        <span class="volum-tool-tip">Orbit View</span>
-      </div>
-      <div class="volum-tool" id="vtool-fly" onclick="volumSetTool('fly')" title="Fly Through">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12 L22 4 L18 12 L22 20 Z"/><path d="M2 12 L18 12"/></svg>
-        <span class="volum-tool-tip">Fly Through</span>
-      </div>
-      <div class="volum-tool-sep"></div>
-      <div class="volum-tool" id="vtool-clear" onclick="volumClearPage()" title="Clear page">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><path d="M5 6l1 14a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2l1-14"/></svg>
-        <span class="volum-tool-tip">Clear page</span>
-      </div>
-      <div class="volum-tool" id="vtool-shuffle" onclick="volumShuffleColors()" title="Shuffle palette">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M16 3h5v5"/><path d="M21 3l-7 7"/><path d="M3 21l7-7"/><path d="M16 21h5v-5"/><path d="M3 8V3h5"/><path d="M3 3l7 7"/></svg>
-        <span class="volum-tool-tip">Shuffle palette</span>
-      </div>
-    </div>
-    <div id="volum-canvas-wrap">
-      <canvas id="volum-canvas"></canvas>
-      <div id="volum-empty"><div class="ve-title">Blocco</div><div class="ve-sub">A notebook in three dimensions</div></div>
-      <div id="volum-input-overlay" class="show">
-        <div id="volum-style-row">
-          <span style="margin-right:4px;">Type</span>
-          <div class="volum-style-pill active" data-vol-style="serif" onclick="volumSetStyle('serif')">Serif</div>
-          <div class="volum-style-pill" data-vol-style="sans" onclick="volumSetStyle('sans')">Sans</div>
-          <div class="volum-style-pill" data-vol-style="mono" onclick="volumSetStyle('mono')">Mono</div>
-          <div class="volum-style-pill" data-vol-style="display" onclick="volumSetStyle('display')">Display</div>
-          <span style="margin-left:8px;margin-right:4px;">Hue</span>
-          <div class="volum-color-pill active" data-vol-color="#c89048" style="background:#c89048;" onclick="volumSetColor('#c89048')"></div>
-          <div class="volum-color-pill" data-vol-color="#e8a850" style="background:#e8a850;" onclick="volumSetColor('#e8a850')"></div>
-          <div class="volum-color-pill" data-vol-color="#a83820" style="background:#a83820;" onclick="volumSetColor('#a83820')"></div>
-          <div class="volum-color-pill" data-vol-color="#5a8868" style="background:#5a8868;" onclick="volumSetColor('#5a8868')"></div>
-          <div class="volum-color-pill" data-vol-color="#3a5878" style="background:#3a5878;" onclick="volumSetColor('#3a5878')"></div>
-          <div class="volum-color-pill" data-vol-color="#883858" style="background:#883858;" onclick="volumSetColor('#883858')"></div>
-          <div class="volum-color-pill" data-vol-color="#fae0b8" style="background:#fae0b8;" onclick="volumSetColor('#fae0b8')"></div>
-          <div class="volum-color-pill" data-vol-color="#1a0c04" style="background:#1a0c04;" onclick="volumSetColor('#1a0c04')"></div>
-        </div>
-        <div id="volum-input-row">
-          <textarea id="volum-input" placeholder="Write something — press Enter to land it on the page (Shift+Enter for newline)" rows="1"></textarea>
-          <button class="volum-add-btn" onclick="volumAddCurrent()" title="Add to page">↵</button>
-        </div>
-      </div>
-      <div id="volum-loader">
-        <div id="volum-loader-title">Blocco</div>
-        <div id="volum-loader-sub">opening the notebook…</div>
-        <div id="volum-loader-bar"><div id="volum-loader-fill"></div></div>
-      </div>
-    </div>
-    <div id="volum-side">
-      <div class="volum-side-head">Pages</div>
-      <div class="volum-side-list" id="volum-page-list"></div>
-      <div class="volum-side-foot">
-        <button id="volum-newbtn" onclick="volumNewPage()">+ New Page</button>
+  <!-- Japanese loader -->
+  <div id="vb-loader">
+    <div class="vbl-inner">
+      <div class="vbl-mon">家</div>
+      <div class="vbl-title">Blocco</div>
+      <div class="vbl-sub">三次元の文字</div>
+      <div class="vbl-bar-wrap"><div class="vbl-bar"></div></div>
+      <div class="vbl-brushlines">
+        <div class="vbl-brush"></div><div class="vbl-brush"></div><div class="vbl-brush"></div>
       </div>
     </div>
   </div>
-  <div id="volum-statusbar">
-    <span id="volum-status-page">Page 1</span>
-    <span id="volum-status-count">0 entries</span>
-    <span class="vs-spacer"></span>
-    <span style="opacity:0.6">Drag to orbit · Scroll to zoom · Type & press Enter</span>
+  <div id="volum-body">
+    <div id="vb-sidebar">
+      <!-- Ukiyo-e style panel -->
+      <div class="vb-panel-title">文字 · BLOCCO</div>
+
+      <div class="vb-label">Text</div>
+      <textarea id="vb-text" rows="2" placeholder="Type…">WAVE</textarea>
+      <button class="vb-btn vb-btn-accent" onclick="vbApply()">Apply ↵</button>
+
+      <div class="vb-divider"></div>
+      <div class="vb-label">Font</div>
+      <select id="vb-font">
+        <option value="helvetiker">Helvetiker</option>
+        <option value="optimer">Optimer</option>
+        <option value="gentilis">Gentilis</option>
+        <option value="droid/droid_sans">Droid Sans</option>
+        <option value="droid/droid_serif">Droid Serif</option>
+      </select>
+
+      <div class="vb-label">Size</div>
+      <input type="range" id="vb-size" min="0.3" max="2.5" step="0.05" value="1.1">
+
+      <div class="vb-label">Depth</div>
+      <input type="range" id="vb-depth" min="0.02" max="0.8" step="0.01" value="0.18">
+
+      <div class="vb-label">Letter Gap</div>
+      <input type="range" id="vb-gap" min="-0.2" max="0.8" step="0.02" value="0.08">
+
+      <div class="vb-label">Letter Style</div>
+      <select id="vb-style">
+        <option value="bold">Bold</option>
+        <option value="normal">Regular</option>
+        <option value="italic">Italic</option>
+        <option value="900">Black</option>
+      </select>
+
+      <div class="vb-divider"></div>
+      <div class="vb-label">Colour</div>
+      <div class="vb-swatches" id="vb-color-swatches">
+        <div class="vbs" data-v="#2a1a0e" style="background:#2a1a0e;"></div>
+        <div class="vbs" data-v="#c0392b" style="background:#c0392b;"></div>
+        <div class="vbs" data-v="#1a4a6e" style="background:#1a4a6e;"></div>
+        <div class="vbs" data-v="#2e6b4a" style="background:#2e6b4a;"></div>
+        <div class="vbs" data-v="#8b4513" style="background:#8b4513;"></div>
+        <div class="vbs" data-v="#c8a050" style="background:#c8a050;"></div>
+        <div class="vbs" data-v="#6a2070" style="background:#6a2070;"></div>
+        <input type="color" id="vb-ccolor" value="#2a1a0e" title="Custom">
+      </div>
+
+      <div class="vb-label">Background</div>
+      <div class="vb-swatches" id="vb-bg-swatches">
+        <div class="vbs" data-v="#f5edd8" style="background:#f5edd8;border:1.5px solid #c8b090;"></div>
+        <div class="vbs" data-v="#e8dfc8" style="background:#e8dfc8;border:1.5px solid #c8b090;"></div>
+        <div class="vbs" data-v="#1a2a3e" style="background:#1a2a3e;"></div>
+        <div class="vbs" data-v="#0d1a0d" style="background:#0d1a0d;"></div>
+        <div class="vbs" data-v="#2a0a0a" style="background:#2a0a0a;"></div>
+        <div class="vbs" data-v="#0d0d1a" style="background:#0d0d1a;"></div>
+        <input type="color" id="vb-bcolor" value="#f5edd8" title="Custom">
+      </div>
+
+      <div class="vb-label">Metalness</div>
+      <input type="range" id="vb-metal" min="0" max="1" step="0.05" value="0.3">
+      <div class="vb-label">Roughness</div>
+      <input type="range" id="vb-rough" min="0" max="1" step="0.05" value="0.5">
+
+      <div class="vb-label">Bevel</div>
+      <input type="range" id="vb-bevel" min="0" max="1" step="0.05" value="0.3">
+
+      <div class="vb-divider"></div>
+      <div class="vb-label">Animation</div>
+      <select id="vb-effect">
+        <option value="none">None (drag letters)</option>
+        <option value="wave">Wave</option>
+        <option value="float">Float</option>
+        <option value="spin">Spin</option>
+        <option value="pulse">Pulse</option>
+        <option value="cascade">Cascade</option>
+        <option value="tilt">Tilt</option>
+      </select>
+      <div class="vb-label">Speed</div>
+      <input type="range" id="vb-speed" min="0.1" max="3" step="0.1" value="1">
+
+      <div class="vb-label">Scene Tilt</div>
+      <input type="range" id="vb-tilt" min="-0.8" max="0.8" step="0.02" value="0.05">
+
+      <div class="vb-divider"></div>
+      <div id="vb-sel-hint" style="display:none;flex-direction:column;gap:5px;">
+        <div class="vb-label" style="color:#c0392b;">● Selected letter</div>
+        <div class="vb-label">Colour</div>
+        <input type="color" id="vb-sel-color" value="#c0392b">
+        <div class="vb-label">Scale</div>
+        <input type="range" id="vb-sel-scale" min="0.3" max="3" step="0.05" value="1">
+        <div class="vb-label">Rotate Y</div>
+        <input type="range" id="vb-sel-roty" min="-3.14" max="3.14" step="0.05" value="0">
+        <div class="vb-label">Rotate X</div>
+        <input type="range" id="vb-sel-rotx" min="-3.14" max="3.14" step="0.05" value="0">
+        <div class="vb-label">Move Z</div>
+        <input type="range" id="vb-sel-z" min="-3" max="3" step="0.1" value="0">
+        <button class="vb-btn" onclick="vbDeselectLetter()">Deselect</button>
+      </div>
+
+      <button class="vb-btn vb-btn-save" onclick="vbSave()">💾 Save PNG</button>
+      <div class="vb-hint-text">Double-click a letter to select · Drag to move · Orbit on empty</div>
+    </div>
+    <div id="vb-canvas-wrap">
+      <canvas id="vb-canvas"></canvas>
+    </div>
   </div>
 </div>
+<style>
+/* ── Ukiyo-e Blocco ── */
+#volum-body{display:flex;flex:1;overflow:hidden;min-height:0;}
+#vb-sidebar{
+  width:188px;flex-shrink:0;
+  background:linear-gradient(180deg,#f0e6cc 0%,#e8dab8 100%);
+  border-right:2px solid #c8aa78;
+  overflow-y:auto;padding:10px 10px 16px;
+  display:flex;flex-direction:column;gap:6px;
+  font-family:-apple-system,sans-serif;
+}
+.vb-panel-title{
+  font-family:'Cormorant Garamond',Georgia,serif;
+  font-size:11px;font-weight:400;font-style:italic;
+  letter-spacing:0.25em;color:#6a4820;
+  text-align:center;padding:4px 0 8px;
+  border-bottom:1px solid rgba(160,120,60,0.3);
+  margin-bottom:2px;
+}
+.vb-label{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:0.09em;color:#8a6230;margin-top:4px;}
+.vb-divider{height:1px;background:rgba(160,120,60,0.25);margin:4px 0;}
+#vb-sidebar textarea,#vb-sidebar select,#vb-sidebar input[type=range],#vb-sidebar input[type=color]{
+  width:100%;box-sizing:border-box;
+  background:rgba(255,255,255,0.55);
+  border:1px solid rgba(160,120,60,0.4);
+  border-radius:5px;color:#2a1a0e;
+  padding:5px 7px;font-size:12px;font-family:inherit;resize:none;
+}
+#vb-sidebar textarea{min-height:48px;}
+#vb-sidebar select{padding:4px 7px;cursor:pointer;background:rgba(255,255,255,0.7);}
+#vb-sidebar input[type=range]{padding:0;height:3px;accent-color:#c0392b;cursor:pointer;background:none;border:none;}
+#vb-sidebar input[type=color]{width:100%;height:26px;padding:1px;cursor:pointer;border-radius:6px;}
+.vb-btn{
+  width:100%;padding:7px;border:1px solid rgba(160,120,60,0.5);
+  border-radius:7px;font-size:11px;font-weight:600;cursor:pointer;
+  font-family:inherit;background:rgba(255,255,255,0.5);color:#4a3010;
+  transition:background 0.12s;
+}
+.vb-btn:hover{background:rgba(255,255,255,0.8);}
+.vb-btn-accent{background:rgba(192,57,43,0.12);color:#8a1a0e;border-color:rgba(192,57,43,0.35);}
+.vb-btn-accent:hover{background:rgba(192,57,43,0.22);}
+.vb-btn-save{background:rgba(26,74,110,0.12);color:#0e3060;border-color:rgba(26,74,110,0.3);margin-top:auto;}
+.vb-btn-save:hover{background:rgba(26,74,110,0.22);}
+.vb-swatches{display:flex;gap:5px;flex-wrap:wrap;align-items:center;}
+.vbs{width:22px;height:22px;border-radius:50%;cursor:pointer;border:2px solid transparent;flex-shrink:0;transition:transform 0.1s;box-shadow:0 1px 3px rgba(0,0,0,0.2);}
+.vbs:hover{transform:scale(1.15);}
+.vbs.on{border-color:#c0392b;box-shadow:0 0 0 2px rgba(192,57,43,0.4);}
+#vb-sidebar input[type=color]{width:22px;height:22px;padding:0;border-radius:50%;border:2px solid rgba(160,120,60,0.4);}
+.vb-hint-text{font-size:9px;color:rgba(100,70,30,0.5);text-align:center;line-height:1.4;margin-top:4px;}
+#vb-canvas-wrap{flex:1;position:relative;overflow:hidden;background:#f5edd8;}
+#vb-canvas{display:block;width:100%;height:100%;}
+/* Woodblock print texture overlay on sidebar */
+#vb-sidebar::after{
+  content:'';position:absolute;inset:0;pointer-events:none;
+  background:repeating-linear-gradient(90deg,transparent 0px,transparent 3px,rgba(120,80,20,0.03) 3px,rgba(120,80,20,0.03) 4px);
+}
+#vb-sidebar{position:relative;}
+
+/* ── Japanese Blocco Loader ── */
+@keyframes vbl-sweep{0%{transform:translateX(-100%);}100%{transform:translateX(200%);}}
+@keyframes vbl-float{0%,100%{transform:translateY(0);}50%{transform:translateY(-6px);}}
+@keyframes vbl-brush{0%{width:0;opacity:0;}60%{opacity:1;}100%{width:100%;opacity:0.4;}}
+@keyframes vbl-fade-in{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:none;}}
+#vb-loader{
+  position:absolute;inset:0;z-index:20;display:flex;align-items:center;justify-content:center;
+  background:linear-gradient(160deg,#f5edd8 0%,#ede0c0 40%,#e0d0a8 100%);
+  transition:opacity 0.8s ease,transform 0.8s cubic-bezier(0.4,0,0.2,1);
+}
+#vb-loader.done{opacity:0;pointer-events:none;transform:scale(0.96);}
+.vbl-inner{
+  display:flex;flex-direction:column;align-items:center;gap:0;
+  animation:vbl-fade-in 0.6s ease forwards;
+}
+.vbl-mon{
+  font-family:'Cormorant Garamond',Georgia,serif;
+  font-size:72px;font-weight:300;color:#4a3020;line-height:1;
+  animation:vbl-float 3s ease-in-out infinite;
+  text-shadow:0 4px 16px rgba(74,48,32,0.18),0 1px 0 rgba(255,255,255,0.8);
+  margin-bottom:16px;
+}
+.vbl-title{
+  font-family:'Cormorant Garamond',Georgia,serif;
+  font-size:28px;font-weight:300;letter-spacing:0.35em;
+  color:#3a2010;text-transform:uppercase;
+  background:linear-gradient(90deg,#6a4020,#c87840,#6a4020);
+  background-size:200% auto;-webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  background-clip:text;
+  animation:clay-shimmer 3s linear infinite;
+}
+.vbl-sub{
+  font-family:'Cormorant Garamond',Georgia,serif;
+  font-size:12px;font-weight:400;font-style:italic;
+  letter-spacing:0.18em;color:rgba(80,50,20,0.55);
+  margin-top:4px;margin-bottom:24px;
+}
+.vbl-bar-wrap{
+  width:140px;height:1px;background:rgba(120,80,30,0.2);
+  overflow:hidden;position:relative;border-radius:1px;
+}
+.vbl-bar{
+  height:100%;width:30%;
+  background:linear-gradient(90deg,transparent,#c87840,#8a4a18,#c87840,transparent);
+  animation:vbl-sweep 1.6s ease-in-out infinite;
+}
+.vbl-brushlines{
+  display:flex;flex-direction:column;gap:6px;margin-top:20px;width:100px;align-items:flex-start;
+}
+.vbl-brush{
+  height:1px;background:rgba(80,50,20,0.35);border-radius:1px;
+  animation:vbl-brush 2.4s ease-in-out infinite;
+}
+.vbl-brush:nth-child(1){animation-delay:0s;width:70%;}
+.vbl-brush:nth-child(2){animation-delay:0.4s;width:45%;}
+.vbl-brush:nth-child(3){animation-delay:0.8s;width:60%;}
+</style>
 <script>
 (function(){
-  // ============ VOLUM STATE ============
-  let volumOpen=false, volumMax=false, volumMinned=false, volumBuilt=false;
+  let open_=false,maxed=false;
+  let renderer,scene,camera,animId;
+  let letterMeshes=[];   // array of {mesh, baseX, baseY, char}
+  let selected=null;
+  let T=null;
+  let textColor='#2a1a0e', bgColor='#f5edd8';
+  let orbitDrag=false,orbitLast=null,rotX_=0.05,rotY_=0;
+  let dragLetter=null,dragStart=null,dragPos=null;
+  let t_=0;
+
   const win=()=>document.getElementById('volum-window');
-  // Pages: each page has {id, name, entries:[ {text, font, color, x,y,rot, depth, size} ]}
-  let pages = [
-    {id:'p1', name:'First Page', entries:[]}
-  ];
-  let activePageId = 'p1';
-  let pageCounter = 1;
-  let currentStyle = 'serif';
-  let currentColor = '#c89048';
-  let currentTool = 'write';
-  // 3D camera state
-  let camOrbitX = -0.55;  // pitch (looking down at notebook)
-  let camOrbitY = 0.0;    // yaw
-  let camDist = 540;
-  let camTargetY = 0;
-  let camPanX = 0, camPanZ = 0;
-  // Anim state
-  let lastEntryT = 0;
-  // ============ OPEN/CLOSE/MIN/MAX ============
-  window.openVolum = function(){
-    volumOpen=true; volumMinned=false; volumMax=false;
+
+  window.openVolum=function(){
+    open_=true; win().classList.add('open');
     document.getElementById('dock-volum').classList.add('app-open');
-    const w=win();
-    w.style.cssText=''; w.style.left='50%'; w.style.top='50%';
-    w.style.transition='none'; w.style.opacity='0';
-    w.style.transform='translate(-50%,-50%) scale(0.05)';
-    w.classList.remove('minimising','maximised','open');
-    if(typeof bringToFront==='function') bringToFront(w);
-    requestAnimationFrame(()=>requestAnimationFrame(()=>{
-      w.style.transition='opacity 0.22s ease,transform 0.38s cubic-bezier(0.34,1.28,0.64,1)';
-      w.style.opacity='1'; w.style.transform='translate(-50%,-50%) scale(1)';
-      w.style.pointerEvents='all'; w.classList.add('open');
-      if(!volumBuilt){ volumBuilt=true; runVolumLoader(); }
-      setTimeout(resizeVolumCanvas, 50);
-    }));
+    if(!T) setTimeout(initVB,80); else setTimeout(resizeVB,50);
   };
-  window.closeVolum = function(){
-    if(!volumOpen) return;
-    document.getElementById('dock-volum').classList.remove('app-open');
-    const w=win();
-    w.style.transition='opacity 0.3s ease,transform 0.3s ease';
-    w.style.opacity='0'; w.style.transform='translate(-50%,-50%) scale(0.88) translateY(8px)';
-    w.style.pointerEvents='none';
-    setTimeout(()=>{ w.classList.remove('open','maximised'); w.style.cssText=''; volumOpen=false; },320);
+  window.closeVolum=function(){
+    open_=false;
+    const w=win(),icon=document.getElementById('dock-volum');
+    const ir=icon.getBoundingClientRect(),wr=w.getBoundingClientRect();
+    w.style.setProperty('--volum-tx',(ir.left+ir.width/2-(wr.left+wr.width/2))+'px');
+    w.style.setProperty('--volum-ty',(ir.top+ir.height/2-(wr.top+wr.height/2))+'px');
+    w.classList.remove('open'); icon.classList.remove('app-open');
+    if(animId){cancelAnimationFrame(animId);animId=null;}
   };
-  window.minimiseVolum = function(){
-    if(!volumOpen) return;
-    const w=win();
-    if(volumMinned){ volumMinned=false; w.classList.remove('minimising'); w.style.cssText=''; w.style.left='50%'; w.style.top='50%'; w.style.transform='translate(-50%,-50%) scale(0.88) translateY(8px)'; requestAnimationFrame(()=>requestAnimationFrame(()=>w.classList.add('open'))); return; }
-    const icon=document.getElementById('dock-volum'), ir=icon.getBoundingClientRect(), wr=w.getBoundingClientRect();
-    w.style.setProperty('--volum-tx',(ir.left+ir.width/2-wr.left-wr.width/2)+'px');
-    w.style.setProperty('--volum-ty',(ir.top+ir.height/2-wr.top-wr.height/2)+'px');
-    w.classList.remove('open','maximised'); w.classList.add('minimising'); volumMinned=true; volumMax=false;
+  window.minimiseVolum=function(){
+    const w=win(),icon=document.getElementById('dock-volum');
+    const ir=icon.getBoundingClientRect(),wr=w.getBoundingClientRect();
+    w.style.setProperty('--volum-tx',(ir.left+ir.width/2-(wr.left+wr.width/2))+'px');
+    w.style.setProperty('--volum-ty',(ir.top+ir.height/2-(wr.top+wr.height/2))+'px');
+    w.classList.remove('open'); w.classList.add('minimising');
+    if(animId){cancelAnimationFrame(animId);animId=null;}
+    setTimeout(()=>w.classList.remove('minimising'),500);
   };
-  window.maximiseVolum = function(){
-    if(!volumOpen) return;
-    const w=win(); volumMax=!volumMax;
-    if(volumMax){ w.classList.add('maximised'); w.classList.remove('minimising'); }
-    else{ w.classList.remove('maximised'); w.style.left='50%'; w.style.top='50%'; w.style.width=''; w.style.height=''; w.style.transform=''; requestAnimationFrame(()=>requestAnimationFrame(()=>w.classList.add('open'))); }
-    setTimeout(resizeVolumCanvas, 350);
+  window.maximiseVolum=function(){
+    maxed=!maxed; win().classList.toggle('maximised',maxed);
+    setTimeout(resizeVB,350);
   };
-  // ============ TITLEBAR DRAG ============
-  (function(){
-    const tb=document.getElementById('volum-titlebar');
-    const MENU_H=24,DOCK_H=78;
-    let drag=false,ox=0,oy=0,raf=null;
-    function start(ex,ey){ const w=win(),r=w.getBoundingClientRect(); ox=ex-r.left; oy=ey-r.top; w.style.transition='none'; w.style.transform='none'; w.style.left=r.left+'px'; w.style.top=r.top+'px'; }
-    function move(ex,ey){ if(!drag||raf) return; raf=requestAnimationFrame(()=>{ raf=null; const w=win(); w.style.left=Math.max(0,Math.min(window.innerWidth-w.offsetWidth,ex-ox))+'px'; w.style.top=Math.max(MENU_H,Math.min(window.innerHeight-DOCK_H-36,ey-oy))+'px'; }); }
-    tb.addEventListener('mousedown',e=>{ if(volumMax||e.target.closest('.pw-dot')||e.target.closest('.vt-export')) return; drag=true; start(e.clientX,e.clientY); e.preventDefault(); });
-    window.addEventListener('mousemove',e=>move(e.clientX,e.clientY));
-    window.addEventListener('mouseup',()=>{ drag=false; raf=null; });
-  })();
-  // ============ LOADER ============
-  function runVolumLoader(){
-    const fill=document.getElementById('volum-loader-fill');
-    const loader=document.getElementById('volum-loader');
-    const subEl=document.getElementById('volum-loader-sub');
-    const phrases = ['opening the notebook','sharpening the pencil','warming the press','aligning the gutter','setting the type'];
-    let pct=0;
-    const iv=setInterval(()=>{
-      pct+=Math.random()*16+5;
-      if(pct>=100){
-        pct=100; fill.style.width='100%';
-        if(subEl) subEl.textContent='ready';
-        clearInterval(iv);
-        setTimeout(()=>{ loader.classList.add('done'); initVolumEngine(); },500);
-      } else {
-        fill.style.width=pct+'%';
-        if(subEl && Math.random()<0.4) subEl.textContent=phrases[Math.floor(Math.random()*phrases.length)]+'…';
-      }
-    },200);
+
+  function loadThree(cb){
+    if(window.THREE){T=window.THREE;cb();return;}
+    const s=document.createElement('script');
+    s.src='https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js';
+    s.onload=()=>{T=window.THREE;cb();}; document.head.appendChild(s);
   }
-  // ============ INITIALIZE ENGINE ============
-  let canvas, ctx;
-  function initVolumEngine(){
-    canvas = document.getElementById('volum-canvas');
-    ctx = canvas.getContext('2d');
-    resizeVolumCanvas();
-    setupInput();
-    setupCanvasInteraction();
-    refreshPageList();
-    updateStatus();
-    requestAnimationFrame(volumLoop);
+
+  function makeLetterTexture(ch,color,fontFamily,fontWeight){
+    const sz=512;
+    const cv=document.createElement('canvas');cv.width=sz;cv.height=sz;
+    const ctx=cv.getContext('2d');
+    ctx.clearRect(0,0,sz,sz);
+    const weight=fontWeight||'bold';
+    const style=document.getElementById('vb-style')?document.getElementById('vb-style').value:'bold';
+    const fontStr=style==='italic'?`italic bold ${Math.round(sz*0.72)}px ${fontFamily}`
+                  :`${weight} ${Math.round(sz*0.72)}px ${fontFamily}`;
+    ctx.font=fontStr;
+    ctx.textAlign='center'; ctx.textBaseline='middle';
+    ctx.shadowColor='rgba(0,0,0,0.35)'; ctx.shadowBlur=24; ctx.shadowOffsetY=10;
+    ctx.fillStyle=color||'#2a1a0e';
+    ctx.fillText(ch,sz/2,sz/2+sz*0.04);
+    ctx.shadowColor='transparent';
+    // Sheen highlight
+    ctx.globalCompositeOperation='lighter';
+    const grd=ctx.createLinearGradient(sz*0.25,sz*0.15,sz*0.75,sz*0.55);
+    grd.addColorStop(0,'rgba(255,255,255,0.32)');
+    grd.addColorStop(0.5,'rgba(255,255,255,0.08)');
+    grd.addColorStop(1,'rgba(255,255,255,0)');
+    ctx.fillStyle=grd; ctx.fillText(ch,sz/2,sz/2+sz*0.04);
+    return cv;
   }
-  function resizeVolumCanvas(){
-    if(!canvas) return;
-    const dpr=window.devicePixelRatio||1;
-    const r=document.getElementById('volum-canvas-wrap').getBoundingClientRect();
-    canvas.width=r.width*dpr; canvas.height=r.height*dpr;
-    canvas.style.width=r.width+'px'; canvas.style.height=r.height+'px';
-    ctx.setTransform(dpr,0,0,dpr,0,0);
-  }
-  window.addEventListener('resize',()=>{ if(volumBuilt) resizeVolumCanvas(); });
-  // ============ INPUT HANDLING ============
-  function setupInput(){
-    const ta = document.getElementById('volum-input');
-    ta.addEventListener('keydown', e=>{
-      if(e.key==='Enter' && !e.shiftKey){
-        e.preventDefault();
-        volumAddCurrent();
-      }
-    });
-    ta.addEventListener('input', ()=>{
-      ta.style.height='auto';
-      ta.style.height=Math.min(110, ta.scrollHeight)+'px';
-    });
-  }
-  window.volumAddCurrent = function(){
-    const ta = document.getElementById('volum-input');
-    const txt = ta.value.trim();
-    if(!txt) return;
-    const page = pages.find(p=>p.id===activePageId);
-    if(!page) return;
-    // Place at random-ish position so entries fan out across the surface
-    const rangeX = 280, rangeZ = 200;
-    const x = (Math.random()-0.5)*rangeX;
-    const z = (Math.random()-0.5)*rangeZ;
-    const rot = (Math.random()-0.5)*0.32;
-    const depth = 8 + Math.random()*22;
-    const size = txt.length > 28 ? 18 : (txt.length > 14 ? 22 : 28);
-    page.entries.push({
-      text: txt,
-      font: currentStyle,
-      color: currentColor,
-      x, y: 0, z, rot, depth, size,
-      bornAt: performance.now()
-    });
-    ta.value=''; ta.style.height='auto';
-    lastEntryT = performance.now();
-    refreshPageList();
-    updateStatus();
-  };
-  window.volumSetStyle = function(st){
-    currentStyle = st;
-    document.querySelectorAll('.volum-style-pill').forEach(p=>p.classList.toggle('active', p.dataset.volStyle===st));
-  };
-  window.volumSetColor = function(c){
-    currentColor = c;
-    document.querySelectorAll('.volum-color-pill').forEach(p=>p.classList.toggle('active', p.dataset.volColor===c));
-  };
-  window.volumSetTool = function(t){
-    currentTool = t;
-    document.querySelectorAll('.volum-tool').forEach(el=>el.classList.remove('active'));
-    const map={write:'vtool-write',orbit:'vtool-orbit',fly:'vtool-fly'};
-    if(map[t]) document.getElementById(map[t]).classList.add('active');
-    const ov = document.getElementById('volum-input-overlay');
-    if(t==='write') ov.classList.add('show'); else ov.classList.remove('show');
-  };
-  window.volumClearPage = function(){
-    const page = pages.find(p=>p.id===activePageId);
-    if(!page) return;
-    if(page.entries.length===0) return;
-    if(!confirm('Clear all entries on this page?')) return;
-    page.entries = [];
-    refreshPageList(); updateStatus();
-  };
-  window.volumShuffleColors = function(){
-    const page = pages.find(p=>p.id===activePageId);
-    if(!page) return;
-    const palette = ['#c89048','#e8a850','#a83820','#5a8868','#3a5878','#883858','#fae0b8','#1a0c04'];
-    page.entries.forEach(e=>{ e.color = palette[Math.floor(Math.random()*palette.length)]; });
-  };
-  window.volumNewPage = function(){
-    pageCounter++;
-    const id = 'p'+pageCounter;
-    const name = 'Page '+pageCounter;
-    pages.push({id, name, entries:[]});
-    activePageId = id;
-    // Reset camera a touch for the new page
-    camOrbitY = 0; camPanX=0; camPanZ=0;
-    refreshPageList(); updateStatus();
-  };
-  window.volumDeletePage = function(id, ev){
-    if(ev){ ev.stopPropagation(); }
-    if(pages.length<=1){ alert('Need at least one page.'); return; }
-    if(!confirm('Delete this page?')) return;
-    const idx = pages.findIndex(p=>p.id===id);
-    if(idx<0) return;
-    pages.splice(idx,1);
-    if(activePageId===id){ activePageId = pages[Math.min(idx, pages.length-1)].id; }
-    refreshPageList(); updateStatus();
-  };
-  window.volumSelectPage = function(id){
-    activePageId = id;
-    camOrbitY = 0; camPanX=0; camPanZ=0;
-    refreshPageList(); updateStatus();
-  };
-  function refreshPageList(){
-    const list = document.getElementById('volum-page-list');
-    list.innerHTML='';
-    pages.forEach(p=>{
-      const it = document.createElement('div');
-      it.className = 'volum-page'+(p.id===activePageId?' active':'');
-      it.onclick = ()=>volumSelectPage(p.id);
-      const last = p.entries.length>0 ? p.entries[p.entries.length-1].text : '— empty —';
-      it.innerHTML = `
-        <div class="volum-page-name">${escHtml(p.name)}</div>
-        <div class="volum-page-sub">${p.entries.length} entries · ${escHtml(last.slice(0,28))}${last.length>28?'…':''}</div>
-        <div class="volum-page-del" onclick="volumDeletePage('${p.id}',event)">×</div>
-      `;
-      list.appendChild(it);
-    });
-  }
-  function updateStatus(){
-    const page = pages.find(p=>p.id===activePageId);
-    document.getElementById('volum-status-page').textContent = page ? page.name : '—';
-    document.getElementById('volum-status-count').textContent = page ? (page.entries.length+' entries') : '';
-    const empty = document.getElementById('volum-empty');
-    empty.style.display = (page && page.entries.length===0) ? '' : 'none';
-  }
-  function escHtml(s){ return String(s).replace(/[&<>"']/g, m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
-  // ============ CANVAS INTERACTION (orbit/zoom/pan) ============
-  function setupCanvasInteraction(){
-    const wrap = document.getElementById('volum-canvas-wrap');
-    let drag=false, mid=false, lastX=0, lastY=0;
-    wrap.addEventListener('mousedown', e=>{
-      // Don't orbit if user clicks input overlay
-      if(e.target.closest('#volum-input-overlay')) return;
-      drag = true;
-      mid = (e.button===1) || e.shiftKey;
-      lastX=e.clientX; lastY=e.clientY;
-      wrap.style.cursor='grabbing';
-      e.preventDefault();
-    });
-    window.addEventListener('mousemove', e=>{
-      if(!drag) return;
-      const dx = e.clientX-lastX, dy=e.clientY-lastY;
-      lastX=e.clientX; lastY=e.clientY;
-      if(mid){
-        camPanX -= dx*0.7;
-        camPanZ -= dy*0.7;
-      } else {
-        camOrbitY += dx*0.005;
-        camOrbitX += dy*0.005;
-        camOrbitX = Math.max(-1.4, Math.min(0.2, camOrbitX));
-      }
-    });
-    window.addEventListener('mouseup', ()=>{ drag=false; wrap.style.cursor='grab'; });
-    wrap.addEventListener('wheel', e=>{
-      if(e.target.closest('#volum-input-overlay')) return;
-      e.preventDefault();
-      camDist *= (1 + e.deltaY*0.0012);
-      camDist = Math.max(220, Math.min(1400, camDist));
-    }, {passive:false});
-  }
-  // ============ 3D PROJECTION (homemade — no three.js) ============
-  // Coord system: x right, y up, z back (away from camera into the page surface)
-  function project(x,y,z, cam){
-    // translate by camera target
-    let ox=x-cam.tx, oy=y-cam.ty, oz=z-cam.tz;
-    // rotate by -orbitY around Y axis
-    const cy=Math.cos(-cam.oy), sy=Math.sin(-cam.oy);
-    const x1 = cy*ox + sy*oz;
-    const z1 = -sy*ox + cy*oz;
-    // rotate by -orbitX around X axis
-    const cx=Math.cos(-cam.ox), sx=Math.sin(-cam.ox);
-    const y2 = cx*oy - sx*z1;
-    const z2 = sx*oy + cx*z1;
-    // translate by distance along Z
-    const zc = z2 + cam.dist;
-    if(zc<=1) return null;
-    // perspective project
-    const f = cam.f;
-    return { x: f*x1/zc + cam.cx, y: -f*y2/zc + cam.cy, depth: zc, scale: f/zc };
-  }
-  function fontFamily(style){
-    switch(style){
-      case 'serif': return "'Cormorant Garamond',Georgia,serif";
-      case 'sans': return "-apple-system,'Helvetica Neue',sans-serif";
-      case 'mono': return "'Courier New',monospace";
-      case 'display': return "'Cormorant Garamond',Georgia,serif";
-      default: return "'Cormorant Garamond',Georgia,serif";
-    }
-  }
-  function fontWeight(style){ return style==='display'?'700':(style==='sans'?'500':'400'); }
-  function fontStyle(style){ return style==='display'?'italic':'normal'; }
-  // ============ RENDER LOOP ============
-  function volumLoop(){
-    if(!volumOpen){ requestAnimationFrame(volumLoop); return; }
-    render();
-    requestAnimationFrame(volumLoop);
-  }
-  function render(){
-    if(!ctx) return;
-    const r = canvas.getBoundingClientRect();
-    const W = r.width, H = r.height;
-    // Background gradient (already on the wrap div, but draw a subtle gradient on canvas too to layer)
-    ctx.clearRect(0,0,W,H);
-    // Camera
-    const cam = {
-      tx: camPanX, ty: 0, tz: camPanZ,
-      ox: camOrbitX, oy: camOrbitY,
-      dist: camDist,
-      f: Math.min(W,H)*0.95,
-      cx: W/2, cy: H*0.50
-    };
-    // Fly mode: gentle auto-orbit
-    if(currentTool==='fly'){ camOrbitY += 0.0035; }
-    // Draw the notebook PAGE plane (a horizontal rectangle at y=0)
-    const pageW = 480, pageD = 360;
-    drawNotebookPage(cam, pageW, pageD);
-    // Draw entries as 3D extruded text blocks rising from the page
-    const page = pages.find(p=>p.id===activePageId);
-    if(page){
-      // Sort entries back-to-front (for painter's algorithm) using projected depth
-      const entries = page.entries.map(e=>{
-        const p = project(e.x, e.depth, e.z, cam);
-        return {e, proj: p, depth: p ? p.depth : Infinity};
-      }).filter(o=>o.proj);
-      entries.sort((a,b)=> b.depth - a.depth);
-      for(const o of entries){
-        drawEntry(cam, o.e);
-      }
-    }
-  }
-  function drawNotebookPage(cam, w, d){
-    const half_w = w/2, half_d = d/2;
-    // Page corners on plane y=0
-    const corners = [
-      {x:-half_w, y:0, z:-half_d},
-      {x: half_w, y:0, z:-half_d},
-      {x: half_w, y:0, z: half_d},
-      {x:-half_w, y:0, z: half_d}
+
+  function buildLetterMesh(ch,color,font){
+    const cv2=makeLetterTexture(ch,color,font);
+    const tex=new T.CanvasTexture(cv2);
+    tex.needsUpdate=true;
+    const depth=parseFloat(document.getElementById('vb-depth').value)||0.18;
+    const size=parseFloat(document.getElementById('vb-size').value)||1.1;
+    // Use a BoxGeometry with the texture on front face — gives real 3D depth
+    const geo=new T.BoxGeometry(size,size,depth*size);
+    // Separate materials per face: textured front/back, plain sides
+    const sideColor=new T.Color(color).multiplyScalar(0.7);
+    const mats=[
+      new T.MeshStandardMaterial({color:sideColor,metalness:0.4,roughness:0.5}), // right
+      new T.MeshStandardMaterial({color:sideColor,metalness:0.4,roughness:0.5}), // left
+      new T.MeshStandardMaterial({color:new T.Color(color).multiplyScalar(0.9),metalness:0.4,roughness:0.5}), // top
+      new T.MeshStandardMaterial({color:new T.Color(color).multiplyScalar(0.6),metalness:0.4,roughness:0.5}), // bottom
+      new T.MeshStandardMaterial({map:tex,metalness:parseFloat(document.getElementById('vb-metal').value)||0.3,roughness:parseFloat(document.getElementById('vb-rough').value)||0.5}), // front
+      new T.MeshStandardMaterial({color:sideColor,metalness:0.4,roughness:0.5}), // back
     ];
-    const proj = corners.map(c=>project(c.x,c.y,c.z,cam));
-    if(proj.some(p=>!p)) return;
-    // Page shadow (offset slightly)
-    ctx.save();
-    ctx.beginPath();
-    ctx.moveTo(proj[0].x+8, proj[0].y+18);
-    ctx.lineTo(proj[1].x+8, proj[1].y+18);
-    ctx.lineTo(proj[2].x+8, proj[2].y+18);
-    ctx.lineTo(proj[3].x+8, proj[3].y+18);
-    ctx.closePath();
-    ctx.fillStyle='rgba(0,0,0,0.45)';
-    ctx.filter='blur(14px)';
-    ctx.fill();
-    ctx.restore();
-    // Page back side (slightly darker; gives sub-page depth)
-    ctx.save();
-    ctx.beginPath();
-    ctx.moveTo(proj[0].x, proj[0].y+6);
-    ctx.lineTo(proj[1].x, proj[1].y+6);
-    ctx.lineTo(proj[2].x, proj[2].y+6);
-    ctx.lineTo(proj[3].x, proj[3].y+6);
-    ctx.closePath();
-    ctx.fillStyle='#3a2418';
-    ctx.fill();
-    ctx.restore();
-    // Page top (paper colour)
-    ctx.save();
-    ctx.beginPath();
-    ctx.moveTo(proj[0].x, proj[0].y);
-    ctx.lineTo(proj[1].x, proj[1].y);
-    ctx.lineTo(proj[2].x, proj[2].y);
-    ctx.lineTo(proj[3].x, proj[3].y);
-    ctx.closePath();
-    // Gradient paper fill
-    const gx0 = (proj[0].x+proj[3].x)/2, gy0=(proj[0].y+proj[3].y)/2;
-    const gx1 = (proj[1].x+proj[2].x)/2, gy1=(proj[1].y+proj[2].y)/2;
-    const gp = ctx.createLinearGradient(gx0,gy0,gx1,gy1);
-    gp.addColorStop(0,'#fae8c8');
-    gp.addColorStop(0.5,'#f4ecd8');
-    gp.addColorStop(1,'#e8d8b8');
-    ctx.fillStyle=gp;
-    ctx.fill();
-    ctx.strokeStyle='rgba(80,50,20,0.55)';
-    ctx.lineWidth=1.5;
-    ctx.stroke();
-    ctx.restore();
-    // Notebook ruled lines (drawn in page plane, projected)
-    const lineCount=14;
-    ctx.save();
-    ctx.lineWidth=1;
-    for(let i=1;i<lineCount;i++){
-      const t = i/lineCount;
-      const z0 = -half_d + t*d;
-      const a = project(-half_w+18, 0, z0, cam);
-      const b = project( half_w-18, 0, z0, cam);
-      if(!a||!b) continue;
-      ctx.strokeStyle='rgba(120,80,50,0.18)';
-      ctx.beginPath();
-      ctx.moveTo(a.x, a.y);
-      ctx.lineTo(b.x, b.y);
-      ctx.stroke();
+    const mesh=new T.Mesh(geo,mats);
+    mesh.castShadow=true;
+    return mesh;
+  }
+
+  function buildLetters(){
+    letterMeshes.forEach(l=>scene.remove(l.mesh));
+    letterMeshes=[];
+    selected=null; updateSelPanel();
+    const txt=document.getElementById('vb-text').value||'WAVE';
+    const font=document.getElementById('vb-font').value;
+    const fontMap={'helvetiker':'Helvetica, Arial, sans-serif','optimer':'Optima, Candara, sans-serif','gentilis':'Palatino, Georgia, serif','droid/droid_sans':'sans-serif','droid/droid_serif':'Georgia, serif'};
+    const fontFam=fontMap[font]||'Georgia, serif';
+    const size=parseFloat(document.getElementById('vb-size').value)||1.1;
+    const chars=[...txt].filter(ch=>ch!=='\n'&&ch!=='\r');
+    const gap=size*0.08;
+    let xCursor=0;
+    const meshData=[];
+    chars.forEach(ch=>{
+      if(ch===' '){xCursor+=size*0.55;return;}
+      const mesh=buildLetterMesh(ch,textColor,fontFam);
+      mesh.position.x=xCursor+size/2;
+      xCursor+=size+gap;
+      meshData.push({mesh,ch});
+    });
+    const totalW=xCursor-gap;
+    meshData.forEach(({mesh,ch})=>{
+      mesh.position.x-=totalW/2;
+      scene.add(mesh);
+      letterMeshes.push({mesh,baseX:mesh.position.x,baseY:0,baseZ:0,char:ch,selected:false});
+    });
+  }
+
+  function initVB(){
+    loadThree(()=>{
+      const wrap=document.getElementById('vb-canvas-wrap');
+      const cv=document.getElementById('vb-canvas');
+      const W=wrap.clientWidth, H=wrap.clientHeight;
+
+      renderer=new T.WebGLRenderer({canvas:cv,antialias:true,preserveDrawingBuffer:true,alpha:false});
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio,2));
+      renderer.setSize(W,H);
+      renderer.shadowMap.enabled=true;
+      renderer.toneMapping=T.ACESFilmicToneMapping;
+      renderer.toneMappingExposure=1.2;
+
+      scene=new T.Scene();
+      scene.background=new T.Color(bgColor);
+
+      camera=new T.PerspectiveCamera(45,W/H,0.1,200);
+      camera.position.set(0,0,12);
+
+      // Ukiyo-e lighting
+      scene.add(new T.AmbientLight(0xfff8e8,0.55));
+      const sun=new T.DirectionalLight(0xfffaec,2.2); sun.position.set(5,12,10); sun.castShadow=true; scene.add(sun);
+      const fill=new T.DirectionalLight(0xc8d8ff,0.5); fill.position.set(-8,-4,6); scene.add(fill);
+      const rim=new T.DirectionalLight(0xffe0a0,0.7); rim.position.set(0,2,-8); scene.add(rim);
+      const bot=new T.DirectionalLight(0xffd0a0,0.3); bot.position.set(0,-8,4); scene.add(bot);
+
+      buildLetters();
+      startLoop();
+      setTimeout(()=>{ const l=document.getElementById('vb-loader'); if(l)l.classList.add('done'); },500);
+      wireUI();
+    });
+  }
+
+  // ── Raycasting ──
+  function hitTest(ex,ey){
+    const wrap=document.getElementById('vb-canvas-wrap');
+    const r=wrap.getBoundingClientRect();
+    const mouse=new T.Vector2(((ex-r.left)/r.width)*2-1,-((ey-r.top)/r.height)*2+1);
+    const ray=new T.Raycaster();
+    ray.setFromCamera(mouse,camera);
+    const meshes=letterMeshes.map(l=>l.mesh);
+    const hits=ray.intersectObjects(meshes,false);
+    if(!hits.length)return null;
+    return letterMeshes.find(l=>l.mesh===hits[0].object)||null;
+  }
+
+  function screenToSceneXY(ex,ey){
+    const wrap=document.getElementById('vb-canvas-wrap');
+    const r=wrap.getBoundingClientRect();
+    const nx=((ex-r.left)/r.width)*2-1;
+    const ny=-((ey-r.top)/r.height)*2+1;
+    const v=new T.Vector3(nx,ny,0.5).unproject(camera);
+    const dir=v.sub(camera.position).normalize();
+    const t2=-camera.position.z/dir.z;
+    return {x:camera.position.x+dir.x*t2, y:camera.position.y+dir.y*t2};
+  }
+
+  function wireUI(){
+    const cv=document.getElementById('vb-canvas');
+    cv.addEventListener('mousedown',e=>{
+      const l=hitTest(e.clientX,e.clientY);
+      if(l){dragLetter=l;dragStart=screenToSceneXY(e.clientX,e.clientY);dragPos={x:l.mesh.position.x,y:l.mesh.position.y};}
+      else{orbitDrag=true;orbitLast={x:e.clientX,y:e.clientY};}
+    });
+    window.addEventListener('mousemove',e=>{
+      if(dragLetter){
+        const wp=screenToSceneXY(e.clientX,e.clientY);
+        dragLetter.mesh.position.x=dragPos.x+(wp.x-dragStart.x);
+        dragLetter.mesh.position.y=dragPos.y+(wp.y-dragStart.y);
+      } else if(orbitDrag){
+        rotY_+=(e.clientX-orbitLast.x)*0.007;
+        rotX_+=(e.clientY-orbitLast.y)*0.007;
+        rotX_=Math.max(-1.0,Math.min(1.0,rotX_));
+        orbitLast={x:e.clientX,y:e.clientY};
+      }
+    });
+    window.addEventListener('mouseup',()=>{dragLetter=null;orbitDrag=false;});
+    cv.addEventListener('wheel',e=>{camera.position.z=Math.max(3,Math.min(25,camera.position.z+e.deltaY*0.015));},{passive:true});
+    cv.addEventListener('dblclick',e=>{
+      const l=hitTest(e.clientX,e.clientY);
+      if(l) selectLetter(l); else deselectAll();
+    });
+
+    // Colour swatches
+    document.querySelectorAll('#vb-color-swatches .vbs').forEach(s=>{
+      s.onclick=()=>{textColor=s.dataset.v;document.querySelectorAll('#vb-color-swatches .vbs').forEach(x=>x.classList.remove('on'));s.classList.add('on');updateAllColors();};
+    });
+    document.getElementById('vb-ccolor').oninput=e=>{textColor=e.target.value;updateAllColors();};
+    document.querySelectorAll('#vb-bg-swatches .vbs').forEach(s=>{
+      s.onclick=()=>{bgColor=s.dataset.v;document.querySelectorAll('#vb-bg-swatches .vbs').forEach(x=>x.classList.remove('on'));s.classList.add('on');applyBg();};
+    });
+    document.getElementById('vb-bcolor').oninput=e=>{bgColor=e.target.value;applyBg();};
+    document.querySelectorAll('#vb-color-swatches .vbs')[0]&&document.querySelectorAll('#vb-color-swatches .vbs')[0].classList.add('on');
+    document.querySelectorAll('#vb-bg-swatches .vbs')[0]&&document.querySelectorAll('#vb-bg-swatches .vbs')[0].classList.add('on');
+
+    // Live sliders update material
+    ['vb-metal','vb-rough'].forEach(id=>{
+      const el=document.getElementById(id); if(el) el.oninput=updateAllMaterials;
+    });
+    // Selected letter controls
+    const sc=document.getElementById('vb-sel-color');
+    if(sc) sc.oninput=e=>{if(selected){recolorLetter(selected,e.target.value);}};
+    const ss=document.getElementById('vb-sel-scale');
+    if(ss) ss.oninput=e=>{if(selected){const v=parseFloat(e.target.value);selected.mesh.scale.set(v,v,v);}};
+    const sr=document.getElementById('vb-sel-roty');
+    if(sr) sr.oninput=e=>{if(selected)selected.mesh.rotation.y=parseFloat(e.target.value);};
+    const sx=document.getElementById('vb-sel-rotx');
+    if(sx) sx.oninput=e=>{if(selected)selected.mesh.rotation.x=parseFloat(e.target.value);};
+  }
+
+  function buildLetterMeshBevel(){
+    // Rebuild with current bevel intensity by rebuilding all letters
+    buildLetters();
+  }
+  function selectLetter(l){
+    deselectAll();
+    l.selected=true; selected=l;
+    // Highlight: brighten front face
+    if(l.mesh.material[4]) l.mesh.material[4].emissive=new T.Color(0x442200);
+    updateSelPanel();
+  }
+  function deselectAll(){
+    letterMeshes.forEach(l=>{l.selected=false;if(Array.isArray(l.mesh.material)&&l.mesh.material[4])l.mesh.material[4].emissive=new T.Color(0);});
+    selected=null; updateSelPanel();
+  }
+  window.vbDeselectLetter=deselectAll;
+
+  function updateSelPanel(){
+    const p=document.getElementById('vb-sel-hint'); if(!p)return;
+    p.style.display=selected?'flex':'none';
+    if(selected&&selected.mesh.material[4]){
+      const hex='#'+selected.mesh.material[4].color.getHexString();
+      const sc=document.getElementById('vb-sel-color'); if(sc)sc.value=hex;
+      const ss=document.getElementById('vb-sel-scale'); if(ss)ss.value=selected.mesh.scale.x.toFixed(2);
+      const sr=document.getElementById('vb-sel-roty'); if(sr)sr.value=selected.mesh.rotation.y.toFixed(2);
     }
-    // Margin (red vertical line near left edge)
-    const m1 = project(-half_w+30, 0, -half_d, cam);
-    const m2 = project(-half_w+30, 0,  half_d, cam);
-    if(m1 && m2){
-      ctx.strokeStyle='rgba(180,80,60,0.40)';
-      ctx.lineWidth=1.2;
-      ctx.beginPath(); ctx.moveTo(m1.x,m1.y); ctx.lineTo(m2.x,m2.y); ctx.stroke();
+  }
+  function recolorLetter(l,color){
+    if(!Array.isArray(l.mesh.material))return;
+    const side=new T.Color(color).multiplyScalar(0.7);
+    [0,1,2,3,5].forEach(i=>{if(l.mesh.material[i])l.mesh.material[i].color.set(side);});
+    // Rebuild front texture
+    const font=document.getElementById('vb-font').value;
+    const fontMap={'helvetiker':'Helvetica, Arial, sans-serif','optimer':'Optima, Candara, sans-serif','gentilis':'Palatino, Georgia, serif','droid/droid_sans':'sans-serif','droid/droid_serif':'Georgia, serif'};
+    const cv2=makeLetterTexture(l.char,color,fontMap[font]||'Georgia, serif');
+    const tex=new T.CanvasTexture(cv2); tex.needsUpdate=true;
+    if(l.mesh.material[4]){l.mesh.material[4].map=tex;l.mesh.material[4].needsUpdate=true;}
+  }
+  function updateAllColors(){
+    const font=document.getElementById('vb-font').value;
+    const fontMap={'helvetiker':'Helvetica, Arial, sans-serif','optimer':'Optima, Candara, sans-serif','gentilis':'Palatino, Georgia, serif','droid/droid_sans':'sans-serif','droid/droid_serif':'Georgia, serif'};
+    letterMeshes.forEach(l=>{if(!l.selected)recolorLetter(l,textColor);});
+  }
+  function updateAllMaterials(){
+    const metal=parseFloat(document.getElementById('vb-metal').value)||0.3;
+    const rough=parseFloat(document.getElementById('vb-rough').value)||0.5;
+    letterMeshes.forEach(l=>{
+      if(Array.isArray(l.mesh.material)) l.mesh.material.forEach(m=>{if(m){m.metalness=metal;m.roughness=rough;}});
+    });
+  }
+  function applyBg(){
+    document.getElementById('vb-canvas-wrap').style.background=bgColor;
+    if(scene) scene.background=new T.Color(bgColor);
+  }
+
+  function startLoop(){
+    if(animId)cancelAnimationFrame(animId);
+    applyBg();
+    function loop(){
+      animId=requestAnimationFrame(loop);
+      if(!renderer)return;
+      t_+=0.016;
+      const eff=document.getElementById('vb-effect').value;
+      const spd=parseFloat(document.getElementById('vb-speed').value)||1;
+      letterMeshes.forEach((l,i)=>{
+        if(l.selected)return;
+        if(eff==='wave'){
+          l.mesh.position.y=(l.baseY||0)+Math.sin(t_*2*spd+i*0.7)*0.25;
+          l.mesh.rotation.z=Math.sin(t_*spd+i*0.5)*0.06;
+        } else if(eff==='float'){
+          l.mesh.position.y=(l.baseY||0)+Math.sin(t_*spd*0.8+i*0.4)*0.15;
+        } else if(eff==='spin'){
+          l.mesh.rotation.y+=0.04*spd;
+        } else if(eff==='pulse'){
+          const s=1+Math.sin(t_*3*spd+i*0.8)*0.12;
+          l.mesh.scale.setScalar(s);
+        } else if(eff==='cascade'){
+          l.mesh.position.y=(l.baseY||0)+Math.sin(t_*spd*1.5+i*1.2)*0.3;
+          l.mesh.rotation.y=Math.sin(t_*spd+i*0.8)*0.4;
+        } else if(eff==='tilt'){
+          l.mesh.rotation.x=Math.sin(t_*spd*1.2+i*0.6)*0.35;
+          l.mesh.rotation.z=Math.cos(t_*spd*0.8+i*0.4)*0.2;
+        } else {
+          l.mesh.position.y=l.baseY||0;
+          l.mesh.rotation.z=0;
+        }
+      });
+      const tiltEl=document.getElementById('vb-tilt');
+      scene.rotation.y=rotY_;
+      scene.rotation.x=tiltEl?parseFloat(tiltEl.value)+rotX_:rotX_;
+      renderer.render(scene,camera);
     }
-    // Holes on left edge
-    const holeY = 0.001;
-    for(let i=0;i<3;i++){
-      const t = (i+1)/4;
-      const z = -half_d + t*d;
-      const c = project(-half_w+12, holeY, z, cam);
-      if(!c) continue;
-      ctx.beginPath();
-      ctx.arc(c.x,c.y, Math.max(2.5, 5*c.scale), 0, Math.PI*2);
-      ctx.fillStyle='#1a0c04';
-      ctx.fill();
-      ctx.strokeStyle='rgba(80,50,20,0.6)';
-      ctx.lineWidth=1;
-      ctx.stroke();
+    loop();
+  }
+
+  window.vbApply=function(){ buildLetters(); };
+  window.vbSave=function(){
+    if(!renderer||!scene||!camera)return;
+    // Force a clean render with preserveDrawingBuffer=true
+    renderer.render(scene,camera);
+    try{
+      renderer.domElement.toBlob(blob=>{
+        if(!blob)return;
+        const url=URL.createObjectURL(blob);
+        const a=document.createElement('a');
+        a.href=url; a.download='blocco-'+Date.now()+'.png';
+        document.body.appendChild(a); a.click();
+        setTimeout(()=>{URL.revokeObjectURL(url);a.remove();},1000);
+      },'image/png');
+    }catch(e){
+      // Fallback to dataURL
+      const url=renderer.domElement.toDataURL('image/png');
+      const a=document.createElement('a');a.href=url;a.download='blocco.png';
+      document.body.appendChild(a);a.click();a.remove();
     }
-    ctx.restore();
-  }
-  // Extruded 3D text block: render the text on a vertical billboard rising 'depth' units above the page
-  function drawEntry(cam, e){
-    // Animation: scale-up on birth
-    const age = performance.now() - (e.bornAt||0);
-    const animScale = age < 600 ? Math.min(1, 0.3 + age/600*0.7) : 1;
-    const animFloat = age < 1200 ? (1-Math.min(1,age/1200))*8 : 0;
-    const baseY = 0;
-    const topY  = e.depth * animScale;
-    // Compute text width/height in pseudo-3D units. We'll measure with canvas at a fixed pixel scale, then scale to 3D.
-    // Use a base font px = e.size, get width
-    ctx.save();
-    ctx.font = `${fontStyle(e.font)} ${fontWeight(e.font)} ${e.size}px ${fontFamily(e.font)}`;
-    const tw = ctx.measureText(e.text).width;
-    ctx.restore();
-    // In 3D units, treat 1px = 0.7 unit
-    const w3 = tw*0.7, h3 = e.size*0.95;
-    // Billboard center on page
-    const cx3 = e.x, cz3 = e.z;
-    const sinR = Math.sin(e.rot), cosR = Math.cos(e.rot);
-    // Local axis (rotated about Y) for text width direction
-    const axX = cosR, axZ = -sinR;
-    // 4 corners of front face (top edge to bottom edge of letterform), and 4 corners of back face (depth-pushed)
-    const halfW = w3/2;
-    const front = [
-      {x: cx3-axX*halfW, y: topY+animFloat,        z: cz3-axZ*halfW},
-      {x: cx3+axX*halfW, y: topY+animFloat,        z: cz3+axZ*halfW},
-      {x: cx3+axX*halfW, y: baseY+animFloat,       z: cz3+axZ*halfW},
-      {x: cx3-axX*halfW, y: baseY+animFloat,       z: cz3-axZ*halfW}
-    ];
-    // Block thickness (a little thicker than the text height for that chunky 3D feel)
-    const thick = Math.max(8, e.size*0.4);
-    // Back-face corners pushed in -Z (or perpendicular to text orientation)
-    // Use perpendicular axis
-    const pX = -axZ, pZ = axX;
-    const back = front.map(p=>({x:p.x+pX*thick, y:p.y, z:p.z+pZ*thick}));
-    const fp = front.map(p=>project(p.x,p.y,p.z,cam));
-    const bp = back.map(p=>project(p.x,p.y,p.z,cam));
-    if(fp.some(x=>!x) || bp.some(x=>!x)) return;
-    const col = e.color;
-    const sideCol = darken(col, 0.55);
-    const topCol = lighten(col, 0.30);
-    const stroke = darken(col, 0.30);
-    // Draw side faces (only the visible ones based on perpendicular projection; simple painter approach)
-    // Right side (front[1]->back[1]->back[2]->front[2])
-    fillQuad(fp[1],bp[1],bp[2],fp[2], sideCol, stroke);
-    // Left side (front[0]->back[0]->back[3]->front[3])
-    fillQuad(fp[0],bp[0],bp[3],fp[3], darken(col,0.65), stroke);
-    // Top side (front[0]->back[0]->back[1]->front[1])
-    fillQuad(fp[0],bp[0],bp[1],fp[1], topCol, stroke);
-    // Bottom side
-    fillQuad(fp[3],bp[3],bp[2],fp[2], darken(col,0.7), stroke);
-    // Front face: render the text using an offscreen canvas, then warp into the projected quad
-    drawTextBillboard(fp[0], fp[1], fp[2], fp[3], e, col, stroke);
-    ctx.restore && ctx.restore(); // safety
-  }
-  function fillQuad(a,b,c,d, fill, stroke){
-    ctx.beginPath();
-    ctx.moveTo(a.x,a.y); ctx.lineTo(b.x,b.y); ctx.lineTo(c.x,c.y); ctx.lineTo(d.x,d.y); ctx.closePath();
-    ctx.fillStyle=fill; ctx.fill();
-    if(stroke){ ctx.strokeStyle=stroke; ctx.lineWidth=0.8; ctx.stroke(); }
-  }
-  // For the front-face text, render to an offscreen canvas at full text resolution, then draw into the projected quad
-  // using a simple bilinear-ish triangle warp (split the quad into 2 triangles and use canvas affine transforms)
-  const _texCv = document.createElement('canvas');
-  const _texCtx = _texCv.getContext('2d');
-  function drawTextBillboard(p0,p1,p2,p3, e, col, stroke){
-    // Prepare the text texture
-    const padX = 14, padY = 8;
-    const fontSpec = `${fontStyle(e.font)} ${fontWeight(e.font)} ${e.size*2}px ${fontFamily(e.font)}`;
-    _texCtx.font = fontSpec;
-    const tw = _texCtx.measureText(e.text).width;
-    const th = e.size*2.2;
-    _texCv.width = Math.ceil(tw + padX*2);
-    _texCv.height = Math.ceil(th + padY*2);
-    _texCtx.clearRect(0,0,_texCv.width,_texCv.height);
-    // Background (subtle paper-toned plate)
-    _texCtx.fillStyle='rgba(248,232,200,0.0)';
-    _texCtx.fillRect(0,0,_texCv.width,_texCv.height);
-    // Underline highlight
-    _texCtx.fillStyle = lighten(col, 0.40);
-    _texCtx.fillRect(0, _texCv.height-Math.max(2,e.size*0.10), _texCv.width, Math.max(2,e.size*0.10));
-    // Text
-    _texCtx.font = fontSpec;
-    _texCtx.fillStyle = col;
-    _texCtx.textBaseline='alphabetic';
-    _texCtx.fillText(e.text, padX, _texCv.height - padY - Math.max(0, e.size*0.10));
-    // A subtle ink shadow under the glyphs
-    _texCtx.globalCompositeOperation='source-atop';
-    _texCtx.fillStyle = darken(col, 0.50);
-    _texCtx.fillRect(0,0,_texCv.width,_texCv.height*0.5);
-    _texCtx.globalCompositeOperation='source-over';
-    // Now warp the texture canvas into the projected quad p0(top-left)->p1(top-right)->p2(bot-right)->p3(bot-left)
-    drawWarpedImage(_texCv, p0, p1, p2, p3);
-    // Outline the front face for a printed feel
-    ctx.beginPath();
-    ctx.moveTo(p0.x,p0.y); ctx.lineTo(p1.x,p1.y); ctx.lineTo(p2.x,p2.y); ctx.lineTo(p3.x,p3.y); ctx.closePath();
-    ctx.strokeStyle=stroke;
-    ctx.lineWidth=1.2;
-    ctx.stroke();
-  }
-  // Warp a 2D image (rectangle) into a quad by splitting into 2 triangles and using canvas transforms.
-  function drawWarpedImage(img, p0, p1, p2, p3){
-    const w = img.width, h = img.height;
-    // Triangle 1: (0,0)(w,0)(0,h) -> p0 p1 p3
-    drawTextureTri(img, 0,0, w,0, 0,h, p0, p1, p3);
-    // Triangle 2: (w,0)(w,h)(0,h) -> p1 p2 p3
-    drawTextureTri(img, w,0, w,h, 0,h, p1, p2, p3);
-  }
-  function drawTextureTri(img, sx0,sy0, sx1,sy1, sx2,sy2, dst0, dst1, dst2){
-    ctx.save();
-    ctx.beginPath();
-    ctx.moveTo(dst0.x,dst0.y);
-    ctx.lineTo(dst1.x,dst1.y);
-    ctx.lineTo(dst2.x,dst2.y);
-    ctx.closePath();
-    ctx.clip();
-    // Solve affine transform: M*(sx,sy,1)' = (dx,dy)'
-    // M = [a c e; b d f]
-    const x0=sx0,y0=sy0,x1=sx1,y1=sy1,x2=sx2,y2=sy2;
-    const u0=dst0.x,v0=dst0.y,u1=dst1.x,v1=dst1.y,u2=dst2.x,v2=dst2.y;
-    const det = x0*(y1-y2)+x1*(y2-y0)+x2*(y0-y1);
-    if(Math.abs(det)<1e-6){ ctx.restore(); return; }
-    const a = (u0*(y1-y2)+u1*(y2-y0)+u2*(y0-y1))/det;
-    const c = (x0*(u1-u2)+x1*(u2-u0)+x2*(u0-u1))/det;
-    const e = (x0*(y1*u2-y2*u1) + x1*(y2*u0-y0*u2) + x2*(y0*u1-y1*u0))/det;
-    const b = (v0*(y1-y2)+v1*(y2-y0)+v2*(y0-y1))/det;
-    const d = (x0*(v1-v2)+x1*(v2-v0)+x2*(v0-v1))/det;
-    const f = (x0*(y1*v2-y2*v1) + x1*(y2*v0-y0*v2) + x2*(y0*v1-y1*v0))/det;
-    ctx.transform(a,b,c,d,e,f);
-    ctx.drawImage(img,0,0);
-    ctx.restore();
-  }
-  // Color helpers
-  function darken(hex,f){
-    if(hex.startsWith('rgb')) return hex;
-    const r=parseInt(hex.slice(1,3),16),g=parseInt(hex.slice(3,5),16),b=parseInt(hex.slice(5,7),16);
-    return 'rgb('+Math.round(r*f)+','+Math.round(g*f)+','+Math.round(b*f)+')';
-  }
-  function lighten(hex,f){
-    if(hex.startsWith('rgb')) return hex;
-    const r=parseInt(hex.slice(1,3),16),g=parseInt(hex.slice(3,5),16),b=parseInt(hex.slice(5,7),16);
-    return 'rgb('+Math.round(r+(255-r)*f)+','+Math.round(g+(255-g)*f)+','+Math.round(b+(255-b)*f)+')';
-  }
-  // ============ EXPORT ============
-  window.volumExportPage = function(){
-    if(!canvas) return;
-    const a = document.createElement('a');
-    a.href = canvas.toDataURL('image/png');
-    const page = pages.find(p=>p.id===activePageId);
-    a.download = (page ? page.name.replace(/\s+/g,'_') : 'volum') + '.png';
-    a.click();
   };
+
+  function resizeVB(){
+    const wrap=document.getElementById('vb-canvas-wrap');
+    if(!wrap||!renderer)return;
+    const W=wrap.clientWidth,H=wrap.clientHeight;
+    renderer.setSize(W,H);
+    if(camera){camera.aspect=W/H;camera.updateProjectionMatrix();}
+  }
+  window.addEventListener('resize',resizeVB);
 })();
 </script>
 <div id="frost-overlay"></div>
