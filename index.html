@@ -1378,13 +1378,59 @@ function dockBounce(el){el.classList.remove('bounce');void el.offsetWidth;el.cla
   }
   function resolveOverlap(moved){
     const m=gridMetrics();
-    DEFS.forEach(other=>{
-      if(other.id===moved.id) return;
-      if(overlaps(moved,other)){
-        other.row=moved.row+moved.ch;
-        other.row=Math.min(m.maxRows-other.ch, other.row);
+    const COLS_=COLS, MAX_ROWS=m.maxRows;
+
+    // Try to place a widget at (col, row) — returns true if free
+    function isFree(def, col, row, skipId){
+      if(col<0||row<0||col+def.cw>COLS_||row+def.ch>MAX_ROWS) return false;
+      return !DEFS.some(o=>{
+        if(o.id===skipId||o.id===def.id) return false;
+        const test={col,row,cw:def.cw,ch:def.ch};
+        return overlaps(test,o);
+      });
+    }
+
+    // Find the nearest free slot for a widget (spiral search from current pos)
+    function findFreeSlot(def, skipId){
+      // First try all rows at current col
+      for(let r=0;r<=MAX_ROWS-def.ch;r++){
+        if(isFree(def,def.col,r,skipId)) return {col:def.col,row:r};
       }
-    });
+      // Then scan all positions row-major
+      for(let r=0;r<=MAX_ROWS-def.ch;r++){
+        for(let c=0;c<=COLS_-def.cw;c++){
+          if(isFree(def,c,r,skipId)) return {col:c,row:r};
+        }
+      }
+      return null; // no room (shouldn't happen with reasonable widget counts)
+    }
+
+    // Cascade: up to 30 passes until no overlaps remain
+    let changed=true;
+    let pass=0;
+    while(changed&&pass<30){
+      changed=false;
+      pass++;
+      // Sort by row so we push downward naturally
+      const others=DEFS.filter(d=>d.id!==moved.id).sort((a,b)=>a.row-b.row||(a.col-b.col));
+      for(const other of others){
+        // Check if other overlaps with anything (moved or already-resolved widgets)
+        const blockers=DEFS.filter(d=>d.id!==other.id&&overlaps(d,other));
+        if(blockers.length===0) continue;
+        changed=true;
+        // Push other below the lowest blocker first
+        const lowestBottom=Math.max(...blockers.map(b=>b.row+b.ch));
+        const tryRow=lowestBottom;
+        if(tryRow+other.ch<=MAX_ROWS&&isFree(other,other.col,tryRow,other.id)){
+          other.row=tryRow;
+        } else {
+          // Push failed — find any free slot
+          const slot=findFreeSlot(other,other.id);
+          if(slot){other.col=slot.col;other.row=slot.row;}
+          // If truly no slot, leave in place (user has too many widgets)
+        }
+      }
+    }
   }
   function onUp(){
     if(touchHoldTimer){clearTimeout(touchHoldTimer);touchHoldTimer=null;}
@@ -4281,21 +4327,31 @@ body.dark-mode #volum-canvas-wrap{background:radial-gradient(ellipse at 50% 30%,
       <!-- Right edge colour band -->
       <rect x="764" y="0" width="36" height="500" fill="#4a5a28" opacity="0.14"/>
 
-      <!-- BLOCCO label — bold, clean, lower right -->
-      <text x="762" y="448" text-anchor="end"
-            font-family="-apple-system,Helvetica Neue,Arial,sans-serif"
-            font-size="54" font-weight="700" letter-spacing="4"
-            fill="#2a1808" opacity="0.82">BLOCCO</text>
+      <!-- Light grain texture overlay — subtle washi paper feel -->
+      <filter id="vbl-grain"><feTurbulence type="fractalNoise" baseFrequency="0.72" numOctaves="4" stitchTiles="stitch"/><feColorMatrix type="saturate" values="0"/><feBlend in="SourceGraphic" mode="multiply" result="blend"/><feComposite in="blend" in2="SourceGraphic" operator="in"/></filter>
+      <rect width="800" height="500" fill="rgba(240,220,180,0.06)" filter="url(#vbl-grain)" opacity="0.4"/>
 
-      <!-- Japanese text below -->
-      <text x="762" y="482" text-anchor="end"
+      <!-- Decorative thin rule above label -->
+      <line x1="490" y1="432" x2="762" y2="432" stroke="#8a6030" stroke-width="0.8" opacity="0.35"/>
+
+      <!-- BLOCCO — refined weight, slightly smaller, spaced -->
+      <text x="762" y="460" text-anchor="end"
+            font-family="Georgia,'Times New Roman',serif"
+            font-size="46" font-weight="400" letter-spacing="10"
+            fill="#2a1808" opacity="0.78">BLOCCO</text>
+
+      <!-- Japanese subtitle — elegant spacing -->
+      <text x="762" y="483" text-anchor="end"
             font-family="Georgia,serif"
-            font-size="18" font-style="italic" letter-spacing="6"
-            fill="#6a4020" opacity="0.65">三次元の文字</text>
+            font-size="14" font-style="italic" letter-spacing="8"
+            fill="#7a5228" opacity="0.55">三次元の文字</text>
 
-      <!-- Thin loading bar at very bottom -->
-      <rect x="36" y="494" width="728" height="3" rx="1.5" fill="rgba(160,100,40,0.18)"/>
-      <rect id="vbl-bar" x="36" y="494" width="0" height="3" rx="1.5" fill="#c87840"/>
+      <!-- Thin rule below -->
+      <line x1="490" y1="490" x2="762" y2="490" stroke="#8a6030" stroke-width="0.6" opacity="0.25"/>
+
+      <!-- Loading bar — very bottom -->
+      <rect x="36" y="496" width="728" height="2" rx="1" fill="rgba(160,100,40,0.15)"/>
+      <rect id="vbl-bar" x="36" y="496" width="0" height="2" rx="1" fill="#b87030" opacity="0.7"/>
     </svg>
   </div>
     <div id="volum-body">
@@ -4608,117 +4664,102 @@ body.dark-mode #volum-canvas-wrap{background:radial-gradient(ellipse at 50% 30%,
     return new T.MeshStandardMaterial({color:side,metalness:metal,roughness:rough});
   }
 
-  /* ── Letter → THREE.Shape via canvas alpha, simple & clean ── */
-  function letterToShape(ch, fontFamily, fontWeight, size){
-    // Render at decent resolution
-    const SZ=192;
+  /* ── True 3D letter: canvas texture on thin extruded rounded slab ── */
+  function buildLetterMesh(ch,color,fontFamily,fontWeight){
+    const size=parseFloat((document.getElementById('vb-size')||{value:1.1}).value)||1.1;
+    const depth=parseFloat((document.getElementById('vb-depth')||{value:0.18}).value)*size;
+    const bevelVal=parseFloat((document.getElementById('vb-bevel')||{value:0.3}).value);
+    const metal=parseFloat((document.getElementById('vb-metal')||{value:0.4}).value);
+    const rough=parseFloat((document.getElementById('vb-rough')||{value:0.3}).value);
+    const col=new T.Color(color);
+
+    /* ── Render letter to canvas at high res ── */
+    const SZ=512;
     const cv=document.createElement('canvas'); cv.width=SZ; cv.height=SZ;
     const ctx=cv.getContext('2d');
+    // Transparent background
+    ctx.clearRect(0,0,SZ,SZ);
     const fi=fontWeight==='italic'?'italic':'normal';
     const fw=(fontWeight==='italic'||fontWeight==='normal')?'bold':(fontWeight||'bold');
     ctx.font=`${fi} ${fw} ${Math.round(SZ*0.76)}px ${fontFamily||'Georgia,serif'}`;
     ctx.textAlign='center'; ctx.textBaseline='middle';
-    ctx.fillStyle='#fff';
-    ctx.fillText(ch, SZ/2, SZ/2 + SZ*0.03);
+    // Draw letter in the chosen colour
+    ctx.fillStyle=color||'#2a1a0e';
+    ctx.fillText(ch, SZ/2, SZ/2+SZ*0.03);
+    // Add a subtle top-left highlight
+    ctx.globalCompositeOperation='lighter';
+    const g=ctx.createLinearGradient(SZ*0.15,SZ*0.1,SZ*0.7,SZ*0.6);
+    g.addColorStop(0,'rgba(255,255,255,0.22)');
+    g.addColorStop(1,'rgba(255,255,255,0)');
+    ctx.fillStyle=g;
+    ctx.fillText(ch, SZ/2, SZ/2+SZ*0.03);
 
+    const tex=new T.CanvasTexture(cv);
+    tex.needsUpdate=true;
+
+    /* ── Measure actual letter width from canvas ── */
+    // Use pixel data to find bounding box for accurate width
     const px=ctx.getImageData(0,0,SZ,SZ).data;
-    const on=(x,y)=>x>=0&&x<SZ&&y>=0&&y<SZ&&px[(y*SZ+x)*4]>40;
-
-    // Scanline: for each row, collect ALL filled spans (handles counters)
-    // Each span becomes a separate sub-shape, combined with evenodd fill
-    // But THREE.Shape holes list is complex — instead just use outer silhouette
-    // Outer silhouette: for each col, find topmost and bottommost pixel
-    // Then for each row, find leftmost and rightmost — connect as single polygon
-
-    // Find bounding box
-    let minX=SZ,maxX=0,minY=SZ,maxY=0;
+    let x0=SZ,x1=0;
     for(let y=0;y<SZ;y++) for(let x=0;x<SZ;x++){
-      if(on(x,y)){if(x<minX)minX=x;if(x>maxX)maxX=x;if(y<minY)minY=y;if(y>maxY)maxY=y;}
+      if(px[(y*SZ+x)*4+3]>20){x0=Math.min(x0,x);x1=Math.max(x1,x);}
     }
-    if(maxX<=minX||maxY<=minY)return null;
+    const letterW=x1>x0?(x1-x0)/SZ*size*1.1:size*0.6;
 
-    const W=maxX-minX, H=maxY-minY;
-    const STEPS=48; // points per half
-    const pts_top=[], pts_bot=[];
-
-    // For each X column, find topmost pixel → top silhouette
-    // For each X column, find bottommost pixel → bottom silhouette  
-    for(let i=0;i<=STEPS;i++){
-      const x=Math.round(minX + (W*i)/STEPS);
-      let top=-1, bot=-1;
-      for(let y=minY;y<=maxY;y++){if(on(x,y)){top=y;break;}}
-      for(let y=maxY;y>=minY;y--){if(on(x,y)){bot=y;break;}}
-      if(top>=0){pts_top.push([x,top]); pts_bot.push([x,bot]);}
-    }
-
-    if(pts_top.length<3)return null;
-
-    // Smooth: running average of 3
-    function smooth(arr){
-      return arr.map((p,i)=>{
-        const a=arr[Math.max(0,i-1)], b=arr[i], d=arr[Math.min(arr.length-1,i+1)];
-        return [(a[0]+b[0]+d[0])/3,(a[1]+b[1]+d[1])/3];
-      });
-    }
-    const top=smooth(smooth(pts_top));
-    const bot=smooth(smooth(pts_bot));
-
-    // Normalise to Three.js space: centre, Y flip, scale to size
-    const cx2=(minX+maxX)/2, cy2=(minY+maxY)/2;
-    const sc=size/Math.max(W,H)*0.88;
-    const nx=x=>(x-cx2)*sc;
-    const ny=y=>-(y-cy2)*sc;
+    /* ── Geometry: thin box with letter texture on front face ── */
+    // Use a slightly rounded box shape via a 2D rounded rect extrusion
+    const w=size, h=size, d=depth;
+    const r=Math.min(w,h)*0.08; // corner radius
 
     const shape=new T.Shape();
-    shape.moveTo(nx(top[0][0]), ny(top[0][1]));
-    // Top edge left→right
-    for(let i=1;i<top.length;i++) shape.lineTo(nx(top[i][0]), ny(top[i][1]));
-    // Right side top→bottom
-    shape.lineTo(nx(bot[bot.length-1][0]), ny(bot[bot.length-1][1]));
-    // Bottom edge right→left
-    for(let i=bot.length-2;i>=0;i--) shape.lineTo(nx(bot[i][0]), ny(bot[i][1]));
+    shape.moveTo(-w/2+r, -h/2);
+    shape.lineTo( w/2-r, -h/2);
+    shape.quadraticCurveTo( w/2, -h/2,  w/2, -h/2+r);
+    shape.lineTo( w/2,  h/2-r);
+    shape.quadraticCurveTo( w/2,  h/2,  w/2-r,  h/2);
+    shape.lineTo(-w/2+r,  h/2);
+    shape.quadraticCurveTo(-w/2,  h/2, -w/2,  h/2-r);
+    shape.lineTo(-w/2, -h/2+r);
+    shape.quadraticCurveTo(-w/2, -h/2, -w/2+r, -h/2);
     shape.closePath();
-    return shape;
-  }
-
-  /* ── Build letter mesh — ExtrudeGeometry with proper letter silhouette ── */
-  function buildLetterMesh(ch,color,fontFamily,fontWeight){
-    const size=parseFloat((document.getElementById('vb-size')||{value:1.1}).value)||1.1;
-    const bevelVal=parseFloat((document.getElementById('vb-bevel')||{value:0.3}).value);
-    const bev=bevelVal*size*0.05;
-    const depth=parseFloat((document.getElementById('vb-depth')||{value:0.18}).value)*size;
-    const metal=parseFloat((document.getElementById('vb-metal')||{value:0.4}).value);
-    const rough=parseFloat((document.getElementById('vb-rough')||{value:0.3}).value);
-
-    const col=new T.Color(color);
-    let mat;
-    if(matPreset==='metal') mat=new T.MeshStandardMaterial({color:col,metalness:0.95,roughness:0.05});
-    else if(matPreset==='clay') mat=new T.MeshStandardMaterial({color:col,metalness:0,roughness:0.95});
-    else if(matPreset==='neon') mat=new T.MeshStandardMaterial({color:col,metalness:0.1,roughness:0.4,emissive:col,emissiveIntensity:0.7});
-    else mat=new T.MeshStandardMaterial({color:col,metalness:metal,roughness:rough});
-
-    const shape=letterToShape(ch,fontFamily,fontWeight,size);
-    if(!shape){
-      // Space or failed — invisible placeholder
-      const geo=new T.BoxGeometry(size*0.3,size*0.01,0.01);
-      return new T.Mesh(geo,new T.MeshStandardMaterial({visible:false}));
-    }
 
     const geo=new T.ExtrudeGeometry(shape,{
-      depth,
-      bevelEnabled:bev>0.001,
-      bevelThickness:bev,
-      bevelSize:bev*0.6,
-      bevelSegments:4,
-      curveSegments:6
+      depth:d,
+      bevelEnabled:bevelVal>0.05,
+      bevelThickness:d*0.12*bevelVal,
+      bevelSize:d*0.08*bevelVal,
+      bevelSegments:3,
+      curveSegments:8
     });
     geo.computeVertexNormals();
-    // Centre on Z
-    geo.translate(0,0,-depth/2);
+    geo.translate(0,0,-d/2);
 
-    const mesh=new T.Mesh(geo,mat);
+    /* ── Materials: letter texture front, solid sides ── */
+    const sideCol=col.clone().multiplyScalar(0.72);
+    let frontMat, sideMat;
+
+    if(matPreset==='metal'){
+      frontMat=new T.MeshStandardMaterial({map:tex,metalness:0.9,roughness:0.08,color:col});
+      sideMat=new T.MeshStandardMaterial({color:sideCol,metalness:0.9,roughness:0.08});
+    } else if(matPreset==='clay'){
+      frontMat=new T.MeshStandardMaterial({map:tex,metalness:0,roughness:0.95,color:col});
+      sideMat=new T.MeshStandardMaterial({color:sideCol,metalness:0,roughness:0.95});
+    } else if(matPreset==='neon'){
+      frontMat=new T.MeshStandardMaterial({map:tex,metalness:0.1,roughness:0.4,emissive:col,emissiveIntensity:0.5});
+      sideMat=new T.MeshStandardMaterial({color:sideCol,metalness:0.1,roughness:0.4,emissive:sideCol,emissiveIntensity:0.3});
+    } else {
+      frontMat=new T.MeshStandardMaterial({map:tex,metalness:metal,roughness:rough,color:col});
+      sideMat=new T.MeshStandardMaterial({color:sideCol,metalness:metal,roughness:rough});
+    }
+
+    // ExtrudeGeometry uses groups 0=side, 1=front cap, 2=back cap
+    const mesh=new T.Mesh(geo,[sideMat,frontMat,sideMat]);
+    mesh._letterW=letterW;
     return mesh;
   }
+
+  // letterToShape no longer used but keep stub
+  function letterToShape(){return null;}
 
   function buildLetters(){
     // Dispose old
