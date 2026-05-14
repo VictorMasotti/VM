@@ -1100,12 +1100,11 @@ function dockBounce(el){el.classList.remove('bounce');void el.offsetWidth;el.cla
   const MENU_H=26, DOCK_H=78;
   function gridMetrics(){
     const deskW=window.innerWidth-PAD*2;
-    const deskH=window.innerHeight-MENU_H-DOCK_H-PAD;
-    const cellByW=Math.floor((deskW - GAP*(COLS-1))/COLS);
-    const cellByH=Math.floor((deskH - GAP*(TARGET_ROWS-1))/TARGET_ROWS);
-    const cellW=Math.min(cellByW,cellByH);
-    const cellH=cellW;
+    const deskH=window.innerHeight-MENU_H-DOCK_H-PAD*2;
+    const cellW=Math.floor((deskW - GAP*(COLS-1))/COLS);
+    const cellH=Math.floor((deskH - GAP*(TARGET_ROWS-1))/TARGET_ROWS);
     const gridW=COLS*cellW+(COLS-1)*GAP;
+    const gridH=TARGET_ROWS*cellH+(TARGET_ROWS-1)*GAP;
     const gridX=PAD;
     const gridY=PAD;
     const maxRows=Math.floor((deskH+GAP)/(cellH+GAP));
@@ -1129,18 +1128,18 @@ function dockBounce(el){el.classList.remove('bounce');void el.offsetWidth;el.cla
   function widgetHTML(type){
     if(type==='clock') return `
       <div style="display:flex;flex-direction:column;justify-content:center;width:100%;height:100%;padding:2px 0;gap:3px;">
-        <div style="font-size:clamp(32px,3.5vw,72px);font-weight:200;letter-spacing:-2px;line-height:1;color:#111;" id="clock-time">09:41</div>
-        <div style="font-size:clamp(12px,1.1vw,16px);font-weight:600;color:var(--text-dim);" id="clock-date">Wed, March 19</div>
+        <div style="font-size:clamp(32px,calc(var(--cell,80px)*0.55),88px);font-weight:200;letter-spacing:-2px;line-height:1;color:#111;" id="clock-time">09:41</div>
+        <div style="font-size:clamp(12px,calc(var(--cell,80px)*0.17),22px);font-weight:600;color:var(--text-dim);" id="clock-date">Wed, March 19</div>
       </div>`;
     if(type==='weather') return `
       <div style="container-type:size;width:100%;height:100%;">
         <div style="display:flex;align-items:center;justify-content:space-between;width:100%;height:100%;padding:2px 0;">
           <div style="display:flex;flex-direction:column;justify-content:center;gap:4px;">
-            <div style="font-size:clamp(10px,1vw,13px);font-weight:600;color:var(--text-dim);letter-spacing:0.03em;" id="weather-city">London</div>
-            <div style="font-size:clamp(32px,3.5vw,72px);font-weight:200;letter-spacing:-2px;line-height:1;color:var(--text);" id="weather-temp">12°</div>
-            <div style="font-size:clamp(11px,1vw,14px);color:var(--text-dim);" id="weather-cond">Partly Cloudy</div>
+            <div style="font-size:clamp(11px,calc(var(--cell,80px)*0.15),16px);font-weight:600;color:var(--text-dim);letter-spacing:0.03em;" id="weather-city">London</div>
+            <div style="font-size:clamp(32px,calc(var(--cell,80px)*0.55),88px);font-weight:200;letter-spacing:-2px;line-height:1;color:var(--text);" id="weather-temp">12°</div>
+            <div style="font-size:clamp(11px,calc(var(--cell,80px)*0.15),16px);color:var(--text-dim);" id="weather-cond">Partly Cloudy</div>
           </div>
-          <div style="font-size:clamp(32px,3.5vw,64px);line-height:1;opacity:0.9;align-self:center;" id="weather-icon">⛅</div>
+          <div style="font-size:clamp(32px,calc(var(--cell,80px)*0.55),80px);line-height:1;opacity:0.9;align-self:center;" id="weather-icon">⛅</div>
         </div>
       </div>`;
     if(type==='calendar'){
@@ -1153,7 +1152,7 @@ function dockBounce(el){el.classList.remove('bounce');void el.offsetWidth;el.cla
       for(let i=0;i<_first;i++) _cells+=`<div class="cal-day empty"></div>`;
       for(let d=1;d<=_days;d++) _cells+=`<div class="cal-day${d===_today?' today':''}">${d}</div>`;
       return `<div style="display:flex;flex-direction:column;height:100%">
-        <div style="font-size:clamp(9px,0.75vw,12px);font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--text-dim);margin-bottom:4px">${_mn[_m]} ${_y}</div>
+        <div style="font-size:clamp(10px,calc(var(--cell,80px)*0.13),16px);font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--text-dim);margin-bottom:4px">${_mn[_m]} ${_y}</div>
         <div class="cal-grid" style="flex:1;align-content:space-evenly;gap:2px">
           <div class="cal-day-label">S</div><div class="cal-day-label">M</div><div class="cal-day-label">T</div><div class="cal-day-label">W</div><div class="cal-day-label">T</div><div class="cal-day-label">F</div><div class="cal-day-label">S</div>
           ${_cells}
@@ -1163,14 +1162,15 @@ function dockBounce(el){el.classList.remove('bounce');void el.offsetWidth;el.cla
     if(type==='folders-a'||type==='folders-b'){
       const fids=type==='folders-a'?['f1','f2','f3']:['f4','f5','f6'];
       const fl=window._folderList||[];
+      const pad='clamp(8px,calc(var(--cell,80px)*0.12),18px)';
       const items=fids.map(fid=>{
         const fd=fl.find(x=>x.id===fid)||{id:fid,name:'—'};
-        return `<div onclick="openFolders('${fd.id}')" style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;cursor:pointer;flex:1;height:100%;padding:4px 2px;border-radius:10px;transition:background 0.1s;box-sizing:border-box;" onmouseover="this.style.background='rgba(0,0,0,0.07)'" onmouseout="this.style.background=''">
-          <img src="folder.png" style="width:min(62px,42%);height:auto;object-fit:contain;filter:drop-shadow(0 3px 8px rgba(0,0,0,0.22));pointer-events:none;flex-shrink:0;">
-          <span style="font-size:8px;font-weight:500;color:var(--text-dim);text-align:center;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:95%;pointer-events:none;">${fd.name}</span>
+        return `<div onclick="openFolders('${fd.id}')" style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;cursor:pointer;width:100%;height:100%;border-radius:10px;transition:background 0.1s;box-sizing:border-box;" onmouseover="this.style.background='rgba(0,0,0,0.07)'" onmouseout="this.style.background=''">
+          <img src="folder.png" style="width:clamp(48px,calc(var(--cell,80px)*0.82),100px);height:auto;object-fit:contain;filter:drop-shadow(0 3px 8px rgba(0,0,0,0.22));pointer-events:none;flex-shrink:0;">
+          <span style="font-size:clamp(8px,calc(var(--cell,80px)*0.10),12px);font-weight:500;color:var(--text-dim);text-align:center;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;width:90%;pointer-events:none;">${fd.name}</span>
         </div>`;
       }).join('');
-      return `<div style="display:flex;align-items:stretch;justify-content:space-evenly;width:100%;height:100%;padding:4px 6px;gap:2px;box-sizing:border-box;">${items}</div>`;
+      return `<div style="display:grid;grid-template-columns:1fr 1fr 1fr;width:100%;height:100%;padding:${pad};gap:${pad};box-sizing:border-box;">${items}</div>`;
     }
     if(type==='calcw') return `
       <style>
@@ -1296,8 +1296,8 @@ function dockBounce(el){el.classList.remove('bounce');void el.offsetWidth;el.cla
           ? `<img src="${a.img}" style="width:100%;height:100%;object-fit:cover;border-radius:10px;display:block;">`
           : a.icon;
         return `<div onclick="${a.fn||''}" ontouchend="event.stopPropagation();${a.fn||''}" style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;padding:4px 2px;border-radius:10px;transition:background 0.1s;cursor:pointer;pointer-events:all;" onmouseover="this.style.background='rgba(0,0,0,0.07)'" onmouseout="this.style.background='none'">
-          <div style="width:clamp(28px,2.6vw,40px);height:clamp(28px,2.6vw,40px);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:clamp(15px,1.5vw,22px);background:${a.img?'none':a.bg};box-shadow:0 2px 6px rgba(0,0,0,0.2);overflow:hidden;pointer-events:none;">${iconContent}</div>
-          <div style="font-size:clamp(8px,0.65vw,10px);color:var(--text-dim);text-align:center;line-height:1.2;white-space:nowrap;pointer-events:none">${a.label}</div>
+          <div style="width:clamp(22px,calc(var(--cell,80px)*0.30),44px);height:clamp(22px,calc(var(--cell,80px)*0.30),44px);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:clamp(15px,1.5vw,22px);background:${a.img?'none':a.bg};box-shadow:0 2px 6px rgba(0,0,0,0.2);overflow:hidden;pointer-events:none;">${iconContent}</div>
+          <div style="font-size:clamp(7px,calc(var(--cell,80px)*0.085),10px);color:var(--text-dim);text-align:center;line-height:1.2;white-space:nowrap;pointer-events:none">${a.label}</div>
         </div>`;
       }).join('');
       return `<div style="display:grid;grid-template-columns:repeat(${cols},1fr);grid-template-rows:repeat(${rows},1fr);gap:4px;width:100%;height:100%;padding:6px;box-sizing:border-box;align-items:center;justify-items:stretch;">${items}</div>`;
@@ -1324,6 +1324,8 @@ function dockBounce(el){el.classList.remove('bounce');void el.offsetWidth;el.cla
   }
   function place(animate){
     const m=gridMetrics();
+    const grid=document.getElementById('widget-grid');
+    if(grid) grid.style.setProperty('--cell',m.cellH+'px');
     DEFS.forEach(def=>{
       const el=elMap[def.id];if(!el)return;
       const px=cellPx(def,m);
