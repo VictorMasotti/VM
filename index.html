@@ -1106,13 +1106,12 @@ function dockBounce(el){el.classList.remove('bounce');void el.offsetWidth;el.cla
   const COLS=10, TARGET_ROWS=6;
   const MENU_H=26, DOCK_H=78;
   function gridMetrics(){
+    const desktopH=window.innerHeight-MENU_H-DOCK_H;
     const deskW=window.innerWidth-PAD*2;
-    const deskH=window.innerHeight-MENU_H-DOCK_H-PAD;
     const cellW=Math.floor((deskW - GAP*(COLS-1))/COLS);
     const cellH=cellW;
     const gridW=COLS*cellW+(COLS-1)*GAP;
-    const maxRows=Math.floor((deskH+GAP)/(cellH+GAP));
-    const gridH=maxRows*cellH+(maxRows-1)*GAP;
+    const maxRows=Math.floor((desktopH - PAD*2 + GAP)/(cellH+GAP));
     const gridX=PAD;
     const gridY=PAD;
     return {cellW,cellH,gridW,gridX,gridY,maxRows};
@@ -1335,14 +1334,20 @@ function dockBounce(el){el.classList.remove('bounce');void el.offsetWidth;el.cla
   }
   function place(animate){
     const m=gridMetrics();
-    const grid=document.getElementById('widget-grid');
-    if(grid&&m.cellH!==_lastCell){_lastCell=m.cellH;grid.style.setProperty('--cell',m.cellH+'px');}
+    if(m.cellH!==_lastCell){_lastCell=m.cellH;const g=document.getElementById('widget-grid');if(g)g.style.setProperty('--cell',m.cellH+'px');}
+    DEFS.forEach(def=>{
+      if(def.row+def.ch>m.maxRows){
+        def.row=Math.max(0,m.maxRows-def.ch);
+        resolveOverlap(def);
+      }
+    });
     DEFS.forEach(def=>{
       const el=elMap[def.id];if(!el)return;
       const px=cellPx(def,m);
       el.style.transition=animate?'left .36s cubic-bezier(.34,1.2,.64,1),top .36s cubic-bezier(.34,1.2,.64,1)':'none';
       el.style.left=px.x+'px';el.style.top=px.y+'px';
       el.style.width=px.w+'px';el.style.height=px.h+'px';
+      el.setAttribute('data-wtype',def.type);
     });
   }
   let drag=null,dragDef=null,dragOX=0,dragOY=0,dragMoved=false;
