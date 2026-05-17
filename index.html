@@ -79,7 +79,7 @@
   <div class="menubar-left">
     <div class="menubar-logo"><img src="south.png" alt="Logo"/></div>
     <div id="widget-add-btn" onclick="toggleDropdown(event)" title="Add Widget">＋</div>
-    <span class="menu-item bold" id="vm-title" onclick="toggleVMTitle()">Victor Masotti</span>
+    <span class="menu-item bold" id="vm-title" onclick="toggleVMTitle()" oncontextmenu="showVMRename(event)">Victor Masotti</span>
     <span class="menu-item" id="menu-file" onclick="toggleMenuDD('file',this)">File</span>
     <span class="menu-item" id="menu-edit" onclick="toggleMenuDD('edit',this)">Edit</span>
     <span class="menu-item" id="menu-view" onclick="toggleMenuDD('view',this)">Filter</span>
@@ -7917,6 +7917,7 @@ function separateFolderWidget(def){
   transform: scale(1.08) !important;}
 </style>
 <script>
+/* Belt-and-suspenders: kill any JS-set background on desk-icon hover */
 (function(){
   var cont = document.getElementById('desktop-icons');
   if(!cont) return;
@@ -7926,4 +7927,45 @@ function separateFolderWidget(def){
   cont.addEventListener('mouseout', function(e){
     var el = e.target.closest('.desk-icon');
     if(el){ el.style.background='transparent'; el.style.backgroundColor='transparent'; }});
-})(); </script> </body> </html>
+})();
+</script>
+<div id="vm-rename-pop" style="position:fixed;z-index:9999;background:rgba(242,240,237,0.92);backdrop-filter:blur(28px);-webkit-backdrop-filter:blur(28px);border:1px solid rgba(0,0,0,0.13);border-radius:8px;box-shadow:0 8px 32px rgba(0,0,0,0.18),0 2px 6px rgba(0,0,0,0.10);padding:10px 12px;display:none;flex-direction:column;gap:7px;min-width:180px;opacity:0;transition:opacity 0.14s ease,transform 0.14s cubic-bezier(0.34,1.2,0.64,1);transform:scale(0.96) translateY(-4px);transform-origin:top center;">
+  <div style="font-size:10px;font-weight:700;color:rgba(0,0,0,0.38);text-transform:uppercase;letter-spacing:0.07em;text-align:center;">Rename</div>
+  <input id="vm-rename-input" type="text" style="font-size:13px;font-weight:600;border:1px solid rgba(0,0,0,0.15);border-radius:6px;padding:5px 8px;outline:none;font-family:inherit;background:rgba(255,255,255,0.8);color:#1a1a1a;width:100%;box-sizing:border-box;" onkeydown="if(event.key==='Enter')commitVMRename();if(event.key==='Escape')closeVMRename();">
+  <div style="display:flex;gap:6px;width:100%;">
+    <button onclick="closeVMRename()" style="flex:1;font-size:12px;padding:5px 0;border-radius:6px;border:1px solid rgba(0,0,0,0.12);background:transparent;cursor:pointer;font-family:inherit;color:#1a1a1a;">Cancel</button>
+    <button onclick="commitVMRename()" style="flex:1;font-size:12px;padding:5px 0;border-radius:6px;border:none;background:#007aff;color:#fff;cursor:pointer;font-family:inherit;font-weight:500;">Rename</button>
+  </div>
+</div>
+<script>
+function showVMRename(e){
+  e.preventDefault();e.stopPropagation();
+  const pop=document.getElementById('vm-rename-pop');
+  const inp=document.getElementById('vm-rename-input');
+  inp.value=document.getElementById('vm-title').textContent;
+  pop.style.display='flex';
+  pop.style.opacity='0';
+  pop.style.transform='scale(0.96) translateY(-4px)';
+  const tr=document.getElementById('vm-title').getBoundingClientRect();
+  const pw=pop.offsetWidth||180;
+  pop.style.left=Math.min(Math.max(tr.left+tr.width/2-pw/2,8),window.innerWidth-pw-8)+'px';
+  pop.style.top='34px';
+  requestAnimationFrame(()=>requestAnimationFrame(()=>{
+    pop.style.opacity='1';
+    pop.style.transform='scale(1) translateY(0)';
+  }));
+  setTimeout(()=>{inp.focus();inp.select();},30);
+  setTimeout(()=>document.addEventListener('mousedown',_vmOutside,true),10);}
+function _vmOutside(e){if(!document.getElementById('vm-rename-pop').contains(e.target))closeVMRename();}
+function closeVMRename(){
+  const pop=document.getElementById('vm-rename-pop');
+  pop.style.opacity='0';pop.style.transform='scale(0.96) translateY(-4px)';
+  setTimeout(()=>{ pop.style.display='none'; },150);
+  document.removeEventListener('mousedown',_vmOutside,true);}
+function commitVMRename(){
+  const val=document.getElementById('vm-rename-input').value.trim();
+  if(val)document.getElementById('vm-title').textContent=val;
+  closeVMRename();}
+</script>
+</body>
+</html>
