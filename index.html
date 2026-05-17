@@ -1618,8 +1618,14 @@ document.addEventListener('click',e=>{
     document.querySelectorAll('.menu-dropdown').forEach(d=>d.classList.remove('open'));
     _openDD.current=null;}});
 function applyRoundCorners(on){
-  document.querySelectorAll('.widget').forEach(w=>{w.style.borderRadius=on?'28px':'16px';});
-  document.querySelector('.dock').style.borderRadius=on?'28px':'20px';}
+  document.querySelectorAll('.widget').forEach(w=>{
+    w.style.transition='left .36s cubic-bezier(.34,1.2,.64,1),top .36s cubic-bezier(.34,1.2,.64,1),box-shadow .2s ease,transform .2s ease,border-radius 0.5s cubic-bezier(0.4,0,0.2,1)';
+    w.style.borderRadius=on?'28px':'16px';
+  });
+  const dock=document.querySelector('.dock');
+  dock.style.transition='background 0.75s ease,border-color 0.75s ease,box-shadow 0.75s ease,border-radius 0.5s cubic-bezier(0.4,0,0.2,1)';
+  dock.style.borderRadius=on?'28px':'20px';
+}
 function applyNightMode(on){ document.body.style.filter=on?'sepia(0.15) saturate(0.88) brightness(0.97)':''; }
 function applyHideDock(on){
   const dock=document.querySelector('.dock-container');
