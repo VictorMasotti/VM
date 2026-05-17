@@ -1672,15 +1672,38 @@ function applyDarkMode(on){
   if(fw) fw.style.background=on?'#1a1814':'#FDFFE9';
   const timeEl=document.getElementById('clock-time');
   if(timeEl){timeEl.style.transition='color 0.75s ease';timeEl.style.color=on?'#f2f2f7':'';}}
-function applyHighContrast(on){ document.body.classList.toggle('high-contrast', on); }
+function applyHighContrast(on){
+  document.body.style.transition='filter 0.5s ease';
+  if(on){
+    document.body.classList.add('high-contrast');
+    document.body.style.filter='contrast(1.18) saturate(0.85)';
+  } else {
+    document.body.classList.remove('high-contrast');
+    document.body.style.filter='contrast(1) saturate(1)';
+    setTimeout(()=>{ document.body.style.filter=''; },520);
+  }
+}
 function applyFrost(on){ document.getElementById('frost-overlay').classList.toggle('active', on); }
 function applyHideWidgets(on){
-  const grid=document.getElementById('widget-grid');
   const dd=document.getElementById('widget-dropdown');
-  const tr='opacity 0.35s ease, visibility 0.35s ease';
   dd.classList.remove('open');
-  if(on){grid.style.transition=tr;grid.style.opacity='0';grid.style.visibility='hidden';grid.style.pointerEvents='none';dd.style.opacity='0';dd.style.visibility='hidden';dd.style.pointerEvents='none';}
-  else{grid.style.transition=tr;grid.style.opacity='1';grid.style.visibility='visible';grid.style.pointerEvents='all';dd.style.opacity='';dd.style.visibility='';dd.style.pointerEvents='';}}
+  const widgets=document.querySelectorAll('#widget-grid .widget');
+  if(on){
+    widgets.forEach(w=>{
+      w.style.transition='opacity 0.32s ease';
+      w.style.opacity='0';
+      w.style.pointerEvents='none';
+    });
+    if(dd){dd.style.opacity='0';dd.style.visibility='hidden';dd.style.pointerEvents='none';}
+  } else {
+    widgets.forEach(w=>{
+      w.style.transition='opacity 0.38s ease';
+      w.style.pointerEvents='all';
+      requestAnimationFrame(()=>{ w.style.opacity='1'; });
+    });
+    if(dd){dd.style.opacity='';dd.style.visibility='';dd.style.pointerEvents='';}
+  }
+}
 let _cwColor=[0,0,0], _cwStrong=false;
 (function(){
   const canvas=document.getElementById('color-wheel');
