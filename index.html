@@ -8291,35 +8291,25 @@ function submitCreateWidget(){
   const status=document.getElementById('cw-status');
   btn.disabled=true;
   status.innerHTML='<span class="cw-dot"></span><span class="cw-dot"></span><span class="cw-dot"></span><span style="margin-left:4px;">Generating…</span>';
-  const STYLE_CONTEXT=`You are generating HTML for a macOS-style desktop widget.
-Widget style rules:
-- Outer element must be a single <div> with NO id, NO class — just inline styles.
-- Size is fixed: filled by parent (width:100%, height:100%), use box-sizing:border-box.
-- Background: transparent (parent widget already has frosted glass background).
-- Font: -apple-system, 'Helvetica Neue', sans-serif.
-- Text color: use var(--text) for main text, var(--text-dim) for secondary.
-- Padding: 0 (parent already has 14px 16px padding).
-- Must be self-contained: all JS inside a <script> tag, all CSS in a <style> tag or inline.
-- No external resources except Google Fonts if needed.
-- Keep it simple, elegant, minimal — match macOS aesthetic.
-- No alert(), no confirm(), no document.write().
-- Output ONLY the raw HTML — no markdown, no explanation, no code fences.`;
-  fetch('https://api.anthropic.com/v1/messages',{
+  const STYLE_CONTEXT='You are generating HTML for a macOS-style desktop widget. Rules: single outer <div> no id/class, width:100% height:100% box-sizing:border-box, transparent background, font:-apple-system sans-serif, use var(--text) and var(--text-dim), no padding (parent has it), self-contained JS/CSS, no external resources except Google Fonts, simple elegant minimal macOS style, no alert/confirm/document.write. Output ONLY raw HTML no markdown no code fences.';
+  const GEMINI_KEY='PASTE_YOUR_GEMINI_KEY_HERE';
+  const GEMINI_URL='https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key='+GEMINI_KEY;
+  fetch(GEMINI_URL,{
     method:'POST',
     headers:{'Content-Type':'application/json'},
     body:JSON.stringify({
-      model:'claude-sonnet-4-20250514',
-      max_tokens:1000,
-      system:STYLE_CONTEXT,
-      messages:[{role:'user',content:'Create a widget: '+prompt}]
+      system_instruction:{parts:[{text:STYLE_CONTEXT}]},
+      contents:[{parts:[{text:'Create a widget: '+prompt}]}],
+      generationConfig:{maxOutputTokens:1000,temperature:0.7}
     })
   })
   .then(r=>r.json())
   .then(data=>{
-    const html=(data.content&&data.content[0]&&data.content[0].text)||'';
-    if(!html||html.includes('error')){throw new Error('Bad response');}
+    const html=data?.candidates?.[0]?.content?.parts?.[0]?.text||'';
+    const clean=html.replace(/^```html?\n?/i,'').replace(/```$/,'').trim();
+    if(!clean) throw new Error('empty');
     closeCreateWidget();
-    spawnAIWidget(html,prompt);
+    spawnAIWidget(clean,prompt);
   })
   .catch(()=>{
     status.innerHTML='<span style="color:#ff3b30;">Something went wrong — try again</span>';
