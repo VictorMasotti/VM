@@ -253,17 +253,18 @@
 </div>
 <div class="desktop" id="desktop-area">
   <div id="widget-dropdown">
+    <div class="dd-item" onclick="ddAction('appshelf-s',this)"><span class="dd-icon">▣</span> App Shelf Small</div>
+    <div class="dd-item" onclick="ddAction('appshelf-l',this)"><span class="dd-icon">▦</span> App Shelf Large</div>
     <div class="dd-item" onclick="ddAction('clock',this)"><span class="dd-icon">🕐</span> Clock</div>
-    <div class="dd-item" onclick="ddAction('weather',this)"><span class="dd-icon">⛅</span> Weather</div>
     <div class="dd-item" onclick="ddAction('calendar',this)"><span class="dd-icon">📅</span> Calendar</div>
-    <div class="dd-item" onclick="ddAction('musicw',this)"><span class="dd-icon">🎵</span> Music Player</div>
     <div class="dd-item" onclick="ddAction('calcw',this)"><span class="dd-icon">🧮</span> Calculator</div>
+    <div class="dd-item" onclick="ddAction('weather',this)"><span class="dd-icon">⛅</span> Weather</div>
+    <div class="dd-item" onclick="ddAction('musicw',this)"><span class="dd-icon">🎵</span> Music Player</div>
     <div class="dd-item" onclick="ddAction('notes',this)"><span class="dd-icon">📝</span> Notes</div>
-    <div class="dd-item" onclick="ddAction('appshelf-s',this)"><span class="dd-icon">📱</span> App Shelf (small)</div>
-    <div class="dd-item" onclick="ddAction('appshelf-l',this)"><span class="dd-icon">📱</span> App Shelf (large)</div>
-    <div class="dd-item" onclick="ddAction('videow',this)"><span class="dd-icon">▶</span> Video Player</div>
-    <div class="dd-item" onclick="ddAction('fashionw',this)"><span class="dd-icon">👗</span> Fashion</div>
+    <div class="dd-item" onclick="ddAction('fashionw',this)"><span class="dd-icon">🥻</span> Fashion</div>
+    <div class="dd-item" onclick="ddAction('videow',this)"><span class="dd-icon">📺</span> Video Player</div>
     <div class="dd-item" onclick="ddAction('folder',this)"><span class="dd-icon"><img src="folder.png" style="width:16px;height:16px;object-fit:contain;vertical-align:middle;"></span> Add Folder</div>
+    <div class="dd-item" onclick="document.getElementById('widget-dropdown').classList.remove('open');setTimeout(openCreateWidget,80)" style="border-top:1px solid rgba(0,0,0,0.06);margin-top:2px;"><span class="dd-icon">✦</span> Create Widget</div>
   </div>
   <div id="desktop-icons" style="display:none;"></div>
   <div id="widget-grid"></div>
@@ -8225,7 +8226,135 @@ function vwNext(wid){const wrap=document.getElementById(wid);if(!wrap)return;vwL
 function vwPrev(wid){const wrap=document.getElementById(wid);if(!wrap)return;vwLoad(wid,parseInt(wrap.dataset.idx||0)-1);}
 function vwToggle(wid){vwPlay(wid);}
 function vwOpenInApp(wid){vwPlay(wid);}
-function showVMRename(e){
+</script>
+<style>
+#cw-modal{position:fixed;inset:0;z-index:9800;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity 0.22s ease;}
+#cw-modal.open{opacity:1;pointer-events:all;}
+#cw-modal-bg{position:absolute;inset:0;background:rgba(0,0,0,0.28);backdrop-filter:blur(8px);}
+#cw-box{position:relative;width:min(400px,88vw);background:rgba(242,240,237,0.94);backdrop-filter:blur(32px);-webkit-backdrop-filter:blur(32px);border:1px solid rgba(255,255,255,0.55);border-radius:18px;box-shadow:0 24px 64px rgba(0,0,0,0.22),0 2px 8px rgba(0,0,0,0.10),inset 0 1px 0 rgba(255,255,255,0.9);padding:16px 16px 14px;display:flex;flex-direction:column;gap:10px;transform:scale(0.92) translateY(12px);transition:transform 0.28s cubic-bezier(0.34,1.2,0.64,1);}
+#cw-modal.open #cw-box{transform:scale(1) translateY(0);}
+body.dark-mode #cw-box{background:rgba(22,22,26,0.96);border-color:rgba(255,255,255,0.12);box-shadow:0 24px 64px rgba(0,0,0,0.55),inset 0 1px 0 rgba(255,255,255,0.08);}
+#cw-title{font-size:13px;font-weight:600;color:#1a1a1a;letter-spacing:-0.01em;}
+#cw-example{font-size:11px;color:rgba(0,0,0,0.38);margin-bottom:-4px;}
+body.dark-mode #cw-example{color:rgba(255,255,255,0.3);}
+#cw-input{width:100%;border:1.5px solid rgba(0,0,0,0.14);border-radius:10px;padding:9px 12px;font-size:13px;font-family:-apple-system,sans-serif;background:rgba(255,255,255,0.7);color:#1a1a1a;outline:none;resize:none;box-sizing:border-box;transition:border-color 0.15s,box-shadow 0.15s;}
+#cw-input:focus{border-color:rgba(0,122,255,0.5);box-shadow:0 0 0 3px rgba(0,122,255,0.12);}
+body.dark-mode #cw-input{background:rgba(255,255,255,0.07);color:#f2f2f7;border-color:rgba(255,255,255,0.15);}
+body.dark-mode #cw-input:focus{border-color:rgba(0,122,255,0.6);}
+#cw-footer{display:flex;gap:8px;width:100%;}
+#cw-cancel{flex:1;padding:9px 0;border-radius:9px;border:1px solid rgba(0,0,0,0.12);background:transparent;font-size:13px;color:rgba(0,0,0,0.6);font-family:-apple-system,sans-serif;cursor:pointer;transition:background 0.1s;}
+#cw-cancel:hover{background:rgba(0,0,0,0.06);}
+body.dark-mode #cw-cancel{color:rgba(255,255,255,0.55);border-color:rgba(255,255,255,0.12);}
+body.dark-mode #cw-cancel:hover{background:rgba(255,255,255,0.07);}
+#cw-submit{flex:1;padding:9px 0;border-radius:9px;border:none;background:#007aff;color:#fff;font-size:13px;font-weight:500;font-family:-apple-system,sans-serif;cursor:pointer;transition:background 0.15s,transform 0.1s,opacity 0.15s;}
+#cw-submit:hover{background:#0066d6;}
+#cw-submit:active{transform:scale(0.95);}
+#cw-submit:disabled{opacity:0.5;cursor:default;}
+#cw-status{font-size:12px;color:rgba(0,0,0,0.4);min-height:16px;display:flex;align-items:center;gap:6px;}
+body.dark-mode #cw-status{color:rgba(255,255,255,0.35);}
+@keyframes cw-dot{0%,80%,100%{opacity:0.2}40%{opacity:1}}
+.cw-dot{width:4px;height:4px;border-radius:50%;background:currentColor;animation:cw-dot 1.2s ease-in-out infinite;}
+.cw-dot:nth-child(2){animation-delay:0.2s;}
+.cw-dot:nth-child(3){animation-delay:0.4s;}
+</style>
+<div id="cw-modal">
+  <div id="cw-modal-bg" onclick="closeCreateWidget()"></div>
+  <div id="cw-box">
+    <div id="cw-title">Create a custom widget</div>
+    <div id="cw-example">Example:</div>
+    <textarea id="cw-input" rows="2" placeholder="A countdown timer…" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();submitCreateWidget();}"></textarea>
+    <div id="cw-status"></div>
+    <div id="cw-footer">
+      <button id="cw-cancel" onclick="closeCreateWidget()">Cancel</button>
+      <button id="cw-submit" onclick="submitCreateWidget()">Create</button>
+    </div>
+  </div>
+</div>
+<script>
+function openCreateWidget(){
+  const hints=['A pomodoro timer…','Countdown to New Year\'s…','Daily quote…','Breathing exercise…','Live word count…','Random colour swatch…','Minimal habit tracker…','Sun & moon rise times…'];
+  document.getElementById('cw-input').placeholder=hints[Math.floor(Math.random()*hints.length)];
+  const m=document.getElementById('cw-modal');
+  m.classList.add('open');
+  setTimeout(()=>document.getElementById('cw-input').focus(),120);
+}
+function closeCreateWidget(){
+  document.getElementById('cw-modal').classList.remove('open');
+  document.getElementById('cw-status').innerHTML='';
+  document.getElementById('cw-input').value='';
+  document.getElementById('cw-submit').disabled=false;
+}
+function submitCreateWidget(){
+  const prompt=document.getElementById('cw-input').value.trim();
+  if(!prompt) return;
+  const btn=document.getElementById('cw-submit');
+  const status=document.getElementById('cw-status');
+  btn.disabled=true;
+  status.innerHTML='<span class="cw-dot"></span><span class="cw-dot"></span><span class="cw-dot"></span><span style="margin-left:4px;">Generating…</span>';
+  const STYLE_CONTEXT=`You are generating HTML for a macOS-style desktop widget.
+Widget style rules:
+- Outer element must be a single <div> with NO id, NO class — just inline styles.
+- Size is fixed: filled by parent (width:100%, height:100%), use box-sizing:border-box.
+- Background: transparent (parent widget already has frosted glass background).
+- Font: -apple-system, 'Helvetica Neue', sans-serif.
+- Text color: use var(--text) for main text, var(--text-dim) for secondary.
+- Padding: 0 (parent already has 14px 16px padding).
+- Must be self-contained: all JS inside a <script> tag, all CSS in a <style> tag or inline.
+- No external resources except Google Fonts if needed.
+- Keep it simple, elegant, minimal — match macOS aesthetic.
+- No alert(), no confirm(), no document.write().
+- Output ONLY the raw HTML — no markdown, no explanation, no code fences.`;
+  fetch('https://api.anthropic.com/v1/messages',{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({
+      model:'claude-sonnet-4-20250514',
+      max_tokens:1000,
+      system:STYLE_CONTEXT,
+      messages:[{role:'user',content:'Create a widget: '+prompt}]
+    })
+  })
+  .then(r=>r.json())
+  .then(data=>{
+    const html=(data.content&&data.content[0]&&data.content[0].text)||'';
+    if(!html||html.includes('error')){throw new Error('Bad response');}
+    closeCreateWidget();
+    spawnAIWidget(html,prompt);
+  })
+  .catch(()=>{
+    status.innerHTML='<span style="color:#ff3b30;">Something went wrong — try again</span>';
+    btn.disabled=false;
+  });
+}
+function spawnAIWidget(innerHtml,label){
+  const defs=window._DEFS||[];
+  const m=window._gridMetrics?window._gridMetrics():{gridX:0,gridY:26,cellW:80,cellH:80,maxRows:10};
+  const COLS=window.COLS||10;
+  const GAP=8;
+  const cw=2,ch=2;
+  let col=0,row=0;
+  function ov(a,b){return!(a.col+a.cw<=b.col||b.col+b.cw<=a.col||a.row+a.ch<=b.row||b.row+b.ch<=a.row);}
+  outer:for(let r=0;r<=m.maxRows-ch;r++){
+    for(let c=0;c<=COLS-cw;c++){
+      if(!defs.some(d=>ov({col:c,row:r,cw,ch},d))){col=c;row=r;break outer;}
+    }
+  }
+  const id='wg-ai-'+Date.now();
+  const def={id,type:'ai-widget',col,row,cw,ch};
+  defs.push(def);
+  if(window._elMap) window._elMap[id]=null;
+  const px=window._cellPx?window._cellPx(def,m):{x:col*90,y:26+row*90,w:180,h:180};
+  const el=document.createElement('div');
+  el.className='widget spawning';
+  el.id=id;
+  el.style.cssText='position:absolute;left:'+px.x+'px;top:'+px.y+'px;width:'+px.w+'px;height:'+px.h+'px;display:flex;flex-direction:column;overflow:hidden;';
+  el.innerHTML=innerHtml;
+  document.getElementById('widget-grid').appendChild(el);
+  if(window._elMap) window._elMap[id]=el;
+  el.addEventListener('animationend',()=>el.classList.remove('spawning'),{once:true});
+  if(window._place) setTimeout(()=>window._place(),50);
+}
+</script>
   const pop=document.getElementById('vm-rename-pop');
   const inp=document.getElementById('vm-rename-input');
   inp.value=document.getElementById('vm-title').textContent;
