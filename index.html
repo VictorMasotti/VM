@@ -164,7 +164,7 @@
 <div><div class="mdd-toggle-label">Trackpad</div>
 <div class="mdd-toggle-sub">Virtual trackpad overlay</div></div>
 <label class="ios-toggle"><input type="checkbox" id="toggle-trackpad" onchange="applyTrackpad(this.checked)"><span class="ios-slider"></span></label></div></div>
-<div id="vtrackpad" style="display:none;position:fixed;z-index:8000;bottom:18px;right:18px;width:180px;height:130px;border-radius:18px;background:var(--widget-bg);backdrop-filter:var(--blur);-webkit-backdrop-filter:var(--blur);border:1px solid var(--widget-border);box-shadow:0 8px 32px rgba(0,0,0,0.14),inset 0 1px 0 rgba(255,255,255,0.85);opacity:0;touch-action:none;transition:opacity 0.3s ease;"></div>
+<div id="vtrackpad" style="display:none;position:fixed;z-index:8000;bottom:90px;right:18px;width:200px;height:160px;border-radius:18px;background:var(--widget-bg);backdrop-filter:var(--blur);-webkit-backdrop-filter:var(--blur);border:1px solid var(--widget-border);box-shadow:0 8px 32px rgba(0,0,0,0.14),inset 0 1px 0 rgba(255,255,255,0.85);opacity:0;touch-action:none;transition:opacity 0.3s ease;"></div>
 <script>
 (function(){
   if(navigator.maxTouchPoints>0){
@@ -182,17 +182,22 @@
   const pad=document.getElementById('vtrackpad');
   if(!pad) return;
   let lastX=null,lastY=null,active=false;
-  const SPEED=1.8;
-  function getEl(){return document.elementFromPoint(window._cursorX||window.innerWidth/2,window._cursorY||window.innerHeight/2);}
+  const MENU_H=26, DOCK_H=78;
   function move(dx,dy){
-    const cx=window._cursorX||window.innerWidth/2;
-    const cy=window._cursorY||window.innerHeight/2;
-    const nx=Math.max(0,Math.min(window.innerWidth,cx+dx*SPEED));
-    const ny=Math.max(0,Math.min(window.innerHeight,cy+dy*SPEED));
+    const pad=document.getElementById('vtrackpad');
+    const padW=pad?pad.offsetWidth:200;
+    const padH=pad?pad.offsetHeight:160;
+    // Scale: full pad travel = full screen travel
+    const scaleX=window.innerWidth/padW;
+    const scaleY=(window.innerHeight-MENU_H-DOCK_H)/padH;
+    const cx=window._cursorX??window.innerWidth/2;
+    const cy=window._cursorY??window.innerHeight/2;
+    // Clamp cursor: can't go above taskbar or below dock, can't leave screen
+    const nx=Math.max(0,Math.min(window.innerWidth,cx+dx*scaleX));
+    const ny=Math.max(MENU_H,Math.min(window.innerHeight-DOCK_H,cy+dy*scaleY));
     window._cursorX=nx;window._cursorY=ny;
     const dot=document.getElementById('cursor-dot');
     if(dot) dot.style.transform=`translate(${nx}px,${ny}px)`;
-    // Dispatch mousemove so hover states work
     const el=document.elementFromPoint(nx,ny);
     if(el){const e=new MouseEvent('mousemove',{bubbles:true,clientX:nx,clientY:ny,screenX:nx,screenY:ny});el.dispatchEvent(e);}
   }
