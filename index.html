@@ -159,8 +159,76 @@
 <div class="mdd-toggle-row" style="cursor:pointer;user-select:none;" onmousedown="this.style.background='rgba(0,0,0,0.1)'" onmouseup="this.style.background=''" onmouseleave="this.style.background=''" ontouchstart="this.style.background='rgba(0,0,0,0.1)'" ontouchend="this.style.background='';window._regenerateWallpaper&&window._regenerateWallpaper();" onclick="window._regenerateWallpaper&&window._regenerateWallpaper();">
 <div>
 <div class="mdd-toggle-label">Generate New Desktop</div>
-<div class="mdd-toggle-sub">Fade and create a new wallpaper</div></div></div></div>
-<div class="menu-dropdown" id="dd-lang" style="min-width:260px;max-height:420px;display:flex;flex-direction:column;">
+<div class="mdd-toggle-sub">Fade and create a new wallpaper</div></div></div>
+<div class="mdd-toggle-row" id="trackpad-menu-row" style="display:none;">
+<div><div class="mdd-toggle-label">Trackpad</div>
+<div class="mdd-toggle-sub">Virtual trackpad overlay</div></div>
+<label class="ios-toggle"><input type="checkbox" id="toggle-trackpad" onchange="applyTrackpad(this.checked)"><span class="ios-slider"></span></label></div></div>
+<div id="vtrackpad" style="display:none;position:fixed;z-index:8000;bottom:18px;right:18px;width:180px;height:130px;border-radius:18px;background:var(--widget-bg);backdrop-filter:var(--blur);-webkit-backdrop-filter:var(--blur);border:1px solid var(--widget-border);box-shadow:0 8px 32px rgba(0,0,0,0.14),inset 0 1px 0 rgba(255,255,255,0.85);opacity:0;touch-action:none;transition:opacity 0.3s ease;"></div>
+<script>
+(function(){
+  if(navigator.maxTouchPoints>0){
+    const row=document.getElementById('trackpad-menu-row');
+    if(row) row.style.display='flex';}
+  window.applyTrackpad=function(on){
+    const pad=document.getElementById('vtrackpad');
+    if(!pad) return;
+    if(on){
+      pad.style.display='block';
+      requestAnimationFrame(()=>requestAnimationFrame(()=>pad.style.opacity='1'));
+    } else {
+      pad.style.opacity='0';
+      setTimeout(()=>pad.style.display='none',300);}};
+  const pad=document.getElementById('vtrackpad');
+  if(!pad) return;
+  let lastX=null,lastY=null,active=false;
+  const SPEED=1.8;
+  function getEl(){return document.elementFromPoint(window._cursorX||window.innerWidth/2,window._cursorY||window.innerHeight/2);}
+  function move(dx,dy){
+    const cx=window._cursorX||window.innerWidth/2;
+    const cy=window._cursorY||window.innerHeight/2;
+    const nx=Math.max(0,Math.min(window.innerWidth,cx+dx*SPEED));
+    const ny=Math.max(0,Math.min(window.innerHeight,cy+dy*SPEED));
+    window._cursorX=nx;window._cursorY=ny;
+    const dot=document.getElementById('cursor-dot');
+    if(dot) dot.style.transform=`translate(${nx}px,${ny}px)`;
+    // Dispatch mousemove so hover states work
+    const el=document.elementFromPoint(nx,ny);
+    if(el){const e=new MouseEvent('mousemove',{bubbles:true,clientX:nx,clientY:ny,screenX:nx,screenY:ny});el.dispatchEvent(e);}
+  }
+  function tap(x,y){
+    const el=document.elementFromPoint(x,y);
+    if(!el) return;
+    const e=new MouseEvent('click',{bubbles:true,cancelable:true,clientX:x,clientY:y});
+    el.dispatchEvent(e);}
+  pad.addEventListener('touchstart',function(e){
+    e.preventDefault();
+    const t=e.touches[0];
+    lastX=t.clientX;lastY=t.clientY;active=true;
+  },{passive:false});
+  pad.addEventListener('touchmove',function(e){
+    e.preventDefault();
+    if(!active||lastX===null) return;
+    const t=e.touches[0];
+    const dx=t.clientX-lastX,dy=t.clientY-lastY;
+    lastX=t.clientX;lastY=t.clientY;
+    move(dx,dy);
+  },{passive:false});
+  pad.addEventListener('touchend',function(e){
+    e.preventDefault();
+    active=false;lastX=null;lastY=null;
+  },{passive:false});
+  // Double tap = click
+  let lastTap=0;
+  pad.addEventListener('touchend',function(e){
+    const now=Date.now();
+    if(now-lastTap<300){
+      const cx=window._cursorX||window.innerWidth/2;
+      const cy=window._cursorY||window.innerHeight/2;
+      tap(cx,cy);}
+    lastTap=now;},{passive:false});
+})();
+</script> style="min-width:260px;max-height:420px;display:flex;flex-direction:column;">
 <div style="padding:10px 12px 8px;border-bottom:1px solid rgba(0,0,0,0.06);"><input id="lang-search" type="text" placeholder="Search language…" style="width:100%;box-sizing:border-box;padding:6px 10px;font-size:13px; border:1px solid rgba(0,0,0,0.14);border-radius:7px; background:rgba(0,0,0,0.04);outline:none;font-family:inherit;color:#1a1a1a;" oninput="filterLangs(this.value)" autocomplete="off" spellcheck="false"></div>
 <div id="lang-list" style="overflow-y:auto;flex:1;"></div>
 <div id="lang-active-bar"></div></div>
