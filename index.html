@@ -1935,11 +1935,46 @@ function npSetSize(px){
 function npRenderList(){
   const list=document.getElementById('notepad-note-list');if(!list)return;
   list.innerHTML=npNotes.map((n,i)=>`
-    <div class="np-note-item${i===npActive?' active':''}" onclick="npSelect(${i})" ondblclick="npRenameInline(${i},this)">
+    <div class="np-note-item${i===npActive?' active':''}" data-idx="${i}" style="position:relative;padding-right:32px;">
       <div class="np-note-title">${n.title||'Untitled'}</div>
       <div class="np-note-preview">${n.content.replace(/<[^>]+>/g,' ').trim().slice(0,40)||'No content'}</div>
       <div class="np-note-date">${n.date}</div>
-    </div>`).join('');}
+      <button class="np-del-btn" data-del="${i}" style="position:absolute;right:7px;top:50%;transform:translateY(-50%);width:20px;height:20px;border-radius:50%;border:none;background:none;display:flex;align-items:center;justify-content:center;font-size:12px;color:rgba(0,0,0,0.25);opacity:0;transition:opacity 0.15s,background 0.12s,color 0.12s;cursor:pointer;padding:0;" title="Delete">🗑</button>
+    </div>`).join('');
+  list.addEventListener('click',function(e){
+    const btn=e.target.closest('[data-del]');
+    if(btn){e.stopPropagation();npDeleteNote(parseInt(btn.dataset.del));return;}
+    const item=e.target.closest('[data-idx]');
+    if(item&&!window._npDeleting) npSelect(parseInt(item.dataset.idx));});
+  list.addEventListener('dblclick',function(e){
+    const item=e.target.closest('[data-idx]');
+    if(item&&!e.target.closest('[data-del]')) npRenameInline(parseInt(item.dataset.idx),item);});
+  list.querySelectorAll('.np-note-item').forEach(el=>{
+    const btn=el.querySelector('.np-del-btn');
+    el.addEventListener('mouseenter',()=>{if(btn)btn.style.opacity='1';});
+    el.addEventListener('mouseleave',()=>{if(btn){btn.style.opacity='0';btn.style.background='none';btn.style.color='rgba(0,0,0,0.25)';}});
+    if(btn){
+      btn.addEventListener('mouseenter',()=>{btn.style.background='rgba(255,59,48,0.10)';btn.style.color='#ff3b30';});
+      btn.addEventListener('mouseleave',()=>{btn.style.background='none';btn.style.color='rgba(0,0,0,0.25)';});}});}
+function npDeleteNote(i){
+  window._npDeleting=true;
+  npNotes.splice(i,1);
+  const ed=document.getElementById('notepad-editor');
+  const tEl=document.getElementById('np-note-title');
+  const main=document.getElementById('notepad-main');
+  if(npNotes.length===0){
+    npActive=0;
+    if(ed) ed.innerHTML='';
+    if(tEl) tEl.textContent='';
+    if(main) main.style.visibility='hidden';
+  } else {
+    npActive=Math.max(0,Math.min(i,npNotes.length-1));
+    if(ed) ed.innerHTML=npNotes[npActive].content;
+    if(tEl) tEl.textContent=npNotes[npActive].title==='Untitled'?'':npNotes[npActive].title;
+    if(main) main.style.visibility='visible';
+  }
+  npRenderList();
+  setTimeout(()=>{window._npDeleting=false;},50);}
 function npRenameInline(i,el){
   const titleEl=el.querySelector('.np-note-title');
   if(!titleEl) return;
@@ -1966,20 +2001,24 @@ function npRenameInline(i,el){
 function npSelect(i){
   const ed=document.getElementById('notepad-editor');
   const tEl=document.getElementById('np-note-title');
-  if(ed) npNotes[npActive].content=ed.innerHTML;
-  if(tEl) npNotes[npActive].title=tEl.textContent.trim()||'Untitled';
+  const main=document.getElementById('notepad-main');
+  if(ed&&npNotes[npActive]) npNotes[npActive].content=ed.innerHTML;
+  if(tEl&&npNotes[npActive]) npNotes[npActive].title=tEl.textContent.trim()||'Untitled';
   npActive=i;
   if(ed) ed.innerHTML=npNotes[i].content;
   if(tEl) tEl.textContent=npNotes[i].title==='Untitled'?'':npNotes[i].title;
+  if(main) main.style.visibility='visible';
   npRenderList();}
 function npNew(){
   const ed=document.getElementById('notepad-editor');
   const tEl=document.getElementById('np-note-title');
-  if(ed) npNotes[npActive].content=ed.innerHTML;
-  if(tEl) npNotes[npActive].title=tEl.textContent.trim()||'Untitled';
+  const main=document.getElementById('notepad-main');
+  if(ed&&npNotes[npActive]) npNotes[npActive].content=ed.innerHTML;
+  if(tEl&&npNotes[npActive]) npNotes[npActive].title=tEl.textContent.trim()||'Untitled';
   const d=new Date(),ds=d.toLocaleDateString('en-GB',{day:'numeric',month:'short'});
   npNotes.unshift({id:Date.now(),title:'',content:'',date:ds});
   npActive=0;
+  if(main) main.style.visibility='visible';
   if(ed){ed.innerHTML='';ed.focus();}
   if(tEl){tEl.textContent='';tEl.focus();}
   npRenderList();}
