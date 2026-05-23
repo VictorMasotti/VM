@@ -186,8 +186,8 @@
     const pad=document.getElementById('vtrackpad');
     const padW=pad?pad.offsetWidth:200;
     const padH=pad?pad.offsetHeight:160;
-    const scaleX=window.innerWidth/padW;
-    const scaleY=window.innerHeight/padH;
+    const scaleX=(window.innerWidth/padW)*0.55;
+    const scaleY=(window.innerHeight/padH)*0.55;
     const cx=window._cursorX??window.innerWidth/2;
     const cy=window._cursorY??window.innerHeight/2;
     const nx=Math.max(0,Math.min(window.innerWidth,cx+dx*scaleX));
