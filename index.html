@@ -195,7 +195,7 @@
   </div>
   <div class="mdd-toggle-row">
     <div>
-      <div class="mdd-toggle-label">Clear Bar</div>
+      <div class="mdd-toggle-label">Clear Taskbar</div>
       <div class="mdd-toggle-sub">Fully transparent taskbar</div>
     </div>
     <label class="ios-toggle">
@@ -205,7 +205,7 @@
   </div>
   <div class="mdd-toggle-row">
     <div>
-      <div class="mdd-toggle-label">Glassy Bar</div>
+      <div class="mdd-toggle-label">Glassy Taskbar</div>
       <div class="mdd-toggle-sub">Frosted glass taskbar</div>
     </div>
     <label class="ios-toggle">
@@ -349,12 +349,13 @@
       <option value="'Courier New',monospace">Mono</option>
       <option value="Arial,sans-serif">Arial</option>
     </select>
-    <select class="np-tb-btn" onchange="document.execCommand('fontSize',false,this.value)" title="Size" style="padding:0 4px;width:46px;font-size:11px;">
-      <option value="2">S</option>
-      <option value="3" selected>M</option>
-      <option value="4">L</option>
-      <option value="5">XL</option>
-      <option value="6">2X</option>
+    <select class="np-tb-btn" onchange="npSetSize(this.value)" title="Size" style="padding:0 4px;width:50px;font-size:11px;">
+      <option value="11">11</option>
+      <option value="13">13</option>
+      <option value="15" selected>15</option>
+      <option value="18">18</option>
+      <option value="24">24</option>
+      <option value="32">32</option>
     </select>
     <div class="np-tb-sep"></div>
     <button class="np-tb-btn" onclick="document.execCommand('bold')" title="Bold"><b>B</b></button>
@@ -1134,7 +1135,7 @@ function dockBounce(el){el.classList.remove('bounce');void el.offsetWidth;el.cla
       {img:'nota.png', icon:'📝',label:'Notes',       fn:'openNotepad()',  bg:'linear-gradient(145deg,#ffd60a,#ff9f0a)'},
       {img:'fash.png', icon:'👗',label:'Fashion',     fn:'openFashion()',  bg:'linear-gradient(145deg,#f48fb1,#c2185b)'},
       {img:'vidyo.png',icon:'▶', label:'Video',       fn:'openVideo()',    bg:'linear-gradient(145deg,#1a1a2e,#0f3460)'},
-      {img:'nom.png',  icon:'🌍',label:'Globe',       fn:'openNom()',      bg:'linear-gradient(145deg,#1a1a2e,#0f3460)'},
+      {img:'',         icon:'🗺️',label:'Maps',         fn:'',               bg:'linear-gradient(145deg,#34c759,#248a3d)'},
       {img:'clay.png', icon:'🏺',label:'Clayround',   fn:'openClay()',     bg:'linear-gradient(145deg,#c8a060,#7a5c30)'},
       {img:'setty.png',icon:'⚙️',label:'Settings',    fn:'openSettings()', bg:'linear-gradient(145deg,#8e8e93,#636366)'},
       {img:'',         icon:'🎵',label:'Echo',        fn:'',               bg:'linear-gradient(145deg,#ff3cac,#784ba0)'},
@@ -1190,7 +1191,7 @@ function dockBounce(el){el.classList.remove('bounce');void el.offsetWidth;el.cla
         const fd=fl.find(x=>x.id===fid)||{id:fid,name:'—'};
         return `<div
           onmousedown="this._md={x:event.clientX,y:event.clientY}"
-          onclick="if(window._widgetDragging)return;var d=this._md;if(!d||Math.hypot(event.clientX-d.x,event.clientY-d.y)<6)openFolders('${fd.id}')"
+          onclick="(function(){if(window._widgetDragging)return;var d=this._md;if(!d||Math.hypot(event.clientX-d.x,event.clientY-d.y)<6)openFolders('${fd.id}')})()"
           style="display:flex;flex-direction:column;align-items:center;justify-content:flex-end;padding:4px;cursor:pointer;border-radius:8px;transition:background 0.1s;overflow:hidden;"
           onmouseover="this.style.background='rgba(0,0,0,0.07)'"
           onmouseout="this.style.background=''">
@@ -1923,14 +1924,45 @@ let notepadOpen=false,notepadMax=false,notepadMinned=false;
 const notepadWin=document.getElementById('notepad-window');
 let npNotes=[{id:1,title:'Untitled',content:'',date:new Date().toLocaleDateString('en-GB',{day:'numeric',month:'short'})}];
 let npActive=0;
+function npSetSize(px){
+  const ed=document.getElementById('notepad-editor');
+  if(!ed) return;
+  ed.focus();
+  document.execCommand('fontSize',false,'7');
+  ed.querySelectorAll('font[size="7"]').forEach(el=>{
+    el.removeAttribute('size');
+    el.style.fontSize=px+'px';});}
 function npRenderList(){
   const list=document.getElementById('notepad-note-list');if(!list)return;
   list.innerHTML=npNotes.map((n,i)=>`
-    <div class="np-note-item${i===npActive?' active':''}" onclick="npSelect(${i})">
+    <div class="np-note-item${i===npActive?' active':''}" onclick="npSelect(${i})" ondblclick="npRenameInline(${i},this)">
       <div class="np-note-title">${n.title||'Untitled'}</div>
       <div class="np-note-preview">${n.content.replace(/<[^>]+>/g,' ').trim().slice(0,40)||'No content'}</div>
       <div class="np-note-date">${n.date}</div>
     </div>`).join('');}
+function npRenameInline(i,el){
+  const titleEl=el.querySelector('.np-note-title');
+  if(!titleEl) return;
+  const prev=npNotes[i].title||'Untitled';
+  titleEl.contentEditable='true';
+  titleEl.style.outline='none';
+  titleEl.style.background='rgba(255,200,50,0.25)';
+  titleEl.style.borderRadius='4px';
+  titleEl.style.padding='1px 4px';
+  titleEl.focus();
+  const range=document.createRange();range.selectNodeContents(titleEl);
+  const sel=window.getSelection();sel.removeAllRanges();sel.addRange(range);
+  function done(){
+    const val=titleEl.textContent.trim()||'Untitled';
+    npNotes[i].title=val;
+    titleEl.contentEditable='false';
+    titleEl.style.background='';
+    titleEl.style.borderRadius='';
+    titleEl.style.padding='';
+    titleEl.textContent=val;
+    if(i===npActive){const t=document.getElementById('np-note-title');if(t)t.textContent=val==='Untitled'?'':val;}}
+  titleEl.onblur=done;
+  titleEl.onkeydown=function(e){if(e.key==='Enter'){e.preventDefault();done();}if(e.key==='Escape'){titleEl.textContent=prev;done();}};}
 function npSelect(i){
   const ed=document.getElementById('notepad-editor');
   const tEl=document.getElementById('np-note-title');
@@ -5421,10 +5453,10 @@ window.addEventListener('keydown',e=>{
     const bg = dark ? '#18181a' : '#f0ede8';
     const groundCol = dark ? '#1e1e20' : '#e8e3da';
     const srcdoc = `<!DOCTYPE html><html><head><style>*{margin:0;padding:0;}body{overflow:hidden;background:${bg};}canvas{cursor:crosshair;}</style>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"><\/script>
-<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/exporters/OBJExporter.js"><\/script>
+<scr`+`ipt src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"><\/scr`+`ipt>
+<scr`+`ipt src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/exporters/OBJExporter.js"><\/scr`+`ipt>
 </head><body>
-<script>
+<scr`+`ipt>
 (function(){
   const W=window.innerWidth, H=window.innerHeight;
   const renderer=new THREE.WebGLRenderer({antialias:true});
@@ -5794,7 +5826,7 @@ window.addEventListener('keydown',e=>{
     window.parent.postMessage({type:'clayKey',key:e.key},'*');
     e.preventDefault();});
 })();
-<\/script></body></html>`;
+<\/scr`+`ipt></body></html>`;
     iframe.srcdoc = srcdoc;
     window.addEventListener('message', e=>{
       if(!e.data) return;
@@ -6989,7 +7021,7 @@ body.dark-mode #nom-titlebar{background:linear-gradient(180deg,#3c3c3e,#2c2c2e);
       <path d="M6 12 Q11 15 16 12" stroke="rgba(255,255,255,0.6)" stroke-width="1" fill="none" stroke-linecap="round"/>
       <path d="M9 5 L8 3 M13 5 L14 3" stroke="rgba(255,255,255,0.55)" stroke-width="1.2" stroke-linecap="round"/>
     </svg>
-    <div class="spring-lbl">Gyarados TCG</div>
+    <div class="spring-lbl">Maps</div>
   </div>
   <div class="spring-icon spi-two" onclick="springLaunch('nom')" style="background:linear-gradient(145deg,#1a1a2e,#0f3460,#16213e);">
     <img src="nom.png" style="width:100%;height:100%;object-fit:cover;border-radius:11px;display:block;pointer-events:none;">
@@ -7947,7 +7979,7 @@ function _fwHTML(def){
     if(fd){
       slots+='<div'+
         ' onmousedown="this._md={x:event.clientX,y:event.clientY}"'+
-        ' onclick="if(window._widgetDragging)return;var d=this._md;if(!d||Math.hypot(event.clientX-d.x,event.clientY-d.y)<6)openFolders(\''+fd.id+'\')"'+
+        ' onclick="(function(){if(window._widgetDragging)return;var d=this._md;if(!d||Math.hypot(event.clientX-d.x,event.clientY-d.y)<6)openFolders(\''+fd.id+'\')})()"'+
         ' style="display:flex;flex-direction:column;align-items:center;justify-content:flex-end;padding:4px;cursor:pointer;border-radius:8px;transition:background 0.1s;overflow:hidden;"'+
         ' onmouseover="this.style.background=\'rgba(0,0,0,0.07)\'"'+
         ' onmouseout="this.style.background=\'\'">'+
@@ -8023,7 +8055,7 @@ window.startFolderWidgetJoin=function(){
         var fd=allIds[i]?fl.find(function(f){return f.id===allIds[i];}):null;
         if(fd){
           slots+='<div onmousedown="this._md={x:event.clientX,y:event.clientY}"'+
-            ' onclick="if(window._widgetDragging)return;var d=this._md;if(!d||Math.hypot(event.clientX-d.x,event.clientY-d.y)<6)openFolders(\''+fd.id+'\')"'+
+            ' onclick="(function(){if(window._widgetDragging)return;var d=this._md;if(!d||Math.hypot(event.clientX-d.x,event.clientY-d.y)<6)openFolders(\''+fd.id+'\')})()"'+
             ' onmouseover="this.style.background=\'rgba(0,0,0,0.07)\'"'+
             ' onmouseout="this.style.background=\'\'"'+
             ' style="display:flex;flex-direction:column;align-items:center;justify-content:flex-end;padding:4px;cursor:pointer;border-radius:8px;overflow:hidden;">'+
@@ -8204,7 +8236,7 @@ function mergeFolderWidgets(elA,elB,onDone){
       var fd=allIds[i]?fl.find(function(f){return f.id===allIds[i];}):null;
       if(fd){
         slots+='<div onmousedown="this._md={x:event.clientX,y:event.clientY}"'+
-          ' onclick="if(window._widgetDragging)return;var d=this._md;if(!d||Math.hypot(event.clientX-d.x,event.clientY-d.y)<6)openFolders(\''+fd.id+'\')"'+
+          ' onclick="(function(){if(window._widgetDragging)return;var d=this._md;if(!d||Math.hypot(event.clientX-d.x,event.clientY-d.y)<6)openFolders(\''+fd.id+'\')})()"'+
           ' onmouseover="this.style.background=\'rgba(0,0,0,0.07)\'"'+
           ' onmouseout="this.style.background=\'\'"'+
           ' style="display:flex;flex-direction:column;align-items:center;justify-content:flex-end;padding:4px;cursor:pointer;border-radius:8px;overflow:hidden;">'+
@@ -8366,6 +8398,56 @@ function commitVMRename(){
 </script>
 <script>
 document.addEventListener('DOMContentLoaded',function(){
+  var list=document.getElementById('notepad-note-list');
+  if(!list) return;
+  var npCtx=document.createElement('div');
+  npCtx.id='np-ctx';
+  npCtx.style.cssText='position:fixed;z-index:9999;background:rgba(242,240,237,0.96);backdrop-filter:blur(28px);-webkit-backdrop-filter:blur(28px);border:1px solid rgba(0,0,0,0.13);border-radius:8px;box-shadow:0 8px 32px rgba(0,0,0,0.18);overflow:hidden;min-width:140px;opacity:0;pointer-events:none;transform:scale(0.94) translateY(-4px);transform-origin:top left;transition:opacity 0.12s ease,transform 0.12s cubic-bezier(0.34,1.2,0.64,1);';
+  npCtx.innerHTML='<div id="np-ctx-rename" style="padding:9px 14px;font-size:13px;color:#1a1a1a;cursor:pointer;border-bottom:1px solid rgba(0,0,0,0.06);transition:background 0.1s;">Rename</div><div id="np-ctx-delete" style="padding:9px 14px;font-size:13px;color:#ff3b30;cursor:pointer;transition:background 0.1s;">Delete</div>';
+  document.body.appendChild(npCtx);
+  var npCtxIdx=-1;
+  function showNpCtx(x,y,i){
+    npCtxIdx=i;
+    npCtx.style.display='block';
+    npCtx.style.left=Math.min(x,window.innerWidth-160)+'px';
+    npCtx.style.top=Math.min(y,window.innerHeight-80)+'px';
+    requestAnimationFrame(function(){requestAnimationFrame(function(){
+      npCtx.style.opacity='1';npCtx.style.transform='scale(1) translateY(0)';npCtx.style.pointerEvents='all';});});}
+  function hideNpCtx(){
+    npCtx.style.opacity='0';npCtx.style.transform='scale(0.94) translateY(-4px)';npCtx.style.pointerEvents='none';
+    setTimeout(function(){npCtx.style.display='none';},130);}
+  list.addEventListener('contextmenu',function(e){
+    var item=e.target.closest('.np-note-item');
+    if(!item) return;
+    e.preventDefault();e.stopPropagation();
+    var i=Array.from(list.children).indexOf(item);
+    if(i<0) return;
+    showNpCtx(e.clientX,e.clientY,i);});
+  document.getElementById('np-ctx-rename').addEventListener('click',function(){
+    var items=list.querySelectorAll('.np-note-item');
+    var el=items[npCtxIdx];
+    hideNpCtx();
+    if(el) npRenameInline(npCtxIdx,el);});
+  document.getElementById('np-ctx-delete').addEventListener('click',function(){
+    var i=npCtxIdx;hideNpCtx();
+    if(i<0||i>=npNotes.length) return;
+    npNotes.splice(i,1);
+    if(npNotes.length===0){const d=new Date();npNotes.push({id:Date.now(),title:'',content:'',date:d.toLocaleDateString('en-GB',{day:'numeric',month:'short'})});}
+    npActive=Math.min(npActive,npNotes.length-1);
+    const ed=document.getElementById('notepad-editor');
+    const tEl=document.getElementById('np-note-title');
+    if(ed)ed.innerHTML=npNotes[npActive].content;
+    if(tEl)tEl.textContent=npNotes[npActive].title==='Untitled'?'':npNotes[npActive].title;
+    npRenderList();});
+  document.addEventListener('mousedown',function(e){if(!npCtx.contains(e.target))hideNpCtx();});
+  npCtx.querySelector('#np-ctx-rename').addEventListener('mouseover',function(){this.style.background='rgba(0,0,0,0.06)';});
+  npCtx.querySelector('#np-ctx-rename').addEventListener('mouseout',function(){this.style.background='';});
+  npCtx.querySelector('#np-ctx-delete').addEventListener('mouseover',function(){this.style.background='rgba(255,59,48,0.08)';});
+  npCtx.querySelector('#np-ctx-delete').addEventListener('mouseout',function(){this.style.background='';});
+  if(document.body.classList.contains('dark-mode')){npCtx.style.background='rgba(20,20,24,0.98)';npCtx.style.borderColor='rgba(255,255,255,0.12)';}});
+</script>
+<script>
+document.addEventListener('DOMContentLoaded',function(){
   var menu=document.getElementById('folder-ctx-menu');
   if(!menu) return;
   function closeFCtx(){menu.style.opacity='0';menu.style.pointerEvents='none';menu.style.transform='scale(0.92) translateY(-4px)';}
@@ -8394,7 +8476,8 @@ document.addEventListener('DOMContentLoaded',function(){
       if(el){el.style.transition='opacity 0.3s,transform 0.3s';el.style.opacity='0';el.style.transform='scale(0.6)';setTimeout(function(){el.remove();},320);}
       if(window._refreshFoldersList)window._refreshFoldersList();
       if(window._updateTrashView)window._updateTrashView();}
-    window._folderCtxTarget=null;});});
+    window._folderCtxTarget=null;});
+});
 </script>
 </body>
 </html>
