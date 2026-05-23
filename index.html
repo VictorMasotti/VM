@@ -181,57 +181,52 @@
       setTimeout(()=>pad.style.display='none',300);}};
   const pad=document.getElementById('vtrackpad');
   if(!pad) return;
-  let lastX=null,lastY=null,active=false;
-  const MENU_H=26, DOCK_H=78;
+  let lastX=null,lastY=null,active=false,lastTap=0,moved=false;
   function move(dx,dy){
     const pad=document.getElementById('vtrackpad');
     const padW=pad?pad.offsetWidth:200;
     const padH=pad?pad.offsetHeight:160;
-    // Scale: full pad travel = full screen travel
     const scaleX=window.innerWidth/padW;
-    const scaleY=(window.innerHeight-MENU_H-DOCK_H)/padH;
+    const scaleY=window.innerHeight/padH;
     const cx=window._cursorX??window.innerWidth/2;
     const cy=window._cursorY??window.innerHeight/2;
-    // Clamp cursor: can't go above taskbar or below dock, can't leave screen
     const nx=Math.max(0,Math.min(window.innerWidth,cx+dx*scaleX));
-    const ny=Math.max(MENU_H,Math.min(window.innerHeight-DOCK_H,cy+dy*scaleY));
+    const ny=Math.max(0,Math.min(window.innerHeight,cy+dy*scaleY));
     window._cursorX=nx;window._cursorY=ny;
     const dot=document.getElementById('cursor-dot');
     if(dot) dot.style.transform=`translate(${nx}px,${ny}px)`;
     const el=document.elementFromPoint(nx,ny);
-    if(el){const e=new MouseEvent('mousemove',{bubbles:true,clientX:nx,clientY:ny,screenX:nx,screenY:ny});el.dispatchEvent(e);}
+    if(el){const e=new MouseEvent('mousemove',{bubbles:true,clientX:nx,clientY:ny});el.dispatchEvent(e);}
   }
   function tap(x,y){
     const el=document.elementFromPoint(x,y);
     if(!el) return;
-    const e=new MouseEvent('click',{bubbles:true,cancelable:true,clientX:x,clientY:y});
-    el.dispatchEvent(e);}
+    ['mousedown','mouseup','click'].forEach(type=>{
+      el.dispatchEvent(new MouseEvent(type,{bubbles:true,cancelable:true,clientX:x,clientY:y}));});}
   pad.addEventListener('touchstart',function(e){
     e.preventDefault();
     const t=e.touches[0];
-    lastX=t.clientX;lastY=t.clientY;active=true;
+    lastX=t.clientX;lastY=t.clientY;active=true;moved=false;
   },{passive:false});
   pad.addEventListener('touchmove',function(e){
     e.preventDefault();
     if(!active||lastX===null) return;
     const t=e.touches[0];
     const dx=t.clientX-lastX,dy=t.clientY-lastY;
+    if(Math.abs(dx)>2||Math.abs(dy)>2) moved=true;
     lastX=t.clientX;lastY=t.clientY;
     move(dx,dy);
   },{passive:false});
   pad.addEventListener('touchend',function(e){
     e.preventDefault();
     active=false;lastX=null;lastY=null;
-  },{passive:false});
-  // Double tap = click
-  let lastTap=0;
-  pad.addEventListener('touchend',function(e){
     const now=Date.now();
-    if(now-lastTap<300){
+    if(!moved){
       const cx=window._cursorX||window.innerWidth/2;
       const cy=window._cursorY||window.innerHeight/2;
       tap(cx,cy);}
-    lastTap=now;},{passive:false});
+    lastTap=now;moved=false;
+  },{passive:false});
 })();
 </script> style="min-width:260px;max-height:420px;display:flex;flex-direction:column;">
 <div style="padding:10px 12px 8px;border-bottom:1px solid rgba(0,0,0,0.06);"><input id="lang-search" type="text" placeholder="Search language…" style="width:100%;box-sizing:border-box;padding:6px 10px;font-size:13px; border:1px solid rgba(0,0,0,0.14);border-radius:7px; background:rgba(0,0,0,0.04);outline:none;font-family:inherit;color:#1a1a1a;" oninput="filterLangs(this.value)" autocomplete="off" spellcheck="false"></div>
@@ -1025,8 +1020,7 @@ function dockBounce(el){el.classList.remove('bounce');void el.offsetWidth;el.cla
       const fl=window._folderList||[];
       const items=fids.map(fid=>{
         const fd=fl.find(x=>x.id===fid)||{id:fid,name:'—'};
-        return `<divonmousedown="this._md={x:event.clientX,y:event.clientY}"onclick="(function(){if(window._widgetDragging)return;var d=this._md;if(!d||Math.hypot(event.clientX-d.x,event.clientY-d.y)<6)openFolders('${fd.id}')})()"style="display:flex;flex-direction:column;align-items:center;justify-content:flex-end;padding:4px;cursor:pointer;border-radius:8px;transition:background 0.1s;overflow:hidden;"onmouseover="this.style.background='rgba(0,0,0,0.07)'"onmouseout="this.style.background=''"><img src="busta.png" style="flex:1;min-height:0;width:auto;max-width:78%;object-fit:contain;filter:drop-shadow(0 3px 8px rgba(0,0,0,0.20));pointer-events:none;"><span style="flex-shrink:0;font-size:9px;font-weight:500;color:var(--text-dim);text-align:center;line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;width:100%;margin-top:-5px;pointer-events:none;">${fd.name}</span>
-        </div>`;
+        return `<div onmousedown="this._md={x:event.clientX,y:event.clientY}" onclick="(function(){if(window._widgetDragging)return;var d=this._md;if(!d||Math.hypot(event.clientX-d.x,event.clientY-d.y)<6)openFolders('${fd.id}')()" style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:4px;cursor:pointer;border-radius:8px;transition:background 0.1s;overflow:hidden;" onmouseover="this.style.background='rgba(0,0,0,0.07)'" onmouseout="this.style.background=''"><img src="busta.png" style="width:70%;aspect-ratio:1;object-fit:contain;filter:drop-shadow(0 3px 8px rgba(0,0,0,0.20));pointer-events:none;flex-shrink:0;"><span style="font-size:9px;font-weight:500;color:var(--text-dim);text-align:center;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;width:100%;margin-top:3px;pointer-events:none;">${fd.name}</span></div>`;
       }).join('');
       return `<div style="display:grid;grid-template-columns:1fr 1fr 1fr;width:100%;height:100%;box-sizing:border-box;">${items}</div>`;}
     if(type==='calcw') return `<style>.cww{position:absolute;inset:0;display:flex;flex-direction:column;font-family:-apple-system,sans-serif;user-select:none;overflow:hidden;}
