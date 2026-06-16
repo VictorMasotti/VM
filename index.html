@@ -3634,7 +3634,16 @@ function maximiseMusic(){
 <div class="video-thumb" onclick="vidLoadYT('zpKwrNzE29o','Video 6')">
 <div class="video-thumb-img" style="overflow:hidden;padding:0;"><img src="https://i.ytimg.com/vi/zpKwrNzE29o/mqdefault.jpg" style="width:100%;height:100%;object-fit:cover;"></div>
 <div class="video-thumb-info"><div class="video-thumb-name">Video 6</div><div class="video-thumb-dur">YouTube</div></div></div>
-<div style="padding:10px 12px;margin-top:auto;border-top:1px solid rgba(255,255,255,0.05);"><input id="vid-url-input" type="text" placeholder="Paste video URL…" style="width:100%;box-sizing:border-box;background:rgba(0,0,0,0.06);border:1px solid rgba(0,0,0,0.12);border-radius:6px;padding:6px 8px;font-size:11px;color:rgba(0,0,0,0.65);outline:none;">
+<div class="video-thumb" onclick="vidLoadYT('xj1wBipbwpk','Video 7')">
+<div class="video-thumb-img" style="overflow:hidden;padding:0;"><img src="https://i.ytimg.com/vi/xj1wBipbwpk/mqdefault.jpg" style="width:100%;height:100%;object-fit:cover;"></div>
+<div class="video-thumb-info"><div class="video-thumb-name">Video 7</div><div class="video-thumb-dur">YouTube</div></div></div>
+<div class="video-thumb" onclick="vidLoadYT('sDyk_euhgsQ','Video 8')">
+<div class="video-thumb-img" style="overflow:hidden;padding:0;"><img src="https://i.ytimg.com/vi/sDyk_euhgsQ/mqdefault.jpg" style="width:100%;height:100%;object-fit:cover;"></div>
+<div class="video-thumb-info"><div class="video-thumb-name">Video 8</div><div class="video-thumb-dur">YouTube</div></div></div>
+<div class="video-thumb" onclick="vidLoadYT('mcghARCzPr8','Video 9')">
+<div class="video-thumb-img" style="overflow:hidden;padding:0;"><img src="https://i.ytimg.com/vi/mcghARCzPr8/mqdefault.jpg" style="width:100%;height:100%;object-fit:cover;"></div>
+<div class="video-thumb-info"><div class="video-thumb-name">Video 9</div><div class="video-thumb-dur">YouTube</div></div></div>
+<div style="padding:10px 12px;margin-top:auto;border-top:1px solid rgba(255,255,255,0.05);"><input id="vid-url-input" type="text" onkeydown="if(event.key==='Enter')vidLoadUrl(this.value)" placeholder="Paste video URL…" style="width:100%;box-sizing:border-box;background:rgba(0,0,0,0.06);border:1px solid rgba(0,0,0,0.12);border-radius:6px;padding:6px 8px;font-size:11px;color:rgba(0,0,0,0.65);outline:none;">
 <button onclick="vidLoadUrl(document.getElementById('vid-url-input').value)" style="margin-top:6px;width:100%;padding:5px;font-size:11px;border-radius:6px;border:none;background:rgba(0,0,0,0.10);color:rgba(0,0,0,0.6);cursor:pointer;transition:background 0.15s;">Load</button></div></div></div></div>
 <div id="fashion-window">
 <div id="fashion-titlebar">
@@ -5972,13 +5981,34 @@ window.addEventListener('keydown',e=>{
     const lbl=document.getElementById('video-title-label');
     if(lbl) lbl.textContent=title||'Video Player';
     document.querySelectorAll('.video-thumb').forEach(t=>t.style.background='');};
+  window.ytIdFromUrl=function(url){
+    if(!url) return null;
+    url=String(url).trim();
+    if(/^[a-zA-Z0-9_-]{11}$/.test(url)) return url;
+    let m=url.match(/(?:youtube\.com\/(?:watch\?(?:.*&)?v=|embed\/|shorts\/|live\/|v\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/);
+    if(m) return m[1];
+    m=url.match(/[?&]v=([a-zA-Z0-9_-]{11})/);
+    if(m) return m[1];
+    return null;};
   window.vidLoadUrl=function(url){
-    if(!url) return;
+    if(!url||!String(url).trim()) return;
+    url=String(url).trim();
+    const input=document.getElementById('vid-url-input');
+    const id=window.ytIdFromUrl(url);
+    if(id){
+      // YouTube link: a native <video> tag can't play these, must embed via iframe
+      vidLoadYT(id,'Custom video');
+      if(input) input.value='';
+      return;}
+    // Not a YouTube link: treat as a direct video-file URL
     const v=vel();
+    const old=document.getElementById('yt-iframe');
+    if(old) old.remove();
     v.src=url; v.style.display='block';
     placeholder().style.display='none';
     v.play().catch(()=>{});
-    document.getElementById('vid-play-btn').textContent='⏸';};
+    const pb=document.getElementById('vid-play-btn'); if(pb) pb.textContent='⏸';
+    if(input) input.value='';};
   setInterval(()=>{
     const v=vel(); if(!v||v.style.display==='none'||!v.duration) return;
     const pct=v.currentTime/v.duration*100;
